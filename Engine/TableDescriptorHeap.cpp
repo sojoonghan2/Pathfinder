@@ -113,8 +113,6 @@ void ComputeDescriptorHeap::SetUAV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, UAV_RE
 	uint32 destRange = 1;
 	uint32 srcRange = 1;
 	DEVICE->CopyDescriptors(1, &destHandle, &destRange, 1, &srcHandle, &srcRange, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-	// TODO : 리소스 상태 변경
 }
 
 void ComputeDescriptorHeap::CommitTable()

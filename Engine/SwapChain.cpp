@@ -8,7 +8,6 @@ void SwapChain::Init(const WindowInfo& info, ComPtr<ID3D12Device> device, ComPtr
 
 void SwapChain::Present()
 {
-	// Present the frame.
 	_swapChain->Present(0, 0);
 }
 
@@ -19,7 +18,7 @@ void SwapChain::SwapIndex()
 
 void SwapChain::CreateSwapChain(const WindowInfo& info, ComPtr<IDXGIFactory> dxgi, ComPtr<ID3D12CommandQueue> cmdQueue)
 {
-	// 이전에 만든 정보 날린다
+	// 이전 정보 리셋
 	_swapChain.Reset();
 
 	DXGI_SWAP_CHAIN_DESC sd;

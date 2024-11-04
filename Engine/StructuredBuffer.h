@@ -8,13 +8,17 @@ public:
 
 	void Init(uint32 elementSize, uint32 elementCount, void* initialData = nullptr);
 
+	// 그래픽스 파이프라인에서 해당 버퍼를 SRV로 바인딩
 	void PushGraphicsData(SRV_REGISTER reg);
+	// 컴퓨팅 파이프라인에서 해당 버퍼를 SRV로 바인딩
 	void PushComputeSRVData(SRV_REGISTER reg);
+	// 컴퓨팅 파이프라인에서 해당 버퍼를 UAV로 바인딩
 	void PushComputeUAVData(UAV_REGISTER reg);
 
 	ComPtr<ID3D12DescriptorHeap> GetSRV() { return _srvHeap; }
 	ComPtr<ID3D12DescriptorHeap> GetUAV() { return _uavHeap; }
 
+	// 버퍼의 현재 상태
 	void SetResourceState(D3D12_RESOURCE_STATES state) { _resourceState = state; }
 	D3D12_RESOURCE_STATES GetResourceState() { return _resourceState; }
 	ComPtr<ID3D12Resource> GetBuffer() { return _buffer; }

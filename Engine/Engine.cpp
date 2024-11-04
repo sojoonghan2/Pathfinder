@@ -102,7 +102,7 @@ void Engine::CreateConstantBuffer(CBV_REGISTER reg, uint32 bufferSize, uint32 co
 
 void Engine::CreateRenderTargetGroups()
 {
-	// DepthStencil
+	// Depth-Stencil
 	shared_ptr<Texture> dsTexture = GET_SINGLE(Resources)->CreateTexture(L"DepthStencil",
 		DXGI_FORMAT_D32_FLOAT, _window.width, _window.height,
 		CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),

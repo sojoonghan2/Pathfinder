@@ -14,10 +14,13 @@
 class Engine
 {
 public:
+	// 엔진 초기화
 	void Init(const WindowInfo& info);
+	// 엔진 업데이트
 	void Update();
 
 public:
+	// Getter
 	const WindowInfo& GetWindow() { return _window; }
 	shared_ptr<Device> GetDevice() { return _device; }
 	shared_ptr<GraphicsCommandQueue> GetGraphicsCmdQueue() { return _graphicsCmdQueue; }

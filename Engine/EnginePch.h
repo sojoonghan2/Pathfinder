@@ -52,10 +52,14 @@ using namespace Microsoft::WRL;
 #pragma comment(lib, "FBX\\debug\\libxml2-md.lib")
 #pragma comment(lib, "FBX\\debug\\zlib-md.lib")
 #else
-#pragma comment(lib, "FBX\\release\libfbxsdk-md.lib")
-#pragma comment(lib, "FBX\\release\libxml2-md.lib")
+#pragma comment(lib, "FBX\\release\\libfbxsdk-md.lib")
+#pragma comment(lib, "FBX\\release\\libxml2-md.lib")
 #pragma comment(lib, "FBX\\release\\zlib-md.lib")
 #endif
+
+// 콘솔 창 출력
+#include <iostream>
+#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 
 // 각종 typedef
 using int8		= __int8;
@@ -144,6 +148,7 @@ struct Vertex
 	Vec4 indices;
 };
 
+// 싱글톤 매크로
 #define DECLARE_SINGLE(type)		\
 private:							\
 	type() {}						\
@@ -187,8 +192,9 @@ struct AnimFrameParams
 	Vec4	translation;
 };
 
+// 전역 인스턴스를 선언하여 엔진을 전역적으로 접근 가능하게 함
 extern unique_ptr<class Engine> GEngine;
 
-// Utils
+// 문자열 변환 함수
 wstring s2ws(const string& s);
 string ws2s(const wstring& s);

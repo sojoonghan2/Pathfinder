@@ -13,6 +13,7 @@ public:
 	void SetCBV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, CBV_REGISTER reg);
 	void SetSRV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, SRV_REGISTER reg);
 
+	// 디스크립터 힙에 설정된 바인딩을 실제 GPU에 커밋
 	void CommitTable();
 
 	ComPtr<ID3D12DescriptorHeap> GetDescriptorHeap() { return _descHeap; }
@@ -47,6 +48,7 @@ public:
 	void SetSRV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, SRV_REGISTER reg);
 	void SetUAV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, UAV_REGISTER reg);
 
+	// 디스크립터 힙에 설정된 바인딩을 실제 GPU에 커밋
 	void CommitTable();
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle(CBV_REGISTER reg);
