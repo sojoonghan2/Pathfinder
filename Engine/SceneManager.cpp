@@ -28,7 +28,6 @@ void SceneManager::Update()
 	_activeScene->FinalUpdate();
 }
 
-// TEMP
 void SceneManager::Render()
 {
 	if (_activeScene)
@@ -197,7 +196,7 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 #pragma endregion
 
 #pragma region Object
-	/*{
+	{
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
 		obj->SetName(L"OBJ");
 		obj->AddComponent(make_shared<Transform>());
@@ -218,11 +217,11 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 		obj->AddComponent(meshRenderer);
 		scene->AddGameObject(obj);
-	}*/
+	}
 #pragma endregion
 
 #pragma region Terrain
-	/*{
+	{
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
 		obj->AddComponent(make_shared<Transform>());
 		obj->AddComponent(make_shared<Terrain>());
@@ -235,7 +234,7 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 		obj->SetCheckFrustum(false);
 
 		scene->AddGameObject(obj);
-	}*/
+	}
 #pragma endregion
 
 #pragma region UI_Test

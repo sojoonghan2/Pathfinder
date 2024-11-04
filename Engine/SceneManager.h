@@ -4,6 +4,7 @@ class Scene;
 
 enum
 {
+	// 최대 레이어 수
 	MAX_LAYER = 32
 };
 

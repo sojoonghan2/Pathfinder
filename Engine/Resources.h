@@ -6,6 +6,7 @@
 #include "Shader.h"
 #include "Texture.h"
 
+// 게임 리소스를 로드하고 관리
 class Resources
 {
 	DECLARE_SINGLE(Resources);

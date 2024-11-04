@@ -121,7 +121,7 @@ void Scene::RenderLights()
 
 	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->OMSetRenderTargets();
 
-	// ±¤¿øÀ» ±×¸°´Ù.
+	// ±¤¿ø ±×¸®±â
 	for (auto& light : _lights)
 	{
 		light->Render();
