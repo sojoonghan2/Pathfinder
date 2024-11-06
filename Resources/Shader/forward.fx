@@ -4,6 +4,13 @@
 #include "params.fx"
 #include "utils.fx"
 
+// ************************
+// Forward Rendering
+// 각 픽셀에 대해 한 번의 패스로 모든 처리 수행
+// 텍스쳐 샘플링, 노말 매핑, 조명 계산을 순차적으로 진행
+// 최종 색상이 바로 화면에 출력
+// ************************
+
 struct VS_IN
 {
     float3 pos : POSITION;
@@ -39,10 +46,12 @@ VS_OUT VS_Main(VS_IN input)
 
 float4 PS_Main(VS_OUT input) : SV_Target
 {
+    // 기본 색상 또는 디퓨즈 텍스쳐 샘플링
     float4 color = float4(1.f, 1.f, 1.f, 1.f);
     if (g_tex_on_0)
         color = g_tex_0.Sample(g_sam_0, input.uv);
 
+    // 노말 매핑
     float3 viewNormal = input.viewNormal;
     if (g_tex_on_1)
     {
@@ -54,8 +63,8 @@ float4 PS_Main(VS_OUT input) : SV_Target
         viewNormal = normalize(mul(tangentSpaceNormal, matTBN));
     }
 
+    // 조명 계산
     LightColor totalColor = (LightColor)0.f;
-
     for (int i = 0; i < g_lightCount; ++i)
     {
          LightColor color = CalculateLightColor(i, viewNormal, input.viewPos);

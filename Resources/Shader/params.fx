@@ -19,13 +19,15 @@ struct LightInfo
     int  	    padding;
 };
 
+// 조명 관련 전역 파라미터
 cbuffer GLOBAL_PARAMS : register(b0)
 {
     int         g_lightCount;
     float3      g_lightPadding;
+    // 최대 50개
     LightInfo   g_light[50];
 }
-
+// 변환 행렬 파라미터
 cbuffer TRANSFORM_PARAMS : register(b1)
 {
     row_major matrix g_matWorld;
@@ -36,6 +38,7 @@ cbuffer TRANSFORM_PARAMS : register(b1)
     row_major matrix g_matViewInv;
 };
 
+// 머터리얼 다용도 파라미터
 cbuffer MATERIAL_PARAMS : register(b2)
 {
     int     g_int_0;
@@ -64,14 +67,17 @@ cbuffer MATERIAL_PARAMS : register(b2)
     row_major float4x4 g_mat_3;
 };
 
+// 리소스 바인딩
 Texture2D g_tex_0 : register(t0);
 Texture2D g_tex_1 : register(t1);
 Texture2D g_tex_2 : register(t2);
 Texture2D g_tex_3 : register(t3);
 Texture2D g_tex_4 : register(t4);
 
+// 본 애니메이션 행렬 버퍼
 StructuredBuffer<Matrix> g_mat_bone : register(t7);
 
+// 샘플러 상태
 SamplerState g_sam_0 : register(s0);
 
 #endif

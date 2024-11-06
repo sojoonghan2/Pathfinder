@@ -13,7 +13,6 @@
 #include "TestCameraScript.h"
 #include "Resources.h"
 #include "ParticleSystem.h"
-#include "Terrain.h"
 #include "SphereCollider.h"
 #include "MeshData.h"
 #include "TestDragon.h"
@@ -39,7 +38,7 @@ void SceneManager::LoadScene(wstring sceneName)
 	// TODO : 기존 Scene 정리
 	// TODO : 파일에서 Scene 정보 로드
 
-	_activeScene = LoadTestScene();
+	_activeScene = LoadMainScene();
 
 	_activeScene->Awake();
 	_activeScene->Start();
@@ -113,7 +112,7 @@ shared_ptr<GameObject> SceneManager::Pick(int32 screenX, int32 screenY)
 
 	return picked;
 }
-shared_ptr<Scene> SceneManager::LoadTestScene()
+shared_ptr<Scene> SceneManager::LoadMainScene()
 {
 #pragma region LayerMask
 	SetLayerName(0, L"Default");
@@ -216,23 +215,6 @@ shared_ptr<Scene> SceneManager::LoadTestScene()
 		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetRadius(0.5f);
 		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 		obj->AddComponent(meshRenderer);
-		scene->AddGameObject(obj);
-	}
-#pragma endregion
-
-#pragma region Terrain
-	{
-		shared_ptr<GameObject> obj = make_shared<GameObject>();
-		obj->AddComponent(make_shared<Transform>());
-		obj->AddComponent(make_shared<Terrain>());
-		obj->AddComponent(make_shared<MeshRenderer>());
-
-		obj->GetTransform()->SetLocalScale(Vec3(50.f, 250.f, 50.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(-100.f, -200.f, 300.f));
-		obj->SetStatic(true);
-		obj->GetTerrain()->Init(64, 64);
-		obj->SetCheckFrustum(false);
-
 		scene->AddGameObject(obj);
 	}
 #pragma endregion

@@ -3,6 +3,7 @@
 
 #include "params.fx"
 
+// 타입별 조명 처리
 LightColor CalculateLightColor(int lightIndex, float3 viewNormal, float3 viewPos)
 {
     LightColor color = (LightColor)0.f;
@@ -74,11 +75,13 @@ LightColor CalculateLightColor(int lightIndex, float3 viewNormal, float3 viewPos
     return color;
 }
 
+// 2D 좌표를 입력받아 의사난수 생성(0.5 ~ 1.0)
 float Rand(float2 co)
 {
     return 0.5 + (frac(sin(dot(co.xy, float2(12.9898, 78.233))) * 43758.5453)) * 0.5;
 }
 
+// LOD를 위한 테셀레이션 레벨 계산
 float CalculateTessLevel(float3 cameraWorldPos, float3 patchPos, float min, float max, float maxLv)
 {
     float distance = length(patchPos - cameraWorldPos);
@@ -93,6 +96,7 @@ float CalculateTessLevel(float3 cameraWorldPos, float3 patchPos, float min, floa
     return level;
 }
 
+// 스켈레톤
 struct SkinningInfo
 {
     float3 pos;
@@ -100,6 +104,7 @@ struct SkinningInfo
     float3 tangent;
 };
 
+// 애니메이션을 위한 스키닝 처리
 void Skinning(inout float3 pos, inout float3 normal, inout float3 tangent,
     inout float4 weight, inout float4 indices)
 {

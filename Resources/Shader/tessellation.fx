@@ -56,11 +56,17 @@ PatchTess ConstantHS(InputPatch<VS_OUT, 3> input, int patchID : SV_PrimitiveID)
 }
 
 // Control Point HS
-[domain("tri")] // 패치의 종류 (tri, quad, isoline)
-[partitioning("integer")] // subdivision mode (integer 소수점 무시, fractional_even, fractional_odd)
-[outputtopology("triangle_cw")] // (triangle_cw, triangle_ccw, line)
-[outputcontrolpoints(3)] // 하나의 입력 패치에 대해, HS가 출력할 제어점 개수
-[patchconstantfunc("ConstantHS")] // ConstantHS 함수 이름
+ // 패치의 종류 (tri, quad, isoline)
+[domain("tri")]
+// subdivision mode (integer 소수점 무시, fractional_even, fractional_odd)
+[partitioning("integer")]
+// (triangle_cw, triangle_ccw, line)
+[outputtopology("triangle_cw")]
+// 하나의 입력 패치에 대해, HS가 출력할 제어점 개수
+[outputcontrolpoints(3)]
+// ConstantHS 함수 이름
+[patchconstantfunc("ConstantHS")]
+
 HS_OUT HS_Main(InputPatch<VS_OUT, 3> input, int vertexIdx : SV_OutputControlPointID, int patchID : SV_PrimitiveID)
 {
     HS_OUT output = (HS_OUT)0.f;

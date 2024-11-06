@@ -4,6 +4,7 @@
 #include "params.fx"
 #include "utils.fx"
 
+// 버텍스 셰이더 입력
 struct VS_IN
 {
     float3 pos : POSITION;
@@ -19,6 +20,7 @@ struct VS_IN
     uint instanceID : SV_InstanceID;
 };
 
+// 버텍스 셰이더 -> 픽셀 셰이더
 struct VS_OUT
 {
     float4 pos : SV_Position;
@@ -33,8 +35,10 @@ VS_OUT VS_Main(VS_IN input)
 {
     VS_OUT output = (VS_OUT)0;
 
+    // 인스턴스별 행렬 사용
     if (g_int_0 == 1)
     {
+        // 스키닝 적용
         if (g_int_1 == 1)
             Skinning(input.pos, input.normal, input.tangent, input.weight, input.indices);
 
@@ -46,8 +50,10 @@ VS_OUT VS_Main(VS_IN input)
         output.viewTangent = normalize(mul(float4(input.tangent, 0.f), input.matWV).xyz);
         output.viewBinormal = normalize(cross(output.viewTangent, output.viewNormal));
     }
+    // 전역 행렬 사용
     else
     {
+        // 스키닝 적용
         if (g_int_1 == 1)
             Skinning(input.pos, input.normal, input.tangent, input.weight, input.indices);
 
@@ -63,6 +69,7 @@ VS_OUT VS_Main(VS_IN input)
     return output;
 }
 
+// 픽셀 셰이더 출력
 struct PS_OUT
 {
     float4 position : SV_Target0;
@@ -70,15 +77,18 @@ struct PS_OUT
     float4 color : SV_Target2;
 };
 
+// 픽셀 셰이더
 PS_OUT PS_Main(VS_OUT input)
 {
     PS_OUT output = (PS_OUT)0;
 
     float4 color = float4(1.f, 1.f, 1.f, 1.f);
+    // 디퓨즈 텍스쳐 샘플링
     if (g_tex_on_0 == 1)
         color = g_tex_0.Sample(g_sam_0, input.uv);
 
     float3 viewNormal = input.viewNormal;
+    // 노말 매핑 처리
     if (g_tex_on_1 == 1)
     {
         // [0,255] 범위에서 [0,1]로 변환
