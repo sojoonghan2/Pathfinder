@@ -115,6 +115,7 @@ shared_ptr<GameObject> SceneManager::Pick(int32 screenX, int32 screenY)
 
 shared_ptr<Scene> SceneManager::LoadMainScene()
 {
+// 레이어
 #pragma region LayerMask
 	SetLayerName(0, L"Default");
 	SetLayerName(1, L"UI");
@@ -141,6 +142,7 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 	}
 #pragma endregion
 
+	// Scene 생성
 	shared_ptr<Scene> scene = make_shared<Scene>();
 	
 // 카메라
@@ -196,6 +198,36 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 		}
 		skybox->AddComponent(meshRenderer);
 		scene->AddGameObject(skybox);
+	}
+#pragma endregion
+
+// 터레인 큐브
+#pragma region TerrainCube
+	{
+		// 1. 기본 오브젝트 생성 및 설정
+		shared_ptr<GameObject> terraincube = make_shared<GameObject>();
+		terraincube->AddComponent(make_shared<Transform>());
+		terraincube->SetCheckFrustum(true);
+
+		// 2. Transform 컴포넌트 추가 및 설정
+		terraincube->AddComponent(make_shared<Transform>());
+		terraincube->GetTransform()->SetLocalScale(Vec3(2000.f, 2000.f, 2000.f));
+		terraincube->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
+
+		// 4. MeshRenderer 설정
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadCubeMesh();
+			meshRenderer->SetMesh(sphereMesh);
+		}
+		{
+			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"TerrainCube");
+			meshRenderer->SetMaterial(material->Clone());
+		}
+		terraincube->AddComponent(meshRenderer);
+
+		// 5. Scene에 추가
+		scene->AddGameObject(terraincube);
 	}
 #pragma endregion
 
