@@ -53,7 +53,7 @@ private:
 
 	float _near = 1.f;
 	float _far = 2000.f;
-	float _fov = XM_PI / 4.f;
+	float _fov = XM_PI / 2.f;
 	float _scale = 1.f;
 	float _width = 0.f;
 	float _height = 0.f;

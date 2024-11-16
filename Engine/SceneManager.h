@@ -23,6 +23,8 @@ public:
 
 	shared_ptr<class GameObject> Pick(int32 screenX, int32 screenY);
 
+	shared_ptr<GameObject> FindObjectByName(const wstring& name);
+
 public:
 	shared_ptr<Scene> GetActiveScene() { return _activeScene; }
 

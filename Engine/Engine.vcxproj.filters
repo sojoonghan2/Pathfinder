@@ -150,6 +150,9 @@
     <ClCompile Include="TestDragon.cpp">
       <Filter>Object\Script</Filter>
     </ClCompile>
+    <ClCompile Include="TestPointLightScript.cpp">
+      <Filter>Object\Script</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -273,6 +276,9 @@
       <Filter>Object\Component</Filter>
     </ClInclude>
     <ClInclude Include="TestDragon.h">
+      <Filter>Object\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="TestPointLightScript.h">
       <Filter>Object\Script</Filter>
     </ClInclude>
   </ItemGroup>

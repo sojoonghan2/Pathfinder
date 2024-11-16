@@ -2,22 +2,28 @@
 #include "Frustum.h"
 #include "Camera.h"
 
+// ***************************************************
+// 프러스텀 컬링은 아직 이상한 부분이 많아 손봐야 할듯
+// ***************************************************
+
 void Frustum::FinalUpdate()
 {
 	Matrix matViewInv = Camera::S_MatView.Invert();
 	Matrix matProjectionInv = Camera::S_MatProjection.Invert();
 	Matrix matInv = matProjectionInv * matViewInv;
 
+	float scale = 2.0f;
+
 	vector<Vec3> worldPos =
 	{
-		::XMVector3TransformCoord(Vec3(-1.f, 1.f, 0.f), matInv),
-		::XMVector3TransformCoord(Vec3(1.f, 1.f, 0.f), matInv),
-		::XMVector3TransformCoord(Vec3(1.f, -1.f, 0.f), matInv),
-		::XMVector3TransformCoord(Vec3(-1.f, -1.f, 0.f), matInv),
-		::XMVector3TransformCoord(Vec3(-1.f, 1.f, 1.f), matInv),
-		::XMVector3TransformCoord(Vec3(1.f, 1.f, 1.f), matInv),
-		::XMVector3TransformCoord(Vec3(1.f, -1.f, 1.f), matInv),
-		::XMVector3TransformCoord(Vec3(-1.f, -1.f, 1.f), matInv)
+		::XMVector3TransformCoord(Vec3(-scale, scale, 0.f), matInv),
+		::XMVector3TransformCoord(Vec3(scale, scale, 0.f), matInv),
+		::XMVector3TransformCoord(Vec3(scale, -scale, 0.f), matInv),
+		::XMVector3TransformCoord(Vec3(-scale, -scale, 0.f), matInv),
+		::XMVector3TransformCoord(Vec3(-scale, scale, scale), matInv),
+		::XMVector3TransformCoord(Vec3(scale, scale, scale), matInv),
+		::XMVector3TransformCoord(Vec3(scale, -scale, scale), matInv),
+		::XMVector3TransformCoord(Vec3(-scale, -scale, scale), matInv)
 	};
 
 	_planes[PLANE_FRONT] = ::XMPlaneFromPoints(worldPos[0], worldPos[1], worldPos[2]); // CW
@@ -30,15 +36,23 @@ void Frustum::FinalUpdate()
 
 bool Frustum::ContainsSphere(const Vec3& pos, float radius)
 {
-	for (const Vec4& plane : _planes)
+	for (int i = 0; i < 6; i++)
 	{
-		// n = (a, b, c)
+		const Vec4& plane = _planes[i];
 		Vec3 normal = Vec3(plane.x, plane.y, plane.z);
+		float distance = normal.Dot(pos) + plane.w;
 
-		// ax + by + cz + d > radius
-		if (normal.Dot(pos) + plane.w > radius)
+		// near/far 평면에 대해서는 더 큰 여유를 줌
+		float checkRadius = (i <= 1) ? radius * 2.0f : radius;
+
+		// distance가 양수면 평면의 앞쪽, 음수면 뒤쪽
+		if (distance > checkRadius)
+		{
+			// Near plane의 경우 특별 처리
+			if (i == 0)
+				continue;  // near plane은 무시
 			return false;
+		}
 	}
-
 	return true;
 }

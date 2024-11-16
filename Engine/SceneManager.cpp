@@ -11,6 +11,7 @@
 #include "Light.h"
 
 #include "TestCameraScript.h"
+#include "TestPointLightScript.h"
 #include "Resources.h"
 #include "ParticleSystem.h"
 #include "SphereCollider.h"
@@ -113,6 +114,24 @@ shared_ptr<GameObject> SceneManager::Pick(int32 screenX, int32 screenY)
 	return picked;
 }
 
+shared_ptr<GameObject> SceneManager::FindObjectByName(const wstring& name)
+{
+	if (_activeScene == nullptr)
+		return nullptr;
+
+	const vector<shared_ptr<GameObject>>& objects = _activeScene->GetGameObjects();
+
+	for (const auto& obj : objects)
+	{
+		if (obj->GetName() == name)
+		{
+			return obj; // 이름이 일치하는 오브젝트를 찾으면 반환
+		}
+	}
+
+	return nullptr; // 찾지 못하면 nullptr 반환
+}
+
 shared_ptr<Scene> SceneManager::LoadMainScene()
 {
 // 레이어
@@ -151,7 +170,7 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
 		camera->SetName(L"Main_Camera");
 		camera->AddComponent(make_shared<Transform>());
-		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=2000, FOV=45도
+		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=3000, FOV=45도
 		camera->AddComponent(make_shared<TestCameraScript>());
 		camera->GetCamera()->SetFar(10000.f);
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
@@ -167,7 +186,7 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
 		camera->SetName(L"Orthographic_Camera");
 		camera->AddComponent(make_shared<Transform>());
-		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=2000, 800*600
+		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=3000, 800*600
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		camera->GetCamera()->SetProjectionType(PROJECTION_TYPE::ORTHOGRAPHIC);
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
@@ -231,8 +250,8 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 	}
 #pragma endregion
 
-// 구 오브젝트
-#pragma region Object
+// 구 오브젝트과 포인트 조명
+#pragma region Object & Point Light
 	{
 		// 1. 기본 오브젝트 생성 및 설정
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
@@ -245,7 +264,8 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 		// 2. Transform 컴포넌트 추가 및 설정
 		obj->AddComponent(make_shared<Transform>());
 		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 500.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
+		obj->AddComponent(make_shared<TestPointLightScript>());
 
 		// 3. Collider 설정
 		obj->AddComponent(make_shared<SphereCollider>());
@@ -268,6 +288,28 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 
 		// 5. Scene에 추가
 		scene->AddGameObject(obj);
+
+		// 1. light 오브젝트 생성 
+		shared_ptr<GameObject> light = make_shared<GameObject>();
+		light->SetName(L"Point_Light");
+		light->AddComponent(make_shared<Transform>());
+		light->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
+
+		// 2-1. light 컴포넌트 추가 및 속성 설정
+		light->AddComponent(make_shared<Light>());
+		light->GetLight()->SetLightType(LIGHT_TYPE::POINT_LIGHT);
+		light->AddComponent(make_shared<TestPointLightScript>());
+
+		// 2-2. 점광원 특수 설정
+		light->GetLight()->SetLightRange(1000.f);
+
+		// 3. 조명 색상 및 강도 설정
+		light->GetLight()->SetDiffuse(Vec3(1.f, 1.f, 1.f));
+		light->GetLight()->SetAmbient(Vec3(1.f, 1.f, 1.f));
+		light->GetLight()->SetSpecular(Vec3(1.f, 1.f, 1.f));
+
+		// 4. Scene에 추가
+		scene->AddGameObject(light);
 	}
 #pragma endregion
 
@@ -317,16 +359,25 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 // 전역 조명
 #pragma region Directional Light
 	{
+		// 1. light 오브젝트 생성 
 		shared_ptr<GameObject> light = make_shared<GameObject>();
+		light->SetName(L"Directional_Light");
 		light->AddComponent(make_shared<Transform>());
-		light->GetTransform()->SetLocalPosition(Vec3(0, 1000, 500));
+		light->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
+
+		// 2-1. light 컴포넌트 추가 및 속성 설정
 		light->AddComponent(make_shared<Light>());
-		light->GetLight()->SetLightDirection(Vec3(0, -1, 1.f));
 		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
+
+		// 2-2. DIRECTIONAL_LIGHT의 경우 조명 방향 설정
+		light->GetLight()->SetLightDirection(Vec3(0, 0, 0.f));
+		
+		// 3. 조명 색상 및 강도 설정
 		light->GetLight()->SetDiffuse(Vec3(1.f, 1.f, 1.f));
 		light->GetLight()->SetAmbient(Vec3(0.1f, 0.1f, 0.1f));
 		light->GetLight()->SetSpecular(Vec3(0.1f, 0.1f, 0.1f));
 
+		// 4. Scene에 추가
 		scene->AddGameObject(light);
 	}
 #pragma endregion
