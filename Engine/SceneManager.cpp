@@ -112,6 +112,7 @@ shared_ptr<GameObject> SceneManager::Pick(int32 screenX, int32 screenY)
 
 	return picked;
 }
+
 shared_ptr<Scene> SceneManager::LoadMainScene()
 {
 #pragma region LayerMask
@@ -201,26 +202,39 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 // 구 오브젝트
 #pragma region Object
 	{
+		// 1. 기본 오브젝트 생성 및 설정
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
 		obj->SetName(L"OBJ");
+		// 프러스텀 컬링 여부
 		obj->SetCheckFrustum(true);
+		// 정적, 동적 여부
+		obj->SetStatic(false);
+
+		// 2. Transform 컴포넌트 추가 및 설정
 		obj->AddComponent(make_shared<Transform>());
-		obj->AddComponent(make_shared<SphereCollider>());
 		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 		obj->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 500.f));
-		obj->SetStatic(false);
+
+		// 3. Collider 설정
+		obj->AddComponent(make_shared<SphereCollider>());
+		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetRadius(0.5f);
+		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+		
+		// 4. MeshRenderer 설정
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
 			meshRenderer->SetMesh(sphereMesh);
 		}
 		{
+			// GameObject 이름을 가진 머터리얼을 찾아 클론 후 메쉬 렌더러에 Set
+			// Resources.cpp로 가면 셰이더와 머터리얼의 생성을 확이해볼 수 있음
 			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"GameObject");
 			meshRenderer->SetMaterial(material->Clone());
 		}
-		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetRadius(0.5f);
-		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 		obj->AddComponent(meshRenderer);
+
+		// 5. Scene에 추가
 		scene->AddGameObject(obj);
 	}
 #pragma endregion
