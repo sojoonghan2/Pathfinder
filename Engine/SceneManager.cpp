@@ -119,6 +119,7 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 	SetLayerName(1, L"UI");
 #pragma endregion
 
+// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능하다는데 아직 잘 모름
 #pragma region ComputeShader
 	{
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"ComputeShader");
@@ -141,12 +142,13 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 
 	shared_ptr<Scene> scene = make_shared<Scene>();
 	
+// 카메라
 #pragma region Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
 		camera->SetName(L"Main_Camera");
 		camera->AddComponent(make_shared<Transform>());
-		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=1000, FOV=45도
+		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=2000, FOV=45도
 		camera->AddComponent(make_shared<TestCameraScript>());
 		camera->GetCamera()->SetFar(10000.f);
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
@@ -156,12 +158,13 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 	}	
 #pragma endregion
 
+// UI 카메라
 #pragma region UI_Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
 		camera->SetName(L"Orthographic_Camera");
 		camera->AddComponent(make_shared<Transform>());
-		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=1000, 800*600
+		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=2000, 800*600
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		camera->GetCamera()->SetProjectionType(PROJECTION_TYPE::ORTHOGRAPHIC);
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
@@ -171,11 +174,12 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 	}
 #pragma endregion
 
+// 스카이 박스
 #pragma region SkyBox
 	{
 		shared_ptr<GameObject> skybox = make_shared<GameObject>();
 		skybox->AddComponent(make_shared<Transform>());
-		skybox->SetCheckFrustum(false);
+		skybox->SetCheckFrustum(true);
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
@@ -194,10 +198,12 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 	}
 #pragma endregion
 
+// 구 오브젝트
 #pragma region Object
 	{
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
 		obj->SetName(L"OBJ");
+		obj->SetCheckFrustum(true);
 		obj->AddComponent(make_shared<Transform>());
 		obj->AddComponent(make_shared<SphereCollider>());
 		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
@@ -219,6 +225,15 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 	}
 #pragma endregion
 
+// *********************************************
+// UI 테스트
+// 0. 월드 공간 위치 정보
+// 1. 노말 벡터 정보
+// 2. 색상 정보
+// 3. 분산광 결과
+// 4. 반사광 결과
+// 5. 그림자
+// *********************************************
 #pragma region UI_Test
 	for (int32 i = 0; i < 6; i++)
 	{
@@ -253,6 +268,7 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 	}
 #pragma endregion
 
+// 전역 조명
 #pragma region Directional Light
 	{
 		shared_ptr<GameObject> light = make_shared<GameObject>();
@@ -269,7 +285,8 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 	}
 #pragma endregion
 
-
+// FBX(애니메이션이 너무 커서 임시 주석처리)
+/*
 #pragma region FBX
 	{
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Dragon.fbx");
@@ -287,6 +304,7 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 		}
 	}
 #pragma endregion
+*/
 
 	return scene;
 }

@@ -175,6 +175,11 @@ public:								\
 
 #define CONST_BUFFER(type)	GEngine->GetConstantBuffer(type)
 
+#define PRINTPOSITION \
+    std::cout << std::string(GetGameObject()->GetName().begin(), GetGameObject()->GetName().end()) << ": " << "(" << GetTransform()->GetLocalPosition().x << ", " \
+              << GetTransform()->GetLocalPosition().y << ", " \
+              << GetTransform()->GetLocalPosition().z << ")" << std::endl
+
 struct TransformParams
 {
 	Matrix matWorld;
@@ -195,6 +200,9 @@ struct AnimFrameParams
 // 전역 인스턴스를 선언하여 엔진을 전역적으로 접근 가능하게 함
 extern unique_ptr<class Engine> GEngine;
 
-// 문자열 변환 함수
+// 문자열 변환
 wstring s2ws(const string& s);
 string ws2s(const wstring& s);
+
+// 정규화
+Vec3 Normalization(Vec3 vec);
