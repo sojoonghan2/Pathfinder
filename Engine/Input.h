@@ -60,12 +60,17 @@ public:
 	
 	const POINT& GetMousePos() { return _mousePos; }
 
+	POINT GetMouseDelta() const { return _mouseDelta; }
+
 private:
 	inline KEY_STATE GetState(KEY_TYPE key) { return _states[static_cast<uint8>(key)]; }
 
 private:
 	HWND _hwnd;
 	vector<KEY_STATE> _states;
-	POINT _mousePos = {};
+
+	POINT _mousePos = {};      // 현재 마우스 위치
+	POINT _prevMousePos = {};  // 이전 프레임의 마우스 위치
+	POINT _mouseDelta = {};    // 마우스 이동량 (델타)
 };
 
