@@ -17,17 +17,18 @@ void Engine::Init(const WindowInfo& info)
 	_viewport = { 0, 0, static_cast<FLOAT>(info.width), static_cast<FLOAT>(info.height), 0.0f, 1.0f };
 	_scissorRect = CD3DX12_RECT(0, 0, info.width, info.height);
 
+	// 버퍼 사이즈가 부족한 경우 256, 512, 1024... 단위로 확장
 	_device->Init();
 	_graphicsCmdQueue->Init(_device->GetDevice(), _swapChain);
 	_computeCmdQueue->Init(_device->GetDevice());
 	_swapChain->Init(info, _device->GetDevice(), _device->GetDXGI(), _graphicsCmdQueue->GetCmdQueue());
 	_rootSignature->Init();
-	_graphicsDescHeap->Init(256);
+	_graphicsDescHeap->Init(512);
 	_computeDescHeap->Init();
 
 	CreateConstantBuffer(CBV_REGISTER::b0, sizeof(LightParams), 1);
-	CreateConstantBuffer(CBV_REGISTER::b1, sizeof(TransformParams), 256);
-	CreateConstantBuffer(CBV_REGISTER::b2, sizeof(MaterialParams), 256);
+	CreateConstantBuffer(CBV_REGISTER::b1, sizeof(TransformParams), 512);
+	CreateConstantBuffer(CBV_REGISTER::b2, sizeof(MaterialParams), 512);
 
 	CreateRenderTargetGroups();
 
