@@ -22,6 +22,7 @@ public:
 
 	virtual void Load(const wstring& path);
 	virtual void Save(const wstring& path);
+	virtual void SaveOrLoad(const wstring& savePath, const wstring& fbxPath);
 
 	vector<shared_ptr<GameObject>> Instantiate();
 

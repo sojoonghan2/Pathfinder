@@ -382,18 +382,19 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 	}
 #pragma endregion
 
-// FBX(애니메이션이 너무 커서 임시 주석처리)
-/*
+// FBX
 #pragma region FBX
 	{
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Dragon.fbx");
-
+		shared_ptr<MeshData> meshData = make_shared<MeshData>();
+		
+		// Save가 잘 안됨, MeshData의 Save와 Load를 수정해야 함, 한번 로드 후 다시 로드하려면 msh 지워야 함
+		meshData->SaveOrLoad(L"..\\Resources\\MeshData\\Dragon.msh", L"..\\Resources\\FBX\\Dragon.fbx");
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
 		for (auto& gameObject : gameObjects)
 		{
 			gameObject->SetName(L"Dragon");
-			gameObject->SetCheckFrustum(false);
+			gameObject->SetCheckFrustum(true);
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 300.f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(1.f, 1.f, 1.f));
 			scene->AddGameObject(gameObject);
@@ -401,7 +402,7 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 		}
 	}
 #pragma endregion
-*/
+
 
 	return scene;
 }
