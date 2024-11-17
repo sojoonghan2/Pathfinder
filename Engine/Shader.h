@@ -3,13 +3,25 @@
 
 enum class SHADER_TYPE : uint8
 {
-	DEFERRED,
-	FORWARD,
+	DEFERRED, // 지연 렌더링, 다중 렌더 타겟 사용(셰이더에서 구조체 리턴 가능)
+	FORWARD, // 일반 전방 렌더링, 단일 렌더 타겟 사용(셰이더에서 구조체 리턴 불가능)
 	LIGHTING,
 	PARTICLE,
 	COMPUTE,
 	SHADOW,
 };
+
+// *****************************************************************************************
+// struct PS_OUT
+// {
+//	 float4 position : SV_Target0;
+//	 float4 normal : SV_Target1;
+//	 float4 color : SV_Target2;
+// };
+// 이런식으로 SV_Targetn을 사용하여 다중 렌더 타겟을 사용 가능함
+// 만약 FORWARD 렌더링의 경우에는 이런식으로 다중 렌더 타겟을 사용이 불가능하기 떄문에
+// return output 처럼 구조체 리턴이 불가능하고 return color 같이 float4 형만 리턴이 가능함
+// *****************************************************************************************
 
 enum class RASTERIZER_TYPE : uint8
 {
