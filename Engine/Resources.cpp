@@ -563,7 +563,7 @@ void Resources::CreateDefaultMaterial()
 		Add<Material>(L"Final", material);
 	}
 
-	// Compute Shader
+	// Compute Shader: 데이터를 변환하거나 시뮬레이션을 수행하기 위한 "작업 환경", 일반적인 머터리얼 X
 	{
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"ComputeShader");
 		shared_ptr<Material> material = make_shared<Material>();
