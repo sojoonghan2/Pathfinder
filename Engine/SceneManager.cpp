@@ -363,19 +363,19 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 		shared_ptr<GameObject> light = make_shared<GameObject>();
 		light->SetName(L"Directional_Light");
 		light->AddComponent(make_shared<Transform>());
-		light->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
+		light->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 
 		// 2-1. light 컴포넌트 추가 및 속성 설정
 		light->AddComponent(make_shared<Light>());
 		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
 
 		// 2-2. DIRECTIONAL_LIGHT의 경우 조명 방향 설정
-		light->GetLight()->SetLightDirection(Vec3(0, 0, 0.f));
+		light->GetLight()->SetLightDirection(Vec3(0.f, 0.f, 0.f));
 		
 		// 3. 조명 색상 및 강도 설정
-		light->GetLight()->SetDiffuse(Vec3(1.f, 1.f, 1.f));
-		light->GetLight()->SetAmbient(Vec3(0.1f, 0.1f, 0.1f));
-		light->GetLight()->SetSpecular(Vec3(0.1f, 0.1f, 0.1f));
+		light->GetLight()->SetDiffuse(Vec3(0.8f, 0.8f, 0.8f));
+		light->GetLight()->SetAmbient(Vec3(0.2f, 0.2f, 0.2f));
+		light->GetLight()->SetSpecular(Vec3(0.05f, 0.05f, 0.05f));
 
 		// 4. Scene에 추가
 		scene->AddGameObject(light);
@@ -385,11 +385,12 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 // FBX
 #pragma region FBX
 	{
-		shared_ptr<MeshData> meshData = make_shared<MeshData>();
-		
-		// Save가 잘 안됨, MeshData의 Save와 Load를 수정해야 함, 한번 로드 후 다시 로드하려면 msh 지워야 함
-		meshData->SaveOrLoad(L"..\\Resources\\MeshData\\Dragon.msh", L"..\\Resources\\FBX\\Dragon.fbx");
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Dragon.fbx");
+
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		// Save가 잘 안됨, MeshData의 Save와 Load를 수정해야 함, 한번 로드 후 다시 로드하려면 msh 지워야 함
+		//meshData->SaveOrLoad(L"..\\Resources\\MeshData\\Dragon.msh", L"..\\Resources\\FBX\\Dragon.fbx");
 
 		for (auto& gameObject : gameObjects)
 		{

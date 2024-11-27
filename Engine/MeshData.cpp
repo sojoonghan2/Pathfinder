@@ -209,6 +209,8 @@ void MeshData::SaveOrLoad(const wstring& savePath, const wstring& fbxPath)
 		wcout << L"Saving FBX: " << savePath << endl;
 		Save(savePath);
 	}
+
+	shared_ptr<MeshData> tempMeshData = GET_SINGLE(Resources)->LoadFBX(fbxPath);
 }
 
 vector<shared_ptr<GameObject>> MeshData::Instantiate()
