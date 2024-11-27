@@ -304,9 +304,9 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 		light->GetLight()->SetLightRange(1000.f);
 
 		// 3. 조명 색상 및 강도 설정
-		light->GetLight()->SetDiffuse(Vec3(1.f, 1.f, 1.f));
-		light->GetLight()->SetAmbient(Vec3(1.f, 1.f, 1.f));
-		light->GetLight()->SetSpecular(Vec3(1.f, 1.f, 1.f));
+		light->GetLight()->SetDiffuse(Vec3(0.5f, 0.5f, 0.5f));
+		light->GetLight()->SetAmbient(Vec3(0.5f, 0.5f, 0.5f));
+		light->GetLight()->SetSpecular(Vec3(0.5f, 0.5f, 0.5f));
 
 		// 4. Scene에 추가
 		scene->AddGameObject(light);
@@ -385,7 +385,7 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 // FBX
 #pragma region FBX
 	{
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Dragon.fbx");
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Part_01xxx.fbx");
 
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
