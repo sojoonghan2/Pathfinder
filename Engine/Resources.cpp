@@ -428,10 +428,15 @@ void Resources::CreateDefaultShader()
 	{
 		ShaderInfo info =
 		{
+			// 파티클
 			SHADER_TYPE::PARTICLE,
+			// 뒷면 제거
 			RASTERIZER_TYPE::CULL_BACK,
+			// 뎁스 버퍼에 기록 X
 			DEPTH_STENCIL_TYPE::LESS_NO_WRITE,
+			// 알파 블렌딩
 			BLEND_TYPE::ALPHA_BLEND,
+			// 기본 도형: 점
 			D3D_PRIMITIVE_TOPOLOGY_POINTLIST
 		};
 

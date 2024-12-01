@@ -71,6 +71,7 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     if (0 == g_data[id].alive)
         return;
 
+    // 파티클 수명에 따른 진행률 계산
     float ratio = g_data[id].curTime / g_data[id].lifeTime;
     float scale = ((g_float_1 - g_float_0) * ratio + g_float_0) / 2.f;
 
@@ -86,11 +87,13 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     output[2].position = mul(output[2].position, g_matProjection);
     output[3].position = mul(output[3].position, g_matProjection);
 
+    // uv
     output[0].uv = float2(0.f, 0.f);
     output[1].uv = float2(1.f, 0.f);
     output[2].uv = float2(1.f, 1.f);
     output[3].uv = float2(0.f, 1.f);
 
+    // id
     output[0].id = id;
     output[1].id = id;
     output[2].id = id;
@@ -142,7 +145,9 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     float minSpeed = g_vec4_0.z;
     float maxSpeed = g_vec4_0.w;
 
+    // 활성화 가능한 파티클 수 관리
     g_shared[0].addCount = addCount;
+    // 동기화하여 스레드 간 데이터 충돌 방지
     GroupMemoryBarrierWithGroupSync();
 
     if (g_particle[threadIndex.x].alive == 0)
@@ -156,8 +161,11 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             int expected = remaining;
             int desired = remaining - 1;
             int originalValue;
+            
+            // 원자적으로(더 이상 쪼갤 수 없는 정도)로 addCount 값 감소
             InterlockedCompareExchange(g_shared[0].addCount, expected, desired, originalValue);
-
+            
+            // 성공적으로 값을 감소시킨 스레드는 해당 파티클을 활성화(alive = 1)
             if (originalValue == expected)
             {
                 g_particle[threadIndex.x].alive = 1;
@@ -165,6 +173,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             }
         }
 
+        // 파티클 초기화
         if (g_particle[threadIndex.x].alive == 1)
         {
             float x = ((float)threadIndex.x / (float)maxCount) + accTime;
@@ -173,7 +182,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             float r2 = Rand(float2(x * accTime, accTime));
             float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
 
-            // [0.5~1] -> [0~1]
+            // [0.5~1] -> [0~1], 난수를 생성해 파티클의 월드 방향 및 위치 계산에 사용
             float3 noise =
             {
                 2 * r1 - 1,
@@ -190,16 +199,21 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             g_particle[threadIndex.x].curTime = 0.f;
         }
     }
+    // 기존 파티클 업데이트
     else
     {
+        // 현재 프레임의 deltaTime을 더해 파티클의 경과 시간 업데이트
         g_particle[threadIndex.x].curTime += deltaTime;
         if (g_particle[threadIndex.x].lifeTime < g_particle[threadIndex.x].curTime)
         {
+            // lifeTime보다 curTime이 커지면 파티클 비활성화
             g_particle[threadIndex.x].alive = 0;
             return;
         }
 
+        // 현재 경과 시간 비율
         float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
+        // 수명 비율에 따라 속도 결정
         float speed = (maxSpeed - minSpeed) * ratio + minSpeed;
         g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
     }

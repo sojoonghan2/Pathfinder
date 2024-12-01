@@ -385,7 +385,7 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 // FBX
 #pragma region FBX
 	{
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Part_01xxx.fbx");
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\TV\\SmartTV.fbx");
 
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
@@ -394,7 +394,7 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 
 		for (auto& gameObject : gameObjects)
 		{
-			gameObject->SetName(L"Dragon");
+			gameObject->SetName(L"Test");
 			gameObject->SetCheckFrustum(true);
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 300.f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(1.f, 1.f, 1.f));

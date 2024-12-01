@@ -16,17 +16,14 @@ ParticleSystem::ParticleSystem() : Component(COMPONENT_TYPE::PARTICLE_SYSTEM)
 
 	_mesh = GET_SINGLE(Resources)->LoadPointMesh();
 	_material = GET_SINGLE(Resources)->Get<Material>(L"Particle");
-	shared_ptr<Texture> tex = GET_SINGLE(Resources)->Load<Texture>(
-		L"Bubbles", L"..\\Resources\\Texture\\Particle\\bubble.png");
+	shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bubbles", L"..\\Resources\\Texture\\Particle\\bubble.png");
 
-	_material->SetTexture(0, tex);
+	_material->SetTexture(0, texture);
 
 	_computeMaterial = GET_SINGLE(Resources)->Get<Material>(L"ComputeParticle");
 }
 
-ParticleSystem::~ParticleSystem()
-{
-}
+ParticleSystem::~ParticleSystem() {}
 
 void ParticleSystem::FinalUpdate()
 {
@@ -39,6 +36,7 @@ void ParticleSystem::FinalUpdate()
 		add = 1;
 	}
 
+	// 파티클 버퍼와 컴퓨트 셰이더 버퍼를 UAV 슬롯에 바인딩
 	_particleBuffer->PushComputeUAVData(UAV_REGISTER::u0);
 	_computeSharedBuffer->PushComputeUAVData(UAV_REGISTER::u1);
 
@@ -55,6 +53,7 @@ void ParticleSystem::Render()
 {
 	GetTransform()->PushData();
 
+	// 파티클 데이터를 그래픽스 셰이더에 읽기 위해 t9에 바인딩
 	_particleBuffer->PushGraphicsData(SRV_REGISTER::t9);
 	_material->SetFloat(0, _startScale);
 	_material->SetFloat(1, _endScale);
