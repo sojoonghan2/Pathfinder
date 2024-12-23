@@ -14,6 +14,8 @@ struct Particle
     float3  padding;
 };
 
+// 그래픽스 셰이더
+// StructuredBuffer 정의
 StructuredBuffer<Particle> g_data : register(t9);
 
 struct VS_IN
@@ -58,6 +60,7 @@ struct GS_OUT
     uint id : SV_InstanceID;
 };
 
+// 파티클의 현재 수명 비율에 따라 크기를 계산하고, 화면에 사각형 형태로 확장
 [maxvertexcount(6)]
 void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 {
@@ -121,14 +124,17 @@ struct ComputeShared
     float3 padding;
 };
 
+// 컴퓨트 셰이더 입/출력
+// 파티클 데이터가 저장된 버퍼
 RWStructuredBuffer<Particle> g_particle : register(u0);
+// 활성화할 파티클 수를 관리하는 공유 데이터
 RWStructuredBuffer<ComputeShared> g_shared : register(u1);
 
 // CS_Main
-// g_vec2_1 : DeltaTime / AccTime
-// g_int_0  : Particle Max Count
-// g_int_1  : AddCount
-// g_vec4_0 : MinLifeTime / MaxLifeTime / MinSpeed / MaxSpeed
+// g_vec2_1 : 델타 시간 / 누적 시간
+// g_int_0  : 최대 파티클 수
+// g_int_1  : 새로 활성화할 파티클 수
+// g_vec4_0 : 최소/최대 수명과 속도
 [numthreads(1024, 1, 1)]
 void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 {
@@ -150,13 +156,13 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     // 동기화하여 스레드 간 데이터 충돌 방지
     GroupMemoryBarrierWithGroupSync();
 
+    // 1. 비활성 파티클 활성화
     if (g_particle[threadIndex.x].alive == 0)
     {
         while (true)
         {
             int remaining = g_shared[0].addCount;
-            if (remaining <= 0)
-                break;
+            if (remaining <= 0) break;
 
             int expected = remaining;
             int desired = remaining - 1;
@@ -199,7 +205,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             g_particle[threadIndex.x].curTime = 0.f;
         }
     }
-    // 기존 파티클 업데이트
+    // 2. 기존 파티클 업데이트
     else
     {
         // 현재 프레임의 deltaTime을 더해 파티클의 경과 시간 업데이트

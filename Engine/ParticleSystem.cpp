@@ -8,6 +8,7 @@
 
 ParticleSystem::ParticleSystem() : Component(COMPONENT_TYPE::PARTICLE_SYSTEM)
 {
+	// GPU로 데이터를 전달하기 위해 필요한 버퍼를 생성
 	_particleBuffer = make_shared<StructuredBuffer>();
 	_particleBuffer->Init(sizeof(ParticleInfo), _maxParticle);
 
@@ -36,7 +37,7 @@ void ParticleSystem::FinalUpdate()
 		add = 1;
 	}
 
-	// 파티클 버퍼와 컴퓨트 셰이더 버퍼를 UAV 슬롯에 바인딩
+	// 컴퓨트 셰이더로 데이터 전달
 	_particleBuffer->PushComputeUAVData(UAV_REGISTER::u0);
 	_computeSharedBuffer->PushComputeUAVData(UAV_REGISTER::u1);
 
@@ -53,7 +54,7 @@ void ParticleSystem::Render()
 {
 	GetTransform()->PushData();
 
-	// 파티클 데이터를 그래픽스 셰이더에 읽기 위해 t9에 바인딩
+	// 그래픽스 셰이더로 데이터 전달
 	_particleBuffer->PushGraphicsData(SRV_REGISTER::t9);
 	_material->SetFloat(0, _startScale);
 	_material->SetFloat(1, _endScale);

@@ -115,6 +115,8 @@ void Camera::SortShadowObject()
 	}
 }
 
+// G버퍼에 장면 데이터를 저장한 뒤, 조명을 계산하여 최종 결과를 출력
+// 대부분의 불투명한 객체
 void Camera::Render_Deferred()
 {
 	S_MatView = _matView;
@@ -123,6 +125,8 @@ void Camera::Render_Deferred()
 	GET_SINGLE(InstancingManager)->Render(_vecDeferred);
 }
 
+// 각 픽셀마다 조명을 계산
+// 투명한 객체, 특수 효과, 조명이 없는 객체
 void Camera::Render_Forward()
 {
 	S_MatView = _matView;

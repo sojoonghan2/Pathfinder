@@ -7,14 +7,21 @@ class StructuredBuffer;
 
 struct ParticleInfo
 {
+	// 월드 좌표
 	Vec3	worldPos;
+	// 현재 경과 시간
 	float	curTime;
+	// 이동 방향
 	Vec3	worldDir;
+	// 수명
 	float	lifeTime;
+	// 활성 상태
 	int32	alive;
+	// 패딩(12 + 4 + 12 + 4 + 4 + 12(패딩))
 	int32	padding[3];
 };
 
+// 컴퓨트 셰이더에서 공유 데이터를 저장하는 버퍼
 struct ComputeSharedInfo
 {
 	int32 addCount;
