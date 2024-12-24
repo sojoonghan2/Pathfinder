@@ -410,12 +410,12 @@ shared_ptr<Scene> SceneManager::LoadMainScene()
 		shared_ptr<GameObject> water = make_shared<GameObject>();
 		water->SetName(L"Water");
 		water->AddComponent(make_shared<Transform>());
-		water->GetTransform()->SetLocalScale(Vec3(2000.f, 1.f, 2000.f));
+		water->GetTransform()->SetLocalScale(Vec3(20.f, 1.f, 20.f));
 		water->GetTransform()->SetLocalPosition(Vec3(0.f, -200.f, 0.f));
 		water->SetStatic(true);
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
-			shared_ptr<Mesh> waterMesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			shared_ptr<Mesh> waterMesh = GET_SINGLE(Resources)->LoadPlanMesh();
 			meshRenderer->SetMesh(waterMesh);
 		}
 		{

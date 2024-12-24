@@ -76,8 +76,7 @@ void Camera::SortGameObject()
 				break;
 			}
 		}
-		else
-		{
+		if (gameObject->GetParticleSystem()) {
 			_vecParticle.push_back(gameObject);
 		}
 	}

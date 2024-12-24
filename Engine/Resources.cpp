@@ -58,6 +58,28 @@ shared_ptr<Mesh> Resources::LoadRectangleMesh()
 	return mesh;
 }
 
+shared_ptr<Mesh> Resources::LoadPlanMesh()
+{
+	float width = 2;
+	float height = 2;
+
+	std::vector<Vertex> vertices = {
+		Vertex(Vec3(-width / 2, 0, -height / 2), Vec2(0, 0), Vec3(0, 1, 0), Vec3(1, 0, 0)),
+		Vertex(Vec3(width / 2, 0, -height / 2), Vec2(1, 0), Vec3(0, 1, 0), Vec3(1, 0, 0)),
+		Vertex(Vec3(-width / 2, 0, height / 2), Vec2(0, 1), Vec3(0, 1, 0), Vec3(1, 0, 0)),
+		Vertex(Vec3(width / 2, 0, height / 2), Vec2(1, 1), Vec3(0, 1, 0), Vec3(1, 0, 0)),
+	};
+
+	std::vector<uint32> indices = {
+		0, 1, 2,
+		1, 3, 2
+	};
+
+	shared_ptr<Mesh> planeMesh = make_shared<Mesh>();
+	planeMesh->Create(vertices, indices);
+	return planeMesh;
+}
+
 shared_ptr<Mesh> Resources::LoadCubeMesh()
 {
 	shared_ptr<Mesh> findMesh = Get<Mesh>(L"Cube");
