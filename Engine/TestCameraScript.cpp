@@ -23,24 +23,41 @@ void TestCameraScript::LateUpdate()
 
 void TestCameraScript::KeyboardInput()
 {
-	Vec3 pos = GetTransform()->GetLocalPosition();
+    Vec3 pos = GetTransform()->GetLocalPosition();
 
-	if (INPUT->GetButton(KEY_TYPE::W))
-		pos += Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
+    // ÀÌµ¿ Ã³¸®
+    if (INPUT->GetButton(KEY_TYPE::W))
+        pos += Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
 
-	if (INPUT->GetButton(KEY_TYPE::S))
-		pos -= Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
+    if (INPUT->GetButton(KEY_TYPE::S))
+        pos -= Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
 
-	if (INPUT->GetButton(KEY_TYPE::A))
-		pos -= Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
+    if (INPUT->GetButton(KEY_TYPE::A))
+        pos -= Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
 
-	if (INPUT->GetButton(KEY_TYPE::D))
-		pos += Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
+    if (INPUT->GetButton(KEY_TYPE::D))
+        pos += Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
 
-	if (INPUT->GetButtonDown(KEY_TYPE::T)) PRINTPOSITION;
+    // ¸Ê Å©±â Á¦ÇÑ
+    float mapMinX = -900.0f;
+    float mapMaxX = 900.0f;
+    float mapMinZ = -900.0f;
+    float mapMaxZ = 900.0f;
+    float minY = 100.0f;
+    float maxY = 1700.0f;
 
-	GetTransform()->SetLocalPosition(pos);
+    // X, Y, Z ÁÂÇ¥¸¦ ¸Ê ¹üÀ§·Î Á¦ÇÑ
+    pos.x = max(mapMinX, min(pos.x, mapMaxX));
+    pos.y = max(minY, min(pos.y, maxY));
+    pos.z = max(mapMinZ, min(pos.z, mapMaxZ));
+
+    // µð¹ö±ë¿ë ÁÂÇ¥ Ãâ·Â
+    if (INPUT->GetButtonDown(KEY_TYPE::T))
+        PRINTPOSITION;
+
+    GetTransform()->SetLocalPosition(pos);
 }
+
 
 void TestCameraScript::MouseInput()
 {

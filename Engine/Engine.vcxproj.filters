@@ -25,11 +25,11 @@
     <Filter Include="Object\Component\Collider">
       <UniqueIdentifier>{054eccde-e1ba-451d-925b-5547022cbf4e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Script">
-      <UniqueIdentifier>{1cfe4b64-4ca1-4958-b16f-73f8ae1985c3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Scene">
       <UniqueIdentifier>{5bb6ad59-935a-4ea0-966f-9b78f2b39dd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Script">
+      <UniqueIdentifier>{1cfe4b64-4ca1-4958-b16f-73f8ae1985c3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -91,7 +91,7 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="TestCameraScript.cpp">
-      <Filter>Object\Script</Filter>
+      <Filter>Script</Filter>
     </ClCompile>
     <ClCompile Include="Resources.cpp">
       <Filter>Manager</Filter>
@@ -151,10 +151,10 @@
       <Filter>Object\Component</Filter>
     </ClCompile>
     <ClCompile Include="TestDragon.cpp">
-      <Filter>Object\Script</Filter>
+      <Filter>Script</Filter>
     </ClCompile>
     <ClCompile Include="TestPointLightScript.cpp">
-      <Filter>Object\Script</Filter>
+      <Filter>Script</Filter>
     </ClCompile>
     <ClCompile Include="LuckyScene.cpp">
       <Filter>Scene</Filter>
@@ -222,7 +222,7 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="TestCameraScript.h">
-      <Filter>Object\Script</Filter>
+      <Filter>Script</Filter>
     </ClInclude>
     <ClInclude Include="Resources.h">
       <Filter>Manager</Filter>
@@ -282,10 +282,10 @@
       <Filter>Object\Component</Filter>
     </ClInclude>
     <ClInclude Include="TestDragon.h">
-      <Filter>Object\Script</Filter>
+      <Filter>Script</Filter>
     </ClInclude>
     <ClInclude Include="TestPointLightScript.h">
-      <Filter>Object\Script</Filter>
+      <Filter>Script</Filter>
     </ClInclude>
     <ClInclude Include="LuckyScene.h">
       <Filter>Scene</Filter>

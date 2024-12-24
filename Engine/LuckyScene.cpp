@@ -109,8 +109,10 @@ LuckyScene::LuckyScene() {
 
 		// 2. Transform 컴포넌트 추가 및 설정
 		terraincube->AddComponent(make_shared<Transform>());
+		// 씬의 임시 크기
 		terraincube->GetTransform()->SetLocalScale(Vec3(2000.f, 2000.f, 2000.f));
-		terraincube->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
+		// 씬의 임시 좌표
+		terraincube->GetTransform()->SetLocalPosition(Vec3(0, 800.f, 0.f));
 
 		// 4. MeshRenderer 설정
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -253,7 +255,7 @@ LuckyScene::LuckyScene() {
 
 		// 3. 조명 색상 및 강도 설정
 		light->GetLight()->SetDiffuse(Vec3(0.8f, 0.8f, 0.8f));
-		light->GetLight()->SetAmbient(Vec3(0.2f, 0.2f, 0.2f));
+		light->GetLight()->SetAmbient(Vec3(0.5f, 0.5f, 0.5f));
 		light->GetLight()->SetSpecular(Vec3(0.05f, 0.05f, 0.05f));
 
 		// 4. Scene에 추가
@@ -275,7 +277,7 @@ LuckyScene::LuckyScene() {
 		{
 			gameObject->SetName(L"Test");
 			gameObject->SetCheckFrustum(true);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 300.f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, 300.f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.7f, 0.f, 0.f));
 			activeScene->AddGameObject(gameObject);
