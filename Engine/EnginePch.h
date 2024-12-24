@@ -63,6 +63,9 @@ using namespace Microsoft::WRL;
 #include <iostream>
 #pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 
+#define WindowHeight	1280
+#define WindowWidth		800
+
 // °¢Á¾ typedef
 using int8		= __int8;
 using int16		= __int16;

@@ -18,6 +18,7 @@
 #include "MeshData.h"
 #include "TestDragon.h"
 
+#include "TitleScene.h"
 #include "LuckyScene.h"
 
 void SceneManager::Init()
@@ -28,6 +29,9 @@ void SceneManager::Init()
 	SetLayerName(1, L"UI");
 #pragma endregion
 #pragma region AddScene
+	shared_ptr<TitleScene> titleScene = make_shared<TitleScene>();
+	scenes[L"TitleScene"] = titleScene->GetScene();
+
 	shared_ptr<LuckyScene> luckyScene = make_shared<LuckyScene>();
 	scenes[L"LuckyScene"] = luckyScene->GetScene();
 #pragma endregion
