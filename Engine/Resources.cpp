@@ -520,6 +520,30 @@ void Resources::CreateDefaultShader()
 		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\deferred.fx", info);
 		Add<Shader>(L"TerrainCube", shader);
 	}
+
+	// Water
+	{
+		ShaderInfo info =
+		{
+			SHADER_TYPE::FORWARD,
+			RASTERIZER_TYPE::CULL_NONE,
+			DEPTH_STENCIL_TYPE::LESS,
+			BLEND_TYPE::ALPHA_BLEND,
+		};
+
+		ShaderArg arg =
+		{
+			"VS_Main",
+			"",
+			"",
+			"",
+			"PS_Main",
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\water.fx", info, arg);
+		Add<Shader>(L"Water", shader);
+	}
 }
 
 // 머터리얼 정보(텍스쳐, 노멀)
@@ -641,5 +665,22 @@ void Resources::CreateDefaultMaterial()
 		material->SetTexture(0, texture);
 		material->SetTexture(1, texture2);
 		Add<Material>(L"TerrainCube", material);
+	}
+
+	// Water
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Water");
+		shared_ptr<Texture> normalTexture = GET_SINGLE(Resources)->Load<Texture>(L"Water_Normal", L"..\\Resources\\Texture\\Water_Normal.jpg");
+
+		//shared_ptr<CubeMapTexture> cubeTexture = GET_SINGLE(Resources)->Load<CubeMapTexture>(L"Sky01", L"..\\Resources\\Texture\\SkyBox_0.dds");
+
+
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		material->SetTexture(0, normalTexture);
+		material->SetTexture(1, GET_SINGLE(Resources)->Get<Texture>(L"ReflectionDiffuseTarget"));
+		//material->SetCubeMapTexture(cubeTexture);
+
+		Add<Material>(L"Water", material);
 	}
 }

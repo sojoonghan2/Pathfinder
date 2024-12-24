@@ -49,14 +49,14 @@ float4 PS_Main(VS_OUT input) : SV_Target
     // 기본 색상 또는 디퓨즈 텍스쳐 샘플링
     float4 color = float4(1.f, 1.f, 1.f, 1.f);
     if (g_tex_on_0)
-        color = g_tex_0.Sample(g_sam_0, input.uv);
+        color = g_textures[0].Sample(g_sam_0, input.uv);
 
     // 노말 매핑
     float3 viewNormal = input.viewNormal;
     if (g_tex_on_1)
     {
         // [0,255] 범위에서 [0,1]로 변환
-        float3 tangentSpaceNormal = g_tex_1.Sample(g_sam_0, input.uv).xyz;
+        float3 tangentSpaceNormal = g_textures[1].Sample(g_sam_0, input.uv).xyz;
         // [0,1] 범위에서 [-1,1]로 변환
         tangentSpaceNormal = (tangentSpaceNormal - 0.5f) * 2.f;
         float3x3 matTBN = { input.viewTangent, input.viewBinormal, input.viewNormal };
@@ -81,7 +81,7 @@ float4 PS_Main(VS_OUT input) : SV_Target
 }
 
 // [Texture Shader]
-// g_tex_0 : Output Texture
+// g_textures[0] : Output Texture
 // AlphaBlend : true
 struct VS_TEX_IN
 {
@@ -109,7 +109,7 @@ float4 PS_Tex(VS_TEX_OUT input) : SV_Target
 {
     float4 color = float4(1.f, 1.f, 1.f, 1.f);
     if (g_tex_on_0)
-        color = g_tex_0.Sample(g_sam_0, input.uv);
+        color = g_textures[0].Sample(g_sam_0, input.uv);
 
     return color;
 }

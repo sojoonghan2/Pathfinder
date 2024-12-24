@@ -1,6 +1,9 @@
 #ifndef _PARAMS_FX_
 #define _PARAMS_FX_
 
+//텍스쳐 배열 크기 정의
+#define MAX_TEXTURES 8
+
 struct LightColor
 {
     float4      diffuse;
@@ -67,15 +70,25 @@ cbuffer MATERIAL_PARAMS : register(b2)
     row_major float4x4 g_mat_3;
 };
 
-// 리소스 바인딩
-Texture2D g_tex_0 : register(t0);
-Texture2D g_tex_1 : register(t1);
-Texture2D g_tex_2 : register(t2);
-Texture2D g_tex_3 : register(t3);
-Texture2D g_tex_4 : register(t4);
+// Texture2D 텍스처 정의
+Texture2D g_textures[MAX_TEXTURES] : register(t0);
+
+// 뎁스 텍스쳐
+Texture2D g_depth : register(t1);
+
+// 임시용 텍스쳐
+Texture2D g_tex_t2 : register(t2);
+Texture2D g_tex_t3 : register(t3);
+Texture2D g_tex_t4 : register(t4);
+
+// TextureCube 텍스처 정의 (큐브맵 추가)
+TextureCube g_texCube : register(t6);
 
 // 본 애니메이션 행렬 버퍼
 StructuredBuffer<Matrix> g_mat_bone : register(t7);
+
+// 굴절 텍스쳐
+Texture2D g_refractionTex : register(t9);
 
 // 샘플러 상태
 SamplerState g_sam_0 : register(s0);

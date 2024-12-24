@@ -37,7 +37,7 @@ struct VS_OUT
 // VS_MAIN
 // g_float_0    : Start Scale
 // g_float_1    : End Scale
-// g_tex_0      : Particle Texture
+// g_textures[0]      : Particle Texture
 
 VS_OUT VS_Main(VS_IN input)
 {
@@ -115,7 +115,7 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 
 float4 PS_Main(GS_OUT input) : SV_Target
 {
-    return g_tex_0.Sample(g_sam_0, input.uv);
+    return g_textures[0].Sample(g_sam_0, input.uv);
 }
 
 struct ComputeShared

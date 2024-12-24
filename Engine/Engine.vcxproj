@@ -276,6 +276,7 @@
     <FxCompile Include="..\Resources\Shader\skybox.fx" />
     <FxCompile Include="..\Resources\Shader\tessellation.fx" />
     <FxCompile Include="..\Resources\Shader\utils.fx" />
+    <FxCompile Include="..\Resources\Shader\water.fx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
