@@ -13,9 +13,11 @@ class SceneManager
 	DECLARE_SINGLE(SceneManager);
 
 public:
+	void Init();
 	void Update();
 	void Render();
 	void LoadScene(wstring sceneName);
+	void ChangeScene(wstring sceneName);
 
 	void SetLayerName(uint8 index, const wstring& name);
 	const wstring& IndexToLayerName(uint8 index) { return _layerNames[index]; }
@@ -29,9 +31,9 @@ public:
 	shared_ptr<Scene> GetActiveScene() { return _activeScene; }
 
 private:
-	shared_ptr<Scene> LoadMainScene();
 
 private:
+	map<wstring, shared_ptr<Scene>> scenes;
 	shared_ptr<Scene> _activeScene;
 
 	array<wstring, MAX_LAYER> _layerNames;

@@ -28,6 +28,9 @@
     <Filter Include="Object\Script">
       <UniqueIdentifier>{1cfe4b64-4ca1-4958-b16f-73f8ae1985c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{5bb6ad59-935a-4ea0-966f-9b78f2b39dd2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -152,6 +155,9 @@
     </ClCompile>
     <ClCompile Include="TestPointLightScript.cpp">
       <Filter>Object\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="LuckyScene.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -280,6 +286,9 @@
     </ClInclude>
     <ClInclude Include="TestPointLightScript.h">
       <Filter>Object\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="LuckyScene.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
