@@ -66,6 +66,9 @@ using namespace Microsoft::WRL;
 #define WindowHeight	1280
 #define WindowWidth		800
 
+// 파티클은 연산량이 많기 때문에 껏다 켰다 하는 매크로
+#define PARTICLEON		TRUE
+
 // 각종 typedef
 using int8		= __int8;
 using int16		= __int16;

@@ -37,6 +37,9 @@ public:
 public:
 	virtual void FinalUpdate();
 	void Render();
+	// 파티클 생성 간격, 누적 시간, 최소 수명, 최대 수명, 최소 속도, 최대 속도, 시작 크기, 종료 크기
+	void SetParticleInfo(float createInterval, float accTime, float minLifeTime, float maxLifeTime,
+		float minSpeed, float maxSpeed, float startScale, float endScale);
 
 public:
 	virtual void Load(const wstring& path) override { }
@@ -51,13 +54,23 @@ private:
 	shared_ptr<Material>		_material;
 	shared_ptr<Mesh>			_mesh;
 
+	// 파티클 생성 간격
 	float				_createInterval = 0.005f;
+	// 누적 시간
 	float				_accTime = 0.f;
 
+	// 최소 수명
 	float				_minLifeTime = 0.5f;
+	// 최대 수명
 	float				_maxLifeTime = 1.f;
+
+	// 최소 속도
 	float				_minSpeed = 100;
+	// 최대 속도
 	float				_maxSpeed = 50;
+
+	// 시작 크기
 	float				_startScale = 10.f;
+	// 종료 크기
 	float				_endScale = 5.f;
 };

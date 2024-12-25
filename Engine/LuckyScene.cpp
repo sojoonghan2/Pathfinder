@@ -285,7 +285,26 @@ LuckyScene::LuckyScene() {
 		}
 	}
 #pragma endregion
+
+// ÆÄÆ¼Å¬
+#pragma region Object & Particle
+	{
+		shared_ptr<GameObject> particle = make_shared<GameObject>();
+		wstring particleName = L"PARTICLE";
+		particle->SetName(particleName);
+		particle->SetCheckFrustum(true);
+		particle->SetStatic(false);
+
+		particle->AddComponent(make_shared<Transform>());
+		particle->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 200.f));
+		particle->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+
+		shared_ptr<ParticleSystem> particleSystem = make_shared<ParticleSystem>();
+		particle->AddComponent(particleSystem);
+
+		activeScene->AddGameObject(particle);
+	}
+#pragma endregion
 }
 
-LuckyScene::~LuckyScene() {
-}
+LuckyScene::~LuckyScene() {}
