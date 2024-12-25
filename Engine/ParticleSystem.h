@@ -41,6 +41,11 @@ public:
 	void SetParticleInfo(float createInterval, float accTime, float minLifeTime, float maxLifeTime,
 		float minSpeed, float maxSpeed, float startScale, float endScale);
 
+	void SetParticleInterval(float createInterval, float accTime);
+	void SetParticleLiftTime(float minLifeTime, float maxLifeTime);
+	void SetParticleSpeed(float minSpeed, float maxSpeed);
+	void SetParticleScale(float startScale, float endScale);
+
 public:
 	virtual void Load(const wstring& path) override { }
 	virtual void Save(const wstring& path) override { }

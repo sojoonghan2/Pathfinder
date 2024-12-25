@@ -62,3 +62,58 @@ void ParticleSystem::Render()
 
 	_mesh->Render(_maxParticle);
 }
+
+void ParticleSystem::SetParticleInfo(float createInterval, float accTime, float minLifeTime, float maxLifeTime, float minSpeed, float maxSpeed, float startScale, float endScale)
+{
+	// 파티클 생성 간격
+	_createInterval = createInterval;
+	// 누적 시간
+	_accTime = accTime;
+
+	// 최소 수명
+	_minLifeTime = minLifeTime;
+	// 최대 수명
+	_maxLifeTime = maxLifeTime;
+
+	// 최소 속도
+	_minSpeed = minSpeed;
+	// 최대 속도
+	_maxSpeed = maxSpeed;
+
+	// 시작 크기
+	_startScale = startScale;
+	// 종료 크기
+	_endScale = endScale;
+}
+
+void ParticleSystem::SetParticleInterval(float createInterval, float accTime)
+{
+	// 파티클 생성 간격
+	_createInterval = createInterval;
+	// 누적 시간
+	_accTime = accTime;
+}
+
+void ParticleSystem::SetParticleLiftTime(float minLifeTime, float maxLifeTime)
+{
+	// 최소 수명
+	_minLifeTime = minLifeTime;
+	// 최대 수명
+	_maxLifeTime = maxLifeTime;
+}
+
+void ParticleSystem::SetParticleSpeed(float minSpeed, float maxSpeed)
+{
+	// 최소 속도
+	_minSpeed = minSpeed;
+	// 최대 속도
+	_maxSpeed = maxSpeed;
+}
+
+void ParticleSystem::SetParticleScale(float startScale, float endScale)
+{
+	// 시작 크기
+	_startScale = startScale;
+	// 종료 크기
+	_endScale = endScale;
+}

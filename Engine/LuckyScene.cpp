@@ -301,6 +301,7 @@ LuckyScene::LuckyScene() {
 
 		shared_ptr<ParticleSystem> particleSystem = make_shared<ParticleSystem>();
 		particle->AddComponent(particleSystem);
+		particle->GetParticleSystem()->SetParticleInfo(0.05f, 0.f, 0.5, 1.f, 100, 50, 50.f, 5.f);
 
 		activeScene->AddGameObject(particle);
 	}
