@@ -307,7 +307,7 @@ LuckyScene::LuckyScene() {
 		particle->AddComponent(particleSystem);
 
 		// 파티클 정보 추가
-		shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bubbles", L"..\\Resources\\Texture\\Particle\\bubble.png");
+		shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Temp", L"..\\Resources\\Texture\\Particle\\bubble.png");
 		particle->GetParticleSystem()->SetParticleTexture(texture);
 		particle->GetParticleSystem()->SetParticleInfo(0.5f, 0.f, 1.f, 1.f, 50, 50, 100.f, 100.f);
 

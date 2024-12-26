@@ -18,9 +18,6 @@ ParticleSystem::ParticleSystem(bool refraction) : Component(COMPONENT_TYPE::PART
 	_mesh = GET_SINGLE(Resources)->LoadPointMesh();
 	if (!refraction) _material = GET_SINGLE(Resources)->Get<Material>(L"Particle");
 	else _material = GET_SINGLE(Resources)->Get<Material>(L"Refraction_Particle");
-	shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bubbles", L"..\\Resources\\Texture\\Particle\\bubble.png");
-
-	_material->SetTexture(0, texture);
 
 	_computeMaterial = GET_SINGLE(Resources)->Get<Material>(L"ComputeParticle");
 }
