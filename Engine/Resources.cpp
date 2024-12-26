@@ -732,14 +732,9 @@ void Resources::CreateDefaultMaterial()
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Water");
 		shared_ptr<Texture> normalTexture = GET_SINGLE(Resources)->Load<Texture>(L"Water_Normal", L"..\\Resources\\Texture\\Water_Normal.jpg");
 
-		//shared_ptr<CubeMapTexture> cubeTexture = GET_SINGLE(Resources)->Load<CubeMapTexture>(L"Sky01", L"..\\Resources\\Texture\\SkyBox_0.dds");
-
-
 		shared_ptr<Material> material = make_shared<Material>();
 		material->SetShader(shader);
-		material->SetTexture(0, normalTexture);
-		material->SetTexture(1, GET_SINGLE(Resources)->Get<Texture>(L"ReflectionDiffuseTarget"));
-		//material->SetCubeMapTexture(cubeTexture);
+		material->SetTexture(1, normalTexture);
 
 		Add<Material>(L"Water", material);
 	}

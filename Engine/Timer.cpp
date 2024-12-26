@@ -1,28 +1,26 @@
 #include "pch.h"
 #include "Timer.h"
 
-void Timer::Init()
-{
-	::QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&_frequency));
-	::QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&_prevCount)); // CPU Å¬·°
+void Timer::Init() {
+
+    _prevTime = Clock::now();
+    _firstTime = Clock::now();
 }
 
-void Timer::Update()
-{
-	uint64 currentCount;
-	::QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&currentCount));
+void Timer::Update() {
+    TimePoint currentTime = Clock::now();
+    std::chrono::duration<float> elapsedTime = currentTime - _prevTime;
+    std::chrono::duration<float> totalTime = currentTime - _firstTime;
+    _deltaTime = elapsedTime.count();
+    _totalTime = totalTime.count();
+    _prevTime = currentTime;
 
-	_deltaTime = (currentCount - _prevCount) / static_cast<float>(_frequency);
-	_prevCount = currentCount;
+    _frameCount++;
+    _elapsedTime += _deltaTime;
 
-	_frameCount++;
-	_frameTime += _deltaTime;
-
-	if (_frameTime > 1.f)
-	{
-		_fps = static_cast<uint32>(_frameCount / _frameTime);
-
-		_frameTime = 0.f;
-		_frameCount = 0;
-	}
+    if (_elapsedTime >= 1.0f) {
+        _fps = _frameCount;
+        _frameCount = 0;
+        _elapsedTime = 0.0f;
+    }
 }

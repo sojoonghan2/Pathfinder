@@ -18,6 +18,7 @@
 
 #include "TestDragon.h"
 #include "TestPointLightScript.h"
+#include "WaterScript.h"
 
 #include "SphereCollider.h"
 
@@ -265,8 +266,8 @@ LuckyScene::LuckyScene() {
 
 // FBX
 #pragma region FBX
-	/*{
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun\\Gun.fbx");
+	/* {
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Dragon\\Dragon.fbx");
 
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
@@ -311,6 +312,31 @@ LuckyScene::LuckyScene() {
 		particle->GetParticleSystem()->SetParticleInfo(0.5f, 0.f, 1.f, 1.f, 50, 50, 100.f, 100.f);
 
 		activeScene->AddGameObject(particle);
+	}
+#pragma endregion
+
+#pragma region Water
+	{
+		shared_ptr<GameObject> water = make_shared<GameObject>();
+		water->SetName(L"Water");
+		water->AddComponent(make_shared<Transform>());
+		water->AddComponent(make_shared<WaterScript>());
+		water->GetTransform()->SetLocalScale(Vec3(2000.f, 1.f, 2000.f));
+		water->GetTransform()->SetLocalPosition(Vec3(0.f, 10.f, 50.f));
+		water->SetStatic(true);
+
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> waterMesh = GET_SINGLE(Resources)->LoadPlanMesh();
+			meshRenderer->SetMesh(waterMesh);
+		}
+		{
+			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Water");
+			meshRenderer->SetMaterial(material);
+		}
+
+		water->AddComponent(meshRenderer);
+		activeScene->AddGameObject(water);
 	}
 #pragma endregion
 }

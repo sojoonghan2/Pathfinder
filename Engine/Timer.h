@@ -1,30 +1,25 @@
 #pragma once
+#include <chrono>
 
-class Timer
-{
-	DECLARE_SINGLE(Timer);
-
+class Timer {
+    DECLARE_SINGLE(Timer);
 public:
-	void Init();
-	void Update();
-
-	uint32 GetFps() { return _fps; }
-	float GetDeltaTime() { return _deltaTime; }
-
-private:
-	// 타이머 주파수를 저장, 해상도를 결정
-	uint64	_frequency = 0;
-	// 이전 프레임의 카운트 값 저장, 델타 타임 계산
-	uint64	_prevCount = 0;
-	// 프레임 간 시간 차이(델타 타임)
-	float	_deltaTime = 0.f;
+    void Init();
+    void Update();
+    float GetDeltaTime() const { return _deltaTime; }
+    float GetElapsedTime() const { return _elapsedTime; }
+    float GetTotalTime() const { return _totalTime; }
+    int32_t GetFps() const { return _fps; }
 
 private:
-	// 현재 프레임 수
-	uint32	_frameCount = 0;
-	// 마지막 프레임의 시간
-	float	_frameTime = 0.f;
-	// 초당 프레임 수(FPS)
-	uint32	_fps = 0;
+    using Clock = std::chrono::high_resolution_clock;
+    using TimePoint = std::chrono::time_point<Clock>;
+
+    TimePoint _firstTime;
+    TimePoint _prevTime;
+    float _deltaTime = 0.0f;
+    int32_t _frameCount = 0;
+    int32_t _fps = 0;
+    float _elapsedTime = 0.0;
+    float _totalTime = 0.0;
 };
-

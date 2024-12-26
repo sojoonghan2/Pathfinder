@@ -165,6 +165,9 @@
     <ClCompile Include="TitleScript.cpp">
       <Filter>Script</Filter>
     </ClCompile>
+    <ClCompile Include="WaterScript.cpp">
+      <Filter>Script</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -300,6 +303,9 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="TitleScript.h">
+      <Filter>Script</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterScript.h">
       <Filter>Script</Filter>
     </ClInclude>
   </ItemGroup>

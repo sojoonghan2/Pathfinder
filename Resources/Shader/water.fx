@@ -49,19 +49,14 @@ float4 PS_Main(VS_OUT input) : SV_TARGET
 
     float2 scrolledTexCoord = input.texCoord + scrollSpeed * time;
     
-    float3 normalMapSample = g_textures[0].Sample(g_sam_0, scrolledTexCoord).rgb;
+    float3 normalMapSample = g_textures[1].Sample(g_sam_0, scrolledTexCoord).rgb;
     normalMapSample = normalMapSample * 2.0 - 1.0;
     
-    float3 reflectionColor = g_textures[1].Sample(g_sam_0, input.texCoord).rgb;
-    
-    float3 refractedDir = refract(viewDir, normal, 1.0 / 1.33);
     float3 refractionColor = g_refractionTex.Sample(g_sam_0, input.texCoord).rgb;
     
     float fresnelFactor = pow(1.0 - saturate(dot(viewDir, normal)), 3.0);
     
-    float3 finalReflection = lerp(reflectionColor, refractionColor, fresnelFactor);
-    
-    float3 finalColor = lerp(finalReflection, baseColor, 0.5f);
+    float3 finalColor = lerp(refractionColor, baseColor, fresnelFactor);
 
     return float4(finalColor, 0.5f);
 }
