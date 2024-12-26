@@ -5,14 +5,6 @@
 #include "Material.h"
 #include "Timer.h"
 
-WaterScript::WaterScript()
-{
-}
-
-WaterScript::~WaterScript()
-{
-}
-
 void WaterScript::LateUpdate()
 {
 	if (GetMeshRenderer())
