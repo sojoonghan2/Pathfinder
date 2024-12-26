@@ -289,18 +289,25 @@ LuckyScene::LuckyScene() {
 // 파티클
 #pragma region Particle
 	{
+		// 파티클 오브젝트 생성
 		shared_ptr<GameObject> particle = make_shared<GameObject>();
 		wstring particleName = L"PARTICLE";
 		particle->SetName(particleName);
 		particle->SetCheckFrustum(true);
 		particle->SetStatic(false);
 
+		// 좌표 컴포넌트 추가
 		particle->AddComponent(make_shared<Transform>());
 		particle->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 200.f));
 		particle->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 
-		shared_ptr<ParticleSystem> particleSystem = make_shared<ParticleSystem>();
+		// 파티클 시스템 컴포넌트 추가
+		shared_ptr<ParticleSystem> particleSystem = make_shared<ParticleSystem>(true);
 		particle->AddComponent(particleSystem);
+
+		// 파티클 정보 추가
+		shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bubbles", L"..\\Resources\\Texture\\Particle\\bubble.png");
+		particle->GetParticleSystem()->SetParticleTexture(texture);
 		particle->GetParticleSystem()->SetParticleInfo(0.5f, 0.f, 1.f, 1.f, 50, 50, 100.f, 100.f);
 
 		activeScene->AddGameObject(particle);

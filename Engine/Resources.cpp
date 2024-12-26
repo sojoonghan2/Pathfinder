@@ -476,6 +476,36 @@ void Resources::CreateDefaultShader()
 		Add<Shader>(L"Particle", shader);
 	}
 
+	// Refraction Particle
+	{
+		ShaderInfo info =
+		{
+			// 파티클
+			SHADER_TYPE::PARTICLE,
+			// 뒷면 제거
+			RASTERIZER_TYPE::CULL_BACK,
+			// 뎁스 버퍼에 기록 X
+			DEPTH_STENCIL_TYPE::LESS_NO_WRITE,
+			// 알파 블렌딩
+			BLEND_TYPE::ALPHA_BLEND,
+			// 기본 도형: 점
+			D3D_PRIMITIVE_TOPOLOGY_POINTLIST
+		};
+
+		ShaderArg arg =
+		{
+			"VS_Main",
+			"",
+			"",
+			"GS_Main",
+			"PS_Main"
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\refraction_particle.fx", info, arg);
+		Add<Shader>(L"Refraction_Particle", shader);
+	}
+
 	// ComputeParticle
 	{
 		shared_ptr<Shader> shader = make_shared<Shader>();
@@ -630,6 +660,14 @@ void Resources::CreateDefaultMaterial()
 		Add<Material>(L"Particle", material);
 	}
 
+	// Refraction Particle
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Refraction_Particle");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		Add<Material>(L"Refraction_Particle", material);
+	}
+
 	// ComputeParticle
 	{
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"ComputeParticle");
@@ -679,8 +717,8 @@ void Resources::CreateDefaultMaterial()
 	// TerrainCube
 	{
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
-		shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Wood", L"..\\Resources\\Texture\\Gold.jpg");
-		shared_ptr<Texture> texture2 = GET_SINGLE(Resources)->Load<Texture>(L"Wood_Normal", L"..\\Resources\\Texture\\Gold_Normal.jpg");
+		shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Gold", L"..\\Resources\\Texture\\Gold.jpg");
+		shared_ptr<Texture> texture2 = GET_SINGLE(Resources)->Load<Texture>(L"Gold_Normal", L"..\\Resources\\Texture\\Gold_Normal.jpg");
 
 		shared_ptr<Material> material = make_shared<Material>();
 		material->SetShader(shader);

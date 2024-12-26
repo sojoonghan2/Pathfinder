@@ -6,7 +6,7 @@
 #include "Transform.h"
 #include "Timer.h"
 
-ParticleSystem::ParticleSystem() : Component(COMPONENT_TYPE::PARTICLE_SYSTEM)
+ParticleSystem::ParticleSystem(bool refraction) : Component(COMPONENT_TYPE::PARTICLE_SYSTEM)
 {
 	// GPU로 데이터를 전달하기 위해 필요한 버퍼를 생성
 	_particleBuffer = make_shared<StructuredBuffer>();
@@ -16,7 +16,8 @@ ParticleSystem::ParticleSystem() : Component(COMPONENT_TYPE::PARTICLE_SYSTEM)
 	_computeSharedBuffer->Init(sizeof(ComputeSharedInfo), 1);
 
 	_mesh = GET_SINGLE(Resources)->LoadPointMesh();
-	_material = GET_SINGLE(Resources)->Get<Material>(L"Particle");
+	if (!refraction) _material = GET_SINGLE(Resources)->Get<Material>(L"Particle");
+	else _material = GET_SINGLE(Resources)->Get<Material>(L"Refraction_Particle");
 	shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bubbles", L"..\\Resources\\Texture\\Particle\\bubble.png");
 
 	_material->SetTexture(0, texture);
@@ -116,4 +117,9 @@ void ParticleSystem::SetParticleScale(float startScale, float endScale)
 	_startScale = startScale;
 	// 종료 크기
 	_endScale = endScale;
+}
+
+void ParticleSystem::SetParticleTexture(shared_ptr<Texture> texture)
+{
+	_material->SetTexture(0, texture);
 }

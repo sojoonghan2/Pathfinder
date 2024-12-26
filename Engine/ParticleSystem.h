@@ -4,6 +4,7 @@
 class Material;
 class Mesh;
 class StructuredBuffer;
+class Texture;
 
 struct ParticleInfo
 {
@@ -31,7 +32,7 @@ struct ComputeSharedInfo
 class ParticleSystem : public Component
 {
 public:
-	ParticleSystem();
+	ParticleSystem(bool refraction);
 	virtual ~ParticleSystem();
 
 public:
@@ -45,6 +46,8 @@ public:
 	void SetParticleLiftTime(float minLifeTime, float maxLifeTime);
 	void SetParticleSpeed(float minSpeed, float maxSpeed);
 	void SetParticleScale(float startScale, float endScale);
+
+	void SetParticleTexture(shared_ptr<Texture> texture);
 
 public:
 	virtual void Load(const wstring& path) override { }
