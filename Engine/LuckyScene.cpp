@@ -265,7 +265,7 @@ LuckyScene::LuckyScene() {
 
 // FBX
 #pragma region FBX
-	{
+	/*{
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun\\Gun.fbx");
 
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
@@ -283,11 +283,11 @@ LuckyScene::LuckyScene() {
 			activeScene->AddGameObject(gameObject);
 			gameObject->AddComponent(make_shared<TestDragon>());
 		}
-	}
+	}*/
 #pragma endregion
 
 // ÆÄÆ¼Å¬
-#pragma region Object & Particle
+#pragma region Particle
 	{
 		shared_ptr<GameObject> particle = make_shared<GameObject>();
 		wstring particleName = L"PARTICLE";
@@ -301,7 +301,7 @@ LuckyScene::LuckyScene() {
 
 		shared_ptr<ParticleSystem> particleSystem = make_shared<ParticleSystem>();
 		particle->AddComponent(particleSystem);
-		particle->GetParticleSystem()->SetParticleInfo(0.05f, 0.f, 0.5, 1.f, 100, 50, 50.f, 5.f);
+		particle->GetParticleSystem()->SetParticleInfo(0.5f, 0.f, 1.f, 1.f, 50, 50, 100.f, 100.f);
 
 		activeScene->AddGameObject(particle);
 	}

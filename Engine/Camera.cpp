@@ -133,12 +133,9 @@ void Camera::Render_Forward()
 
 	GET_SINGLE(InstancingManager)->Render(_vecForward);
 
-	if (PARTICLEON)
+	for (auto& gameObject : _vecParticle)
 	{
-		for (auto& gameObject : _vecParticle)
-		{
-			gameObject->GetParticleSystem()->Render();
-		}
+		gameObject->GetParticleSystem()->Render();
 	}
 }
 
