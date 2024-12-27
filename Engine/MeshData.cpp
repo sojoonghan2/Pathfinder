@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "MeshData.h"
 #include "FBXLoader.h"
+#include "BINLoader.h"
 #include "Mesh.h"
 #include "Material.h"
 #include "Resources.h"
@@ -50,6 +51,36 @@ shared_ptr<MeshData> MeshData::LoadFromFBX(const wstring& path)
 		meshData->_meshRenders.push_back(info);
 	}
 
+	return meshData;
+}
+
+shared_ptr<MeshData> MeshData::LoadFromBIN(const wstring& path)
+{
+	shared_ptr<BINLoader> loader = make_shared<BINLoader>();
+	loader->LoadBIN(path);
+
+	shared_ptr<MeshData> meshData = make_shared<MeshData>();
+
+	for (int32 i = 0; i < loader->GetMeshCount(); i++) {
+		if (!loader->GetMesh(i).vertices.empty()) {
+			shared_ptr<Mesh> mesh = Mesh::CreateFromBIN(&loader->GetMesh(i), loader);
+			mesh->SetTransform(loader->GetMesh(i).transform);
+
+			GET_SINGLE(Resources)->Add<Mesh>(mesh->GetName(), mesh);
+
+			// Material 찾아서 연동
+			vector<shared_ptr<Material>> materials;
+			for (size_t j = 0; j < loader->GetMesh(i).materials.size(); j++) {
+				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(loader->GetMesh(i).materials.at(j).name);
+				materials.push_back(material);
+			}
+
+			MeshRenderInfo info = {};
+			info.mesh = mesh;
+			info.materials = materials;
+			meshData->_meshRenders.push_back(info);
+		}
+	}
 	return meshData;
 }
 

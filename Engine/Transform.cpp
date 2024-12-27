@@ -118,3 +118,23 @@ Vec3 Transform::DecomposeRotationMatrix(const Matrix& rotation)
 
 	return ret;
 }
+
+Vec3 Transform::QuaternionToEuler(const Quaternion& q)
+{
+	XMMATRIX rotationMatrix = XMMatrixRotationQuaternion(q);
+
+	float pitch, yaw, roll;
+
+	pitch = std::asin(-rotationMatrix.r[2].m128_f32[1]);
+
+	if (std::cos(pitch) > 0.0001f) {
+		roll = std::atan2(rotationMatrix.r[2].m128_f32[0], rotationMatrix.r[2].m128_f32[2]);
+		yaw = std::atan2(rotationMatrix.r[0].m128_f32[1], rotationMatrix.r[1].m128_f32[1]);
+	}
+	else {
+		roll = std::atan2(-rotationMatrix.r[1].m128_f32[0], rotationMatrix.r[0].m128_f32[0]);
+		yaw = 0.0f;
+	}
+
+	return Vector3(pitch, yaw, roll);
+}

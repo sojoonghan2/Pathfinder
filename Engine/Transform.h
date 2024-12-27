@@ -31,9 +31,10 @@ public:
 	void SetLocalScale(const Vec3& scale) { _localScale = scale; }
 
 	void LookAt(const Vec3& dir);
-
+	void SetLocalRotation(const Quaternion& quaternion) { _quaternion = quaternion; }
 	static bool CloseEnough(const float& a, const float& b, const float& epsilon = std::numeric_limits<float>::epsilon());
 	static Vec3 DecomposeRotationMatrix(const Matrix& rotation);
+	Vec3 QuaternionToEuler(const Quaternion& q);
 
 public:
 	void SetParent(shared_ptr<Transform> parent) { _parent = parent; }
@@ -44,6 +45,7 @@ private:
 	Vec3 _localPosition = {};
 	Vec3 _localRotation = {};
 	Vec3 _localScale = { 1.f, 1.f, 1.f };
+	Quaternion _quaternion;
 
 	Matrix _matLocal= {};
 	Matrix _matWorld = {};

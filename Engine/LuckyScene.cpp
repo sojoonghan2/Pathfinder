@@ -266,8 +266,8 @@ LuckyScene::LuckyScene() {
 
 // FBX
 #pragma region FBX
-	/* {
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Dragon\\Dragon.fbx");
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadBIN(L"..\\Resources\\BIN\\Angrybot.bin");
 
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
@@ -284,7 +284,7 @@ LuckyScene::LuckyScene() {
 			activeScene->AddGameObject(gameObject);
 			gameObject->AddComponent(make_shared<TestDragon>());
 		}
-	}*/
+	}
 #pragma endregion
 
 // ÆÄÆ¼Å¬

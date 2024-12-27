@@ -4,6 +4,7 @@
 #include "Material.h"
 #include "InstancingBuffer.h"
 #include "FBXLoader.h"
+#include "BINLoader.h"
 #include "StructuredBuffer.h"
 
 Mesh::Mesh() : Object(OBJECT_TYPE::MESH)
@@ -65,6 +66,24 @@ shared_ptr<Mesh> Mesh::CreateFromFBX(const FbxMeshInfo* meshInfo, FBXLoader& loa
 	if (meshInfo->hasAnimation)
 		mesh->CreateBonesAndAnimations(loader);
 	
+	return mesh;
+}
+
+shared_ptr<Mesh> Mesh::CreateFromBIN(const BINInfo* meshInfo, shared_ptr<BINLoader> loader) {
+	shared_ptr<Mesh> mesh = make_shared<Mesh>();
+	mesh->CreateVertexBuffer(meshInfo->vertices);
+
+	for (const vector<uint32>& buffer : meshInfo->indices) {
+		if (buffer.empty()) {
+
+			vector<uint32> defaultBuffer{ 0 };
+			mesh->CreateIndexBuffer(defaultBuffer);
+		}
+		else {
+			mesh->CreateIndexBuffer(buffer);
+		}
+	}
+
 	return mesh;
 }
 

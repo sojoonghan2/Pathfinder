@@ -29,6 +29,7 @@ namespace fs = std::filesystem;
 #include <DirectXColors.h>
 
 using namespace DirectX;
+using namespace DirectX::SimpleMath;
 using namespace DirectX::PackedVector;
 using namespace Microsoft::WRL;
 
@@ -211,3 +212,7 @@ string ws2s(const wstring& s);
 
 // ¡§±‘»≠
 Vec3 Normalization(Vec3 vec);
+
+bool IsMatrixValid(const XMFLOAT4X4& matrix);
+void DecomposeMatrix(const XMFLOAT4X4& matrix, Vec3& position, Quaternion& rotation, Vec3& scale);
+Vec3 QuaternionToEuler(const Quaternion& q);
