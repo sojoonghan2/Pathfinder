@@ -45,7 +45,7 @@ float4 PS_Main(VS_OUT input) : SV_TARGET
     float3 baseColor = float3(0.0f, 0.1f, 0.2f);
 
     float time = g_float_0;
-    float2 scrollSpeed = float2(0.1, 0.05);
+    float2 scrollSpeed = float2(0.07, 0.05);
 
     // ½ºÅ©·Ñ¸µµÈ ÅØ½ºÃ³ ÁÂÇ¥
     float2 scrolledTexCoord = input.texCoord + scrollSpeed * time;
@@ -54,7 +54,10 @@ float4 PS_Main(VS_OUT input) : SV_TARGET
     float wave = sin(input.texCoord.x * 5.0 + g_float_0) * 0.03;
     scrolledTexCoord += wave;
 
-    // ÅØ½ºÃ³ »ùÇÃ¸µ
+    // ¹° ÅØ½ºÃ³ »ùÇÃ¸µ (textures[0])
+    float3 waterTextureSample = g_textures[0].Sample(g_sam_0, input.texCoord).rgb;
+
+    // ³ë¸Ö ¸Ê »ùÇÃ¸µ
     float3 normalMapSample = g_textures[1].Sample(g_sam_0, scrolledTexCoord).rgb;
     normalMapSample = normalMapSample * 2.0 - 1.0;
 
@@ -64,11 +67,12 @@ float4 PS_Main(VS_OUT input) : SV_TARGET
     // ±¼Àý ÅØ½ºÃ³ »ùÇÃ¸µ
     float3 refractionColor = g_refractionTex.Sample(g_sam_0, input.texCoord).rgb;
 
-    // ±¼Àý °­Á¶
-    float3 enhancedRefraction = lerp(refractionColor, normalMapSample, 0.3);
+    // ±¼Àý °­Á¶ ¹× ÅØ½ºÃ³ °áÇÕ
+    float3 combinedColor = lerp(refractionColor, normalMapSample, 0.5);
+    combinedColor = lerp(combinedColor, waterTextureSample, 0.5);
 
     // ÃÖÁ¾ ÄÃ·¯ °è»ê
-    float3 finalColor = lerp(enhancedRefraction, baseColor, fresnelFactor);
+    float3 finalColor = lerp(combinedColor, baseColor, fresnelFactor);
 
     return float4(finalColor, 0.5f);
 }

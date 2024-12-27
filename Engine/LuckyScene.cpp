@@ -256,7 +256,7 @@ LuckyScene::LuckyScene() {
 
 		// 3. 조명 색상 및 강도 설정
 		light->GetLight()->SetDiffuse(Vec3(0.8f, 0.8f, 0.8f));
-		light->GetLight()->SetAmbient(Vec3(0.5f, 0.5f, 0.5f));
+		light->GetLight()->SetAmbient(Vec3(0.8f, 0.8f, 0.8f));
 		light->GetLight()->SetSpecular(Vec3(0.05f, 0.05f, 0.05f));
 
 		// 4. Scene에 추가
