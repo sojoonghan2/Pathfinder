@@ -37,7 +37,26 @@ void TestPointLightScript::KeyboardInput()
 	if (INPUT->GetButton(KEY_TYPE::RIGHT))
 		pos += Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
 
+	if (INPUT->GetButton(KEY_TYPE::PAGEUP))
+		pos += Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
+
+	if (INPUT->GetButton(KEY_TYPE::PAGEDOWN))
+		pos -= Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
+
 	if (INPUT->GetButtonDown(KEY_TYPE::T)) PRINTPOSITION;
+
+	// ¸Ê Å©±â Á¦ÇÑ
+	float mapMinX = -900.0f;
+	float mapMaxX = 900.0f;
+	float mapMinZ = -900.0f;
+	float mapMaxZ = 900.0f;
+	float minY = -200.0f;
+	float maxY = 1700.0f;
+
+	// X, Y, Z ÁÂÇ¥¸¦ ¸Ê ¹üÀ§·Î Á¦ÇÑ
+	pos.x = max(mapMinX, min(pos.x, mapMaxX));
+	pos.y = max(minY, min(pos.y, maxY));
+	pos.z = max(mapMinZ, min(pos.z, mapMaxZ));
 
 	GetTransform()->SetLocalPosition(pos);
 }

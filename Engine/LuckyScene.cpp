@@ -264,10 +264,10 @@ LuckyScene::LuckyScene() {
 	}
 #pragma endregion
 
-// FBX
-#pragma region FBX
-	/*{
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun.fbx");
+// 로봇
+#pragma region BOT
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\MSAModelGoldPosed\\MSAModelGoldPosed.fbx");
 
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
@@ -276,15 +276,36 @@ LuckyScene::LuckyScene() {
 
 		for (auto& gameObject : gameObjects)
 		{
-			gameObject->SetName(L"Test");
+			gameObject->SetName(L"Bot");
 			gameObject->SetCheckFrustum(true);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, 300.f));
-			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, -200.f, 300.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.7f, 0.f, 0.f));
 			activeScene->AddGameObject(gameObject);
-			gameObject->AddComponent(make_shared<TestDragon>());
 		}
-	}*/
+	}
+#pragma endregion
+
+// 플레이어
+#pragma region PLAYER
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Halo 5 Noble\\Halo 5 Noble.fbx");
+
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		// Save가 잘 안됨, MeshData의 Save와 Load를 수정해야 함, 한번 로드 후 다시 로드하려면 msh 지워야 함
+		//meshData->SaveOrLoad(L"..\\Resources\\MeshData\\Dragon.msh", L"..\\Resources\\FBX\\Dragon.fbx");
+
+		for (auto& gameObject : gameObjects)
+		{
+			gameObject->SetName(L"Player");
+			gameObject->SetCheckFrustum(true);
+			gameObject->GetTransform()->SetLocalPosition(Vec3(200.f, -200.f, 300.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.7f, 0.f, 0.f));
+			activeScene->AddGameObject(gameObject);
+		}
+	}
 #pragma endregion
 
 // 파티클

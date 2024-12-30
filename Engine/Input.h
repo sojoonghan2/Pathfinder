@@ -7,6 +7,9 @@ enum class KEY_TYPE
 	LEFT = VK_LEFT,
 	RIGHT = VK_RIGHT,
 
+	PAGEUP = VK_PRIOR,
+	PAGEDOWN = VK_NEXT,
+
 	W = 'W',
 	A = 'A',
 	S = 'S',
