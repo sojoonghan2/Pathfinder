@@ -20,6 +20,7 @@ namespace fs = std::filesystem;
 
 #include "d3dx12.h"
 #include "SimpleMath.h"
+#include "SimpleMath.inl"
 #include <d3d12.h>
 #include <wrl.h>
 #include <d3dcompiler.h>
@@ -30,6 +31,7 @@ namespace fs = std::filesystem;
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
+
 using namespace DirectX::PackedVector;
 using namespace Microsoft::WRL;
 
@@ -216,3 +218,24 @@ Vec3 Normalization(Vec3 vec);
 bool IsMatrixValid(const XMFLOAT4X4& matrix);
 void DecomposeMatrix(const XMFLOAT4X4& matrix, Vec3& position, Quaternion& rotation, Vec3& scale);
 Vec3 QuaternionToEuler(const Quaternion& q);
+
+namespace MyProject
+{
+	float Dot(const Vector3& v1, const Vector3& v2);
+
+	float Dot(const Quaternion& q1, const Quaternion& q2);
+
+	Quaternion Normalize(const Quaternion& q);
+
+	Vec3 Lerp(const Vec3& start, const Vec3& end, float t);
+
+	Quaternion Lerp(const Quaternion& q1, const Quaternion& q2, float t);
+
+	Quaternion QuaternionSlerp(const Quaternion& q1, const Quaternion& q2, float t);
+
+	Matrix MatrixAffineTransformation(const Vec3& scale, const Quaternion& rotation, const Vec3& translation);
+
+	Matrix MatrixScaling(const Vec3& scale);
+
+	Matrix MatrixRotationQuaternion(const Quaternion& quat);
+}

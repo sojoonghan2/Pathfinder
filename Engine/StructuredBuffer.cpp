@@ -135,3 +135,54 @@ void StructuredBuffer::CopyInitialData(uint64 bufferSize, void* initialData)
 
 	_resourceState = D3D12_RESOURCE_STATE_COMMON;
 }
+
+void StructuredBuffer::Update(const void* data, size_t dataSize)
+{
+	// 데이터 크기 확인
+	if (dataSize > static_cast<size_t>(_elementSize) * _elementCount) {
+		cout << "Error: Data size exceeds buffer capacity." << endl;
+		return;
+	}
+
+	// UploadBuffer 생성
+	ComPtr<ID3D12Resource> uploadBuffer = nullptr;
+	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(dataSize, D3D12_RESOURCE_FLAG_NONE);
+	D3D12_HEAP_PROPERTIES heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+
+	HRESULT hr = DEVICE->CreateCommittedResource(
+		&heapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&desc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&uploadBuffer));
+	if (FAILED(hr)) {
+		cout << "Failed to create upload buffer." << endl;
+		return;
+	}
+
+	// 데이터 복사
+	uint8_t* mappedData = nullptr;
+	D3D12_RANGE readRange = { 0, 0 };
+	uploadBuffer->Map(0, &readRange, reinterpret_cast<void**>(&mappedData));
+	memcpy(mappedData, data, dataSize);
+	uploadBuffer->Unmap(0, nullptr);
+
+	// GPU 버퍼에 데이터 복사
+	{
+		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+			_buffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST);
+		RESOURCE_CMD_LIST->ResourceBarrier(1, &barrier);
+	}
+
+	RESOURCE_CMD_LIST->CopyBufferRegion(_buffer.Get(), 0, uploadBuffer.Get(), 0, dataSize);
+
+	{
+		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+			_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_COMMON);
+		RESOURCE_CMD_LIST->ResourceBarrier(1, &barrier);
+	}
+
+	// 명령 실행 및 동기화
+	GEngine->GetGraphicsCmdQueue()->FlushResourceCommandQueue();
+}

@@ -27,6 +27,8 @@ public:
 	uint32	GetElementCount() { return _elementCount; }
 	UINT	GetBufferSize() { return _elementSize * _elementCount; }
 
+	void Update(const void* data, size_t dataSize);
+
 private:
 	void CopyInitialData(uint64 bufferSize, void* initialData);
 

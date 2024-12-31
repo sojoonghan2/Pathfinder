@@ -19,21 +19,63 @@ Animator::~Animator()
 
 void Animator::FinalUpdate()
 {
-	_updateTime += DELTA_TIME;
+    if (!_animClips || _animClips->empty()) {
+        cout << "No animation clips available!" << endl;
+        return;
+    }
 
-	// 몇 번째 클립?
-	const AnimClipInfo& animClip = _animClips->at(_clipIndex);
-	if (_updateTime >= animClip.duration)
-		_updateTime = 0.f;
+    _updateTime += DELTA_TIME;
 
-	const int32 ratio = static_cast<int32>(animClip.frameCount / animClip.duration);
-	// 현재 프레임
-	_frame = static_cast<int32>(_updateTime * ratio);
-	_frame = min(_frame, animClip.frameCount - 1);
-	// 다음 프레임
-	_nextFrame = min(_frame + 1, animClip.frameCount - 1);
-	// 1과 2프레임 사이에 있는 애매한 1.6프레임 같은 애들을 frameRatio라고 함
-	_frameRatio = static_cast<float>(_frame - _frame);
+    const AnimClipInfo& animClip = _animClips->at(_clipIndex);
+
+    if (_updateTime >= animClip.duration)
+        _updateTime = 0.f;
+
+    const int32 ratio = static_cast<int32>(animClip.frameCount / animClip.duration);
+    _frame = static_cast<int32>(_updateTime * ratio);
+    _frame = min(_frame, animClip.frameCount - 1);
+    _nextFrame = (_frame + 1) % animClip.frameCount;
+
+    float currentTime = _frame / static_cast<float>(ratio);
+    float nextTime = _nextFrame / static_cast<float>(ratio);
+    _frameRatio = (_updateTime - currentTime) / (nextTime - currentTime);
+    _frameRatio = clamp(_frameRatio, 0.0f, 1.0f);
+
+    // 부모-자식 관계를 고려한 최종 트랜스폼 계산
+    vector<Matrix> finalTransforms(_bones->size());
+
+    for (size_t i = 0; i < _bones->size(); ++i) {
+        const BoneInfo& bone = _bones->at(i);
+
+        // 현재와 다음 프레임의 키프레임 데이터 가져오기
+        const KeyFrameInfo& currentKeyFrame = animClip.keyFrames[i][_frame];
+        const KeyFrameInfo& nextKeyFrame = animClip.keyFrames[i][_nextFrame];
+
+        // 스케일, 회전, 이동 데이터 보간
+        Vec3 interpolatedScale = MyProject::Lerp(currentKeyFrame.scale, nextKeyFrame.scale, _frameRatio);
+        Quaternion interpolatedRotation = MyProject::QuaternionSlerp(currentKeyFrame.rotation, nextKeyFrame.rotation, _frameRatio);
+        Vec3 interpolatedTranslation = MyProject::Lerp(currentKeyFrame.translate, nextKeyFrame.translate, _frameRatio);
+
+        // 보간된 트랜스폼으로 행렬 생성
+        Matrix blendedTransform = MyProject::MatrixAffineTransformation(interpolatedScale, interpolatedRotation, interpolatedTranslation);
+
+        // 부모의 최종 트랜스폼 적용
+        if (bone.parentIdx >= 0) {
+            blendedTransform = finalTransforms[bone.parentIdx] * blendedTransform;
+        }
+
+        // 본 오프셋 적용
+        blendedTransform = blendedTransform * bone.matOffset;
+
+        // 최종 트랜스폼 저장
+        finalTransforms[i] = blendedTransform;
+    }
+
+    // GPU 데이터 업데이트 (StructuredBuffer에 업로드)
+    if (_boneFinalMatrix->GetElementCount() < finalTransforms.size()) {
+        _boneFinalMatrix->Init(sizeof(Matrix), finalTransforms.size());
+    }
+    _boneFinalMatrix->Update(finalTransforms.data(), finalTransforms.size() * sizeof(Matrix));
 }
 
 void Animator::SetAnimClip(const vector<AnimClipInfo>* animClips)

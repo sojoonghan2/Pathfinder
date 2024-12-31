@@ -86,3 +86,111 @@ Vec3 QuaternionToEuler(const Quaternion& q)
     // 오일러 각을 Vector3로 반환 (Yaw, Pitch, Roll)
     return Vector3(pitch, yaw, roll); // 피치, 요, 롤 순으로 반환
 }
+
+float MyProject::Dot(const Vector3& v1, const Vector3& v2)
+{
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+float MyProject::Dot(const Quaternion& q1, const Quaternion& q2)
+{
+    return q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
+}
+
+Quaternion MyProject::Normalize(const Quaternion& q)
+{
+    float magnitude = sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
+    if (magnitude > 1e-6f) {
+        return Quaternion(q.x / magnitude, q.y / magnitude, q.z / magnitude, q.w / magnitude);
+    }
+    else {
+        return Quaternion(0.0f, 0.0f, 0.0f, 1.0f); // 기본 단위 쿼터니언 반환
+    }
+}
+
+Vec3 MyProject::Lerp(const Vec3& start, const Vec3& end, float t)
+{
+    return start * (1.0f - t) + end * t;
+}
+
+Quaternion MyProject::Lerp(const Quaternion& q1, const Quaternion& q2, float t)
+{
+    float dotProduct = Dot(q1, q2);
+
+    // 방향이 반대라면 반전된 방향으로 보간
+    Quaternion q2Adjusted = dotProduct < 0.0f ? -q2 : q2;
+
+    Quaternion result = q1 * (1.0f - t) + q2Adjusted * t;
+
+    // 결과 쿼터니언을 정규화
+    return Normalize(result);
+}
+
+Quaternion MyProject::QuaternionSlerp(const Quaternion& q1, const Quaternion& q2, float t)
+{
+    float cosTheta = Dot(q1, q2);
+    Quaternion q2Adjusted = cosTheta < 0.0f ? -q2 : q2;
+
+    float sinTheta = sqrt(1.0f - cosTheta * cosTheta);
+    if (sinTheta < 1e-6f) {
+        return MyProject::Lerp(q1, q2Adjusted, t);
+    }
+    else {
+        float angle = atan2(sinTheta, cosTheta);
+        float w1 = sin((1.0f - t) * angle) / sinTheta;
+        float w2 = sin(t * angle) / sinTheta;
+        return q1 * w1 + q2Adjusted * w2;
+    }
+}
+
+Matrix MyProject::MatrixAffineTransformation(const Vec3& scale, const Quaternion& rotation, const Vec3& translation)
+{
+    Matrix result;
+    result = MatrixScaling(scale) * MatrixRotationQuaternion(rotation);
+    result._41 = translation.x;
+    result._42 = translation.y;
+    result._43 = translation.z;
+    return result;
+}
+
+Matrix MyProject::MatrixScaling(const Vec3& scale)
+{
+    Matrix result = Matrix::Identity;
+
+    result._11 = scale.x;
+    result._22 = scale.y;
+    result._33 = scale.z;
+
+    return result;
+}
+
+Matrix MyProject::MatrixRotationQuaternion(const Quaternion& quat)
+{
+    Matrix result = Matrix::Identity;
+
+    float xx = quat.x * quat.x;
+    float yy = quat.y * quat.y;
+    float zz = quat.z * quat.z;
+
+    float xy = quat.x * quat.y;
+    float xz = quat.x * quat.z;
+    float yz = quat.y * quat.z;
+
+    float wx = quat.w * quat.x;
+    float wy = quat.w * quat.y;
+    float wz = quat.w * quat.z;
+
+    result._11 = 1.0f - 2.0f * (yy + zz);
+    result._12 = 2.0f * (xy - wz);
+    result._13 = 2.0f * (xz + wy);
+
+    result._21 = 2.0f * (xy + wz);
+    result._22 = 1.0f - 2.0f * (xx + zz);
+    result._23 = 2.0f * (yz - wx);
+
+    result._31 = 2.0f * (xz - wy);
+    result._32 = 2.0f * (yz + wx);
+    result._33 = 1.0f - 2.0f * (xx + yy);
+
+    return result;
+}
