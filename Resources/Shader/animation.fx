@@ -12,9 +12,9 @@ struct AnimFrameParams
     float4 translation;
 };
 
-StructuredBuffer<AnimFrameParams>   g_bone_frame : register(t8);
-StructuredBuffer<matrix>            g_offset : register(t9);
-RWStructuredBuffer<matrix>          g_final : register(u0);
+StructuredBuffer<AnimFrameParams> g_bone_frame : register(t8);
+StructuredBuffer<matrix> g_offset : register(t9);
+RWStructuredBuffer<matrix> g_final : register(u0);
 
 // ComputeAnimation
 // g_int_0 : BoneCount
@@ -37,12 +37,15 @@ void CS_Main(int3 threadIdx : SV_DispatchThreadID)
 
     float4 quaternionZero = float4(0.f, 0.f, 0.f, 1.f);
 
+    // 스케일, 회전, 위치 보간
     float4 scale = lerp(g_bone_frame[idx].scale, g_bone_frame[nextIdx].scale, ratio);
     float4 rotation = QuaternionSlerp(g_bone_frame[idx].rotation, g_bone_frame[nextIdx].rotation, ratio);
+    rotation = QuaternionNormalize(rotation); // 쿼터니언 정규화
     float4 translation = lerp(g_bone_frame[idx].translation, g_bone_frame[nextIdx].translation, ratio);
 
+    // 최종 본 행렬 계산
     matrix matBone = MatrixAffineTransformation(scale, quaternionZero, rotation, translation);
-
+    
     g_final[threadIdx.x] = mul(g_offset[threadIdx.x], matBone);
 }
 

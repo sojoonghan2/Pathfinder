@@ -128,4 +128,21 @@ void Skinning(inout float3 pos, inout float3 normal, inout float3 tangent,
     normal = normalize(info.normal);
 }
 
+float4 QuaternionNormalize(float4 q)
+{
+    float magnitude = sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
+
+    // 0으로 나누는 것을 방지하기 위해 최소값 확인
+    if (magnitude > 1e-6)
+    {
+        return float4(q.x / magnitude, q.y / magnitude, q.z / magnitude, q.w / magnitude);
+    }
+    else
+    {
+        // 기본 단위 쿼터니언 반환
+        return float4(0.f, 0.f, 0.f, 1.f);
+    }
+}
+
+
 #endif
