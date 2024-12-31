@@ -20,6 +20,7 @@
 
 #include "TitleScene.h"
 #include "LuckyScene.h"
+#include "TestScene.h"
 
 void SceneManager::Init()
 {
@@ -34,6 +35,9 @@ void SceneManager::Init()
 
 	shared_ptr<LuckyScene> luckyScene = make_shared<LuckyScene>();
 	scenes[L"LuckyScene"] = luckyScene->GetScene();
+
+	shared_ptr<TestScene> testScene = make_shared<TestScene>();
+	scenes[L"TestScene"] = testScene->GetScene();
 #pragma endregion
 }
 

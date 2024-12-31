@@ -171,6 +171,9 @@
     <ClCompile Include="BINLoader.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="TestScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -313,6 +316,9 @@
     </ClInclude>
     <ClInclude Include="BINLoader.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="TestScene.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
