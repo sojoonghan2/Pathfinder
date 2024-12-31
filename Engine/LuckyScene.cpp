@@ -116,7 +116,7 @@ LuckyScene::LuckyScene()
 		// 씬의 임시 좌표
 		terraincube->GetTransform()->SetLocalPosition(Vec3(0, 800.f, 0.f));
 
-		// 4. MeshRenderer 설정
+		// 3. MeshRenderer 설정
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadCubeMesh();
@@ -128,7 +128,7 @@ LuckyScene::LuckyScene()
 		}
 		terraincube->AddComponent(meshRenderer);
 
-		// 5. Scene에 추가
+		// 4. Scene에 추가
 		activeScene->AddGameObject(terraincube);
 	}
 #pragma endregion
