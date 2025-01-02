@@ -186,6 +186,9 @@
     <ClCompile Include="CrashScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -342,6 +345,9 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="RuinsScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>

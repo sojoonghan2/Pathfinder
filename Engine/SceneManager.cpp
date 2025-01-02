@@ -19,7 +19,14 @@
 #include "TestDragon.h"
 
 #include "TitleScene.h"
+#include "ParticleScene.h"
+
+#include "RuinsScene.h"
+#include "FactoryScene.h"
+#include "ExplorationScene.h"
+#include "CrashScene.h"
 #include "LuckyScene.h"
+
 #include "TestScene.h"
 
 void SceneManager::Init()
@@ -33,11 +40,26 @@ void SceneManager::Init()
 	shared_ptr<TitleScene> titleScene = make_shared<TitleScene>();
 	scenes[L"TitleScene"] = titleScene->GetScene();
 
+	shared_ptr<RuinsScene> ruinsScene = make_shared<RuinsScene>();
+	scenes[L"RuinsScene"] = ruinsScene->GetScene();
+
+	shared_ptr<FactoryScene> factoryScene = make_shared<FactoryScene>();
+	scenes[L"FactoryScene"] = factoryScene->GetScene();
+
+	shared_ptr<ExplorationScene> explorationScene = make_shared<ExplorationScene>();
+	scenes[L"ExplorationScene"] = explorationScene->GetScene();
+
+	shared_ptr<CrashScene> crashScene = make_shared<CrashScene>();
+	scenes[L"CrashScene"] = crashScene->GetScene();
+
 	shared_ptr<LuckyScene> luckyScene = make_shared<LuckyScene>();
 	scenes[L"LuckyScene"] = luckyScene->GetScene();
 
 	shared_ptr<TestScene> testScene = make_shared<TestScene>();
 	scenes[L"TestScene"] = testScene->GetScene();
+
+	shared_ptr<ParticleScene> particleScene = make_shared<ParticleScene>();
+	scenes[L"ParticleScene"] = particleScene->GetScene();
 #pragma endregion
 }
 
