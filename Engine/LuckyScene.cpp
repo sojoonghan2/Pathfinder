@@ -112,7 +112,7 @@ LuckyScene::LuckyScene()
 		// 2. Transform ÄÄÆ÷³ÍÆ® Ãß°¡ ¹× ¼³Á¤
 		terraincube->AddComponent(make_shared<Transform>());
 		// ¾ÀÀÇ ÀÓ½Ã Å©±â
-		terraincube->GetTransform()->SetLocalScale(Vec3(SCENESIZE, SCENESIZE, SCENESIZE));
+		terraincube->GetTransform()->SetLocalScale(Vec3(2000.f, 2000.f, 2000.f));
 		// ¾ÀÀÇ ÀÓ½Ã ÁÂÇ¥
 		terraincube->GetTransform()->SetLocalPosition(Vec3(0, 800.f, 0.f));
 

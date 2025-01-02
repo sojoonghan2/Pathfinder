@@ -69,8 +69,8 @@ using namespace Microsoft::WRL;
 #define WINDOWHEIGHT	1280
 #define WINDOWWIDTH		800
 
-#define SCENESIZE		10000.f
-#define MAXMOVESIZE		5000.f
+#define SCENESIZE		1000.f
+#define MAXMOVESIZE		500.f
 
 // °¢Á¾ typedef
 using int8		= __int8;

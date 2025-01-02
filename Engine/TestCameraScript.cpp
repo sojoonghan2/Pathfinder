@@ -39,12 +39,12 @@ void TestCameraScript::KeyboardInput()
         pos += Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
 
     // ¸Ê Å©±â Á¦ÇÑ
-    float mapMinX = -MAXMOVESIZE + 100;
-    float mapMaxX = MAXMOVESIZE - 100;
-    float mapMinZ = -MAXMOVESIZE + 100;
-    float mapMaxZ = MAXMOVESIZE - 100;
-    float minY = -MAXMOVESIZE + 1000;
-    float maxY = MAXMOVESIZE;
+    float mapMinX = -900.f;
+    float mapMaxX = 900.f;
+    float mapMinZ = -900.f;
+    float mapMaxZ = 900.f;
+    float minY = 100.f;
+    float maxY = 1700.f;
 
     // X, Y, Z ÁÂÇ¥¸¦ ¸Ê ¹üÀ§·Î Á¦ÇÑ
     pos.x = max(mapMinX, min(pos.x, mapMaxX));
