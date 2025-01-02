@@ -43,7 +43,7 @@ bool Frustum::ContainsSphere(const Vec3& pos, float radius)
 		float distance = normal.Dot(pos) + plane.w;
 
 		// near/far 평면에 대해서는 더 큰 여유를 줌
-		float checkRadius = (i <= 1) ? radius * 2.0f : radius;
+		float checkRadius = (i <= 1) ? radius * 3.0f : radius * 2.0f;
 
 		// distance가 양수면 평면의 앞쪽, 음수면 뒤쪽
 		if (distance > checkRadius)

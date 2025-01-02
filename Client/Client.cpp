@@ -45,8 +45,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
-    GWindowInfo.width = WindowHeight;
-    GWindowInfo.height = WindowWidth;
+    GWindowInfo.width = WINDOWHEIGHT;
+    GWindowInfo.height = WINDOWWIDTH;
     GWindowInfo.windowed = true;
 
     unique_ptr<Game> game = make_unique<Game>();

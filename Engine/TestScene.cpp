@@ -46,7 +46,7 @@ TestScene::TestScene()
 
     // 2. Transform 컴포넌트 추가 및 설정
     um->AddComponent(make_shared<Transform>());
-    um->GetTransform()->SetLocalScale(Vec3(WindowHeight, WindowWidth, 1.f));
+    um->GetTransform()->SetLocalScale(Vec3(WINDOWHEIGHT, WINDOWWIDTH, 1.f));
     um->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 1.f));
 
     // 3. MeshRenderer 설정

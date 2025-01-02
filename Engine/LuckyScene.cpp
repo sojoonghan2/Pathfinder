@@ -112,7 +112,7 @@ LuckyScene::LuckyScene()
 		// 2. Transform ÄÄÆ÷³ÍÆ® Ãß°¡ ¹× ¼³Á¤
 		terraincube->AddComponent(make_shared<Transform>());
 		// ¾ÀÀÇ ÀÓ½Ã Å©±â
-		terraincube->GetTransform()->SetLocalScale(Vec3(2000.f, 2000.f, 2000.f));
+		terraincube->GetTransform()->SetLocalScale(Vec3(SCENESIZE, SCENESIZE, SCENESIZE));
 		// ¾ÀÀÇ ÀÓ½Ã ÁÂÇ¥
 		terraincube->GetTransform()->SetLocalPosition(Vec3(0, 800.f, 0.f));
 
@@ -268,7 +268,7 @@ LuckyScene::LuckyScene()
 // ·Îº¿
 #pragma region BOT
 	{
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\SelfDestructionRobot\\SelfDestructionRobot.fbx");
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Bot\\Bot.fbx");
 
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
@@ -279,8 +279,8 @@ LuckyScene::LuckyScene()
 		{
 			gameObject->SetName(L"Bot");
 			gameObject->SetCheckFrustum(true);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 200.f, 300.f));
-			gameObject->GetTransform()->SetLocalScale(Vec3(200.f, 200.f, 200.f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, -200.f, 300.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.7f, 0.f, 0.f));
 			activeScene->AddGameObject(gameObject);
 		}

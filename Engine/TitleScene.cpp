@@ -38,7 +38,7 @@ TitleScene::TitleScene()
     title->SetName(L"Title");
     title->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI"));
     title->AddComponent(make_shared<Transform>());
-    title->GetTransform()->SetLocalScale(Vec3(WindowHeight, WindowWidth, 1.f));
+    title->GetTransform()->SetLocalScale(Vec3(WINDOWHEIGHT, WINDOWWIDTH, 1.f));
     title->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 1.f));
     shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
     {
