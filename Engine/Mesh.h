@@ -26,7 +26,7 @@ struct KeyFrameInfo
 struct BoneInfo
 {
 	wstring					boneName;
-	int32					parentIdx;
+	int32					parentIndex;
 	Matrix					matOffset;
 };
 

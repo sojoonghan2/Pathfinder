@@ -268,7 +268,7 @@ LuckyScene::LuckyScene()
 // ·Îº¿
 #pragma region BOT
 	{
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\MSAModelGoldPosed\\MSAModelGoldPosed.fbx");
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\SelfDestructionRobot\\SelfDestructionRobot.fbx");
 
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
@@ -279,8 +279,8 @@ LuckyScene::LuckyScene()
 		{
 			gameObject->SetName(L"Bot");
 			gameObject->SetCheckFrustum(true);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, -200.f, 300.f));
-			gameObject->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 200.f, 300.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(200.f, 200.f, 200.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.7f, 0.f, 0.f));
 			activeScene->AddGameObject(gameObject);
 		}

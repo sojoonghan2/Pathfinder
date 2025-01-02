@@ -120,6 +120,8 @@ void FBXLoader::LoadMesh(FbxMesh* mesh)
 	FbxGeometryElementMaterial* geometryElementMaterial = mesh->GetElementMaterial();
 
 	const int32 polygonSize = mesh->GetPolygonSize(0);
+	
+	// 폴리곤이 삼각형이 아니면 프로그램 종료
 	assert(polygonSize == 3);
 
 	uint32 arrIdx[3];

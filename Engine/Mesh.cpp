@@ -216,7 +216,7 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 	for (shared_ptr<FbxBoneInfo>& bone : bones)
 	{
 		BoneInfo boneInfo = {};
-		boneInfo.parentIdx = bone->parentIndex;
+		boneInfo.parentIndex = bone->parentIndex;
 		boneInfo.matOffset = GetMatrix(bone->matOffset);
 		boneInfo.boneName = bone->boneName;
 		_bones.push_back(boneInfo);

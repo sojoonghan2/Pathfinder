@@ -60,8 +60,8 @@ void Animator::FinalUpdate()
         Matrix blendedTransform = MyProject::MatrixAffineTransformation(interpolatedScale, interpolatedRotation, interpolatedTranslation);
 
         // 부모의 최종 트랜스폼 적용
-        if (bone.parentIdx >= 0) {
-            blendedTransform = finalTransforms[bone.parentIdx] * blendedTransform;
+        if (bone.parentIndex >= 0) {
+            blendedTransform = finalTransforms[bone.parentIndex] * blendedTransform;
         }
 
         // 본 오프셋 적용
