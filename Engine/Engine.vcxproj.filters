@@ -189,6 +189,7 @@
     <ClCompile Include="ParticleScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="TestParticleScript.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -350,6 +351,7 @@
     <ClInclude Include="ParticleScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="TestParticleScript.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">

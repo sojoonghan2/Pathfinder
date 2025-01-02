@@ -19,12 +19,13 @@
 #include "TestDragon.h"
 #include "TestPointLightScript.h"
 #include "WaterScript.h"
+#include "TestParticleScript.h"
 
 #include "SphereCollider.h"
 
 ParticleScene::ParticleScene()
 {
-	// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
+// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
 #pragma region ComputeShader
 	{
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"ComputeShader");
@@ -159,12 +160,12 @@ ParticleScene::ParticleScene()
 	}
 #pragma endregion
 
-	// 파티클
+// 파티클
 #pragma region Particle
 	{
 		// 파티클 오브젝트 생성
 		shared_ptr<GameObject> particle = make_shared<GameObject>();
-		wstring particleName = L"PARTICLE";
+		wstring particleName = L"TestParticle";
 		particle->SetName(particleName);
 		particle->SetCheckFrustum(true);
 		particle->SetStatic(false);
@@ -174,14 +175,16 @@ ParticleScene::ParticleScene()
 		particle->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 200.f));
 		particle->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 
+		// 파티클 정보 추가
+		shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Particle", L"..\\Resources\\Texture\\Particle\\heal.png");
+		particle->AddComponent(make_shared<TestParticleScript>());
+
 		// 파티클 시스템 컴포넌트 추가
 		shared_ptr<ParticleSystem> particleSystem = make_shared<ParticleSystem>(true);
+		particleSystem->SetParticleTexture(texture);
+		particleSystem->SetParticleSpeed(50, 30);
+		particleSystem->SetParticleInterval(0.05f, 0.f);
 		particle->AddComponent(particleSystem);
-
-		// 파티클 정보 추가
-		shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Temp", L"..\\Resources\\Texture\\Particle\\bubble.png");
-		particle->GetParticleSystem()->SetParticleTexture(texture);
-		particle->GetParticleSystem()->SetParticleInfo(0.5f, 0.f, 1.f, 1.f, 50, 50, 100.f, 100.f);
 
 		activeScene->AddGameObject(particle);
 	}
