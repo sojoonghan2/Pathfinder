@@ -26,24 +26,25 @@ ParticleSystem::~ParticleSystem() {}
 
 void ParticleSystem::FinalUpdate()
 {
-	if (!_isActive) return;
-
 	_totalTime += DELTA_TIME;
 
-	// 지속 시간 초과 시 자동 종료
-	if (_duration > 0.0f && _totalTime >= _duration)
+	// 새 파티클 생성 중단 조건
+	int32 add = 0;
+	if (_isActive && _duration > 0.0f && _totalTime >= _duration)
 	{
-		ParticleStop();
-		return;
+		_isActive = false; // 새 파티클 생성 중단
 	}
 
-	_accTime += DELTA_TIME;
-
-	int32 add = 0;
-	if (_createInterval < _accTime)
+	// 새 파티클 생성
+	if (_isActive)
 	{
-		_accTime -= _createInterval;
-		add = 1;
+		_accTime += DELTA_TIME;
+
+		if (_createInterval < _accTime)
+		{
+			_accTime -= _createInterval;
+			add = 1; // 새 파티클 생성
+		}
 	}
 
 	// 컴퓨트 셰이더로 데이터 전달
@@ -51,17 +52,18 @@ void ParticleSystem::FinalUpdate()
 	_computeSharedBuffer->PushComputeUAVData(UAV_REGISTER::u1);
 
 	_computeMaterial->SetInt(0, _maxParticle);
-	_computeMaterial->SetInt(1, add);
-
+	_computeMaterial->SetInt(1, add); // add 값 전달
 	_computeMaterial->SetVec2(1, Vec2(DELTA_TIME, _accTime));
 	_computeMaterial->SetVec4(0, Vec4(_minLifeTime, _maxLifeTime, _minSpeed, _maxSpeed));
-
 	_computeMaterial->Dispatch(1, 1, 1);
 }
 
 void ParticleSystem::Render()
 {
-	if (!_isActive) return;
+	// 모든 파티클이 종료된 경우 렌더링 중단
+	if (_totalTime >= (_duration + _maxLifeTime))
+		return;
+
 	GetTransform()->PushData();
 
 	// 그래픽스 셰이더로 데이터 전달
@@ -151,16 +153,6 @@ void ParticleSystem::ParticleStart()
 void ParticleSystem::ParticleStop()
 {
 	_isActive = false;
-
-	// GPU 버퍼를 초기화하여 진행 중인 파티클 제거
-	vector<ParticleInfo> emptyParticles(_maxParticle);
-	_particleBuffer->Update(emptyParticles.data(), emptyParticles.size() * sizeof(ParticleInfo));
-
-	// 누적 시간 초기화
-	_accTime = 0.0f;
-
-	// 토탈 타임 초기화
-	_totalTime = 0.0;
 }
 
 void ParticleSystem::ParticleToggle()

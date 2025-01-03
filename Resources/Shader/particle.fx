@@ -157,7 +157,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     GroupMemoryBarrierWithGroupSync();
 
     // 1. 비활성 파티클 활성화
-    if (g_particle[threadIndex.x].alive == 0)
+    if (g_particle[threadIndex.x].alive == 0 && g_shared[0].addCount > 0)
     {
         while (true)
         {

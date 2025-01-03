@@ -176,7 +176,7 @@ ParticleScene::ParticleScene()
 		// 좌표 컴포넌트 추가
 		particle->AddComponent(make_shared<Transform>());
 		particle->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 200.f));
-		particle->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+		particle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		// 파티클 시스템 컴포넌트 추가
 		shared_ptr<IceParticleSystem> particleSystem = make_shared<IceParticleSystem>(true);
