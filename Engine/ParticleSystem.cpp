@@ -16,8 +16,8 @@ ParticleSystem::ParticleSystem(bool refraction) : Component(COMPONENT_TYPE::PART
 	_computeSharedBuffer->Init(sizeof(ComputeSharedInfo), 1);
 
 	_mesh = GET_SINGLE(Resources)->LoadPointMesh();
-	if (!refraction) _material = GET_SINGLE(Resources)->Get<Material>(L"Particle");
-	else _material = GET_SINGLE(Resources)->Get<Material>(L"Refraction_Particle");
+	if (!refraction) _material = GET_SINGLE(Resources)->Get<Material>(L"Particle")->Clone();
+	else _material = GET_SINGLE(Resources)->Get<Material>(L"Refraction_Particle")->Clone();
 
 	_computeMaterial = GET_SINGLE(Resources)->Get<Material>(L"ComputeParticle");
 }
