@@ -11,10 +11,12 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "Light.h"
-#include "ParticleSystem.h"
 #include "TestCameraScript.h"
 #include "Resources.h"
 #include "MeshData.h"
+
+#include "ParticleSystem.h"
+#include "BaseParticleSystem.h"
 
 #include "TestDragon.h"
 #include "TestPointLightScript.h"
@@ -180,7 +182,7 @@ ParticleScene::ParticleScene()
 		particle->AddComponent(make_shared<TestParticleScript>());
 
 		// 파티클 시스템 컴포넌트 추가
-		shared_ptr<ParticleSystem> particleSystem = make_shared<ParticleSystem>(true);
+		shared_ptr<BaseParticleSystem> particleSystem = make_shared<BaseParticleSystem>(true);
 		particleSystem->SetParticleTexture(texture);
 		particleSystem->SetParticleSpeed(50, 30);
 		particleSystem->SetParticleInterval(0.05f, 0.f);

@@ -31,6 +31,9 @@
     <Filter Include="Script">
       <UniqueIdentifier>{1cfe4b64-4ca1-4958-b16f-73f8ae1985c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object\Component\ParticleSystem">
+      <UniqueIdentifier>{80b1713f-f791-4da8-b579-6149d3cbd6f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -123,9 +126,6 @@
     <ClCompile Include="RenderTargetGroup.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleSystem.cpp">
-      <Filter>Object\Component</Filter>
-    </ClCompile>
     <ClCompile Include="StructuredBuffer.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
@@ -189,7 +189,15 @@
     <ClCompile Include="ParticleScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="TestParticleScript.cpp" />
+    <ClCompile Include="TestParticleScript.cpp">
+      <Filter>Script</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -285,9 +293,6 @@
     <ClInclude Include="RenderTargetGroup.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleSystem.h">
-      <Filter>Object\Component</Filter>
-    </ClInclude>
     <ClInclude Include="StructuredBuffer.h">
       <Filter>Engine</Filter>
     </ClInclude>
@@ -351,7 +356,15 @@
     <ClInclude Include="ParticleScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="TestParticleScript.h" />
+    <ClInclude Include="TestParticleScript.h">
+      <Filter>Script</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">

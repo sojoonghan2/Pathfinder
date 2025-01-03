@@ -171,6 +171,7 @@
   <ItemGroup>
     <ClInclude Include="Animator.h" />
     <ClInclude Include="BaseCollider.h" />
+    <ClInclude Include="BaseParticleSystem.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="BINLoader.h" />
     <ClInclude Include="CommandQueue.h" />
@@ -227,6 +228,7 @@
   <ItemGroup>
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="BaseCollider.cpp" />
+    <ClCompile Include="BaseParticleSystem.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="BINLoader.cpp" />
     <ClCompile Include="CommandQueue.cpp" />
