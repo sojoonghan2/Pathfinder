@@ -24,12 +24,11 @@ void TestParticleScript::LateUpdate()
 
 void TestParticleScript::KeyboardInput()
 {
-
+    auto particle_system = GetGameObject()->GetParticleSystem();
 	if (INPUT->GetButton(KEY_TYPE::U))
 	{
-
+		particle_system->ParticleStart();
 	}
-
 }
 
 void TestParticleScript::MouseInput()

@@ -17,6 +17,7 @@
 
 #include "ParticleSystem.h"
 #include "BaseParticleSystem.h"
+#include "IceParticleSystem.h"
 
 #include "TestDragon.h"
 #include "TestPointLightScript.h"
@@ -177,15 +178,9 @@ ParticleScene::ParticleScene()
 		particle->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 200.f));
 		particle->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 
-		// 파티클 정보 추가
-		shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Particle", L"..\\Resources\\Texture\\Particle\\heal.png");
-		particle->AddComponent(make_shared<TestParticleScript>());
-
 		// 파티클 시스템 컴포넌트 추가
-		shared_ptr<BaseParticleSystem> particleSystem = make_shared<BaseParticleSystem>(true);
-		particleSystem->SetParticleTexture(texture);
-		particleSystem->SetParticleSpeed(50, 30);
-		particleSystem->SetParticleInterval(0.05f, 0.f);
+		shared_ptr<IceParticleSystem> particleSystem = make_shared<IceParticleSystem>(true);
+		particle->AddComponent(make_shared<TestParticleScript>());
 		particle->AddComponent(particleSystem);
 
 		activeScene->AddGameObject(particle);

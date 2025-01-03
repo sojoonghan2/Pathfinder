@@ -26,12 +26,23 @@ ParticleSystem::~ParticleSystem() {}
 
 void ParticleSystem::FinalUpdate()
 {
+	if (!_isActive) return;
+
+	_totalTime += DELTA_TIME;
+
+	// 지속 시간 초과 시 자동 종료
+	if (_duration > 0.0f && _totalTime >= _duration)
+	{
+		ParticleStop();
+		return;
+	}
+
 	_accTime += DELTA_TIME;
 
 	int32 add = 0;
 	if (_createInterval < _accTime)
 	{
-		_accTime = _accTime - _createInterval;
+		_accTime -= _createInterval;
 		add = 1;
 	}
 
@@ -50,6 +61,7 @@ void ParticleSystem::FinalUpdate()
 
 void ParticleSystem::Render()
 {
+	if (!_isActive) return;
 	GetTransform()->PushData();
 
 	// 그래픽스 셰이더로 데이터 전달
@@ -119,4 +131,40 @@ void ParticleSystem::SetParticleScale(float startScale, float endScale)
 void ParticleSystem::SetParticleTexture(shared_ptr<Texture> texture)
 {
 	_material->SetTexture(0, texture);
+}
+
+void ParticleSystem::ParticleStart()
+{
+	_isActive = true;
+
+	// 전체 시간 초기화
+	_totalTime = 0.0f;
+
+	// 초기화된 상태로 시작
+	_accTime = 0.0f;
+
+	// 필요한 경우 추가 초기화
+	vector<ParticleInfo> emptyParticles(_maxParticle);
+	_particleBuffer->Update(emptyParticles.data(), emptyParticles.size() * sizeof(ParticleInfo));
+}
+
+void ParticleSystem::ParticleStop()
+{
+	_isActive = false;
+
+	// GPU 버퍼를 초기화하여 진행 중인 파티클 제거
+	vector<ParticleInfo> emptyParticles(_maxParticle);
+	_particleBuffer->Update(emptyParticles.data(), emptyParticles.size() * sizeof(ParticleInfo));
+
+	// 누적 시간 초기화
+	_accTime = 0.0f;
+
+	// 토탈 타임 초기화
+	_totalTime = 0.0;
+}
+
+void ParticleSystem::ParticleToggle()
+{
+	if (_isActive) ParticleStop();
+	else ParticleStart();
 }

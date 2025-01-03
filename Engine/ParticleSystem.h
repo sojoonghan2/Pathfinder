@@ -53,6 +53,14 @@ public:
 
 	void SetParticleTexture(shared_ptr<Texture> texture);
 
+	void SetDuration(float duration) { _duration = duration; }
+
+	void ParticleStart();
+	void ParticleStop();
+	void ParticleToggle();
+
+	bool IsActive() { return _isActive; }
+
 public:
 	virtual void Load(const wstring& path) override { }
 	virtual void Save(const wstring& path) override { }
@@ -60,7 +68,7 @@ public:
 private:
 	shared_ptr<StructuredBuffer>	_particleBuffer;
 	shared_ptr<StructuredBuffer>	_computeSharedBuffer;
-	uint32							_maxParticle = 1000;
+	uint32							_maxParticle = 10000;
 
 	shared_ptr<Material>		_computeMaterial;
 	shared_ptr<Material>		_material;
@@ -85,4 +93,11 @@ private:
 	float				_startScale = 10.f;
 	// 종료 크기
 	float				_endScale = 5.f;
+
+	// 파티클 활성 상태
+	bool				_isActive = false;
+	// 전체 경과 시간
+	float				_totalTime = 0.0f;
+	// 파티클 지속 시간(-1은 무한)
+	float				_duration = -1.0f;
 };
