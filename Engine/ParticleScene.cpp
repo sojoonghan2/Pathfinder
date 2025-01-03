@@ -166,6 +166,8 @@ ParticleScene::ParticleScene()
 
 // 얼음 파티클
 #pragma region IceParticle
+	// 테스트 결과 100개를 만들면 fps 20까지 떨어짐
+	// VRS 테스트 시 파티클 100개 띄우면 될듯
 	{
 		// 파티클 오브젝트 생성
 		shared_ptr<GameObject> iceParticle = make_shared<GameObject>();
