@@ -185,6 +185,7 @@
     <ClInclude Include="ExplorationScene.h" />
     <ClInclude Include="FactoryScene.h" />
     <ClInclude Include="FBXLoader.h" />
+    <ClInclude Include="FireParticleSystem.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="IceParticleSystem.h" />
@@ -242,6 +243,7 @@
     <ClCompile Include="ExplorationScene.cpp" />
     <ClCompile Include="FactoryScene.cpp" />
     <ClCompile Include="FBXLoader.cpp" />
+    <ClCompile Include="FireParticleSystem.cpp" />
     <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="IceParticleSystem.cpp" />

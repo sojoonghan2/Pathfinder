@@ -201,6 +201,9 @@
     <ClCompile Include="IceParticleSystem.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
+    <ClCompile Include="FireParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -369,6 +372,9 @@
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClInclude>
     <ClInclude Include="IceParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="FireParticleSystem.h">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClInclude>
   </ItemGroup>
