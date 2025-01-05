@@ -314,7 +314,7 @@ LuckyScene::LuckyScene()
 	{
 		// 파티클 오브젝트 생성
 		shared_ptr<GameObject> particle = make_shared<GameObject>();
-		wstring particleName = L"PARTICLE";
+		wstring particleName = L"BubbleParticle";
 		particle->SetName(particleName);
 		particle->SetCheckFrustum(true);
 		particle->SetStatic(false);
@@ -329,7 +329,7 @@ LuckyScene::LuckyScene()
 		particle->AddComponent(particleSystem);
 
 		// 파티클 정보 추가
-		shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Temp", L"..\\Resources\\Texture\\Particle\\bubble.png");
+		shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"bubble", L"..\\Resources\\Texture\\Particle\\bubble.png");
 		particle->GetParticleSystem()->SetParticleTexture(texture);
 		particle->GetParticleSystem()->SetParticleInfo(0.5f, 0.f, 1.f, 1.f, 50, 50, 100.f, 100.f);
 
