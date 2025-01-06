@@ -5,7 +5,7 @@
 class FireParticleSystem : public BaseParticleSystem
 {
 public:
-	FireParticleSystem(bool reflection);
+	FireParticleSystem();
 
 	virtual void FinalUpdate() override;
 };

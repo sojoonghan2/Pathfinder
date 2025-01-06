@@ -325,7 +325,7 @@ LuckyScene::LuckyScene()
 		particle->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 
 		// 파티클 시스템 컴포넌트 추가
-		shared_ptr<ParticleSystem> particleSystem = make_shared<ParticleSystem>(true);
+		shared_ptr<ParticleSystem> particleSystem = make_shared<ParticleSystem>();
 		particle->AddComponent(particleSystem);
 
 		// 파티클 정보 추가

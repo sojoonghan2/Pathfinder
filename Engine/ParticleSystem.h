@@ -43,7 +43,7 @@ enum ParticleType
 class ParticleSystem : public Component
 {
 public:
-	ParticleSystem(bool refraction);
+	ParticleSystem();
 	virtual ~ParticleSystem();
 
 public:
