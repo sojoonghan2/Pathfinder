@@ -1,5 +1,5 @@
-#ifndef _PARTICLE_FX_
-#define _PARTICLE_FX_
+#ifndef _REFRACTION_PARTICLE_FX_
+#define _REFRACTION_PARTICLE_FX_
 
 #include "params.fx"
 #include "utils.fx"
