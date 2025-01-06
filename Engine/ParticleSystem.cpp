@@ -102,7 +102,7 @@ void ParticleSystem::SetParticleInterval(float createInterval, float accTime)
 	_accTime = accTime;
 }
 
-void ParticleSystem::SetParticleLiftTime(float minLifeTime, float maxLifeTime)
+void ParticleSystem::SetParticleLifeTime(float minLifeTime, float maxLifeTime)
 {
 	// 최소 수명
 	_minLifeTime = minLifeTime;

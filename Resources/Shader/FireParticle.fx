@@ -115,8 +115,32 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 
 float4 PS_Main(GS_OUT input) : SV_Target
 {
-    return g_textures[0].Sample(g_sam_0, input.uv);
+    // 파티클 수명 비율 계산
+    float ratio = g_data[input.id].curTime / g_data[input.id].lifeTime;
+
+    // 노란색(초기), 빨간색(중간), 검은색(최종) 색상 정의
+    float3 startColor = float3(1.0f, 1.0f, 0.0f); // 노란색
+    float3 midColor = float3(1.0f, 0.0f, 0.0f); // 빨간색
+    float3 endColor = float3(0.0f, 0.0f, 0.0f); // 검은색
+
+    // 색상 전환
+    float3 color;
+    if (ratio < 0.5f)
+    {
+        // 0~0.5 구간: 노란색 -> 빨간색
+        color = lerp(startColor, midColor, ratio * 2.0f);
+    }
+    else
+    {
+        // 0.5~1.0 구간: 빨간색 -> 검은색
+        color = lerp(midColor, endColor, (ratio - 0.5f) * 2.0f);
+    }
+
+    // 텍스처 샘플링 및 색상 적용
+    float4 texColor = g_textures[0].Sample(g_sam_0, input.uv);
+    return float4(color, 1.0f) * texColor;
 }
+
 
 struct ComputeShared
 {
@@ -135,33 +159,29 @@ RWStructuredBuffer<ComputeShared> g_shared : register(u1);
 // g_int_0  : 최대 파티클 수
 // g_int_1  : 새로 활성화할 파티클 수
 // g_vec4_0 : 최소/최대 수명과 속도
-// g_int_3  : 파티클 타입
 [numthreads(1024, 1, 1)]
 void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 {
     if (threadIndex.x >= g_int_0)
         return;
 
+    float minX = -5.0f, maxX = 5.0f;
+    float minZ = -5.0f, maxZ = 5.0f;
+
     int maxCount = g_int_0;
     int addCount = g_int_1;
-    int frameNumber = g_int_2;
-    int particleType = g_int_3;
     float deltaTime = g_vec2_1.x;
     float accTime = g_vec2_1.y;
     float minLifeTime = g_vec4_0.x;
     float maxLifeTime = g_vec4_0.y;
     float minSpeed = g_vec4_0.z;
     float maxSpeed = g_vec4_0.w;
-    
-    // 활성화 가능한 파티클 수 관리
+
     g_shared[0].addCount = addCount;
-    // 동기화하여 스레드 간 데이터 충돌 방지
     GroupMemoryBarrierWithGroupSync();
 
-    // 1. 비활성 파티클 활성화
     if (g_particle[threadIndex.x].alive == 0 && g_shared[0].addCount > 0)
     {
-        // 활성화 가능한 파티클 수 감소
         while (true)
         {
             int remaining = g_shared[0].addCount;
@@ -171,11 +191,8 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             int expected = remaining;
             int desired = remaining - 1;
             int originalValue;
-            
-            // 원자적으로(더 이상 쪼갤 수 없는 정도)로 addCount 값 감소
+
             InterlockedCompareExchange(g_shared[0].addCount, expected, desired, originalValue);
-            
-            // 성공적으로 값을 감소시킨 스레드는 해당 파티클을 활성화(alive = 1)
             if (originalValue == expected)
             {
                 g_particle[threadIndex.x].alive = 1;
@@ -183,49 +200,35 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             }
         }
 
-        // 파티클 초기화
-        float x = ((float) threadIndex.x / (float) maxCount) + accTime;
-
-        float r1 = Rand(float2(x, accTime));
-        float r2 = Rand(float2(x * accTime, accTime));
-        float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
-
-        float3 noise =
+        if (g_particle[threadIndex.x].alive == 1)
         {
-            2 * r1 - 1,
-            abs(2 * r2 - 1), // 항상 위로 이동
-            2 * r3 - 1
-        };
+            float x = ((float) threadIndex.x / (float) maxCount) + accTime;
 
-        // 초기 위치
-        g_particle[threadIndex.x].worldPos = float3(
-        (noise.x - 0.5f) * 5.0f,
-        0.0f,
-        (noise.z - 0.5f) * 5.0f
-    );
+            float r1 = Rand(float2(x, accTime));
+            float r2 = Rand(float2(x * accTime, accTime));
+            float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
 
-        // 방향
-        g_particle[threadIndex.x].worldDir = normalize(float3(noise.x * 0.2f, 1.0f, noise.z * 0.2f));
+            g_particle[threadIndex.x].worldPos = float3(
+                lerp(minX, maxX, r1), // X: 범위 내 랜덤 값
+                0.0f, // Y: 고정값
+                lerp(minZ, maxZ, r3) // Z: 범위 내 랜덤 값
+            );
 
-        // 수명
-        g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * noise.y) + minLifeTime;
-        g_particle[threadIndex.x].curTime = 0.f;
+            g_particle[threadIndex.x].worldDir = normalize(float3(r1 - 0.5f, 1.0f, r3 - 0.5f));
+            g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * r2) + minLifeTime;
+            g_particle[threadIndex.x].curTime = 0.f;
+        }
     }
-    // 2. 기존 파티클 업데이트
     else
     {
-        // 현재 프레임의 deltaTime을 더해 파티클의 경과 시간 업데이트
         g_particle[threadIndex.x].curTime += deltaTime;
         if (g_particle[threadIndex.x].lifeTime < g_particle[threadIndex.x].curTime)
         {
-            // lifeTime보다 curTime이 커지면 파티클 비활성화
             g_particle[threadIndex.x].alive = 0;
             return;
         }
 
-        // 현재 경과 시간 비율
         float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
-        // 수명 비율에 따라 속도 결정
         float speed = (maxSpeed - minSpeed) * ratio + minSpeed;
         g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
     }

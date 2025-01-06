@@ -135,7 +135,6 @@ RWStructuredBuffer<ComputeShared> g_shared : register(u1);
 // g_int_0  : 최대 파티클 수
 // g_int_1  : 새로 활성화할 파티클 수
 // g_vec4_0 : 최소/최대 수명과 속도
-// g_int_3  : 파티클 타입
 [numthreads(1024, 1, 1)]
 void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 {

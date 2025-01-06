@@ -46,7 +46,7 @@ public:
 	// 생성 간걱, 누적 시간(기본: 0.005f, 0.f)
 	void SetParticleInterval(float createInterval, float accTime);
 	// 최소 수명, 최대 수명(기본: 0.5f, 1.f)
-	void SetParticleLiftTime(float minLifeTime, float maxLifeTime);
+	void SetParticleLifeTime(float minLifeTime, float maxLifeTime);
 	// 최소 속도, 최대 속도(기본: 100, 50)
 	void SetParticleSpeed(float minSpeed, float maxSpeed);
 	// 시작 크기, 종료 크기(기본: 10.f, 5.f)
