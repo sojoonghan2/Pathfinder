@@ -328,11 +328,6 @@ LuckyScene::LuckyScene()
 		shared_ptr<ParticleSystem> particleSystem = make_shared<ParticleSystem>();
 		particle->AddComponent(particleSystem);
 
-		// 파티클 정보 추가
-		shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"bubble", L"..\\Resources\\Texture\\Particle\\bubble.png");
-		particle->GetParticleSystem()->SetParticleTexture(texture);
-		particle->GetParticleSystem()->SetParticleInfo(0.5f, 0.f, 1.f, 1.f, 50, 50, 100.f, 100.f);
-
 		activeScene->AddGameObject(particle);
 	}
 #pragma endregion

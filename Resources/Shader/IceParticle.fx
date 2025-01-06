@@ -11,8 +11,7 @@ struct Particle
     float3  worldDir;
     float   lifeTime;
     int     alive;
-    int     particleType;
-    float2  padding;
+    float3  padding;
 };
 
 // 그래픽스 셰이더

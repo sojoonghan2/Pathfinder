@@ -19,10 +19,8 @@ struct ParticleInfo
 	float	lifeTime;
 	// 활성 상태
 	int32	alive;
-	// 파티클 타입
-	int32	particleType;
-	// 패딩(12 + 4 + 12 + 4 + 4 + 8(패딩))
-	int32	padding[2];
+	// 패딩(12 + 4 + 12 + 4 + 12(패딩))
+	int32	padding[3];
 };
 
 // 컴퓨트 셰이더에서 공유 데이터를 저장하는 버퍼
@@ -30,14 +28,6 @@ struct ComputeSharedInfo
 {
 	int32 addCount;
 	int32 padding[3];
-};
-
-enum ParticleType
-{
-	IceParticle,
-	FireParticle,
-
-	End
 };
 
 class ParticleSystem : public Component
@@ -61,13 +51,13 @@ public:
 	void SetParticleSpeed(float minSpeed, float maxSpeed);
 	// 시작 크기, 종료 크기(기본: 10.f, 5.f)
 	void SetParticleScale(float startScale, float endScale);
-
+	// 텍스쳐
 	void SetParticleTexture(shared_ptr<Texture> texture);
-
+	// 지속 시간
 	void SetDuration(float duration) { _duration = duration; }
+	// 머터리얼
+	void SetMaterial(shared_ptr<Material> material, shared_ptr<Material> computeMaterial);
 	
-	void SetParticleType(int particleType) { _computeMaterial->SetInt(3, particleType); }
-
 	void ParticleStart();
 	void ParticleStop();
 	void ParticleToggle();
