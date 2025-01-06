@@ -459,7 +459,7 @@ void Resources::CreateDefaultShader()
 		Add<Shader>(L"ComputeShader", shader);
 	}
 
-	// Particle
+	// IceParticle
 	{
 		ShaderInfo info =
 		{
@@ -485,11 +485,15 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\particle.fx", info, arg);
-		Add<Shader>(L"Particle", shader);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\IceParticle.fx", info, arg);
+		Add<Shader>(L"IceParticle", shader);
+
+		shared_ptr<Shader> computeShader = make_shared<Shader>();
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\IceParticle.fx", "CS_Main", "cs_5_0");
+		Add<Shader>(L"IceComputeParticle", computeShader);
 	}
 
-	// Refraction Particle
+	// FireParticle
 	{
 		ShaderInfo info =
 		{
@@ -515,15 +519,12 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\refraction_particle.fx", info, arg);
-		Add<Shader>(L"Refraction_Particle", shader);
-	}
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\FireParticle.fx", info, arg);
+		Add<Shader>(L"FireParticle", shader);
 
-	// ComputeParticle
-	{
-		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateComputeShader(L"..\\Resources\\Shader\\particle.fx", "CS_Main", "cs_5_0");
-		Add<Shader>(L"ComputeParticle", shader);
+		shared_ptr<Shader> computeShader = make_shared<Shader>();
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\FireParticle.fx", "CS_Main", "cs_5_0");
+		Add<Shader>(L"FireComputeParticle", computeShader);
 	}
 
 	// Shadow
@@ -665,29 +666,30 @@ void Resources::CreateDefaultMaterial()
 		Add<Material>(L"ComputeShader", material);
 	}
 
-	// Particle
+	// IceParticle
 	{
-		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Particle");
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"IceParticle");
 		shared_ptr<Material> material = make_shared<Material>();
 		material->SetShader(shader);
-		Add<Material>(L"Particle", material);
+		Add<Material>(L"IceParticle", material);
+
+		shared_ptr<Shader> computShader = GET_SINGLE(Resources)->Get<Shader>(L"IceComputeParticle");
+		shared_ptr<Material> computeMaterial = make_shared<Material>();
+		computeMaterial->SetShader(computShader);
+		Add<Material>(L"IceComputeParticle", computeMaterial);
 	}
 
-	// Refraction Particle
+	// FireParticle
 	{
-		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Refraction_Particle");
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"FireParticle");
 		shared_ptr<Material> material = make_shared<Material>();
 		material->SetShader(shader);
-		Add<Material>(L"Refraction_Particle", material);
-	}
+		Add<Material>(L"FireParticle", material);
 
-	// ComputeParticle
-	{
-		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"ComputeParticle");
-		shared_ptr<Material> material = make_shared<Material>();
-		material->SetShader(shader);
-
-		Add<Material>(L"ComputeParticle", material);
+		shared_ptr<Shader> computShader = GET_SINGLE(Resources)->Get<Shader>(L"FireComputeParticle");
+		shared_ptr<Material> computeMaterial = make_shared<Material>();
+		computeMaterial->SetShader(computShader);
+		Add<Material>(L"FireComputeParticle", computeMaterial);
 	}
 
 	// GameObject

@@ -181,7 +181,7 @@ ParticleScene::ParticleScene()
 		iceParticle->GetTransform()->SetLocalPosition(Vec3(-200.f, 100.f, 200.f));
 		iceParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
-		// 파티클 시스템 컴포넌트 추가(true: 굴절 파티클)
+		// 파티클 시스템 컴포넌트 추가
 		shared_ptr<IceParticleSystem> iceParticleSystem = make_shared<IceParticleSystem>();
 		iceParticle->AddComponent(make_shared<TestParticleScript>());
 		iceParticle->AddComponent(iceParticleSystem);
@@ -205,7 +205,7 @@ ParticleScene::ParticleScene()
 		fireParticle->GetTransform()->SetLocalPosition(Vec3(200.f, 100.f, 200.f));
 		fireParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
-		// 파티클 시스템 컴포넌트 추가(false: 비굴절 파티클)
+		// 파티클 시스템 컴포넌트 추가
 		shared_ptr<FireParticleSystem> fireParticleSystem = make_shared<FireParticleSystem>();
 		fireParticle->AddComponent(make_shared<TestParticleScript>());
 		fireParticle->AddComponent(fireParticleSystem);

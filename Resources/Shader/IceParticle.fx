@@ -1,18 +1,18 @@
-#ifndef _REFRACTION_PARTICLE_FX_
-#define _REFRACTION_PARTICLE_FX_
+#ifndef _ICEPARTICLE_FX_
+#define _ICEPARTICLE_FX_
 
 #include "params.fx"
 #include "utils.fx"
 
 struct Particle
 {
-    float3 worldPos;
-    float curTime;
-    float3 worldDir;
-    float lifeTime;
-    int alive;
-    int particleType;
-    float2 padding;
+    float3  worldPos;
+    float   curTime;
+    float3  worldDir;
+    float   lifeTime;
+    int     alive;
+    int     particleType;
+    float2  padding;
 };
 
 // 그래픽스 셰이더
@@ -136,6 +136,7 @@ RWStructuredBuffer<ComputeShared> g_shared : register(u1);
 // g_int_0  : 최대 파티클 수
 // g_int_1  : 새로 활성화할 파티클 수
 // g_vec4_0 : 최소/최대 수명과 속도
+// g_int_3  : 파티클 타입
 [numthreads(1024, 1, 1)]
 void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 {
@@ -152,19 +153,21 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     float maxLifeTime = g_vec4_0.y;
     float minSpeed = g_vec4_0.z;
     float maxSpeed = g_vec4_0.w;
-
+    
     // 활성화 가능한 파티클 수 관리
     g_shared[0].addCount = addCount;
     // 동기화하여 스레드 간 데이터 충돌 방지
     GroupMemoryBarrierWithGroupSync();
 
     // 1. 비활성 파티클 활성화
-    if (g_particle[threadIndex.x].alive == 0)
+    if (g_particle[threadIndex.x].alive == 0 && g_shared[0].addCount > 0)
     {
+        // 활성화 가능한 파티클 수 감소
         while (true)
         {
             int remaining = g_shared[0].addCount;
-            if (remaining <= 0) break;
+            if (remaining <= 0)
+                break;
 
             int expected = remaining;
             int desired = remaining - 1;
@@ -184,7 +187,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
         // 파티클 초기화
         if (g_particle[threadIndex.x].alive == 1)
         {
-            float x = ((float)threadIndex.x / (float)maxCount) + accTime;
+            float x = ((float) threadIndex.x / (float) maxCount) + accTime;
 
             float r1 = Rand(float2(x, accTime));
             float r2 = Rand(float2(x * accTime, accTime));
@@ -206,6 +209,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * noise.x) + minLifeTime;
             g_particle[threadIndex.x].curTime = 0.f;
         }
+        
     }
     // 2. 기존 파티클 업데이트
     else

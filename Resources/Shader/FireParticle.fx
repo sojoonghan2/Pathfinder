@@ -1,18 +1,18 @@
-#ifndef _PARTICLE_FX_
-#define _PARTICLE_FX_
+#ifndef _FIREPARTICLE_FX_
+#define _FIREPARTICLE_FX_
 
 #include "params.fx"
 #include "utils.fx"
 
 struct Particle
 {
-    float3  worldPos;
-    float   curTime;
-    float3  worldDir;
-    float   lifeTime;
-    int     alive;
-    int     particleType;
-    float2  padding;
+    float3 worldPos;
+    float curTime;
+    float3 worldDir;
+    float lifeTime;
+    int alive;
+    int particleType;
+    float2 padding;
 };
 
 // 그래픽스 셰이더
@@ -42,7 +42,7 @@ struct VS_OUT
 
 VS_OUT VS_Main(VS_IN input)
 {
-    VS_OUT output = (VS_OUT)0.f;
+    VS_OUT output = (VS_OUT) 0.f;
 
     float3 worldPos = mul(float4(input.pos, 1.f), g_matWorld).xyz;
     worldPos += g_data[input.id].worldPos;
@@ -67,11 +67,11 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 {
     GS_OUT output[4] =
     {
-        (GS_OUT)0.f, (GS_OUT)0.f, (GS_OUT)0.f, (GS_OUT)0.f
+        (GS_OUT) 0.f, (GS_OUT) 0.f, (GS_OUT) 0.f, (GS_OUT) 0.f
     };
 
     VS_OUT vtx = input[0];
-    uint id = (uint)vtx.id;
+    uint id = (uint) vtx.id;
     if (0 == g_data[id].alive)
         return;
 
@@ -131,66 +131,6 @@ RWStructuredBuffer<Particle> g_particle : register(u0);
 // 활성화할 파티클 수를 관리하는 공유 데이터
 RWStructuredBuffer<ComputeShared> g_shared : register(u1);
 
-void IceParticleInit(int3 threadIndex, int maxCount, float accTime, int addCount,
-    float maxLifeTime, float minLifeTime)
-{
-    if (g_particle[threadIndex.x].alive == 1)
-    {
-        float x = ((float) threadIndex.x / (float) maxCount) + accTime;
-
-        float r1 = Rand(float2(x, accTime));
-        float r2 = Rand(float2(x * accTime, accTime));
-        float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
-
-        // [0.5~1] -> [0~1], 난수를 생성해 파티클의 월드 방향 및 위치 계산에 사용
-        float3 noise =
-        {
-            2 * r1 - 1,
-            2 * r2 - 1,
-             2 * r3 - 1
-        };
-
-        // [0~1] -> [-1~1]
-        float3 dir = (noise - 0.5f) * 2.f;
-
-        g_particle[threadIndex.x].worldDir = normalize(dir);
-        g_particle[threadIndex.x].worldPos = (noise.xyz - 0.5f) * 25;
-        g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * noise.x) + minLifeTime;
-        g_particle[threadIndex.x].curTime = 0.f;
-    }
-}
-
-void FireParticleInit(int3 threadIndex, int maxCount, float accTime, int addCount,
-    float maxLifeTime, float minLifeTime)
-{
-    float x = ((float) threadIndex.x / (float) maxCount) + accTime;
-
-    float r1 = Rand(float2(x, accTime));
-    float r2 = Rand(float2(x * accTime, accTime));
-    float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
-
-    float3 noise =
-    {
-        2 * r1 - 1,
-        abs(2 * r2 - 1), // 항상 위로 이동
-        2 * r3 - 1
-    };
-
-    // 초기 위치
-    g_particle[threadIndex.x].worldPos = float3(
-        (noise.x - 0.5f) * 5.0f,
-        0.0f,
-        (noise.z - 0.5f) * 5.0f
-    );
-
-    // 방향
-    g_particle[threadIndex.x].worldDir = normalize(float3(noise.x * 0.2f, 1.0f, noise.z * 0.2f));
-
-    // 수명
-    g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * noise.y) + minLifeTime;
-    g_particle[threadIndex.x].curTime = 0.f;
-}
-
 // CS_Main
 // g_vec2_1 : 델타 시간 / 누적 시간
 // g_int_0  : 최대 파티클 수
@@ -245,13 +185,32 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
         }
 
         // 파티클 초기화
-        // 0: IceParticle
-        // 1: FireParticle
-        if (particleType == 0)
-            IceParticleInit(threadIndex, maxCount, accTime, addCount, maxLifeTime, minLifeTime);
-        if (particleType == 1)
-            FireParticleInit(threadIndex, maxCount, accTime, addCount, maxLifeTime, minLifeTime);
-        
+        float x = ((float) threadIndex.x / (float) maxCount) + accTime;
+
+        float r1 = Rand(float2(x, accTime));
+        float r2 = Rand(float2(x * accTime, accTime));
+        float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
+
+        float3 noise =
+        {
+            2 * r1 - 1,
+            abs(2 * r2 - 1), // 항상 위로 이동
+            2 * r3 - 1
+        };
+
+        // 초기 위치
+        g_particle[threadIndex.x].worldPos = float3(
+        (noise.x - 0.5f) * 5.0f,
+        0.0f,
+        (noise.z - 0.5f) * 5.0f
+    );
+
+        // 방향
+        g_particle[threadIndex.x].worldDir = normalize(float3(noise.x * 0.2f, 1.0f, noise.z * 0.2f));
+
+        // 수명
+        g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * noise.y) + minLifeTime;
+        g_particle[threadIndex.x].curTime = 0.f;
     }
     // 2. 기존 파티클 업데이트
     else

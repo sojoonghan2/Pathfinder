@@ -16,9 +16,9 @@ ParticleSystem::ParticleSystem() : Component(COMPONENT_TYPE::PARTICLE_SYSTEM)
 	_computeSharedBuffer->Init(sizeof(ComputeSharedInfo), 1);
 
 	_mesh = GET_SINGLE(Resources)->LoadPointMesh();
-	_material = GET_SINGLE(Resources)->Get<Material>(L"Particle")->Clone();
+	_material = GET_SINGLE(Resources)->Get<Material>(L"IceParticle")->Clone();
 
-	_computeMaterial = GET_SINGLE(Resources)->Get<Material>(L"ComputeParticle")->Clone();
+	_computeMaterial = GET_SINGLE(Resources)->Get<Material>(L"IceComputeParticle")->Clone();
 }
 
 ParticleSystem::~ParticleSystem() {}
