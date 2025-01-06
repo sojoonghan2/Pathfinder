@@ -7,7 +7,6 @@ class FireParticleSystem : public BaseParticleSystem
 public:
 	FireParticleSystem(bool reflection);
 
-	virtual void InitializeParticle() override;
 	virtual void FinalUpdate() override;
 };
 

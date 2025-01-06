@@ -6,12 +6,13 @@
 
 struct Particle
 {
-    float3  worldPos;
-    float   curTime;
-    float3  worldDir;
-    float   lifeTime;
-    int     alive;
-    float3  padding;
+    float3 worldPos;
+    float curTime;
+    float3 worldDir;
+    float lifeTime;
+    int alive;
+    int particleType;
+    float2 padding;
 };
 
 // 그래픽스 셰이더
@@ -144,6 +145,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     int maxCount = g_int_0;
     int addCount = g_int_1;
     int frameNumber = g_int_2;
+    int particleType = g_int_3;
     float deltaTime = g_vec2_1.x;
     float accTime = g_vec2_1.y;
     float minLifeTime = g_vec4_0.x;

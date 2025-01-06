@@ -19,7 +19,7 @@ ParticleSystem::ParticleSystem(bool refraction) : Component(COMPONENT_TYPE::PART
 	if (!refraction) _material = GET_SINGLE(Resources)->Get<Material>(L"Particle")->Clone();
 	else _material = GET_SINGLE(Resources)->Get<Material>(L"Refraction_Particle")->Clone();
 
-	_computeMaterial = GET_SINGLE(Resources)->Get<Material>(L"ComputeParticle");
+	_computeMaterial = GET_SINGLE(Resources)->Get<Material>(L"ComputeParticle")->Clone();
 }
 
 ParticleSystem::~ParticleSystem() {}
@@ -52,7 +52,7 @@ void ParticleSystem::FinalUpdate()
 	_computeSharedBuffer->PushComputeUAVData(UAV_REGISTER::u1);
 
 	_computeMaterial->SetInt(0, _maxParticle);
-	_computeMaterial->SetInt(1, add); // add 값 전달
+	_computeMaterial->SetInt(1, add);
 	_computeMaterial->SetVec2(1, Vec2(DELTA_TIME, _accTime));
 	_computeMaterial->SetVec4(0, Vec4(_minLifeTime, _maxLifeTime, _minSpeed, _maxSpeed));
 	_computeMaterial->Dispatch(1, 1, 1);
@@ -147,6 +147,7 @@ void ParticleSystem::ParticleStart()
 
 	// 필요한 경우 추가 초기화
 	vector<ParticleInfo> emptyParticles(_maxParticle);
+	// GPU로 파티클 버퍼 전달
 	_particleBuffer->Update(emptyParticles.data(), emptyParticles.size() * sizeof(ParticleInfo));
 }
 

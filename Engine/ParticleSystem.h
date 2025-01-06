@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "Material.h"
 
 class Material;
 class Mesh;
@@ -18,8 +19,10 @@ struct ParticleInfo
 	float	lifeTime;
 	// 활성 상태
 	int32	alive;
-	// 패딩(12 + 4 + 12 + 4 + 4 + 12(패딩))
-	int32	padding[3];
+	// 파티클 타입
+	int32	particleType;
+	// 패딩(12 + 4 + 12 + 4 + 4 + 8(패딩))
+	int32	padding[2];
 };
 
 // 컴퓨트 셰이더에서 공유 데이터를 저장하는 버퍼
@@ -27,6 +30,14 @@ struct ComputeSharedInfo
 {
 	int32 addCount;
 	int32 padding[3];
+};
+
+enum ParticleType
+{
+	IceParticle,
+	FireParticle,
+
+	End
 };
 
 class ParticleSystem : public Component
@@ -54,6 +65,8 @@ public:
 	void SetParticleTexture(shared_ptr<Texture> texture);
 
 	void SetDuration(float duration) { _duration = duration; }
+	
+	void SetParticleType(int particleType) { _computeMaterial->SetInt(3, particleType); }
 
 	void ParticleStart();
 	void ParticleStop();
