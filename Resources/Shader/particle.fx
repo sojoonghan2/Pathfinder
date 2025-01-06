@@ -146,8 +146,8 @@ void IceParticleInit(int3 threadIndex, int maxCount, float accTime, int addCount
         float3 noise =
         {
             2 * r1 - 1,
-                2 * r2 - 1,
-                2 * r3 - 1
+            2 * r2 - 1,
+             2 * r3 - 1
         };
 
         // [0~1] -> [-1~1]
@@ -169,30 +169,26 @@ void FireParticleInit(int3 threadIndex, int maxCount, float accTime, int addCoun
     float r2 = Rand(float2(x * accTime, accTime));
     float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
 
-    // [0, 1] 난수를 생성
     float3 noise =
     {
-        2 * r1 - 1, // X축 난수
-        abs(2 * r2 - 1), // Y축은 항상 양수 (위로 상승)
-        2 * r3 - 1 // Z축 난수
+        2 * r1 - 1,
+        abs(2 * r2 - 1), // 항상 위로 이동
+        2 * r3 - 1
     };
 
-    // 모닥불처럼 위로 퍼지면서 올라가는 방향
-    float3 dir = normalize(float3(noise.x * 0.3f, 1.0f, noise.z * 0.3f)); // Y축(위) 중심, X/Z는 약간 퍼짐
-
-    // 파티클의 초기 위치를 모닥불의 기점에서 설정
+    // 초기 위치
     g_particle[threadIndex.x].worldPos = float3(
-        (noise.x - 0.5f) * 5.0f, // X축: 좁은 범위
-        0.0f, // Y축: 고정된 시작점
-        (noise.z - 0.5f) * 5.0f // Z축: 좁은 범위
+        (noise.x - 0.5f) * 5.0f,
+        0.0f,
+        (noise.z - 0.5f) * 5.0f
     );
 
-    // 수명은 난수를 기반으로 설정
+    // 방향
+    g_particle[threadIndex.x].worldDir = normalize(float3(noise.x * 0.2f, 1.0f, noise.z * 0.2f));
+
+    // 수명
     g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * noise.y) + minLifeTime;
     g_particle[threadIndex.x].curTime = 0.f;
-
-    // 방향 설정
-    g_particle[threadIndex.x].worldDir = dir;
 }
 
 // CS_Main
