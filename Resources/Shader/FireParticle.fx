@@ -6,12 +6,12 @@
 
 struct Particle
 {
-    float3 worldPos;
-    float curTime;
-    float3 worldDir;
-    float lifeTime;
-    int alive;
-    float3 padding;
+    float3  worldPos;
+    float   curTime;
+    float3  worldDir;
+    float   lifeTime;
+    int     alive;
+    float3  padding;
 };
 
 // 그래픽스 셰이더
@@ -35,9 +35,9 @@ struct VS_OUT
 };
 
 // VS_MAIN
-// g_float_0    : Start Scale
-// g_float_1    : End Scale
-// g_textures[0]      : Particle Texture
+// g_float_0        : Start Scale
+// g_float_1        : End Scale
+// g_textures[0]    : Particle Texture
 
 VS_OUT VS_Main(VS_IN input)
 {
@@ -74,7 +74,7 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     if (0 == g_data[id].alive)
         return;
 
-    // 파티클 수명에 따른 진행률 계산
+    // 파티클 수명 진행률 비율 계산
     float ratio = g_data[id].curTime / g_data[id].lifeTime;
     float scale = ((g_float_1 - g_float_0) * ratio + g_float_0) / 2.f;
 
@@ -102,6 +102,7 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     output[2].id = id;
     output[3].id = id;
 
+    // 삼각형 스트립 추가
     outputStream.Append(output[0]);
     outputStream.Append(output[1]);
     outputStream.Append(output[2]);
@@ -165,8 +166,9 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     if (threadIndex.x >= g_int_0)
         return;
 
-    float minX = -5.0f, maxX = 5.0f;
-    float minZ = -5.0f, maxZ = 5.0f;
+    // 초기 시작 범위
+    float minX = -10.0f, maxX = 10.0f;
+    float minZ = -10.0f, maxZ = 10.0f;
 
     int maxCount = g_int_0;
     int addCount = g_int_1;
@@ -177,11 +179,15 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     float minSpeed = g_vec4_0.z;
     float maxSpeed = g_vec4_0.w;
 
+    // 활성화 가능한 파티클 수 관리
     g_shared[0].addCount = addCount;
+    // 스레드 동기화
     GroupMemoryBarrierWithGroupSync();
 
+    // 비활성 파티클 활성화
     if (g_particle[threadIndex.x].alive == 0 && g_shared[0].addCount > 0)
     {
+        // 활성화 가능한 파티클 수 감소
         while (true)
         {
             int remaining = g_shared[0].addCount;
@@ -200,6 +206,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             }
         }
 
+        // 불 파티클 연산
         if (g_particle[threadIndex.x].alive == 1)
         {
             float x = ((float) threadIndex.x / (float) maxCount) + accTime;
@@ -219,6 +226,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             g_particle[threadIndex.x].curTime = 0.f;
         }
     }
+    // 기존 파티클 업데이트
     else
     {
         g_particle[threadIndex.x].curTime += deltaTime;

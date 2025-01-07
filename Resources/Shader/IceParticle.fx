@@ -35,13 +35,13 @@ struct VS_OUT
 };
 
 // VS_MAIN
-// g_float_0    : Start Scale
-// g_float_1    : End Scale
-// g_textures[0]      : Particle Texture
+// g_float_0        : Start Scale
+// g_float_1        : End Scale
+// g_textures[0]    : Particle Texture
 
 VS_OUT VS_Main(VS_IN input)
 {
-    VS_OUT output = (VS_OUT)0.f;
+    VS_OUT output = (VS_OUT) 0.f;
 
     float3 worldPos = mul(float4(input.pos, 1.f), g_matWorld).xyz;
     worldPos += g_data[input.id].worldPos;
@@ -154,10 +154,10 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     
     // 활성화 가능한 파티클 수 관리
     g_shared[0].addCount = addCount;
-    // 동기화하여 스레드 간 데이터 충돌 방지
+    // 스레드 동기화
     GroupMemoryBarrierWithGroupSync();
 
-    // 1. 비활성 파티클 활성화
+    // 비활성 파티클 활성화
     if (g_particle[threadIndex.x].alive == 0 && g_shared[0].addCount > 0)
     {
         // 활성화 가능한 파티클 수 감소
@@ -182,7 +182,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             }
         }
 
-        // 파티클 초기화
+        // 얼음 파티클 연산
         if (g_particle[threadIndex.x].alive == 1)
         {
             float x = ((float) threadIndex.x / (float) maxCount) + accTime;
@@ -209,7 +209,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
         }
         
     }
-    // 2. 기존 파티클 업데이트
+    // 기존 파티클 업데이트
     else
     {
         // 현재 프레임의 deltaTime을 더해 파티클의 경과 시간 업데이트
