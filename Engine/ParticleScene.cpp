@@ -20,6 +20,7 @@
 #include "IceParticleSystem.h"
 #include "FireParticleSystem.h"
 #include "CataclysmParticleSystem.h"
+#include "RazerParticleSystem.h"
 
 #include "TestDragon.h"
 #include "TestPointLightScript.h"
@@ -280,7 +281,7 @@ ParticleScene::ParticleScene()
 		razerParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		// 파티클 시스템 컴포넌트 추가
-		shared_ptr<FireParticleSystem> razerParticleSystem = make_shared<FireParticleSystem>();
+		shared_ptr<RazerParticleSystem> razerParticleSystem = make_shared<RazerParticleSystem>();
 		razerParticle->AddComponent(make_shared<TestParticleScript>());
 		razerParticle->AddComponent(razerParticleSystem);
 

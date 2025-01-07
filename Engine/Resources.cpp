@@ -561,6 +561,40 @@ void Resources::CreateDefaultShader()
 		Add<Shader>(L"CataclysmComputeParticle", computeShader);
 	}
 
+	// RazerParticle
+	{
+		ShaderInfo info =
+		{
+			// 파티클
+			SHADER_TYPE::PARTICLE,
+			// 뒷면 제거
+			RASTERIZER_TYPE::CULL_BACK,
+			// 뎁스 버퍼에 기록 X
+			DEPTH_STENCIL_TYPE::LESS_NO_WRITE,
+			// 알파 블렌딩
+			BLEND_TYPE::ALPHA_BLEND,
+			// 기본 도형: 점
+			D3D_PRIMITIVE_TOPOLOGY_POINTLIST
+		};
+
+		ShaderArg arg =
+		{
+			"VS_Main",
+			"",
+			"",
+			"GS_Main",
+			"PS_Main"
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\RazerParticle.fx", info, arg);
+		Add<Shader>(L"RazerParticle", shader);
+
+		shared_ptr<Shader> computeShader = make_shared<Shader>();
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\RazerParticle.fx", "CS_Main", "cs_5_0");
+		Add<Shader>(L"RazerComputeParticle", computeShader);
+	}
+
 	// Shadow
 	{
 		ShaderInfo info =
@@ -737,6 +771,19 @@ void Resources::CreateDefaultMaterial()
 		shared_ptr<Material> computeMaterial = make_shared<Material>();
 		computeMaterial->SetShader(computShader);
 		Add<Material>(L"CataclysmComputeParticle", computeMaterial);
+	}
+
+	// RazerParticle
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"RazerParticle");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		Add<Material>(L"RazerParticle", material);
+
+		shared_ptr<Shader> computShader = GET_SINGLE(Resources)->Get<Shader>(L"RazerComputeParticle");
+		shared_ptr<Material> computeMaterial = make_shared<Material>();
+		computeMaterial->SetShader(computShader);
+		Add<Material>(L"RazerComputeParticle", computeMaterial);
 	}
 
 	// GameObject
