@@ -1,5 +1,5 @@
-#ifndef _FIREPARTICLE_FX_
-#define _FIREPARTICLE_FX_
+#ifndef _CATACLYSMPARTICLE_FX_
+#define _CATACLYSMPARTICLE_FX_
 
 #include "params.fx"
 #include "utils.fx"
@@ -116,32 +116,20 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 
 float4 PS_Main(GS_OUT input) : SV_Target
 {
-    // 파티클 수명 비율 계산
     float ratio = g_data[input.id].curTime / g_data[input.id].lifeTime;
 
-    // 노란색(초기), 빨간색(중간), 검은색(최종) 색상 정의
-    float3 startColor = float3(1.0f, 1.0f, 0.0f); // 노란색
-    float3 midColor = float3(1.0f, 0.0f, 0.0f); // 빨간색
-    float3 endColor = float3(0.0f, 0.0f, 0.0f); // 검은색
+    // 색상: 빨강 → 어두운 빨강 → 검은색
+    float3 startColor = float3(1.0f, 0.3f, 0.0f); // 밝은 빨강
+    float3 endColor = float3(0.1f, 0.0f, 0.0f); // 검은색
 
-    // 색상 전환
-    float3 color;
-    if (ratio < 0.5f)
-    {
-        // 0~0.5 구간: 노란색 -> 빨간색
-        color = lerp(startColor, midColor, ratio * 2.0f);
-    }
-    else
-    {
-        // 0.5~1.0 구간: 빨간색 -> 검은색
-        color = lerp(midColor, endColor, (ratio - 0.5f) * 2.0f);
-    }
+    float3 color = lerp(startColor, endColor, ratio);
 
-    // 텍스처 샘플링 및 색상 적용
+    // 투명도 효과
+    float alpha = 1.0f - ratio; // 서서히 투명해짐
+
     float4 texColor = g_textures[0].Sample(g_sam_0, input.uv);
-    return float4(color, 1.0f) * texColor;
+    return float4(color, alpha) * texColor;
 }
-
 
 struct ComputeShared
 {
@@ -167,8 +155,8 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
         return;
 
     // 초기 시작 범위
-    float minX = -10.0f, maxX = 10.0f;
-    float minZ = -10.0f, maxZ = 10.0f;
+    float minX = -100.0f, maxX = 100.0f;
+    float minZ = -100.0f, maxZ = 100.0f;
 
     int maxCount = g_int_0;
     int addCount = g_int_1;
@@ -206,23 +194,24 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             }
         }
 
-        // 불 파티클 연산
+        // 대격변 파티클 연산
         if (g_particle[threadIndex.x].alive == 1)
         {
             float x = ((float) threadIndex.x / (float) maxCount) + accTime;
 
-            float r1 = Rand(float2(x, accTime));
-            float r2 = Rand(float2(x * accTime, accTime));
-            float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
+            float coneRadius = 50.0f;
+            // 원뿔의 기저면 좌표
+            float angle = Rand(float2(x, accTime)) * 2.0f * 3.141592f; // 0 ~ 2π 범위 각도
+            float radius = Rand(float2(x * accTime, accTime)) * coneRadius; // 반지름 내 랜덤 값
 
+            // 파티클 초기 위치 (XZ는 고정, Y는 0에서 시작)
             g_particle[threadIndex.x].worldPos = float3(
-                lerp(minX, maxX, r1), // X: 범위 내 랜덤 값
-                0.0f, // Y: 고정값
-                lerp(minZ, maxZ, r3) // Z: 범위 내 랜덤 값
+                radius * cos(angle), // X: 기저면 원형 좌표
+                0.0f, // Y: 시작 높이
+                radius * sin(angle) // Z: 기저면 원형 좌표
             );
 
-            g_particle[threadIndex.x].worldDir = normalize(float3(r1 - 0.5f, 1.0f, r3 - 0.5f));
-            g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * r2) + minLifeTime;
+            g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * Rand(float2(x, accTime))) + minLifeTime;
             g_particle[threadIndex.x].curTime = 0.f;
         }
     }
@@ -235,10 +224,11 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             g_particle[threadIndex.x].alive = 0;
             return;
         }
-
+        
         float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
-        float speed = (maxSpeed - minSpeed) * ratio + minSpeed;
-        g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
+        float coneHeight = 100.0f;
+        // Y축 이동: 부드럽게 올라갔다 내려오기
+        g_particle[threadIndex.x].worldPos.y = sin(3.141592f * ratio) * coneHeight;
     }
 }
 

@@ -1,19 +1,19 @@
 #include "pch.h"
-#include "FireParticleSystem.h"
+#include "CataclysmParticleSystem.h"
 
-FireParticleSystem::FireParticleSystem() : BaseParticleSystem()
+CataclysmParticleSystem::CataclysmParticleSystem() : BaseParticleSystem()
 {
-	SetParticleInterval(0.01f, 0.0f);
+	SetParticleInterval(0.001f, 0.0f);
 	SetParticleLifeTime(3.0f, 5.0f);
-	SetParticleSpeed(50.0f, 30.0f);
-	SetParticleScale(10.0f, 50.0f);
-	SetDuration(2.0f);
-	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"FireParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"FireComputeParticle")->Clone());
-	shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"FireParticleTexture", L"..\\Resources\\Texture\\Particle\\fire.png");
+	SetParticleSpeed(300.0f, 200.0f);
+	SetParticleScale(5.0f, 5.0f);
+	SetDuration(1.0f);
+	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"CataclysmParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"CataclysmComputeParticle")->Clone());
+	shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"CataclysmParticleTexture", L"..\\Resources\\Texture\\Particle\\ston.png");
 	SetParticleTexture(texture);
 }
 
-void FireParticleSystem::FinalUpdate()
+void CataclysmParticleSystem::FinalUpdate()
 {
 	BaseParticleSystem::FinalUpdate();
 }

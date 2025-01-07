@@ -204,6 +204,9 @@
     <ClCompile Include="FireParticleSystem.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
+    <ClCompile Include="CataclysmParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -377,6 +380,9 @@
     <ClInclude Include="FireParticleSystem.h">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClInclude>
+    <ClInclude Include="CataclysmParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -424,6 +430,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\FireParticle.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\CataclysmParticle.fx">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

@@ -19,6 +19,7 @@
 #include "BaseParticleSystem.h"
 #include "IceParticleSystem.h"
 #include "FireParticleSystem.h"
+#include "CataclysmParticleSystem.h"
 
 #include "TestDragon.h"
 #include "TestPointLightScript.h"
@@ -207,6 +208,30 @@ ParticleScene::ParticleScene()
 
 		// 파티클 시스템 컴포넌트 추가
 		shared_ptr<FireParticleSystem> fireParticleSystem = make_shared<FireParticleSystem>();
+		fireParticle->AddComponent(make_shared<TestParticleScript>());
+		fireParticle->AddComponent(fireParticleSystem);
+
+		activeScene->AddGameObject(fireParticle);
+	}
+#pragma endregion
+
+// 불 파티클
+#pragma region CataclysmParticle
+	{
+		// 파티클 오브젝트 생성
+		shared_ptr<GameObject> fireParticle = make_shared<GameObject>();
+		wstring fireParticleName = L"CataclysmParticle";
+		fireParticle->SetName(fireParticleName);
+		fireParticle->SetCheckFrustum(true);
+		fireParticle->SetStatic(false);
+
+		// 좌표 컴포넌트 추가
+		fireParticle->AddComponent(make_shared<Transform>());
+		fireParticle->GetTransform()->SetLocalPosition(Vec3(-50.f, 100.f, 200.f));
+		fireParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+
+		// 파티클 시스템 컴포넌트 추가
+		shared_ptr<CataclysmParticleSystem> fireParticleSystem = make_shared<CataclysmParticleSystem>();
 		fireParticle->AddComponent(make_shared<TestParticleScript>());
 		fireParticle->AddComponent(fireParticleSystem);
 

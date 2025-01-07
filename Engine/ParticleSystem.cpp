@@ -39,7 +39,8 @@ void ParticleSystem::FinalUpdate()
 		if (_createInterval < _accTime)
 		{
 			_accTime -= _createInterval;
-			add = 1; // 새 파티클 생성
+			// 파티클을 10개씩 생성
+			add = 10;
 		}
 	}
 
