@@ -127,7 +127,7 @@ float4 PS_Main(GS_OUT input) : SV_Target
     float3 color = lerp(startColor, endColor, ratio);
 
     // 투명도 효과
-    float alpha = 1.0f - ratio; // 서서히 투명해짐
+    float alpha = 0.8f - ratio; // 서서히 투명해짐
 
     float4 texColor = g_textures[0].Sample(g_sam_0, input.uv);
     return float4(color, alpha) * texColor;
@@ -222,6 +222,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     // 기존 파티클 업데이트
     else
     {
+        float coneHeight = 100.0f;
         g_particle[threadIndex.x].curTime += deltaTime;
         if (g_particle[threadIndex.x].lifeTime < g_particle[threadIndex.x].curTime)
         {
@@ -230,9 +231,18 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
         }
         
         float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
-        float coneHeight = 100.0f;
-        // Y축 이동: 부드럽게 올라갔다 내려오기
-        g_particle[threadIndex.x].worldPos.y = sin(PI * ratio) * coneHeight;
+        
+        if (ratio < 0.5f)
+        {
+            // 올라가는 구간: 기존 속도
+            g_particle[threadIndex.x].worldPos.y = sin(PI * ratio) * coneHeight;
+        }
+        else
+        {
+            // 내려오는 구간: 속도 가속
+            float descendRatio = (ratio - 0.5f) / 0.1f;
+            g_particle[threadIndex.x].worldPos.y = sin(PI * 0.5f) * coneHeight * (1.0f - descendRatio);
+        }
     }
 }
 
