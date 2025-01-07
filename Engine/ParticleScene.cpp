@@ -215,27 +215,28 @@ ParticleScene::ParticleScene()
 	}
 #pragma endregion
 
-// 불 파티클
+// 대격변 파티클
 #pragma region CataclysmParticle
 	{
 		// 파티클 오브젝트 생성
-		shared_ptr<GameObject> fireParticle = make_shared<GameObject>();
-		wstring fireParticleName = L"CataclysmParticle";
-		fireParticle->SetName(fireParticleName);
-		fireParticle->SetCheckFrustum(true);
-		fireParticle->SetStatic(false);
+		shared_ptr<GameObject> cataclysmParticle = make_shared<GameObject>();
+		wstring cataclysmParticleName = L"CataclysmParticle";
+		cataclysmParticle->SetName(cataclysmParticleName);
+		cataclysmParticle->SetCheckFrustum(true);
+		cataclysmParticle->SetStatic(false);
 
 		// 좌표 컴포넌트 추가
-		fireParticle->AddComponent(make_shared<Transform>());
-		fireParticle->GetTransform()->SetLocalPosition(Vec3(-50.f, 100.f, 200.f));
-		fireParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+		cataclysmParticle->AddComponent(make_shared<Transform>());
+		cataclysmParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 200.f));
+		cataclysmParticle->GetTransform()->SetLocalRotation(Vec3(0.0f, 90.0f, 0.0f));
+		cataclysmParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		// 파티클 시스템 컴포넌트 추가
 		shared_ptr<CataclysmParticleSystem> fireParticleSystem = make_shared<CataclysmParticleSystem>();
-		fireParticle->AddComponent(make_shared<TestParticleScript>());
-		fireParticle->AddComponent(fireParticleSystem);
+		cataclysmParticle->AddComponent(make_shared<TestParticleScript>());
+		cataclysmParticle->AddComponent(fireParticleSystem);
 
-		activeScene->AddGameObject(fireParticle);
+		activeScene->AddGameObject(cataclysmParticle);
 	}
 #pragma endregion
 }

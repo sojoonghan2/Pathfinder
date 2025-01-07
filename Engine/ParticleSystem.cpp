@@ -40,7 +40,7 @@ void ParticleSystem::FinalUpdate()
 		{
 			_accTime -= _createInterval;
 			// 파티클을 10개씩 생성
-			add = 10;
+			add = _onceParticleNum;
 		}
 	}
 

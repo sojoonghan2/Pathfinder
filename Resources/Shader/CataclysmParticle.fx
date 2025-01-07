@@ -4,6 +4,8 @@
 #include "params.fx"
 #include "utils.fx"
 
+#define PI 3.141592
+
 struct Particle
 {
     float3  worldPos;
@@ -199,9 +201,11 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
         {
             float x = ((float) threadIndex.x / (float) maxCount) + accTime;
 
-            float coneRadius = 50.0f;
-            // 원뿔의 기저면 좌표
-            float angle = Rand(float2(x, accTime)) * 2.0f * 3.141592f; // 0 ~ 2π 범위 각도
+            // 범위
+            float coneRadius = 100.0f;
+            
+            // 기저면 좌표
+            float angle = Rand(float2(x, accTime)) * 5.0f * PI * -1; // 0 ~ 2π 범위 각도
             float radius = Rand(float2(x * accTime, accTime)) * coneRadius; // 반지름 내 랜덤 값
 
             // 파티클 초기 위치 (XZ는 고정, Y는 0에서 시작)
@@ -228,7 +232,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
         float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
         float coneHeight = 100.0f;
         // Y축 이동: 부드럽게 올라갔다 내려오기
-        g_particle[threadIndex.x].worldPos.y = sin(3.141592f * ratio) * coneHeight;
+        g_particle[threadIndex.x].worldPos.y = sin(PI * ratio) * coneHeight;
     }
 }
 

@@ -57,6 +57,8 @@ public:
 	void SetDuration(float duration) { _duration = duration; }
 	// 머터리얼
 	void SetMaterial(shared_ptr<Material> material, shared_ptr<Material> computeMaterial);
+	// 한 번에 새성되는 파티클 양
+	void SetOnceParticleNum(int num) { _onceParticleNum = num; }
 	
 	void ParticleStart();
 	void ParticleStop();
@@ -103,4 +105,7 @@ private:
 	float				_totalTime = 0.0f;
 	// 파티클 지속 시간(-1은 무한)
 	float				_duration = -1.0f;
+
+	// 한 번에 생성되는 파티클의 양
+	int					_onceParticleNum = 1;
 };
