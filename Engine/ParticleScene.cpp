@@ -241,7 +241,7 @@ ParticleScene::ParticleScene()
 	}
 #pragma endregion
 
-	// 불 파티클
+// 불 파티클
 #pragma region FireParticle
 	{
 		// 파티클 오브젝트 생성
@@ -277,7 +277,7 @@ ParticleScene::ParticleScene()
 
 		// 좌표 컴포넌트 추가
 		razerParticle->AddComponent(make_shared<Transform>());
-		razerParticle->GetTransform()->SetLocalPosition(Vec3(-200.f, 100.f, 200.f));
+		razerParticle->GetTransform()->SetLocalPosition(Vec3(-400.f, 100.f, 200.f));
 		razerParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		// 파티클 시스템 컴포넌트 추가
