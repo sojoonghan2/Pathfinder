@@ -207,9 +207,6 @@
     <ClCompile Include="CataclysmParticleSystem.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
-    <ClCompile Include="RazerParticleSystem.cpp">
-      <Filter>Object\Component\ParticleSystem</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -386,9 +383,6 @@
     <ClInclude Include="CataclysmParticleSystem.h">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClInclude>
-    <ClInclude Include="RazerParticleSystem.h">
-      <Filter>Object\Component\ParticleSystem</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -439,9 +433,6 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\CataclysmParticle.fx">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\RazerParticle.fx">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

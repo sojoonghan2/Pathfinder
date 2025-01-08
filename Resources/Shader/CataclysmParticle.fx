@@ -200,48 +200,60 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
         if (g_particle[threadIndex.x].alive == 1)
         {
             float x = ((float) threadIndex.x / (float) maxCount) + accTime;
+            // 삼각형 꼭짓점 정의
+            float2 A = float2(-300.0f, 500.0f);
+            float2 B = float2(300.0f, 500.0f);
+            float2 C = float2(0.0f, -50.0f);
 
-            // 범위
-            float coneRadius = 100.0f;
+            // 균일한 삼각형 분포를 위한 수정된 바리센트릭 좌표 생성
+            float r1 = Rand(float2(x, accTime));
+            float r2 = Rand(float2(x * accTime, accTime));
+    
+            // 수정된 바리센트릭 좌표 계산
+            float u = 1.0f - sqrt(r1);
+            float v = r2 * sqrt(r1);
+            float w = 1.0f - u - v;
+    
+            // 삼각형 내부의 랜덤 좌표 계산
+            float2 randPosition = u * A + v * B + w * C;
+    
+            g_particle[threadIndex.x].worldPos = float3(randPosition.x, 0.0f, randPosition.y);
             
-            // 기저면 좌표
-            float angle = Rand(float2(x, accTime)) * 5.0f * PI * -1; // 0 ~ 2π 범위 각도
-            float radius = Rand(float2(x * accTime, accTime)) * coneRadius; // 반지름 내 랜덤 값
-
-            // 파티클 초기 위치 (XZ는 고정, Y는 0에서 시작)
-            g_particle[threadIndex.x].worldPos = float3(
-                radius * cos(angle), // X: 기저면 원형 좌표
-                0.0f, // Y: 시작 높이
-                radius * sin(angle) // Z: 기저면 원형 좌표
-            );
-
-            g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * Rand(float2(x, accTime))) + minLifeTime;
+            // 위치와 독립적인 수명 설정
+            float randomSeed = Rand(float2(accTime, threadIndex.x));
+            g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * randomSeed) + minLifeTime;
             g_particle[threadIndex.x].curTime = 0.f;
         }
     }
     // 기존 파티클 업데이트
     else
     {
-        float coneHeight = 100.0f;
+        // 현재 시간 업데이트
         g_particle[threadIndex.x].curTime += deltaTime;
-        if (g_particle[threadIndex.x].lifeTime < g_particle[threadIndex.x].curTime)
+        
+        // 진행률 계산 (0~1 사이 값)
+        float progress = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
+        
+        // Z축 속도 계산
+        float ySpeed;
+        if (progress < 0.03f)
+        {
+            // 처음에는 빠르게 -z 방향으로 이동
+            ySpeed = 300.0f; // 빠른 속도, 값은 조정 가능
+        }
+        else if (progress > 0.2f)
+        {
+            // 0.5 이후에는 천천히 +z 방향으로 이동
+            ySpeed = -50.0f; // 느린 속도, 값은 조정 가능
+        }
+        
+        // 위치 업데이트
+        g_particle[threadIndex.x].worldPos.y += ySpeed * deltaTime;
+        
+        // 수명이 다한 파티클 제거
+        if (g_particle[threadIndex.x].curTime >= g_particle[threadIndex.x].lifeTime)
         {
             g_particle[threadIndex.x].alive = 0;
-            return;
-        }
-        
-        float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
-        
-        if (ratio < 0.5f)
-        {
-            // 올라가는 구간: 기존 속도
-            g_particle[threadIndex.x].worldPos.y = sin(PI * ratio) * coneHeight;
-        }
-        else
-        {
-            // 내려오는 구간: 속도 가속
-            float descendRatio = (ratio - 0.5f) / 0.1f;
-            g_particle[threadIndex.x].worldPos.y = sin(PI * 0.5f) * coneHeight * (1.0f - descendRatio);
         }
     }
 }
