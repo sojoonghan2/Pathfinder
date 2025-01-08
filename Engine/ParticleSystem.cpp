@@ -39,8 +39,12 @@ void ParticleSystem::FinalUpdate()
 		if (_createInterval < _accTime)
 		{
 			_accTime -= _createInterval;
+<<<<<<< HEAD
 			// ÆÄÆ¼Å¬À» 10°³¾¿ »ı¼º
 			add = _onceParticleNum;
+=======
+			add = 1; // »õ ÆÄÆ¼Å¬ »ı¼º
+>>>>>>> parent of cbe179b (ëŒ€ê²©ë³€ íŒŒí‹°í´ ì¶”ê°€)
 		}
 	}
 

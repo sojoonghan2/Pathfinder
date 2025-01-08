@@ -19,7 +19,6 @@
 #include "BaseParticleSystem.h"
 #include "IceParticleSystem.h"
 #include "FireParticleSystem.h"
-#include "CataclysmParticleSystem.h"
 
 #include "TestDragon.h"
 #include "TestPointLightScript.h"
@@ -214,6 +213,7 @@ ParticleScene::ParticleScene()
 		activeScene->AddGameObject(fireParticle);
 	}
 #pragma endregion
+<<<<<<< HEAD
 
 // ��ݺ� ��ƼŬ
 #pragma region CataclysmParticle
@@ -287,6 +287,8 @@ ParticleScene::ParticleScene()
 		activeScene->AddGameObject(razerParticle);
 	}
 #pragma endregion
+=======
+>>>>>>> parent of cbe179b (대격변 파티클 추가)
 }
 
 ParticleScene::~ParticleScene() {}

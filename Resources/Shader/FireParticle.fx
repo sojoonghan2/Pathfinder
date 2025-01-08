@@ -136,13 +136,10 @@ float4 PS_Main(GS_OUT input) : SV_Target
         // 0.5~1.0 구간: 빨간색 -> 검은색
         color = lerp(midColor, endColor, (ratio - 0.5f) * 2.0f);
     }
-    
-    // 투명도 효과
-    float alpha = 1.0f - ratio; // 서서히 투명해짐
-    
+
     // 텍스처 샘플링 및 색상 적용
     float4 texColor = g_textures[0].Sample(g_sam_0, input.uv);
-    return float4(color, alpha) * texColor;
+    return float4(color, 1.0f) * texColor;
 }
 
 

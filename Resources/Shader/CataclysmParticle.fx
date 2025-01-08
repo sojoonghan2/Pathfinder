@@ -1,5 +1,5 @@
-#ifndef _CATACLYSMPARTICLE_FX_
-#define _CATACLYSMPARTICLE_FX_
+#ifndef _FIREPARTICLE_FX_
+#define _FIREPARTICLE_FX_
 
 #include "params.fx"
 #include "utils.fx"
@@ -118,20 +118,39 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 
 float4 PS_Main(GS_OUT input) : SV_Target
 {
+    // ÆÄÆ¼Å¬ ¼ö¸í ºñÀ² °è»ê
     float ratio = g_data[input.id].curTime / g_data[input.id].lifeTime;
 
-    // »ö»ó: »¡°­ ¡æ ¾îµÎ¿î »¡°­ ¡æ °ËÀº»ö
-    float3 startColor = float3(1.0f, 0.3f, 0.0f); // ¹àÀº »¡°­
-    float3 endColor = float3(0.1f, 0.0f, 0.0f); // °ËÀº»ö
+    // ³ë¶õ»ö(ÃÊ±â), »¡°£»ö(Áß°£), °ËÀº»ö(ÃÖÁ¾) »ö»ó Á¤ÀÇ
+    float3 startColor = float3(1.0f, 1.0f, 0.0f); // ³ë¶õ»ö
+    float3 midColor = float3(1.0f, 0.0f, 0.0f); // »¡°£»ö
+    float3 endColor = float3(0.0f, 0.0f, 0.0f); // °ËÀº»ö
 
+<<<<<<< HEAD
     float3 color = lerp(startColor, endColor, ratio);
 
     // Åõ¸íµµ È¿°ú
     float alpha = 0.8f - ratio; // ¼­¼­È÷ Åõ¸íÇØÁü
+=======
+    // »ö»ó ÀüÈ¯
+    float3 color;
+    if (ratio < 0.5f)
+    {
+        // 0~0.5 ±¸°£: ³ë¶õ»ö -> »¡°£»ö
+        color = lerp(startColor, midColor, ratio * 2.0f);
+    }
+    else
+    {
+        // 0.5~1.0 ±¸°£: »¡°£»ö -> °ËÀº»ö
+        color = lerp(midColor, endColor, (ratio - 0.5f) * 2.0f);
+    }
+>>>>>>> parent of cbe179b (ëŒ€ê²©ë³€ íŒŒí‹°í´ ì¶”ê°€)
 
+    // ÅØ½ºÃ³ »ùÇÃ¸µ ¹× »ö»ó Àû¿ë
     float4 texColor = g_textures[0].Sample(g_sam_0, input.uv);
-    return float4(color, alpha) * texColor;
+    return float4(color, 1.0f) * texColor;
 }
+
 
 struct ComputeShared
 {
@@ -157,8 +176,8 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
         return;
 
     // ÃÊ±â ½ÃÀÛ ¹üÀ§
-    float minX = -100.0f, maxX = 100.0f;
-    float minZ = -100.0f, maxZ = 100.0f;
+    float minX = -10.0f, maxX = 10.0f;
+    float minZ = -10.0f, maxZ = 10.0f;
 
     int maxCount = g_int_0;
     int addCount = g_int_1;
@@ -196,7 +215,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             }
         }
 
-        // ´ë°İº¯ ÆÄÆ¼Å¬ ¿¬»ê
+        // ºÒ ÆÄÆ¼Å¬ ¿¬»ê
         if (g_particle[threadIndex.x].alive == 1)
         {
             float x = ((float) threadIndex.x / (float) maxCount) + accTime;
@@ -205,6 +224,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             float2 B = float2(300.0f, 500.0f);
             float2 C = float2(0.0f, -50.0f);
 
+<<<<<<< HEAD
             // ±ÕÀÏÇÑ »ï°¢Çü ºĞÆ÷¸¦ À§ÇÑ ¼öÁ¤µÈ ¹Ù¸®¼¾Æ®¸¯ ÁÂÇ¥ »ı¼º
             float r1 = Rand(float2(x, accTime));
             float r2 = Rand(float2(x * accTime, accTime));
@@ -222,6 +242,20 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             // À§Ä¡¿Í µ¶¸³ÀûÀÎ ¼ö¸í ¼³Á¤
             float randomSeed = Rand(float2(accTime, threadIndex.x));
             g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * randomSeed) + minLifeTime;
+=======
+            float r1 = Rand(float2(x, accTime));
+            float r2 = Rand(float2(x * accTime, accTime));
+            float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
+
+            g_particle[threadIndex.x].worldPos = float3(
+                lerp(minX, maxX, r1), // X: ¹üÀ§ ³» ·£´ı °ª
+                0.0f, // Y: °íÁ¤°ª
+                lerp(minZ, maxZ, r3) // Z: ¹üÀ§ ³» ·£´ı °ª
+            );
+
+            g_particle[threadIndex.x].worldDir = normalize(float3(r1 - 0.5f, 1.0f, r3 - 0.5f));
+            g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * r2) + minLifeTime;
+>>>>>>> parent of cbe179b (ëŒ€ê²©ë³€ íŒŒí‹°í´ ì¶”ê°€)
             g_particle[threadIndex.x].curTime = 0.f;
         }
     }
@@ -246,6 +280,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             // 0.5 ÀÌÈÄ¿¡´Â ÃµÃµÈ÷ +z ¹æÇâÀ¸·Î ÀÌµ¿
             ySpeed = -50.0f; // ´À¸° ¼Óµµ, °ªÀº Á¶Á¤ °¡´É
         }
+<<<<<<< HEAD
         
         // À§Ä¡ ¾÷µ¥ÀÌÆ®
         g_particle[threadIndex.x].worldPos.y += ySpeed * deltaTime;
@@ -255,6 +290,12 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
         {
             g_particle[threadIndex.x].alive = 0;
         }
+=======
+
+        float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
+        float speed = (maxSpeed - minSpeed) * ratio + minSpeed;
+        g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
+>>>>>>> parent of cbe179b (ëŒ€ê²©ë³€ íŒŒí‹°í´ ì¶”ê°€)
     }
 }
 
