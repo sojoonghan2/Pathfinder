@@ -121,8 +121,8 @@ float4 PS_Main(GS_OUT input) : SV_Target
     float ratio = g_data[input.id].curTime / g_data[input.id].lifeTime;
 
     // »ö»ó: »¡°­ ¡æ ¾îµÎ¿î »¡°­ ¡æ °ËÀº»ö
-    float3 startColor = float3(1.0f, 0.3f, 0.0f); // ¹àÀº »¡°­
-    float3 endColor = float3(0.1f, 0.0f, 0.0f); // °ËÀº»ö
+    float3 startColor = float3(1.0f, 1.0f, 1.0f); // ¹àÀº »¡°­
+    float3 endColor = float3(0.0f, 0.0f, 0.0f); // °ËÀº»ö
 
     float3 color = lerp(startColor, endColor, ratio);
 

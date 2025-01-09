@@ -118,14 +118,30 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 
 float4 PS_Main(GS_OUT input) : SV_Target
 {
-    float ratio = g_data[input.id].curTime / g_data[input.id].lifeTime;
-    
-    // 투명도 효과
-    float alpha = 1.0f - ratio; // 서서히 투명해짐
+    // 첫 번째 텍스처(g_textures[0]) 샘플링
+    float4 baseTexColor = g_textures[0].Sample(g_sam_0, input.uv);
 
-    float4 texColor = g_textures[0].Sample(g_sam_0, input.uv);
-    
-    return g_textures[0].Sample(g_sam_0, input.uv) * alpha;
+    // 두 번째 텍스처(g_textures[1]) 샘플링
+    float4 overlayTexColor = g_textures[1].Sample(g_sam_0, input.uv);
+
+    // 중심 거리 계산
+    float2 center = float2(0.5f, 0.5f);
+    float dist = distance(input.uv, center);
+
+    // 거리 기반 알파값 조정 (중심에서 멀수록 투명)
+    float overlayAlpha = saturate(1.0f - dist * 2.0f);
+
+    // 파티클 수명 기반 알파값
+    float ratio = g_data[input.id].curTime / g_data[input.id].lifeTime;
+    float lifeAlpha = 1.0f - ratio;
+
+    // 최종 알파값
+    float finalAlpha = overlayAlpha * lifeAlpha;
+
+    // 텍스처 혼합
+    float4 finalColor = lerp(baseTexColor, overlayTexColor, finalAlpha);
+
+    return finalColor;
 }
 
 struct ComputeShared
@@ -194,62 +210,53 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
         // 오버 드라이브 파티클 연산
         if (g_particle[threadIndex.x].alive == 1)
         {
+            // 랜덤 시드 생성
             float x = ((float) threadIndex.x / (float) maxCount) + accTime;
-            // 삼각형 꼭짓점 정의
-            float2 A = float2(-300.0f, 500.0f);
-            float2 B = float2(300.0f, 500.0f);
-            float2 C = float2(0.0f, -50.0f);
 
-            // 균일한 삼각형 분포를 위한 수정된 바리센트릭 좌표 생성
+            // 랜덤 값 생성
             float r1 = Rand(float2(x, accTime));
             float r2 = Rand(float2(x * accTime, accTime));
-    
-            // 수정된 바리센트릭 좌표 계산
-            float u = 1.0f - sqrt(r1);
-            float v = r2 * sqrt(r1);
-            float w = 1.0f - u - v;
-    
-            // 삼각형 내부의 랜덤 좌표 계산
-            float2 randPosition = u * A + v * B + w * C;
-    
-            g_particle[threadIndex.x].worldPos = float3(randPosition.x, 0.0f, randPosition.y);
-            
-            // 위치와 독립적인 수명 설정
-            float randomSeed = Rand(float2(accTime, threadIndex.x));
-            g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * randomSeed) + minLifeTime;
-            g_particle[threadIndex.x].curTime = 0.f;
+            float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
+
+            // 초기 위치 설정 (0, 0 기준 원형 범위 내 랜덤)
+            float radius = 200.0f; // 원 범위 반지름
+            float angle = r1 * 2.0f * PI; // 0~2π 랜덤 각도
+            g_particle[threadIndex.x].worldPos = float3(
+                radius * cos(angle), // X 좌표
+                0.0f, // Y 좌표 (시작점 고정)
+                radius * sin(angle) // Z 좌표
+            );
+
+            g_particle[threadIndex.x].worldDir = float3(0.0f, 1.0f, 0.0f);
+            g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * r2) + minLifeTime;
+            g_particle[threadIndex.x].curTime = 0.0f; // 경과 시간 초기화
         }
     }
     // 기존 파티클 업데이트
     else
     {
-        // 현재 시간 업데이트
+        // 현재 프레임의 deltaTime을 더해 경과 시간 업데이트
         g_particle[threadIndex.x].curTime += deltaTime;
-        
-        // 진행률 계산 (0~1 사이 값)
-        float progress = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
-        
-        // Z축 속도 계산
-        float ySpeed;
-        if (progress < 0.03f)
-        {
-            // 처음에는 빠르게 -z 방향으로 이동
-            ySpeed = 300.0f; // 빠른 속도, 값은 조정 가능
-        }
-        else if (progress > 0.2f)
-        {
-            // 0.5 이후에는 천천히 +z 방향으로 이동
-            ySpeed = -50.0f; // 느린 속도, 값은 조정 가능
-        }
-        
-        // 위치 업데이트
-        g_particle[threadIndex.x].worldPos.y += ySpeed * deltaTime;
-        
-        // 수명이 다한 파티클 제거
-        if (g_particle[threadIndex.x].curTime >= g_particle[threadIndex.x].lifeTime)
+
+        // 수명 종료 시 파티클 비활성화
+        if (g_particle[threadIndex.x].lifeTime < g_particle[threadIndex.x].curTime)
         {
             g_particle[threadIndex.x].alive = 0;
+            return;
         }
+
+        // 현재 수명 진행률 계산
+        float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
+
+        // 이동 속도 계산 (수명 비율에 따라 점점 느려짐)
+        float speed = (maxSpeed - minSpeed) * (1.0f - ratio) + minSpeed;
+
+        // 위치 업데이트
+        g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
+
+        // Y축 움직임: sin 함수를 사용해 상승 후 하강
+        float amplitude = 1.0f; // Y축 최대 진폭
+        g_particle[threadIndex.x].worldPos.y += sin(PI * ratio) * amplitude * deltaTime;
     }
 }
 
