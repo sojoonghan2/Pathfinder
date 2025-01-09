@@ -21,6 +21,7 @@
 #include "FireParticleSystem.h"
 #include "CataclysmParticleSystem.h"
 #include "RazerParticleSystem.h"
+#include "OverDriveParticleSystem.h"
 
 #include "TestDragon.h"
 #include "TestPointLightScript.h"
@@ -180,7 +181,7 @@ ParticleScene::ParticleScene()
 
 		// 좌표 컴포넌트 추가
 		iceParticle->AddComponent(make_shared<Transform>());
-		iceParticle->GetTransform()->SetLocalPosition(Vec3(-200.f, 100.f, -200.f));
+		iceParticle->GetTransform()->SetLocalPosition(Vec3(-400.f, 100.f, -400.f));
 		iceParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		// 파티클 시스템 컴포넌트 추가
@@ -204,7 +205,7 @@ ParticleScene::ParticleScene()
 
 		// 좌표 컴포넌트 추가
 		fireParticle->AddComponent(make_shared<Transform>());
-		fireParticle->GetTransform()->SetLocalPosition(Vec3(200.f, 100.f, 200.f));
+		fireParticle->GetTransform()->SetLocalPosition(Vec3(400.f, 100.f, -400.f));
 		fireParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		// 파티클 시스템 컴포넌트 추가
@@ -228,7 +229,7 @@ ParticleScene::ParticleScene()
 
 		// 좌표 컴포넌트 추가
 		cataclysmParticle->AddComponent(make_shared<Transform>());
-		cataclysmParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 200.f));
+		cataclysmParticle->GetTransform()->SetLocalPosition(Vec3(0.f, -100.f, 400.f));
 		cataclysmParticle->GetTransform()->SetLocalRotation(Vec3(0.0f, 90.0f, 0.0f));
 		cataclysmParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
@@ -238,30 +239,6 @@ ParticleScene::ParticleScene()
 		cataclysmParticle->AddComponent(fireParticleSystem);
 
 		activeScene->AddGameObject(cataclysmParticle);
-	}
-#pragma endregion
-
-	// 불 파티클
-#pragma region FireParticle
-	{
-		// 파티클 오브젝트 생성
-		shared_ptr<GameObject> fireParticle = make_shared<GameObject>();
-		wstring fireParticleName = L"FireParticle";
-		fireParticle->SetName(fireParticleName);
-		fireParticle->SetCheckFrustum(true);
-		fireParticle->SetStatic(false);
-
-		// 좌표 컴포넌트 추가
-		fireParticle->AddComponent(make_shared<Transform>());
-		fireParticle->GetTransform()->SetLocalPosition(Vec3(200.f, 100.f, 200.f));
-		fireParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
-
-		// 파티클 시스템 컴포넌트 추가
-		shared_ptr<FireParticleSystem> fireParticleSystem = make_shared<FireParticleSystem>();
-		fireParticle->AddComponent(make_shared<TestParticleScript>());
-		fireParticle->AddComponent(fireParticleSystem);
-
-		activeScene->AddGameObject(fireParticle);
 	}
 #pragma endregion
 
@@ -277,7 +254,7 @@ ParticleScene::ParticleScene()
 
 		// 좌표 컴포넌트 추가
 		razerParticle->AddComponent(make_shared<Transform>());
-		razerParticle->GetTransform()->SetLocalPosition(Vec3(-200.f, 100.f, 200.f));
+		razerParticle->GetTransform()->SetLocalPosition(Vec3(-400.f, 100.f, 400.f));
 		razerParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		// 파티클 시스템 컴포넌트 추가
@@ -286,6 +263,30 @@ ParticleScene::ParticleScene()
 		razerParticle->AddComponent(razerParticleSystem);
 
 		activeScene->AddGameObject(razerParticle);
+	}
+#pragma endregion
+
+// 오버 드라이브 파티클
+#pragma region OverDriveParticle
+	{
+		// 파티클 오브젝트 생성
+		shared_ptr<GameObject> overDriveParticle = make_shared<GameObject>();
+		wstring overDriveParticleName = L"OverDriveParticle";
+		overDriveParticle->SetName(overDriveParticleName);
+		overDriveParticle->SetCheckFrustum(true);
+		overDriveParticle->SetStatic(false);
+
+		// 좌표 컴포넌트 추가
+		overDriveParticle->AddComponent(make_shared<Transform>());
+		overDriveParticle->GetTransform()->SetLocalPosition(Vec3(400.f, -100.f, 400.f));
+		overDriveParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+
+		// 파티클 시스템 컴포넌트 추가
+		shared_ptr<OverDriveParticleSystem> overDriveParticleSystem = make_shared<OverDriveParticleSystem>();
+		overDriveParticle->AddComponent(make_shared<TestParticleScript>());
+		overDriveParticle->AddComponent(overDriveParticleSystem);
+
+		activeScene->AddGameObject(overDriveParticle);
 	}
 #pragma endregion
 }

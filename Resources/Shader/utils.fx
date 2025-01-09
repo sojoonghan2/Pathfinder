@@ -75,10 +75,10 @@ LightColor CalculateLightColor(int lightIndex, float3 viewNormal, float3 viewPos
     return color;
 }
 
-// 2D 좌표를 입력받아 의사난수 생성(0.5 ~ 1.0)
+// 2D 좌표를 입력받아 의사난수 생성
 float Rand(float2 co)
 {
-    return 0.5 + (frac(sin(dot(co.xy, float2(12.9898, 78.233))) * 43758.5453)) * 0.5;
+    return frac(sin(dot(co.xy, float2(12.9898, 78.233))) * 43758.5453);
 }
 
 // LOD를 위한 테셀레이션 레벨 계산

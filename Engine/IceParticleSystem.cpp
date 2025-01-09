@@ -11,7 +11,7 @@ IceParticleSystem::IceParticleSystem() : BaseParticleSystem()
 	SetOnceParticleNum(5);
 	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"IceParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"IceComputeParticle")->Clone());
 	shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"IceParticleTexture", L"..\\Resources\\Texture\\Particle\\ice1.png");
-	SetParticleTexture(texture);
+	SetParticleTexture(0, texture);
 }
 
 void IceParticleSystem::FinalUpdate()

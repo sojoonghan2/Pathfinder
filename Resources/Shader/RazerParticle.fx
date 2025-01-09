@@ -116,7 +116,21 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 
 float4 PS_Main(GS_OUT input) : SV_Target
 {
-    return g_textures[0].Sample(g_sam_0, input.uv);
+    // 텍스처 색상 샘플링
+    float4 texColor = g_textures[0].Sample(g_sam_0, input.uv);
+
+    // UV 좌표에서 중심(0.5, 0.5)까지의 거리 계산
+    float2 center = float2(0.5f, 0.5f);
+    float dist = distance(input.uv, center);
+
+    // 거리 기반 알파값 계산 (멀어질수록 알파값 감소)
+    // dist가 0일 때 알파값 1, dist가 0.5 이상이면 알파값 0
+    float alpha = saturate(1.0f - dist * 2.0f);
+
+    // 텍스처 색상에 알파값 적용
+    texColor.a *= alpha;
+
+    return texColor;
 }
 
 struct ComputeShared
@@ -219,10 +233,31 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 
         // 현재 경과 시간 비율
         float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
+
         // 수명 비율에 따라 속도 결정
         float speed = (maxSpeed - minSpeed) * ratio + minSpeed;
+
+        // 현재 위치 업데이트
         g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
+
+        // Z축 기준 회전 각도 계산 (시간에 따라 회전)
+        float rotationAngle = g_particle[threadIndex.x].curTime * 10.0f; // 각도 = 시간 * 속도 (radians)
+
+        // Z축 회전 변환 행렬
+        float cosTheta = cos(rotationAngle);
+        float sinTheta = sin(rotationAngle);
+
+        // 원래 위치
+        float3 originalPos = g_particle[threadIndex.x].worldPos;
+
+        // Z축 회전을 적용하여 새 위치 계산
+        g_particle[threadIndex.x].worldPos = float3(
+        cosTheta * originalPos.x - sinTheta * originalPos.y, // X축 회전
+        sinTheta * originalPos.x + cosTheta * originalPos.y, // Y축 회전
+        originalPos.z                                        // Z축 고정
+    );
     }
+
 }
 
 #endif

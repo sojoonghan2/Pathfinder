@@ -127,9 +127,9 @@ void ParticleSystem::SetParticleScale(float startScale, float endScale)
 	_endScale = endScale;
 }
 
-void ParticleSystem::SetParticleTexture(shared_ptr<Texture> texture)
+void ParticleSystem::SetParticleTexture(int index, shared_ptr<Texture> texture)
 {
-	_material->SetTexture(0, texture);
+	_material->SetTexture(index, texture);
 }
 
 void ParticleSystem::SetMaterial(shared_ptr<Material> material, shared_ptr<Material> computeMaterial)

@@ -214,6 +214,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
         {
             float x = ((float) threadIndex.x / (float) maxCount) + accTime;
 
+            // r값을 고정으로 하면 불이 퍼지지 않게 할 수 있음
             float r1 = Rand(float2(x, accTime));
             float r2 = Rand(float2(x * accTime, accTime));
             float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));

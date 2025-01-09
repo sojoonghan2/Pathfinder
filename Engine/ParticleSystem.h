@@ -52,12 +52,12 @@ public:
 	// 시작 크기, 종료 크기(기본: 10.f, 5.f)
 	void SetParticleScale(float startScale, float endScale);
 	// 텍스쳐
-	void SetParticleTexture(shared_ptr<Texture> texture);
+	void SetParticleTexture(int index, shared_ptr<Texture> texture);
 	// 지속 시간
 	void SetDuration(float duration) { _duration = duration; }
 	// 머터리얼
 	void SetMaterial(shared_ptr<Material> material, shared_ptr<Material> computeMaterial);
-	// 한 번에 새성되는 파티클 양
+	// 한 번에 생성되는 파티클 양
 	void SetOnceParticleNum(int num) { _onceParticleNum = num; }
 	
 	void ParticleStart();
