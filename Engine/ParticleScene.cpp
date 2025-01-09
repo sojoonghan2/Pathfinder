@@ -22,6 +22,7 @@
 #include "CataclysmParticleSystem.h"
 #include "RazerParticleSystem.h"
 #include "OverDriveParticleSystem.h"
+#include "TestPBRParticleSystem.h"
 
 #include "TestDragon.h"
 #include "TestPointLightScript.h"
@@ -167,6 +168,38 @@ ParticleScene::ParticleScene()
 	}
 #pragma endregion
 
+	// 내가만든 파티클들 로드
+	//LoadMyParticle();
+
+// 테스트 PBR 파티클
+#pragma region TestPBRParticle
+	{
+		// 파티클 오브젝트 생성
+		shared_ptr<GameObject> testPBRParticle = make_shared<GameObject>();
+		wstring testPBRParticleName = L"testPBRParticle";
+		testPBRParticle->SetName(testPBRParticleName);
+		testPBRParticle->SetCheckFrustum(true);
+		testPBRParticle->SetStatic(false);
+
+		// 좌표 컴포넌트 추가
+		testPBRParticle->AddComponent(make_shared<Transform>());
+		testPBRParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 400.f));
+		testPBRParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+
+		// 파티클 시스템 컴포넌트 추가
+		shared_ptr<TestPBRParticleSystem> testPBRParticleSystem = make_shared<TestPBRParticleSystem>();
+		testPBRParticle->AddComponent(make_shared<TestParticleScript>());
+		testPBRParticle->AddComponent(testPBRParticleSystem);
+
+		activeScene->AddGameObject(testPBRParticle);
+	}
+#pragma endregion
+}
+
+ParticleScene::~ParticleScene() {}
+
+void ParticleScene::LoadMyParticle()
+{
 // 얼음 파티클
 #pragma region IceParticle
 	// 테스트 결과 100개를 만들면 fps 20까지 떨어짐
@@ -290,5 +323,3 @@ ParticleScene::ParticleScene()
 	}
 #pragma endregion
 }
-
-ParticleScene::~ParticleScene() {}
