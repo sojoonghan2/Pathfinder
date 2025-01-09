@@ -11,7 +11,7 @@ FireParticleSystem::FireParticleSystem() : BaseParticleSystem()
 	SetOnceParticleNum(3);
 	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"FireParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"FireComputeParticle")->Clone());
 	shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"FireParticleTexture", L"..\\Resources\\Texture\\Particle\\fire.png");
-	SetParticleTexture(texture);
+	SetParticleTexture(0, texture);
 }
 
 void FireParticleSystem::FinalUpdate()

@@ -11,7 +11,7 @@ RazerParticleSystem::RazerParticleSystem() : BaseParticleSystem()
 	SetOnceParticleNum(5);
 	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"RazerParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"RazerComputeParticle")->Clone());
 	shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"RazerParticleTexture", L"..\\Resources\\Texture\\Particle\\razer.png");
-	SetParticleTexture(texture);
+	SetParticleTexture(0, texture);
 }
 
 void RazerParticleSystem::FinalUpdate()

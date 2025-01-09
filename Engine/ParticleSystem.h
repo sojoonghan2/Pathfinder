@@ -52,7 +52,7 @@ public:
 	// 시작 크기, 종료 크기(기본: 10.f, 5.f)
 	void SetParticleScale(float startScale, float endScale);
 	// 텍스쳐
-	void SetParticleTexture(shared_ptr<Texture> texture);
+	void SetParticleTexture(int index, shared_ptr<Texture> texture);
 	// 지속 시간
 	void SetDuration(float duration) { _duration = duration; }
 	// 머터리얼

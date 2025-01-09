@@ -11,7 +11,7 @@ CataclysmParticleSystem::CataclysmParticleSystem() : BaseParticleSystem()
 	SetOnceParticleNum(100);
 	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"CataclysmParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"CataclysmComputeParticle")->Clone());
 	shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"CataclysmParticleTexture", L"..\\Resources\\Texture\\Particle\\ston.png");
-	SetParticleTexture(texture);
+	SetParticleTexture(0, texture);
 }
 
 void CataclysmParticleSystem::FinalUpdate()
