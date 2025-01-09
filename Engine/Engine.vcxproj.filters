@@ -34,6 +34,9 @@
     <Filter Include="Object\Component\ParticleSystem">
       <UniqueIdentifier>{80b1713f-f791-4da8-b579-6149d3cbd6f0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\Particle">
+      <UniqueIdentifier>{5f8fafc3-15e6-4b22-adb0-2be7447512c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -208,6 +211,9 @@
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
     <ClCompile Include="RazerParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="OverDriveParticleSystem.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
   </ItemGroup>
@@ -389,6 +395,9 @@
     <ClInclude Include="RazerParticleSystem.h">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClInclude>
+    <ClInclude Include="OverDriveParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -417,9 +426,6 @@
     <FxCompile Include="..\Resources\Shader\compute.fx">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\IceParticle.fx">
-      <Filter>Shader</Filter>
-    </FxCompile>
     <FxCompile Include="..\Resources\Shader\shadow.fx">
       <Filter>Shader</Filter>
     </FxCompile>
@@ -435,14 +441,20 @@
     <FxCompile Include="..\Resources\Shader\water.fx">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\FireParticle.fx">
-      <Filter>Shader</Filter>
-    </FxCompile>
     <FxCompile Include="..\Resources\Shader\CataclysmParticle.fx">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\FireParticle.fx">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\OverDriveParticle.fx">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\IceParticle.fx">
+      <Filter>Shader\Particle</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\RazerParticle.fx">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Particle</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
