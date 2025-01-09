@@ -216,6 +216,9 @@
     <ClCompile Include="OverDriveParticleSystem.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
+    <ClCompile Include="TestPBRParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -398,6 +401,9 @@
     <ClInclude Include="OverDriveParticleSystem.h">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClInclude>
+    <ClInclude Include="TestPBRParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -454,6 +460,9 @@
       <Filter>Shader\Particle</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\RazerParticle.fx">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\TestPBRParticle.fx">
       <Filter>Shader\Particle</Filter>
     </FxCompile>
   </ItemGroup>
