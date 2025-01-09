@@ -15,7 +15,8 @@
 #include "TestCameraScript.h"
 #include "Resources.h"
 #include "MeshData.h"
-
+#include "Animator.h"
+#include "input.h"
 #include "SphereCollider.h"
 
 TestScene::TestScene()
@@ -36,8 +37,33 @@ TestScene::TestScene()
         activeScene->AddGameObject(camera);
     }
 #pragma endregion
+    // 전역 조명
+#pragma region Directional Light
+    {
+        // 1. light 오브젝트 생성 
+        shared_ptr<GameObject> light = make_shared<GameObject>();
+        light->SetName(L"Directional_Light");
+        light->AddComponent(make_shared<Transform>());
+        light->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 
+        // 2-1. light 컴포넌트 추가 및 속성 설정
+        light->AddComponent(make_shared<Light>());
+        light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
+
+        // 2-2. DIRECTIONAL_LIGHT의 경우 조명 방향 설정
+        light->GetLight()->SetLightDirection(Vec3(0.f, 0.f, 0.f));
+
+        // 3. 조명 색상 및 강도 설정
+        light->GetLight()->SetDiffuse(Vec3(0.8f, 0.8f, 0.8f));
+        light->GetLight()->SetAmbient(Vec3(0.8f, 0.8f, 0.8f));
+        light->GetLight()->SetSpecular(Vec3(0.05f, 0.05f, 0.05f));
+
+        // 4. Scene에 추가
+        activeScene->AddGameObject(light);
+    }
+#pragma endregion
 // 임시 사각형 객체
+/*
 #pragma region UM
     // 1. 임시 오브젝트 생성 및 설정
     shared_ptr<GameObject> um = make_shared<GameObject>();
@@ -75,6 +101,43 @@ TestScene::TestScene()
 
     // 4. Scene에 추가
     activeScene->AddGameObject(um);
+#pragma endregion
+
+*/
+#pragma region TESTOBJ
+    {
+        shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\AnimationTest\\bi-rp_nathan_animated_003_walking.fbx");
+
+        vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+        for (auto& gameObject : gameObjects)
+        {
+            gameObject->SetName(L"TestObj");
+            gameObject->SetCheckFrustum(false);
+            gameObject->GetTransform()->SetLocalPosition(Vec3(50.f, 0.f, 0.f));
+            gameObject->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
+            gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 180.f, 0.f));
+            activeScene->AddGameObject(gameObject);
+        }
+        
+        if (INPUT->GetButtonDown(KEY_TYPE::KEY_1))
+        {
+            int32 count = GetAnimator()->GetAnimCount();
+            int32 currentIndex = GetAnimator()->GetCurrentClipIndex();
+
+            int32 index = (currentIndex + 1) % count;
+            GetAnimator()->Play(index);
+        }
+
+        if (INPUT->GetButtonDown(KEY_TYPE::KEY_2))
+        {
+            int32 count = GetAnimator()->GetAnimCount();
+            int32 currentIndex = GetAnimator()->GetCurrentClipIndex();
+
+            int32 index = (currentIndex - 1 + count) % count;
+            GetAnimator()->Play(index);
+        }
+    }
 #pragma endregion
 }
 
