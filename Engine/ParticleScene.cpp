@@ -31,6 +31,8 @@
 
 #include "SphereCollider.h"
 
+#define PARTICLEDEBUG	TRUE
+
 ParticleScene::ParticleScene()
 {
 // 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
@@ -168,32 +170,8 @@ ParticleScene::ParticleScene()
 	}
 #pragma endregion
 
-	// 내가만든 파티클들 로드
-	//LoadMyParticle();
-
-// 테스트 PBR 파티클
-#pragma region TestPBRParticle
-	{
-		// 파티클 오브젝트 생성
-		shared_ptr<GameObject> testPBRParticle = make_shared<GameObject>();
-		wstring testPBRParticleName = L"testPBRParticle";
-		testPBRParticle->SetName(testPBRParticleName);
-		testPBRParticle->SetCheckFrustum(true);
-		testPBRParticle->SetStatic(false);
-
-		// 좌표 컴포넌트 추가
-		testPBRParticle->AddComponent(make_shared<Transform>());
-		testPBRParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 400.f));
-		testPBRParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
-
-		// 파티클 시스템 컴포넌트 추가
-		shared_ptr<TestPBRParticleSystem> testPBRParticleSystem = make_shared<TestPBRParticleSystem>();
-		testPBRParticle->AddComponent(make_shared<TestParticleScript>());
-		testPBRParticle->AddComponent(testPBRParticleSystem);
-
-		activeScene->AddGameObject(testPBRParticle);
-	}
-#pragma endregion
+	if (PARTICLEDEBUG) LoadDebugParticle();
+	else LoadMyParticle();
 }
 
 ParticleScene::~ParticleScene() {}
@@ -320,6 +298,33 @@ void ParticleScene::LoadMyParticle()
 		overDriveParticle->AddComponent(overDriveParticleSystem);
 
 		activeScene->AddGameObject(overDriveParticle);
+	}
+#pragma endregion
+}
+
+void ParticleScene::LoadDebugParticle()
+{
+// 테스트 PBR 파티클
+#pragma region TestPBRParticle
+	{
+		// 파티클 오브젝트 생성
+		shared_ptr<GameObject> testPBRParticle = make_shared<GameObject>();
+		wstring testPBRParticleName = L"testPBRParticle";
+		testPBRParticle->SetName(testPBRParticleName);
+		testPBRParticle->SetCheckFrustum(true);
+		testPBRParticle->SetStatic(false);
+
+		// 좌표 컴포넌트 추가
+		testPBRParticle->AddComponent(make_shared<Transform>());
+		testPBRParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 400.f));
+		testPBRParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+
+		// 파티클 시스템 컴포넌트 추가
+		shared_ptr<TestPBRParticleSystem> testPBRParticleSystem = make_shared<TestPBRParticleSystem>();
+		testPBRParticle->AddComponent(make_shared<TestParticleScript>());
+		testPBRParticle->AddComponent(testPBRParticleSystem);
+
+		activeScene->AddGameObject(testPBRParticle);
 	}
 #pragma endregion
 }

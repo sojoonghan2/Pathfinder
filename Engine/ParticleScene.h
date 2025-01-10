@@ -6,6 +6,7 @@ public:
     virtual ~ParticleScene();
 
     void LoadMyParticle();
+    void LoadDebugParticle();
 
     shared_ptr<Scene> GetScene() { return activeScene; }
 private:
