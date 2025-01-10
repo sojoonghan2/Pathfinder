@@ -10,7 +10,8 @@ void RootSignature::Init()
 
 void RootSignature::CreateGraphicsRootSignature()
 {
-	_samplerDesc = CD3DX12_STATIC_SAMPLER_DESC(0);
+	_samplerDesc[0] = CD3DX12_STATIC_SAMPLER_DESC(0); // s0
+	_samplerDesc[1] = CD3DX12_STATIC_SAMPLER_DESC(1); // s1
 
 	CD3DX12_DESCRIPTOR_RANGE ranges[] =
 	{
@@ -24,7 +25,7 @@ void RootSignature::CreateGraphicsRootSignature()
 	// CBV와 SRV의 범위를 루트 디스크립터 테이블로 설정
 	param[1].InitAsDescriptorTable(_countof(ranges), ranges);	
 
-	D3D12_ROOT_SIGNATURE_DESC sigDesc = CD3DX12_ROOT_SIGNATURE_DESC(_countof(param), param, 1, &_samplerDesc);
+	D3D12_ROOT_SIGNATURE_DESC sigDesc = CD3DX12_ROOT_SIGNATURE_DESC(_countof(param), param, _countof(_samplerDesc), _samplerDesc);
 	sigDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT; // 입력 조립기 단계
 
 	ComPtr<ID3DBlob> blobSignature;
@@ -35,6 +36,9 @@ void RootSignature::CreateGraphicsRootSignature()
 
 void RootSignature::CreateComputeRootSignature()
 {
+	_samplerDesc[0] = CD3DX12_STATIC_SAMPLER_DESC(0); // s0
+	_samplerDesc[1] = CD3DX12_STATIC_SAMPLER_DESC(1); // s1
+
 	CD3DX12_DESCRIPTOR_RANGE ranges[] =
 	{
 		CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, CBV_REGISTER_COUNT, 0),

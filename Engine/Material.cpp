@@ -37,7 +37,7 @@ void Material::PushComputeData()
 	CONST_BUFFER(CONSTANT_BUFFER_TYPE::MATERIAL)->PushComputeData(&_params, sizeof(_params));
 
 	// SRV ¾÷·Îµå
-	for (size_t i = 0; i < _textures.size(); i++)
+	for (size_t i = 0; i < min(_textures.size(), 7); i++)
 	{
 		if (_textures[i] == nullptr)
 			continue;

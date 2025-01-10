@@ -11,7 +11,9 @@ TestPBRParticleSystem::TestPBRParticleSystem() : BaseParticleSystem()
 	SetOnceParticleNum(1);
 	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"TestPBRParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"TestPBRComputeParticle")->Clone());
 	shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"TestPBRComputeParticle", L"..\\Resources\\Texture\\Particle\\tmp.png");
+	shared_ptr<Texture> screenTexture = GET_SINGLE(Resources)->Get<Texture>(L"ScreenTexture");
 	SetParticleTexture(0, texture);
+	SetParticleTexture(1, screenTexture);
 }
 
 void TestPBRParticleSystem::FinalUpdate()

@@ -943,4 +943,27 @@ void Resources::CreateDefaultMaterial()
 
 		Add<Material>(L"Water", material);
 	}
+
+	// ScreenTexture
+	{
+		// 창 크기 가져오기
+		const WindowInfo& window = GEngine->GetWindow();
+		uint32 screenWidth = window.width;
+		uint32 screenHeight = window.height;
+
+		// 스크린 텍스처 생성
+		shared_ptr<Texture> screenTexture = GET_SINGLE(Resources)->CreateTexture(
+			L"ScreenTexture",
+			DXGI_FORMAT_R8G8B8A8_UNORM,                     // 텍스처 포맷
+			screenWidth,                                   // 화면 너비
+			screenHeight,                                  // 화면 높이
+			CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), // 디폴트 힙
+			D3D12_HEAP_FLAG_NONE,                          // 힙 플래그
+			D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,       // 렌더 타겟 플래그
+			Vec4(0.0f, 0.0f, 0.0f, 1.0f)                   // 초기 클리어 색상
+		);
+
+		// 텍스처 추가
+		Add<Texture>(L"ScreenTexture", screenTexture);
+	}
 }

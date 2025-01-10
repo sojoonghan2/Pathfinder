@@ -115,7 +115,8 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 
 float4 PS_Main(GS_OUT input) : SV_Target
 {
-    return g_textures[0].Sample(g_sam_0, input.uv);
+    // 스크린 텍스처 내용을 직접 출력
+    return g_textures[1].Sample(g_sam_0, input.uv);
 }
 
 struct ComputeShared

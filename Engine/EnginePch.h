@@ -109,6 +109,7 @@ enum class SRV_REGISTER : uint8
 	t7,
 	t8,
 	t9,
+	t10,
 
 	END
 };
@@ -122,6 +123,17 @@ enum class UAV_REGISTER : uint8
 	u4,
 
 	END,
+};
+
+enum class SAMPLER_REGISTER : uint8
+{
+	s0 = static_cast<uint8>(UAV_REGISTER::END),
+	s1,
+	s2,
+	s3,
+	s4,
+
+	END
 };
 
 enum
