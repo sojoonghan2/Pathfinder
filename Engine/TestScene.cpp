@@ -13,6 +13,7 @@
 #include "Light.h"
 #include "ParticleSystem.h"
 #include "TestCameraScript.h"
+#include "TestHuman.h"
 #include "Resources.h"
 #include "MeshData.h"
 #include "Animator.h"
@@ -106,35 +107,20 @@ TestScene::TestScene()
 */
 #pragma region TESTOBJ
     {
-        shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\AnimationTest\\Anim_UE4_Smoking_01.fbx");
+        shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\AnimationTest\\bi-rp_nathan_animated_003_walking.fbx");
+
         vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
         for (auto& gameObject : gameObjects)
         {
             gameObject->SetName(L"TestObj");
             gameObject->SetCheckFrustum(false);
-            gameObject->GetTransform()->SetLocalPosition(Vec3(100.f, 0.f, 0.f));
-            gameObject->GetTransform()->SetLocalScale(Vec3(0.1f, 0.1f, 0.1f));
-            gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 180.f, 0.f));
+            gameObject->AddComponent(make_shared<Transform>());
+            gameObject->AddComponent(make_shared<TestHuman>());
+            gameObject->GetTransform()->SetLocalPosition(Vec3(50.f, 0.f, 0.f));
+            gameObject->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
+            gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 0.f, 90.f));
             activeScene->AddGameObject(gameObject);
-        }
-        
-        if (INPUT->GetButtonDown(KEY_TYPE::KEY_1))
-        {
-            int32 count = GetAnimator()->GetAnimCount();
-            int32 currentIndex = GetAnimator()->GetCurrentClipIndex();
-
-            int32 index = (currentIndex + 1) % count;
-            GetAnimator()->Play(index);
-        }
-
-        if (INPUT->GetButtonDown(KEY_TYPE::KEY_2))
-        {
-            int32 count = GetAnimator()->GetAnimCount();
-            int32 currentIndex = GetAnimator()->GetCurrentClipIndex();
-
-            int32 index = (currentIndex - 1 + count) % count;
-            GetAnimator()->Play(index);
         }
     }
 #pragma endregion

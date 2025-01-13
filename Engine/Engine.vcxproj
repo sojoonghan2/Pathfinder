@@ -226,6 +226,7 @@
     <ClInclude Include="TitleScript.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="WaterScript.h" />
+    <ClInclude Include="TestHuman.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animator.cpp" />
@@ -280,6 +281,7 @@
     <ClCompile Include="TableDescriptorHeap.cpp" />
     <ClCompile Include="TestCameraScript.cpp" />
     <ClCompile Include="TestDragon.cpp" />
+    <ClCompile Include="TestHuman.cpp" />
     <ClCompile Include="TestParticleScript.cpp" />
     <ClCompile Include="TestPointLightScript.cpp" />
     <ClCompile Include="TestScene.cpp" />

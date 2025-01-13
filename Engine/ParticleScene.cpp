@@ -213,7 +213,6 @@ ParticleScene::ParticleScene()
 		activeScene->AddGameObject(fireParticle);
 	}
 #pragma endregion
-<<<<<<< HEAD
 
 // ´ë°İº¯ ÆÄÆ¼Å¬
 #pragma region CataclysmParticle
@@ -232,9 +231,9 @@ ParticleScene::ParticleScene()
 		cataclysmParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		// ÆÄÆ¼Å¬ ½Ã½ºÅÛ ÄÄÆ÷³ÍÆ® Ãß°¡
-		shared_ptr<CataclysmParticleSystem> fireParticleSystem = make_shared<CataclysmParticleSystem>();
-		cataclysmParticle->AddComponent(make_shared<TestParticleScript>());
-		cataclysmParticle->AddComponent(fireParticleSystem);
+		//shared_ptr<CataclysmParticleSystem> fireParticleSystem = make_shared<CataclysmParticleSystem>();
+		//cataclysmParticle->AddComponent(make_shared<TestParticleScript>());
+		//cataclysmParticle->AddComponent(fireParticleSystem);
 
 		activeScene->AddGameObject(cataclysmParticle);
 	}
@@ -287,8 +286,7 @@ ParticleScene::ParticleScene()
 		activeScene->AddGameObject(razerParticle);
 	}
 #pragma endregion
-=======
->>>>>>> parent of cbe179b (ëŒ€ê²©ë³€ íŒŒí‹°í´ ì¶”ê°€)
+
 }
 
 ParticleScene::~ParticleScene() {}

@@ -204,6 +204,9 @@
     <ClCompile Include="FireParticleSystem.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
+    <ClCompile Include="TestHuman.cpp">
+      <Filter>Script</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -344,9 +347,6 @@
     <ClInclude Include="BINLoader.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="TestScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="CrashScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
@@ -376,6 +376,12 @@
     </ClInclude>
     <ClInclude Include="FireParticleSystem.h">
       <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="TestHuman.h">
+      <Filter>Script</Filter>
+    </ClInclude>
+    <ClInclude Include="TestScene.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -19,8 +19,7 @@ Animator::~Animator()
 
 void Animator::FinalUpdate()
 {
-    if (!_animClips || _animClips->empty()) {
-        cout << "No animation clips available!" << endl;
+    if (!_isPlaying || !_animClips || _animClips->empty()) {
         return;
     }
 
@@ -106,9 +105,20 @@ void Animator::PushData()
 	_boneFinalMatrix->PushGraphicsData(SRV_REGISTER::t7);
 }
 
+// 플레이 수정
 void Animator::Play(uint32 idx)
 {
+    _isPlaying = true;
 	assert(idx < _animClips->size());
+
 	_clipIndex = idx;
 	_updateTime = 0.f;
+}
+
+
+// 스탑 추가
+void Animator::Stop()
+{
+    _isPlaying = false;
+
 }
