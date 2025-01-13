@@ -106,16 +106,15 @@ TestScene::TestScene()
 */
 #pragma region TESTOBJ
     {
-        shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\AnimationTest\\bi-rp_nathan_animated_003_walking.fbx");
-
+        shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\AnimationTest\\Anim_UE4_Smoking_01.fbx");
         vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
         for (auto& gameObject : gameObjects)
         {
             gameObject->SetName(L"TestObj");
             gameObject->SetCheckFrustum(false);
-            gameObject->GetTransform()->SetLocalPosition(Vec3(50.f, 0.f, 0.f));
-            gameObject->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
+            gameObject->GetTransform()->SetLocalPosition(Vec3(100.f, 0.f, 0.f));
+            gameObject->GetTransform()->SetLocalScale(Vec3(0.1f, 0.1f, 0.1f));
             gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 180.f, 0.f));
             activeScene->AddGameObject(gameObject);
         }
