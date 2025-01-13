@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "Material.h"
 
 class Material;
 class Mesh;
@@ -18,7 +19,7 @@ struct ParticleInfo
 	float	lifeTime;
 	// 활성 상태
 	int32	alive;
-	// 패딩(12 + 4 + 12 + 4 + 4 + 12(패딩))
+	// 패딩(12 + 4 + 12 + 4 + 12(패딩))
 	int32	padding[3];
 };
 
@@ -32,7 +33,7 @@ struct ComputeSharedInfo
 class ParticleSystem : public Component
 {
 public:
-	ParticleSystem(bool refraction);
+	ParticleSystem();
 	virtual ~ParticleSystem();
 
 public:
@@ -45,16 +46,20 @@ public:
 	// 생성 간걱, 누적 시간(기본: 0.005f, 0.f)
 	void SetParticleInterval(float createInterval, float accTime);
 	// 최소 수명, 최대 수명(기본: 0.5f, 1.f)
-	void SetParticleLiftTime(float minLifeTime, float maxLifeTime);
+	void SetParticleLifeTime(float minLifeTime, float maxLifeTime);
 	// 최소 속도, 최대 속도(기본: 100, 50)
 	void SetParticleSpeed(float minSpeed, float maxSpeed);
 	// 시작 크기, 종료 크기(기본: 10.f, 5.f)
 	void SetParticleScale(float startScale, float endScale);
-
+	// 텍스쳐
 	void SetParticleTexture(shared_ptr<Texture> texture);
-
+	// 지속 시간
 	void SetDuration(float duration) { _duration = duration; }
-
+	// 머터리얼
+	void SetMaterial(shared_ptr<Material> material, shared_ptr<Material> computeMaterial);
+	// 한 번에 생성되는 파티클 양
+	void SetOnceParticleNum(int num) { _onceParticleNum = num; }
+	
 	void ParticleStart();
 	void ParticleStop();
 	void ParticleToggle();
@@ -100,4 +105,7 @@ private:
 	float				_totalTime = 0.0f;
 	// 파티클 지속 시간(-1은 무한)
 	float				_duration = -1.0f;
+
+	// 한 번에 생성되는 파티클의 양
+	int					_onceParticleNum = 1;
 };

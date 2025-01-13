@@ -178,11 +178,11 @@ ParticleScene::ParticleScene()
 
 		// ÁÂÇ¥ ÄÄÆ÷³ÍÆ® Ãß°¡
 		iceParticle->AddComponent(make_shared<Transform>());
-		iceParticle->GetTransform()->SetLocalPosition(Vec3(-200.f, 100.f, 200.f));
+		iceParticle->GetTransform()->SetLocalPosition(Vec3(-200.f, 100.f, -200.f));
 		iceParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		// ÆÄÆ¼Å¬ ½Ã½ºÅÛ ÄÄÆ÷³ÍÆ® Ãß°¡
-		shared_ptr<IceParticleSystem> iceParticleSystem = make_shared<IceParticleSystem>(true);
+		shared_ptr<IceParticleSystem> iceParticleSystem = make_shared<IceParticleSystem>();
 		iceParticle->AddComponent(make_shared<TestParticleScript>());
 		iceParticle->AddComponent(iceParticleSystem);
 
@@ -206,13 +206,89 @@ ParticleScene::ParticleScene()
 		fireParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		// ÆÄÆ¼Å¬ ½Ã½ºÅÛ ÄÄÆ÷³ÍÆ® Ãß°¡
-		shared_ptr<FireParticleSystem> fireParticleSystem = make_shared<FireParticleSystem>(true);
+		shared_ptr<FireParticleSystem> fireParticleSystem = make_shared<FireParticleSystem>();
 		fireParticle->AddComponent(make_shared<TestParticleScript>());
 		fireParticle->AddComponent(fireParticleSystem);
 
 		activeScene->AddGameObject(fireParticle);
 	}
 #pragma endregion
+<<<<<<< HEAD
+
+// ´ë°İº¯ ÆÄÆ¼Å¬
+#pragma region CataclysmParticle
+	{
+		// ÆÄÆ¼Å¬ ¿ÀºêÁ§Æ® »ı¼º
+		shared_ptr<GameObject> cataclysmParticle = make_shared<GameObject>();
+		wstring cataclysmParticleName = L"CataclysmParticle";
+		cataclysmParticle->SetName(cataclysmParticleName);
+		cataclysmParticle->SetCheckFrustum(true);
+		cataclysmParticle->SetStatic(false);
+
+		// ÁÂÇ¥ ÄÄÆ÷³ÍÆ® Ãß°¡
+		cataclysmParticle->AddComponent(make_shared<Transform>());
+		cataclysmParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 200.f));
+		cataclysmParticle->GetTransform()->SetLocalRotation(Vec3(0.0f, 90.0f, 0.0f));
+		cataclysmParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+
+		// ÆÄÆ¼Å¬ ½Ã½ºÅÛ ÄÄÆ÷³ÍÆ® Ãß°¡
+		shared_ptr<CataclysmParticleSystem> fireParticleSystem = make_shared<CataclysmParticleSystem>();
+		cataclysmParticle->AddComponent(make_shared<TestParticleScript>());
+		cataclysmParticle->AddComponent(fireParticleSystem);
+
+		activeScene->AddGameObject(cataclysmParticle);
+	}
+#pragma endregion
+
+// ºÒ ÆÄÆ¼Å¬
+#pragma region FireParticle
+	{
+		// ÆÄÆ¼Å¬ ¿ÀºêÁ§Æ® »ı¼º
+		shared_ptr<GameObject> fireParticle = make_shared<GameObject>();
+		wstring fireParticleName = L"FireParticle";
+		fireParticle->SetName(fireParticleName);
+		fireParticle->SetCheckFrustum(true);
+		fireParticle->SetStatic(false);
+
+		// ÁÂÇ¥ ÄÄÆ÷³ÍÆ® Ãß°¡
+		fireParticle->AddComponent(make_shared<Transform>());
+		fireParticle->GetTransform()->SetLocalPosition(Vec3(200.f, 100.f, 200.f));
+		fireParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+
+		// ÆÄÆ¼Å¬ ½Ã½ºÅÛ ÄÄÆ÷³ÍÆ® Ãß°¡
+		shared_ptr<FireParticleSystem> fireParticleSystem = make_shared<FireParticleSystem>();
+		fireParticle->AddComponent(make_shared<TestParticleScript>());
+		fireParticle->AddComponent(fireParticleSystem);
+
+		activeScene->AddGameObject(fireParticle);
+	}
+#pragma endregion
+
+// ·¹ÀÌÀú ÆÄÆ¼Å¬
+#pragma region RazerParticle
+	{
+		// ÆÄÆ¼Å¬ ¿ÀºêÁ§Æ® »ı¼º
+		shared_ptr<GameObject> razerParticle = make_shared<GameObject>();
+		wstring razerParticleName = L"RazerParticle";
+		razerParticle->SetName(razerParticleName);
+		razerParticle->SetCheckFrustum(true);
+		razerParticle->SetStatic(false);
+
+		// ÁÂÇ¥ ÄÄÆ÷³ÍÆ® Ãß°¡
+		razerParticle->AddComponent(make_shared<Transform>());
+		razerParticle->GetTransform()->SetLocalPosition(Vec3(-400.f, 100.f, 200.f));
+		razerParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+
+		// ÆÄÆ¼Å¬ ½Ã½ºÅÛ ÄÄÆ÷³ÍÆ® Ãß°¡
+		shared_ptr<FireParticleSystem> razerParticleSystem = make_shared<FireParticleSystem>();
+		razerParticle->AddComponent(make_shared<TestParticleScript>());
+		razerParticle->AddComponent(razerParticleSystem);
+
+		activeScene->AddGameObject(razerParticle);
+	}
+#pragma endregion
+=======
+>>>>>>> parent of cbe179b (ëŒ€ê²©ë³€ íŒŒí‹°í´ ì¶”ê°€)
 }
 
 ParticleScene::~ParticleScene() {}

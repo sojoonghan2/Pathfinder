@@ -5,9 +5,8 @@
 class IceParticleSystem : public BaseParticleSystem
 {
 public:
-	IceParticleSystem(bool reflection);
+	IceParticleSystem();
 
-	virtual void InitializeParticle() override;
 	virtual void FinalUpdate() override;
 };
 

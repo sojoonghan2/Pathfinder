@@ -405,7 +405,7 @@
     <FxCompile Include="..\Resources\Shader\compute.fx">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\particle.fx">
+    <FxCompile Include="..\Resources\Shader\IceParticle.fx">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\shadow.fx">
@@ -423,7 +423,7 @@
     <FxCompile Include="..\Resources\Shader\water.fx">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\refraction_particle.fx">
+    <FxCompile Include="..\Resources\Shader\FireParticle.fx">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

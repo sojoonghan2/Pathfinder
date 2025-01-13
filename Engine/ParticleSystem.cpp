@@ -6,7 +6,7 @@
 #include "Transform.h"
 #include "Timer.h"
 
-ParticleSystem::ParticleSystem(bool refraction) : Component(COMPONENT_TYPE::PARTICLE_SYSTEM)
+ParticleSystem::ParticleSystem() : Component(COMPONENT_TYPE::PARTICLE_SYSTEM)
 {
 	// GPU·Î µ¥ÀÌÅÍ¸¦ Àü´ÞÇÏ±â À§ÇØ ÇÊ¿äÇÑ ¹öÆÛ¸¦ »ý¼º
 	_particleBuffer = make_shared<StructuredBuffer>();
@@ -16,10 +16,6 @@ ParticleSystem::ParticleSystem(bool refraction) : Component(COMPONENT_TYPE::PART
 	_computeSharedBuffer->Init(sizeof(ComputeSharedInfo), 1);
 
 	_mesh = GET_SINGLE(Resources)->LoadPointMesh();
-	if (!refraction) _material = GET_SINGLE(Resources)->Get<Material>(L"Particle")->Clone();
-	else _material = GET_SINGLE(Resources)->Get<Material>(L"Refraction_Particle")->Clone();
-
-	_computeMaterial = GET_SINGLE(Resources)->Get<Material>(L"ComputeParticle");
 }
 
 ParticleSystem::~ParticleSystem() {}
@@ -43,7 +39,12 @@ void ParticleSystem::FinalUpdate()
 		if (_createInterval < _accTime)
 		{
 			_accTime -= _createInterval;
+<<<<<<< HEAD
+			// ÆÄÆ¼Å¬À» 10°³¾¿ »ý¼º
+			add = _onceParticleNum;
+=======
 			add = 1; // »õ ÆÄÆ¼Å¬ »ý¼º
+>>>>>>> parent of cbe179b (ëŒ€ê²©ë³€ íŒŒí‹°í´ ì¶”ê°€)
 		}
 	}
 
@@ -52,7 +53,7 @@ void ParticleSystem::FinalUpdate()
 	_computeSharedBuffer->PushComputeUAVData(UAV_REGISTER::u1);
 
 	_computeMaterial->SetInt(0, _maxParticle);
-	_computeMaterial->SetInt(1, add); // add °ª Àü´Þ
+	_computeMaterial->SetInt(1, add);
 	_computeMaterial->SetVec2(1, Vec2(DELTA_TIME, _accTime));
 	_computeMaterial->SetVec4(0, Vec4(_minLifeTime, _maxLifeTime, _minSpeed, _maxSpeed));
 	_computeMaterial->Dispatch(1, 1, 1);
@@ -106,7 +107,7 @@ void ParticleSystem::SetParticleInterval(float createInterval, float accTime)
 	_accTime = accTime;
 }
 
-void ParticleSystem::SetParticleLiftTime(float minLifeTime, float maxLifeTime)
+void ParticleSystem::SetParticleLifeTime(float minLifeTime, float maxLifeTime)
 {
 	// ÃÖ¼Ò ¼ö¸í
 	_minLifeTime = minLifeTime;
@@ -135,6 +136,12 @@ void ParticleSystem::SetParticleTexture(shared_ptr<Texture> texture)
 	_material->SetTexture(0, texture);
 }
 
+void ParticleSystem::SetMaterial(shared_ptr<Material> material, shared_ptr<Material> computeMaterial)
+{
+	_material = material;
+	_computeMaterial = computeMaterial;
+}
+
 void ParticleSystem::ParticleStart()
 {
 	_isActive = true;
@@ -147,6 +154,7 @@ void ParticleSystem::ParticleStart()
 
 	// ÇÊ¿äÇÑ °æ¿ì Ãß°¡ ÃÊ±âÈ­
 	vector<ParticleInfo> emptyParticles(_maxParticle);
+	// GPU·Î ÆÄÆ¼Å¬ ¹öÆÛ Àü´Þ
 	_particleBuffer->Update(emptyParticles.data(), emptyParticles.size() * sizeof(ParticleInfo));
 }
 
