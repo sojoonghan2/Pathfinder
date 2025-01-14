@@ -76,8 +76,10 @@ Texture2D g_textures[MAX_TEXTURES] : register(t0);
 // 뎁스 텍스쳐
 Texture2D g_depth : register(t1);
 
+// 굴절 텍스쳐
+Texture2D g_refractionTex : register(t2);
+
 // 임시용 텍스쳐
-Texture2D g_tex_t2 : register(t2);
 Texture2D g_tex_t3 : register(t3);
 Texture2D g_tex_t4 : register(t4);
 
@@ -86,9 +88,6 @@ TextureCube g_texCube : register(t6);
 
 // 본 애니메이션 행렬 버퍼
 StructuredBuffer<Matrix> g_mat_bone : register(t7);
-
-// 굴절 텍스쳐
-Texture2D g_refractionTex : register(t9);
 
 // 샘플러 상태
 SamplerState g_sam_0 : register(s0);
