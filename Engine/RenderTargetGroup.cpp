@@ -3,26 +3,35 @@
 #include "Engine.h"
 #include "Device.h"
 
-
+// 렌더 타겟 그룹 생성 및 초기화
 void RenderTargetGroup::Create(RENDER_TARGET_GROUP_TYPE groupType, vector<RenderTarget>& rtVec, shared_ptr<Texture> dsTexture)
 {
+	// 렌더 타겟 그룹 속성 초기화
 	_groupType = groupType;
 	_rtVec = rtVec;
 	_rtCount = static_cast<uint32>(rtVec.size());
 	_dsTexture = dsTexture;
 
+	// 렌더 타겟 뷰 힙 생성
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
 	heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	heapDesc.NumDescriptors = _rtCount;
 	heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	heapDesc.NodeMask = 0;
-
 	DEVICE->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&_rtvHeap));
 
+	// 렌더 타겟 뷰 / 뎁스 스텐실 뷰 핸들 설정
 	_rtvHeapSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	_rtvHeapBegin = _rtvHeap->GetCPUDescriptorHandleForHeapStart();
 	_dsvHeapBegin = _dsTexture->GetDSV()->GetCPUDescriptorHandleForHeapStart();
 
+	// 스크린 텍스처로 첫 번째 렌더 타겟 설정
+	if (_rtCount > 0)
+	{
+		_screenTexture = rtVec[0].target;
+	}
+
+	// 렌더 타겟 뷰 디스크립터를 힙에 복사
 	for (uint32 i = 0; i < _rtCount; i++)
 	{
 		uint32 destSize = 1;
@@ -35,6 +44,7 @@ void RenderTargetGroup::Create(RENDER_TARGET_GROUP_TYPE groupType, vector<Render
 		DEVICE->CopyDescriptors(1, &destHandle, &destSize, 1, &srcHandle, &srcSize, D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	}
 
+	// 상태 전환 정보 초기화
 	for (int i = 0; i < _rtCount; ++i)
 	{
 		_targetToResource[i] = CD3DX12_RESOURCE_BARRIER::Transition(_rtVec[i].target->GetTex2D().Get(),
@@ -45,6 +55,7 @@ void RenderTargetGroup::Create(RENDER_TARGET_GROUP_TYPE groupType, vector<Render
 	}
 }
 
+// 렌더 타겟과 깊이/스텐실 뷰를 출력 병합기(OM)에 설정
 void RenderTargetGroup::OMSetRenderTargets(uint32 count, uint32 offset)
 {
 	D3D12_VIEWPORT vp = D3D12_VIEWPORT{ 0.f, 0.f, _rtVec[0].target->GetWidth() , _rtVec[0].target->GetHeight(), 0.f, 1.f };
@@ -53,6 +64,7 @@ void RenderTargetGroup::OMSetRenderTargets(uint32 count, uint32 offset)
 	GRAPHICS_CMD_LIST->RSSetViewports(1, &vp);
 	GRAPHICS_CMD_LIST->RSSetScissorRects(1, &rect);
 
+	// 지정된 렌더 타겟 뷰와 뎁스 스텐실 핸들 OM에 바인딩
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(_rtvHeapBegin, offset * _rtvHeapSize);
 	GRAPHICS_CMD_LIST->OMSetRenderTargets(count, &rtvHandle, FALSE/*1개*/, &_dsvHeapBegin);
 }
@@ -89,12 +101,23 @@ void RenderTargetGroup::ClearRenderTargetView()
 	GRAPHICS_CMD_LIST->ClearDepthStencilView(_dsvHeapBegin, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
 }
 
+// 렌더 타겟 -> 리소스 상태 전환
 void RenderTargetGroup::WaitTargetToResource()
 {
 	GRAPHICS_CMD_LIST->ResourceBarrier(_rtCount, _targetToResource);
 }
 
+// 리소스 -> 렌더 타겟 상태 전환
 void RenderTargetGroup::WaitResourceToTarget()
 {
 	GRAPHICS_CMD_LIST->ResourceBarrier(_rtCount, _resourceToTarget);
+}
+
+// 첫 번째 렌더 타겟을 스크린 텍스쳐로 설정
+void RenderTargetGroup::SetScreenTexture()
+{
+	if (_rtCount > 0)
+	{
+		_screenTexture = _rtVec[0].target;
+	}
 }

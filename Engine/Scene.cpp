@@ -99,6 +99,7 @@ void Scene::RenderShadow()
 	}
 
 	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->WaitTargetToResource();
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->SetScreenTexture();
 }
 
 void Scene::RenderDeferred()
@@ -111,6 +112,7 @@ void Scene::RenderDeferred()
 	mainCamera->Render_Deferred();
 
 	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->WaitTargetToResource();
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->SetScreenTexture();
 }
 
 void Scene::RenderLights()
@@ -128,6 +130,7 @@ void Scene::RenderLights()
 	}
 
 	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->WaitTargetToResource();
+	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->SetScreenTexture();
 }
 
 void Scene::RenderFinal()

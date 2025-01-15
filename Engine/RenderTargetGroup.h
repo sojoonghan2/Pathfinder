@@ -50,6 +50,8 @@ public:
 	void WaitTargetToResource();
 	void WaitResourceToTarget();
 
+	void SetScreenTexture();
+
 private:
 	RENDER_TARGET_GROUP_TYPE		_groupType;
 	vector<RenderTarget>			_rtVec;
@@ -65,5 +67,8 @@ private:
 private:
 	D3D12_RESOURCE_BARRIER			_targetToResource[8];
 	D3D12_RESOURCE_BARRIER			_resourceToTarget[8];
+
+private:
+	shared_ptr<Texture>				_screenTexture;
 };
 
