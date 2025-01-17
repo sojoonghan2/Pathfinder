@@ -309,29 +309,6 @@ LuckyScene::LuckyScene()
 	}
 #pragma endregion
 
-// 파티클
-#pragma region Particle
-	{
-		// 파티클 오브젝트 생성
-		shared_ptr<GameObject> particle = make_shared<GameObject>();
-		wstring particleName = L"BubbleParticle";
-		particle->SetName(particleName);
-		particle->SetCheckFrustum(true);
-		particle->SetStatic(false);
-
-		// 좌표 컴포넌트 추가
-		particle->AddComponent(make_shared<Transform>());
-		particle->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 200.f));
-		particle->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-
-		// 파티클 시스템 컴포넌트 추가
-		shared_ptr<ParticleSystem> particleSystem = make_shared<ParticleSystem>();
-		particle->AddComponent(particleSystem);
-
-		activeScene->AddGameObject(particle);
-	}
-#pragma endregion
-
 #pragma region Water
 	{
 		shared_ptr<GameObject> water = make_shared<GameObject>();

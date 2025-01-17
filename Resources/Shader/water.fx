@@ -65,7 +65,7 @@ float4 PS_Main(VS_OUT input) : SV_TARGET
     float fresnelFactor = pow(1.0 - saturate(dot(viewDir, normal)), 2.0);
 
     // 굴절 텍스처 샘플링
-    float3 refractionColor = g_refractionTex.Sample(g_sam_0, input.texCoord).rgb;
+    float3 refractionColor = g_refractionTexture.Sample(g_sam_0, input.texCoord).rgb;
 
     // 굴절 강조 및 텍스처 결합
     float3 combinedColor = lerp(refractionColor, normalMapSample, 0.5);

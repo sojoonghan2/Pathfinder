@@ -77,10 +77,12 @@ Texture2D g_textures[MAX_TEXTURES] : register(t0);
 Texture2D g_depth : register(t1);
 
 // 굴절 텍스쳐
-Texture2D g_refractionTex : register(t2);
+Texture2D g_refractionTexture : register(t2);
+
+// 스크린 텍스쳐
+Texture2D g_screenTexture : register(t3);
 
 // 임시용 텍스쳐
-Texture2D g_tex_t3 : register(t3);
 Texture2D g_tex_t4 : register(t4);
 
 // TextureCube 텍스처 정의 (큐브맵 추가)

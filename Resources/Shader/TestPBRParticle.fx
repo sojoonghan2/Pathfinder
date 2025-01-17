@@ -116,25 +116,7 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 float4 PS_Main(GS_OUT input) : SV_Target
 {
     // 파티클 텍스처로 알파값 샘플링
-    float4 particleColor = g_textures[0].Sample(g_sam_0, input.uv);
-    
-    // UV 좌표 왜곡
-    float2 distortedUV = input.uv;
-    
-    // 중심점 기준으로 UV 왜곡
-    float2 center = float2(0.5f, 0.5f);
-    float2 dir = input.uv - center;
-    float dist = length(dir);
-    
-    // 왜곡 강도 조절 (값이 클수록 더 많이 휘어짐)
-    float strength = 0.2f;
-    distortedUV += dir * dist * strength;
-    
-    // 왜곡된 UV로 스크린 텍스처 샘플링
-    float4 refractionColor = g_refractionTex.Sample(g_sam_0, distortedUV);
-    
-    // 파티클 텍스처의 알파값을 이용해 스크린 텍스처 블렌딩
-    return float4(refractionColor.rgb, particleColor.a);
+    return g_textures[0].Sample(g_sam_0, input.uv);
 }
 
 struct ComputeShared
