@@ -51,6 +51,8 @@ public:
 	void WaitResourceToTarget();
 
 	void SetScreenTexture();
+	void CreateSRVForScreenTexture();
+	void BindScreenTextureToShader();
 
 private:
 	RENDER_TARGET_GROUP_TYPE		_groupType;
@@ -70,5 +72,6 @@ private:
 
 private:
 	shared_ptr<Texture>				_screenTexture;
+	ComPtr<ID3D12DescriptorHeap>	_screenTextureSRVHeap;
 };
 
