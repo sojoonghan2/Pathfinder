@@ -119,10 +119,10 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 float4 PS_Main(GS_OUT input) : SV_Target
 {
     // 첫 번째 텍스처(g_textures[0]) 샘플링
-    float4 baseTexColor = g_textures[0].Sample(g_sam_0, input.uv);
+    float4 baseTexColor = g_textures.Sample(g_sam_0, input.uv);
 
     // 두 번째 텍스처(g_textures[1]) 샘플링
-    float4 overlayTexColor = g_textures[1].Sample(g_sam_0, input.uv);
+    float4 overlayTexColor = g_textures1.Sample(g_sam_0, input.uv);
 
     // 중심 거리 계산
     float2 center = float2(0.5f, 0.5f);

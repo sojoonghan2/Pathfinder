@@ -117,7 +117,7 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 float4 PS_Main(GS_OUT input) : SV_Target
 {
     // 텍스처 색상 샘플링
-    float4 texColor = g_textures[0].Sample(g_sam_0, input.uv);
+    float4 texColor = g_textures.Sample(g_sam_0, input.uv);
 
     // UV 좌표에서 중심(0.5, 0.5)까지의 거리 계산
     float2 center = float2(0.5f, 0.5f);

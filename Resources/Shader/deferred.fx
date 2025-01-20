@@ -85,14 +85,14 @@ PS_OUT PS_Main(VS_OUT input)
     float4 color = float4(1.f, 1.f, 1.f, 1.f);
     // 디퓨즈 텍스쳐 샘플링
     if (g_tex_on_0 == 1)
-        color = g_textures[0].Sample(g_sam_0, input.uv);
+        color = g_textures.Sample(g_sam_0, input.uv);
 
     float3 viewNormal = input.viewNormal;
     // 노말 매핑 처리
     if (g_tex_on_1 == 1)
     {
         // [0,255] 범위에서 [0,1]로 변환
-        float3 tangentSpaceNormal = g_textures[1].Sample(g_sam_0, input.uv).xyz;
+        float3 tangentSpaceNormal = g_textures1.Sample(g_sam_0, input.uv).xyz;
         // [0,1] 범위에서 [-1,1]로 변환
         tangentSpaceNormal = (tangentSpaceNormal - 0.5f) * 2.f;
         float3x3 matTBN = { input.viewTangent, input.viewBinormal, input.viewNormal };

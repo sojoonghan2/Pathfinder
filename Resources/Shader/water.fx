@@ -55,17 +55,17 @@ float4 PS_Main(VS_OUT input) : SV_TARGET
     scrolledTexCoord += wave;
 
     // 물 텍스처 샘플링 (textures[0])
-    float3 waterTextureSample = g_textures[0].Sample(g_sam_0, input.texCoord).rgb;
+    float3 waterTextureSample = g_textures.Sample(g_sam_0, input.texCoord).rgb;
 
     // 노멀 맵 샘플링
-    float3 normalMapSample = g_textures[1].Sample(g_sam_0, scrolledTexCoord).rgb;
+    float3 normalMapSample = g_textures1.Sample(g_sam_0, scrolledTexCoord).rgb;
     normalMapSample = normalMapSample * 2.0 - 1.0;
 
     // Fresnel Factor 계산
     float fresnelFactor = pow(1.0 - saturate(dot(viewDir, normal)), 2.0);
 
     // 굴절 텍스처 샘플링
-    float3 refractionColor = g_refractionTexture.Sample(g_sam_0, input.texCoord).rgb;
+    float3 refractionColor = g_textures2.Sample(g_sam_0, input.texCoord).rgb;
 
     // 굴절 강조 및 텍스처 결합
     float3 combinedColor = lerp(refractionColor, normalMapSample, 0.5);

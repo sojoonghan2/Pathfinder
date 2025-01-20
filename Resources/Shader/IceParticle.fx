@@ -115,7 +115,7 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 
 float4 PS_Main(GS_OUT input) : SV_Target
 {
-    return g_textures[0].Sample(g_sam_0, input.uv);
+    return g_textures.Sample(g_sam_0, input.uv);
 }
 
 struct ComputeShared

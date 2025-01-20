@@ -115,8 +115,7 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 
 float4 PS_Main(GS_OUT input) : SV_Target
 {
-    // 파티클 텍스처로 알파값 샘플링
-    return g_textures[0].Sample(g_sam_0, input.uv);
+    return g_textures.Sample(g_sam_0, input.uv);
 }
 
 struct ComputeShared

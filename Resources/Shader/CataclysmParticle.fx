@@ -129,7 +129,7 @@ float4 PS_Main(GS_OUT input) : SV_Target
     // 투명도 효과
     float alpha = 0.8f - ratio; // 서서히 투명해짐
 
-    float4 texColor = g_textures[0].Sample(g_sam_0, input.uv);
+    float4 texColor = g_textures.Sample(g_sam_0, input.uv);
     return float4(color, alpha) * texColor;
 }
 

@@ -141,7 +141,7 @@ float4 PS_Main(GS_OUT input) : SV_Target
     float alpha = 1.0f - ratio; // 서서히 투명해짐
     
     // 텍스처 샘플링 및 색상 적용
-    float4 texColor = g_textures[0].Sample(g_sam_0, input.uv);
+    float4 texColor = g_textures.Sample(g_sam_0, input.uv);
     return float4(color, alpha) * texColor;
 }
 
