@@ -47,14 +47,6 @@ void RenderTargetGroup::Create(RENDER_TARGET_GROUP_TYPE groupType, vector<Render
 		_resourceToTarget[i] = CD3DX12_RESOURCE_BARRIER::Transition(_rtVec[i].target->GetTex2D().Get(),
 			D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	}
-
-	// 스크린 텍스처로 첫 번째 렌더 타겟 설정
-	if (_rtCount > 0)
-	{
-		_screenTexture = rtVec[0].target;
-	}
-
-	CreateSRVForScreenTexture();
 }
 
 // 렌더 타겟과 깊이/스텐실 뷰를 출력 병합기(OM)에 설정
@@ -113,58 +105,4 @@ void RenderTargetGroup::WaitTargetToResource()
 void RenderTargetGroup::WaitResourceToTarget()
 {
 	GRAPHICS_CMD_LIST->ResourceBarrier(_rtCount, _resourceToTarget);
-}
-
-// 첫 번째 렌더 타겟을 스크린 텍스쳐로 설정
-void RenderTargetGroup::SetScreenTexture()
-{
-	if (_rtCount > 0)
-	{
-		_screenTexture = _rtVec[0].target;
-	}
-}
-
-void RenderTargetGroup::CreateSRVForScreenTexture()
-{
-	// 더 강력한 유효성 검사
-	if (!_screenTexture || !_screenTexture->GetTex2D())
-	{
-		return;
-	}
-
-	// 실제 텍스처 속성 가져오기
-	D3D12_RESOURCE_DESC texDesc = _screenTexture->GetTex2D()->GetDesc();
-
-	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	srvHeapDesc.NumDescriptors = 1;
-	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	srvHeapDesc.NodeMask = 0;
-
-	ComPtr<ID3D12DescriptorHeap> srvHeap;
-	HRESULT hr = DEVICE->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&srvHeap));
-	if (FAILED(hr)) return;
-
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = texDesc.Format;  // 실제 텍스처 포맷 사용
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.Texture2D.MipLevels = texDesc.MipLevels;
-
-	DEVICE->CreateShaderResourceView(_screenTexture->GetTex2D().Get(), &srvDesc,
-		srvHeap->GetCPUDescriptorHandleForHeapStart());
-
-	_screenTextureSRVHeap = srvHeap;
-}
-
-void RenderTargetGroup::BindScreenTextureToShader()
-{
-	if (!_screenTextureSRVHeap)
-		return;
-
-	ID3D12DescriptorHeap* heaps[] = { _screenTextureSRVHeap.Get() };
-	GRAPHICS_CMD_LIST->SetDescriptorHeaps(_countof(heaps), heaps);
-
-	// t2 레지스터에 바인딩
-	GRAPHICS_CMD_LIST->SetGraphicsRootDescriptorTable(1, _screenTextureSRVHeap->GetGPUDescriptorHandleForHeapStart());
 }

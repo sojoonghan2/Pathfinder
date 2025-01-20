@@ -58,18 +58,25 @@ shared_ptr<Camera> Scene::GetMainCamera()
 
 void Scene::Render()
 {
+	// _light 벡터에서 모든 광원 데이터를 가져와 글로벌 상수버퍼에 저장
 	PushLightData();
-
+	
+	// 각 렌더 타겟 그룹 초기화
 	ClearRTV();
 
+	// 그림자 렌더링
 	RenderShadow(); 
 	
+	// 디퍼드 렌더링
 	RenderDeferred();
 
+	// 조명 렌더링
 	RenderLights();	
 
+	// 최종 렌더링
 	RenderFinal();
 
+	// 메인 카메라와 나머지 카메라에서 전방 렌더링
 	RenderForward();
 }
 
@@ -99,7 +106,6 @@ void Scene::RenderShadow()
 	}
 
 	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->WaitTargetToResource();
-	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->SetScreenTexture();
 }
 
 void Scene::RenderDeferred()
@@ -112,7 +118,6 @@ void Scene::RenderDeferred()
 	mainCamera->Render_Deferred();
 
 	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->WaitTargetToResource();
-	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->SetScreenTexture();
 }
 
 void Scene::RenderLights()
@@ -130,7 +135,6 @@ void Scene::RenderLights()
 	}
 
 	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->WaitTargetToResource();
-	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->SetScreenTexture();
 }
 
 void Scene::RenderFinal()
@@ -138,9 +142,6 @@ void Scene::RenderFinal()
 	// Swapchain OMSet
 	int8 backIndex = GEngine->GetSwapChain()->GetBackBufferIndex();
 	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->OMSetRenderTargets(1, backIndex);
-
-	// 스크린 텍스처를 t2에 바인딩
-	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->BindScreenTextureToShader();
 
 	GET_SINGLE(Resources)->Get<Material>(L"Final")->PushGraphicsData();
 	GET_SINGLE(Resources)->Get<Mesh>(L"Rectangle")->Render();

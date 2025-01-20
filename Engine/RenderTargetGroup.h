@@ -50,10 +50,6 @@ public:
 	void WaitTargetToResource();
 	void WaitResourceToTarget();
 
-	void SetScreenTexture();
-	void CreateSRVForScreenTexture();
-	void BindScreenTextureToShader();
-
 private:
 	RENDER_TARGET_GROUP_TYPE		_groupType;
 	vector<RenderTarget>			_rtVec;
