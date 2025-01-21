@@ -49,7 +49,7 @@ void RenderTargetGroup::Create(RENDER_TARGET_GROUP_TYPE groupType, vector<Render
 	}
 }
 
-// ·»´õ Å¸°Ù°ú ±íÀÌ/½ºÅÙ½Ç ºä¸¦ Ãâ·Â º´ÇÕ±â(OM)¿¡ ¼³Á¤
+// ÃÖÁ¾ÀûÀÎ ·»´õ Å¸°Ù°ú ±íÀÌ/½ºÅÙ½Ç ºä¸¦ Ãâ·Â º´ÇÕ±â(OM)¿¡ ¼³Á¤
 void RenderTargetGroup::OMSetRenderTargets(uint32 count, uint32 offset)
 {
 	D3D12_VIEWPORT vp = D3D12_VIEWPORT{ 0.f, 0.f, _rtVec[0].target->GetWidth() , _rtVec[0].target->GetHeight(), 0.f, 1.f };
@@ -63,6 +63,7 @@ void RenderTargetGroup::OMSetRenderTargets(uint32 count, uint32 offset)
 	GRAPHICS_CMD_LIST->OMSetRenderTargets(count, &rtvHandle, FALSE/*1°³*/, &_dsvHeapBegin);
 }
 
+// ·»´õ Å¸°Ù ±×·ìµéÀÇ ·»´õ Å¸°Ù°ú ±íÀÌ/½ºÅÙ½Ç ºä¸¦ Ãâ·Â º´ÇÕ±â(OM)¿¡ ¼³Á¤
 void RenderTargetGroup::OMSetRenderTargets()
 {
 	D3D12_VIEWPORT vp = D3D12_VIEWPORT{ 0.f, 0.f, _rtVec[0].target->GetWidth() , _rtVec[0].target->GetHeight(), 0.f, 1.f };

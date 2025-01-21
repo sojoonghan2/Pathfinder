@@ -944,3 +944,15 @@ void Resources::CreateDefaultMaterial()
 		Add<Material>(L"Water", material);
 	}
 }
+
+shared_ptr<Texture> Resources::CreateRenderTargetTexture(const wstring& name, DXGI_FORMAT format, uint32 width, uint32 height)
+{
+	shared_ptr<Texture> texture = make_shared<Texture>();
+
+	texture->Create(format, width, height,
+		CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+		D3D12_HEAP_FLAG_NONE,
+		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+
+	return texture;
+}
