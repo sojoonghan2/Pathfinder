@@ -31,7 +31,7 @@
 
 #include "SphereCollider.h"
 
-#define PARTICLEDEBUG	TRUE
+#define PARTICLEDEBUG	FALSE
 
 ParticleScene::ParticleScene()
 {
