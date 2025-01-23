@@ -63,46 +63,12 @@ void Engine::Render()
 
 void Engine::RenderBegin()
 {
-	shared_ptr<Texture> renderTargetTexture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->GetRTTexture(0);
-
-	GET_SINGLE(Resources)->SetRenderTargetTexture(renderTargetTexture);
-
-	// 리소스 상태 추적 및 조건부 베리어 호출
-	static D3D12_RESOURCE_STATES currentState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	if (currentState != D3D12_RESOURCE_STATE_RENDER_TARGET)
-	{
-		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			renderTargetTexture->GetTex2D().Get(),
-			currentState,
-			D3D12_RESOURCE_STATE_RENDER_TARGET
-		);
-
-		GRAPHICS_CMD_LIST->ResourceBarrier(1, &barrier);
-		currentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	}
-
 	_graphicsCmdQueue->RenderBegin();
 }
 
 void Engine::RenderEnd()
 {
 	_graphicsCmdQueue->RenderEnd();
-
-	shared_ptr<Texture> renderTargetTexture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->GetRTTexture(0);
-
-	// 리소스 상태 추적 및 조건부 베리어 호출
-	static D3D12_RESOURCE_STATES currentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	if (currentState != D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE)
-	{
-		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			renderTargetTexture->GetTex2D().Get(),
-			currentState,
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-		);
-
-		GRAPHICS_CMD_LIST->ResourceBarrier(1, &barrier);
-		currentState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	}
 }
 
 void Engine::ResizeWindow(int32 width, int32 height)

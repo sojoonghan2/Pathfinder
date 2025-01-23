@@ -16,8 +16,9 @@ TestPBRParticleSystem::TestPBRParticleSystem() : BaseParticleSystem()
 
 void TestPBRParticleSystem::FinalUpdate()
 {
-	shared_ptr<Texture> texture1 = GET_SINGLE(Resources)->GetRenderTargetTexture();
-	SetParticleTexture(1, texture1);
+	shared_ptr<Texture> texture =
+		GET_SINGLE(Resources)->GetRenderTargetTexture();
+	SetParticleTexture(0, texture);
 
 	BaseParticleSystem::FinalUpdate();
 }

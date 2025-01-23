@@ -145,6 +145,11 @@ void Scene::RenderFinal()
 
 	GET_SINGLE(Resources)->Get<Material>(L"Final")->PushGraphicsData();
 	GET_SINGLE(Resources)->Get<Mesh>(L"Rectangle")->Render();
+
+	shared_ptr<Texture> renderTargetTexture =
+		GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->GetRTTexture(backIndex);
+
+	GET_SINGLE(Resources)->SetRenderTargetTexture(renderTargetTexture);
 }
 
 void Scene::RenderForward()
