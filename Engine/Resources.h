@@ -38,13 +38,13 @@ public:
 
 	shared_ptr<Texture> CreateTextureFromResource(const wstring& name, ComPtr<ID3D12Resource> tex2D);
 
-	shared_ptr<Texture> CreateRenderTargetTexture(const wstring& name, DXGI_FORMAT format, uint32 width, uint32 height);
-	
 	shared_ptr<class MeshData> LoadFBX(const wstring& path);
 	shared_ptr<class MeshData> LoadBIN(const wstring& path);
 
 	void SetRenderTargetTexture(shared_ptr<Texture> renderTargetTexture) { _renderTargetTexture = renderTargetTexture; }
 	shared_ptr<Texture> GetRenderTargetTexture() { return _renderTargetTexture; }
+
+	shared_ptr<Texture> CloneTexture(shared_ptr<Texture> originalTexture);
 
 private:
 	void CreateDefaultShader();

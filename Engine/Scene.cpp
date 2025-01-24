@@ -149,7 +149,11 @@ void Scene::RenderFinal()
 	shared_ptr<Texture> renderTargetTexture =
 		GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->GetRTTexture(backIndex);
 
-	GET_SINGLE(Resources)->SetRenderTargetTexture(renderTargetTexture);
+	// 복사본 생성
+	shared_ptr<Texture> copiedTexture = GET_SINGLE(Resources)->CloneTexture(renderTargetTexture);
+
+	// 복사본을 Resources에 설정
+	GET_SINGLE(Resources)->SetRenderTargetTexture(copiedTexture);
 }
 
 void Scene::RenderForward()
