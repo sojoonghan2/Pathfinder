@@ -14,7 +14,6 @@ struct Particle
     float3 padding;
 };
 
-// 그래픽스 셰이더
 // StructuredBuffer 정의
 StructuredBuffer<Particle> g_data : register(t9);
 
@@ -34,11 +33,7 @@ struct VS_OUT
     float id : ID;
 };
 
-// VS_MAIN
-// g_float_0        : Start Scale
-// g_float_1        : End Scale
-// g_textures[0]    : Particle Texture
-
+// Vertex Shader
 VS_OUT VS_Main(VS_IN input)
 {
     VS_OUT output = (VS_OUT) 0.f;
@@ -60,7 +55,7 @@ struct GS_OUT
     uint id : SV_InstanceID;
 };
 
-// 파티클의 현재 수명 비율에 따라 크기를 계산하고, 화면에 사각형 형태로 확장
+// Geometry Shader
 [maxvertexcount(6)]
 void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 {
@@ -74,7 +69,6 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     if (0 == g_data[id].alive)
         return;
 
-    // 파티클 수명에 따른 진행률 계산
     float ratio = g_data[id].curTime / g_data[id].lifeTime;
     float scale = ((g_float_1 - g_float_0) * ratio + g_float_0) / 2.f;
 
@@ -90,13 +84,13 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     output[2].position = mul(output[2].position, g_matProjection);
     output[3].position = mul(output[3].position, g_matProjection);
 
-    // uv
+    // UV
     output[0].uv = float2(0.f, 0.f);
     output[1].uv = float2(1.f, 0.f);
     output[2].uv = float2(1.f, 1.f);
     output[3].uv = float2(0.f, 1.f);
 
-    // id
+    // ID
     output[0].id = id;
     output[1].id = id;
     output[2].id = id;
@@ -113,54 +107,74 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     outputStream.RestartStrip();
 }
 
-float4 PS_Main(GS_OUT input) : SV_Target
+// UV 계산 함수 추가
+float2 ComputeUVOffset(float4 position, float scale)
 {
-    return g_textures1.Sample(g_sam_0, input.uv);
+    float2 uvOffset = position.xy / position.w; // NDC 좌표 (-1~1)
+    uvOffset = uvOffset * 0.5f + 0.5f; // UV 좌표 (0~1)
+
+    // 파티클 크기만큼 UV를 조정
+    uvOffset += float2(scale, scale);
+    return saturate(uvOffset);
 }
 
+// Pixel Shader
+float4 PS_Main(GS_OUT input) : SV_Target
+{
+    // 파티클 텍스처 샘플링
+    float4 particleColor = g_textures.Sample(g_sam_0, input.uv);
+
+    // 원 모양 UV 처리
+    float2 center = float2(0.5, 0.5); // 원의 중심
+    float distance = length(input.uv - center);
+
+    // 원 밖의 영역 투명 처리
+    if (distance > 0.5f)
+    {
+        particleColor.a = 0.0f; // 투명도 설정
+    }
+
+    // 굴절 UV 계산
+    float2 refractedUV = input.uv + (particleColor.rg - 0.5f) * 0.05f; // 굴절 강도 조정
+    refractedUV = saturate(refractedUV); // UV 좌표 범위 제한 (0~1)
+
+    // 렌더 타겟 텍스처에서 굴절된 픽셀 샘플링
+    float4 backgroundColor = g_textures1.Sample(g_sam_0, refractedUV);
+
+    // 파티클과 배경 혼합
+    return lerp(backgroundColor, particleColor, particleColor.a); // 투명도 기반 혼합
+}
+
+// Compute Shader
 struct ComputeShared
 {
     int addCount;
     float3 padding;
 };
 
-// 컴퓨트 셰이더 입/출력
-// 파티클 데이터가 저장된 버퍼
 RWStructuredBuffer<Particle> g_particle : register(u0);
-// 활성화할 파티클 수를 관리하는 공유 데이터
 RWStructuredBuffer<ComputeShared> g_shared : register(u1);
 
-// 그룹 공유 변수 (모든 스레드에서 공통으로 사용)
-groupshared int isGenerated; // 0: 생성되지 않음, 1: 생성됨
+groupshared int isGenerated;
 
-// CS_Main
-// g_vec2_1 : 델타 시간 / 누적 시간
-// g_int_0  : 최대 파티클 수
-// g_int_1  : 새로 활성화할 파티클 수
-// g_vec4_0 : 최소/최대 수명과 속도
 [numthreads(1, 1, 1)]
 void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 {
-    // 초기화
     if (threadIndex.x == 0)
         isGenerated = 0;
-    
+
     int addCount = g_int_1;
     float maxLifeTime = g_vec4_0.y;
-    
-    // 활성화 가능한 파티클 수 관리
+
     g_shared[0].addCount = addCount;
-    // 스레드 동기화
     GroupMemoryBarrierWithGroupSync();
 
-    // 비활성 파티클 활성화
     if (g_particle[threadIndex.x].alive == 0 && g_shared[0].addCount > 0 && isGenerated == 0)
     {
         g_particle[threadIndex.x].worldPos = float3(0.0f, 0.0f, 0.0f);
         g_particle[threadIndex.x].lifeTime = g_vec4_0.y;
         g_particle[threadIndex.x].alive = 1;
 
-        // isGenerated 값을 1로 설정
         InterlockedMax(isGenerated, 1);
     }
 }

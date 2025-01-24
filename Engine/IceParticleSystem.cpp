@@ -3,10 +3,10 @@
 
 IceParticleSystem::IceParticleSystem() : BaseParticleSystem()
 {
-	SetParticleInterval(0.9f, 0.0f);
+	SetParticleInterval(0.01f, 0.0f);
 	SetParticleLifeTime(3.0f, 5.0f);
 	SetParticleSpeed(1.0f, 5.0f);
-	SetParticleScale(1000.0f, 2000.0f);
+	SetParticleScale(30.0f, 50.0f);
 	SetDuration(1.0f);
 	SetOnceParticleNum(5);
 	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"IceParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"IceComputeParticle")->Clone());
