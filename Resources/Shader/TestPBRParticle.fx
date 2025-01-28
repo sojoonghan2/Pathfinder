@@ -135,7 +135,7 @@ float4 PS_Main(GS_OUT input) : SV_Target
     }
 
     // ±¼Àý UV °è»ê
-    float2 refractedUV = input.uv + (particleColor.rg - 0.5f) * 0.05f; // ±¼Àý °­µµ Á¶Á¤
+    float2 refractedUV = input.uv + (particleColor.rg - 0.5f) * 0.005f; // ±¼Àý °­µµ Á¶Á¤
     refractedUV = saturate(refractedUV); // UV ÁÂÇ¥ ¹üÀ§ Á¦ÇÑ (0~1)
 
     // ·»´õ Å¸°Ù ÅØ½ºÃ³¿¡¼­ ±¼ÀýµÈ ÇÈ¼¿ »ùÇÃ¸µ

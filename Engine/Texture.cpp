@@ -85,14 +85,22 @@ void Texture::Load(const wstring& path)
 
 void Texture::Create(DXGI_FORMAT format, uint32 width, uint32 height,
 	const D3D12_HEAP_PROPERTIES& heapProperty, D3D12_HEAP_FLAGS heapFlags,
-	D3D12_RESOURCE_FLAGS resFlags, Vec4 clearColor)
+	D3D12_RESOURCE_FLAGS resFlags, Vec4 clearColor, uint16 mipLevels)  // mipLevels 파라미터 추가
 {
-	_desc = CD3DX12_RESOURCE_DESC::Tex2D(format, width, height);
-	_desc.Flags = resFlags;
+	// CD3DX12_RESOURCE_DESC 생성 시 mipLevels 지정
+	_desc = CD3DX12_RESOURCE_DESC::Tex2D(
+		format,     // 포맷
+		width,      // 너비
+		height,     // 높이
+		1,          // arraySize
+		mipLevels,  // 전달받은 mipLevels 사용
+		1,          // sampleCount
+		0,          // sampleQuality
+		resFlags    // 리소스 플래그
+	);
 
 	D3D12_CLEAR_VALUE optimizedClearValue = {};
 	D3D12_CLEAR_VALUE* pOptimizedClearValue = nullptr;
-
 	D3D12_RESOURCE_STATES resourceStates = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON;
 
 	// 뎁스-스텐실용인지 렌더 타겟용인지 플래그를 확인하여 리소스 상태를 초기화
@@ -118,7 +126,6 @@ void Texture::Create(DXGI_FORMAT format, uint32 width, uint32 height,
 		resourceStates,
 		pOptimizedClearValue,
 		IID_PPV_ARGS(&_tex2D));
-
 	assert(SUCCEEDED(hr));
 
 	// 해당 리소스를 실제로 사용 가능하도록 추가적인 뷰(RTV, SRV, DSV 등)를 생성하고 설정

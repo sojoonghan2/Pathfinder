@@ -947,6 +947,68 @@ void Resources::CreateDefaultMaterial()
 
 shared_ptr<Texture> Resources::CloneTexture(shared_ptr<Texture> originalTexture)
 {
-	// 원본 텍스쳐를 클론해서 복사본을 만드는 함수를 만들어야 함
-	return originalTexture;
+	// 1. 원본 텍스처의 속성 가져오기
+	D3D12_RESOURCE_DESC desc = originalTexture->GetTex2D()->GetDesc();
+
+	// 2. 복사본 텍스처 생성
+	shared_ptr<Texture> cloneTexture = make_shared<Texture>();
+
+	// CD3DX12_RESOURCE_DESC를 사용하여 명시적으로 모든 속성 설정
+	D3D12_RESOURCE_DESC newDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+		desc.Format,
+		desc.Width,
+		desc.Height,
+		1,                  // arraySize
+		desc.MipLevels,    // 원본과 동일한 MipLevels 사용
+		1,                  // sampleCount
+		0,                  // sampleQuality
+		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET
+	);
+
+	cloneTexture->Create(
+		newDesc.Format,
+		static_cast<uint32>(newDesc.Width),
+		static_cast<uint32>(newDesc.Height),
+		CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+		D3D12_HEAP_FLAG_NONE,
+		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET
+	);
+
+	// 나머지 코드는 동일
+	// 3. Source 텍스처 상태 전환
+	D3D12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(
+		originalTexture->GetTex2D().Get(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_COPY_SOURCE
+	);
+	GRAPHICS_CMD_LIST->ResourceBarrier(1, &barrier1);
+
+	// 4. Destination 텍스처 상태 전환
+	D3D12_RESOURCE_BARRIER barrier2 = CD3DX12_RESOURCE_BARRIER::Transition(
+		cloneTexture->GetTex2D().Get(),
+		D3D12_RESOURCE_STATE_COMMON,
+		D3D12_RESOURCE_STATE_COPY_DEST
+	);
+	GRAPHICS_CMD_LIST->ResourceBarrier(1, &barrier2);
+
+	// 5. 텍스처 데이터 복사
+	GRAPHICS_CMD_LIST->CopyResource(cloneTexture->GetTex2D().Get(), originalTexture->GetTex2D().Get());
+
+	// 6. 상태 복원: Source 텍스처
+	D3D12_RESOURCE_BARRIER barrier3 = CD3DX12_RESOURCE_BARRIER::Transition(
+		originalTexture->GetTex2D().Get(),
+		D3D12_RESOURCE_STATE_COPY_SOURCE,
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+	GRAPHICS_CMD_LIST->ResourceBarrier(1, &barrier3);
+
+	// 7. 상태 복원: Destination 텍스처
+	D3D12_RESOURCE_BARRIER barrier4 = CD3DX12_RESOURCE_BARRIER::Transition(
+		cloneTexture->GetTex2D().Get(),
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	GRAPHICS_CMD_LIST->ResourceBarrier(1, &barrier4);
+
+	return cloneTexture;
 }
