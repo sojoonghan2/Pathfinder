@@ -85,7 +85,7 @@ void Texture::Load(const wstring& path)
 
 void Texture::Create(DXGI_FORMAT format, uint32 width, uint32 height,
 	const D3D12_HEAP_PROPERTIES& heapProperty, D3D12_HEAP_FLAGS heapFlags,
-	D3D12_RESOURCE_FLAGS resFlags, Vec4 clearColor, uint16 mipLevels)  // mipLevels 파라미터 추가
+	D3D12_RESOURCE_FLAGS resFlags, Vec4 clearColor, uint16 mipLevels)
 {
 	// CD3DX12_RESOURCE_DESC 생성 시 mipLevels 지정
 	_desc = CD3DX12_RESOURCE_DESC::Tex2D(

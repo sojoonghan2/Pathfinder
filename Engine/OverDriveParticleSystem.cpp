@@ -12,11 +12,13 @@ OverDriveParticleSystem::OverDriveParticleSystem() : BaseParticleSystem()
 	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"OverDriveParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"OverDriveComputeParticle")->Clone());
 	shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"OverDriveParticleTexture", L"..\\Resources\\Texture\\Particle\\overDrive.png");
 	SetParticleTexture(0, texture);
-	shared_ptr<Texture> textur2 = GET_SINGLE(Resources)->Load<Texture>(L"OverDriveWhiteParticleTexture", L"..\\Resources\\Texture\\Particle\\razer.png");
-	SetParticleTexture(1, textur2);
+	
 }
 
 void OverDriveParticleSystem::FinalUpdate()
 {
+	shared_ptr<Texture> textur2 = GET_SINGLE(Resources)->GetRenderTargetTexture();
+	SetParticleTexture(1, textur2);
+
 	BaseParticleSystem::FinalUpdate();
 }

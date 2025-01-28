@@ -75,34 +75,59 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     uint id = (uint) vtx.id;
     if (0 == g_data[id].alive)
         return;
-
-    // 파티클 수명 진행률 비율 계산
+    
     float ratio = g_data[id].curTime / g_data[id].lifeTime;
-    float scale = ((g_float_1 - g_float_0) * ratio + g_float_0) / 2.f;
 
-    // View Space
-    output[0].position = vtx.viewPos + float4(-scale, scale, 0.f, 0.f);
-    output[1].position = vtx.viewPos + float4(scale, scale, 0.f, 0.f);
-    output[2].position = vtx.viewPos + float4(scale, -scale, 0.f, 0.f);
-    output[3].position = vtx.viewPos + float4(-scale, -scale, 0.f, 0.f);
+    // 기본 스케일 값
+    float baseScale = ((g_float_1 - g_float_0) * ratio + g_float_0) / 2.f;
 
-    // Projection Space
-    output[0].position = mul(output[0].position, g_matProjection);
-    output[1].position = mul(output[1].position, g_matProjection);
-    output[2].position = mul(output[2].position, g_matProjection);
-    output[3].position = mul(output[3].position, g_matProjection);
+    // 랜덤 스케일 적용 (X, Y 방향)
+    float scaleX = baseScale * (1.0f + (Rand(float2(id, ratio)) * 0.5f - 0.25f));
+    float scaleY = baseScale * (1.0f + (Rand(float2(ratio, id)) * 0.5f - 0.25f));
 
-    // uv
+    // 랜덤 회전 적용
+    float angle = Rand(float2(id, ratio)) * PI * 2.0f;
+    float cosA = cos(angle);
+    float sinA = sin(angle);
+
+    // 정점 위치 배열
+    float2 rotatedPos[4] =
+    {
+        float2(-scaleX, scaleY),
+        float2(scaleX, scaleY),
+        float2(scaleX, -scaleY),
+        float2(-scaleX, -scaleY)
+    };
+
+// 회전 변형 적용
+    for (int i = 0; i < 4; i++)
+    {
+        rotatedPos[i] = float2(rotatedPos[i].x * cosA - rotatedPos[i].y * sinA,
+                           rotatedPos[i].x * sinA + rotatedPos[i].y * cosA);
+    }
+
+    // View Space 좌표 적용
+    output[0].position = vtx.viewPos + float4(rotatedPos[0], 0.f, 0.f);
+    output[1].position = vtx.viewPos + float4(rotatedPos[1], 0.f, 0.f);
+    output[2].position = vtx.viewPos + float4(rotatedPos[2], 0.f, 0.f);
+    output[3].position = vtx.viewPos + float4(rotatedPos[3], 0.f, 0.f);
+
+    // Projection 변환
+    for (int i = 0; i < 4; i++)
+    {
+        output[i].position = mul(output[i].position, g_matProjection);
+    }
+
+    // uv 및 id 설정
     output[0].uv = float2(0.f, 0.f);
     output[1].uv = float2(1.f, 0.f);
     output[2].uv = float2(1.f, 1.f);
     output[3].uv = float2(0.f, 1.f);
 
-    // id
-    output[0].id = id;
-    output[1].id = id;
-    output[2].id = id;
-    output[3].id = id;
+    for (int i = 0; i < 4; i++)
+    {
+        output[i].id = id;
+    }
 
     // 삼각형 스트립 추가
     outputStream.Append(output[0]);
@@ -119,17 +144,18 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 float4 PS_Main(GS_OUT input) : SV_Target
 {
     float ratio = g_data[input.id].curTime / g_data[input.id].lifeTime;
-
-    // 색상: 빨강 → 어두운 빨강 → 검은색
-    float3 startColor = float3(1.0f, 1.0f, 1.0f); // 밝은 빨강
-    float3 endColor = float3(0.0f, 0.0f, 0.0f); // 검은색
+    float3 startColor = float3(1.0f, 0.5f, 0.2f);
+    float3 endColor = float3(0.1f, 0.05f, 0.02f);
 
     float3 color = lerp(startColor, endColor, ratio);
+    float alpha = 0.8f - ratio;
 
-    // 투명도 효과
-    float alpha = 0.8f - ratio; // 서서히 투명해짐
+    // 랜덤 UV 변형 적용
+    float2 uvOffset = float2(Rand(float2(input.id, ratio)) * 0.2f - 0.1f,
+                             Rand(float2(ratio, input.id)) * 0.2f - 0.1f);
+    float2 sampledUV = saturate(input.uv + uvOffset);
 
-    float4 texColor = g_textures.Sample(g_sam_0, input.uv);
+    float4 texColor = g_textures.Sample(g_sam_0, sampledUV);
     return float4(color, alpha) * texColor;
 }
 
