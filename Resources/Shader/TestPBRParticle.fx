@@ -129,20 +129,18 @@ float4 PS_Main(GS_OUT input) : SV_Target
     float distance = length(input.uv - center);
 
     // 원 밖의 영역 투명 처리
-    if (distance > 0.5f)
-    {
-        particleColor.a = 0.0f; // 투명도 설정
-    }
+    if (distance > 0.5f) particleColor.a = 0.0f;
 
-    // 굴절 UV 계산
-    float2 refractedUV = input.uv + (particleColor.rg - 0.5f) * 0.005f; // 굴절 강도 조정
-    refractedUV = saturate(refractedUV); // UV 좌표 범위 제한 (0~1)
+    // 굴절 UV 계산(* 굴절 강도)
+    float2 refractedUV = input.uv + (particleColor.rg - 0.5f) * 0.05f;
+    // UV 좌표 범위 제한
+    refractedUV = saturate(refractedUV);
 
     // 렌더 타겟 텍스처에서 굴절된 픽셀 샘플링
     float4 backgroundColor = g_textures1.Sample(g_sam_0, refractedUV);
 
     // 파티클과 배경 혼합
-    return lerp(backgroundColor, particleColor, particleColor.a); // 투명도 기반 혼합
+    return lerp(backgroundColor, particleColor, particleColor.a);
 }
 
 // Compute Shader
