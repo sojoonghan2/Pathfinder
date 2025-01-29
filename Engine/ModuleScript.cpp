@@ -15,21 +15,45 @@ void ModuleScript::LateUpdate()
 
 void ModuleScript::KeyboardInput()
 {
-    // 이동 처리
-    if (INPUT->GetButton(KEY_TYPE::I))
+    // 모듈 보여주기
+    if (INPUT->GetButton(KEY_TYPE::I) && (way == WAIT))
     {
-        select = true;
+        alive = true;
+        way = UP;
     }
 
-    if (select)
+    // 이동
+    if (alive && (way == UP))
     {
         Vec3 pos = GetTransform()->GetLocalPosition();
         pos += Normalization(GetTransform()->GetUp()) * 1000.0f * DELTA_TIME;
         GetTransform()->SetLocalPosition(pos);
+
+        if (GetTransform()->GetLocalPosition().y > 0.0f)
+        {
+            way = WAIT;
+        }
+    }
+
+    // 이동
+    if (alive && (way == DOWN))
+    {
+        Vec3 pos = GetTransform()->GetLocalPosition();
+        pos -= Normalization(GetTransform()->GetUp()) * 1000.0f * DELTA_TIME;
+        GetTransform()->SetLocalPosition(pos);
+
+        if (GetTransform()->GetLocalPosition().y < -800.0f)
+        {
+            way = WAIT;
+            alive = false;
+        }
     }
 }
 
 void ModuleScript::MouseInput()
 {
-    
+    if (INPUT->GetButtonDown(KEY_TYPE::LBUTTON))
+    {
+        if (alive && (way == WAIT)) way = DOWN;
+    }
 }

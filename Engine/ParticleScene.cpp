@@ -246,7 +246,7 @@ ParticleScene::ParticleScene()
 		obj->AddComponent(make_shared<Transform>());
 		obj->AddComponent(make_shared<ModuleScript>());
 		obj->GetTransform()->SetLocalScale(Vec3(300.f, 500.f, 100.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(-400.f + (i * 400), 0.f, 1.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(-400.f + (i * 400), -800.f, 1.f));
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();

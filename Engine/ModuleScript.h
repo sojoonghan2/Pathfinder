@@ -1,6 +1,8 @@
 #pragma once
 #include "MonoBehaviour.h"
 
+enum { UP, DOWN, WAIT };
+
 class ModuleScript : public MonoBehaviour
 {
 public:
@@ -10,5 +12,6 @@ public:
 	void MouseInput();
 
 private:
-	bool select = false;
+	bool alive = false;
+	int way = WAIT;
 };
