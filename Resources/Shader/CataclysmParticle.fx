@@ -78,39 +78,41 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     
     float ratio = g_data[id].curTime / g_data[id].lifeTime;
 
-    // 기본 스케일 값
+    // 기본 크기 설정
     float baseScale = ((g_float_1 - g_float_0) * ratio + g_float_0) / 2.f;
 
-    // 랜덤 스케일 적용 (X, Y 방향)
-    float scaleX = baseScale * (1.0f + (Rand(float2(id, ratio)) * 0.5f - 0.25f));
-    float scaleY = baseScale * (1.0f + (Rand(float2(ratio, id)) * 0.5f - 0.25f));
+    // 랜덤한 크기 변형
+    float scaleX = baseScale * (1.2f + (Rand(float2(id, ratio)) * 0.5f - 0.25f));
+    float scaleY = baseScale * (1.2f + (Rand(float2(ratio, id)) * 0.5f - 0.25f));
 
-    // 랜덤 회전 적용
+    // 랜덤 회전 추가 (균열이 자연스럽게 보이도록)
     float angle = Rand(float2(id, ratio)) * PI * 2.0f;
     float cosA = cos(angle);
     float sinA = sin(angle);
 
-    // 정점 위치 배열
-    float2 rotatedPos[4] =
+    // 비대칭한 균열 모양을 위해 다각형 형태 생성
+    float2 crackedShape[4] =
     {
-        float2(-scaleX, scaleY),
-        float2(scaleX, scaleY),
-        float2(scaleX, -scaleY),
-        float2(-scaleX, -scaleY)
+        float2(-scaleX * 1.2f, scaleY * 0.8f),
+        float2(scaleX * 0.9f, scaleY * 1.2f),
+        float2(scaleX * 1.2f, -scaleY * 0.9f),
+        float2(-scaleX * 0.8f, -scaleY * 1.1f)
     };
 
-// 회전 변형 적용
+    // 회전 적용
     for (int i = 0; i < 4; i++)
     {
-        rotatedPos[i] = float2(rotatedPos[i].x * cosA - rotatedPos[i].y * sinA,
-                           rotatedPos[i].x * sinA + rotatedPos[i].y * cosA);
+        crackedShape[i] = float2(
+            crackedShape[i].x * cosA - crackedShape[i].y * sinA,
+            crackedShape[i].x * sinA + crackedShape[i].y * cosA
+        );
     }
 
-    // View Space 좌표 적용
-    output[0].position = vtx.viewPos + float4(rotatedPos[0], 0.f, 0.f);
-    output[1].position = vtx.viewPos + float4(rotatedPos[1], 0.f, 0.f);
-    output[2].position = vtx.viewPos + float4(rotatedPos[2], 0.f, 0.f);
-    output[3].position = vtx.viewPos + float4(rotatedPos[3], 0.f, 0.f);
+    // View Space 적용
+    output[0].position = vtx.viewPos + float4(crackedShape[0], 0.f, 0.f);
+    output[1].position = vtx.viewPos + float4(crackedShape[1], 0.f, 0.f);
+    output[2].position = vtx.viewPos + float4(crackedShape[2], 0.f, 0.f);
+    output[3].position = vtx.viewPos + float4(crackedShape[3], 0.f, 0.f);
 
     // Projection 변환
     for (int i = 0; i < 4; i++)
@@ -144,18 +146,28 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 float4 PS_Main(GS_OUT input) : SV_Target
 {
     float ratio = g_data[input.id].curTime / g_data[input.id].lifeTime;
-    float3 startColor = float3(1.0f, 0.5f, 0.2f);
-    float3 endColor = float3(0.1f, 0.05f, 0.02f);
-
+    
+    // 균열 중심 색상
+    float3 startColor = float3(0.2f, 0.2f, 0.2f); // 짙은 회색 (바닥)
+    float3 endColor = float3(0.8f, 0.8f, 0.8f); // 흰색 (부서지는 경계)
+    
+    // 부드러운 색상 전환
     float3 color = lerp(startColor, endColor, ratio);
-    float alpha = 0.8f - ratio;
 
-    // 랜덤 UV 변형 적용
-    float2 uvOffset = float2(Rand(float2(input.id, ratio)) * 0.2f - 0.1f,
-                             Rand(float2(ratio, input.id)) * 0.2f - 0.1f);
+    // 거리 기반 알파값 조정
+    float2 center = float2(0.5f, 0.5f);
+    float dist = distance(input.uv, center);
+
+    float alpha = saturate(1.0f - dist * 2.0f); // 중심 1.0, 가장자리 0.0
+    alpha = pow(alpha, 2.5f); // 더 부드러운 흐려짐 효과
+
+    // 텍스처 샘플링 및 노이즈 적용
+    float2 uvOffset = float2(Rand(float2(input.id, ratio)) * 0.1f - 0.05f,
+                             Rand(float2(ratio, input.id)) * 0.1f - 0.05f);
     float2 sampledUV = saturate(input.uv + uvOffset);
-
+    
     float4 texColor = g_textures.Sample(g_sam_0, sampledUV);
+
     return float4(color, alpha) * texColor;
 }
 
@@ -256,26 +268,38 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     {
         // 현재 시간 업데이트
         g_particle[threadIndex.x].curTime += deltaTime;
-        
-        // 진행률 계산 (0~1 사이 값)
+
+        // 균열이 점점 넓어지도록 속도를 다르게 설정
         float progress = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
-        
-        // Z축 속도 계산
-        float ySpeed;
-        if (progress < 0.03f)
+
+        // 초기 속도는 빠르게, 점점 느려지도록 설정
+        float3 velocity = g_particle[threadIndex.x].worldDir; // 파편의 기본 이동 방향
+        float initialSpeed = 5000.0f; // 초기 강한 속도 (지면 충격)
+        float gravity = -5000.0f; // 중력 (파편이 떨어지게 만듦)
+    
+        // 랜덤한 바람 효과 적용 (X, Z 방향 확산)
+        float windFactor = 0.5f;
+        float windX = (Rand(float2(progress, threadIndex.x)) - 0.5f) * windFactor;
+        float windZ = (Rand(float2(threadIndex.x, progress)) - 0.5f) * windFactor;
+
+        // 초기에는 빠르게 튀어오름
+        if (progress < 0.01f)
         {
-            // 처음에는 빠르게 -z 방향으로 이동
-            ySpeed = 300.0f; // 빠른 속도, 값은 조정 가능
+            velocity.y += initialSpeed * (1.0f - progress); // 점점 감속
         }
-        else if (progress > 0.2f)
+        // 중력 적용 시작
+        else if (progress > 0.01f)
         {
-            // 0.5 이후에는 천천히 +z 방향으로 이동
-            ySpeed = -50.0f; // 느린 속도, 값은 조정 가능
+            velocity.y += gravity * deltaTime;
         }
-        
+
+        // X, Z 방향 확산 (바람 효과 추가)
+        velocity.x += windX * deltaTime;
+        velocity.z += windZ * deltaTime;
+
         // 위치 업데이트
-        g_particle[threadIndex.x].worldPos.y += ySpeed * deltaTime;
-        
+        g_particle[threadIndex.x].worldPos += velocity * deltaTime;
+
         // 수명이 다한 파티클 제거
         if (g_particle[threadIndex.x].curTime >= g_particle[threadIndex.x].lifeTime)
         {
