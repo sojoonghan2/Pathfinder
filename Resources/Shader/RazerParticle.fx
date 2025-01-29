@@ -6,16 +6,14 @@
 
 struct Particle
 {
-    float3  worldPos;
-    float   curTime;
-    float3  worldDir;
-    float   lifeTime;
-    int     alive;
-    float3  padding;
+    float3 worldPos;
+    float curTime;
+    float3 worldDir;
+    float lifeTime;
+    int alive;
+    float3 padding;
 };
 
-// 그래픽스 셰이더
-// StructuredBuffer 정의
 StructuredBuffer<Particle> g_data : register(t9);
 
 struct VS_IN
@@ -33,11 +31,6 @@ struct VS_OUT
     float2 uv : TEXCOORD;
     float id : ID;
 };
-
-// VS_MAIN
-// g_float_0        : Start Scale
-// g_float_1        : End Scale
-// g_textures[0]    : Particle Texture
 
 VS_OUT VS_Main(VS_IN input)
 {
@@ -57,52 +50,48 @@ struct GS_OUT
 {
     float4 position : SV_Position;
     float2 uv : TEXCOORD;
+    float lifeRatio : TEXCOORD1;
     uint id : SV_InstanceID;
 };
 
-// 파티클의 현재 수명 비율에 따라 크기를 계산하고, 화면에 사각형 형태로 확장
 [maxvertexcount(6)]
 void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 {
-    GS_OUT output[4] =
-    {
-        (GS_OUT) 0.f, (GS_OUT) 0.f, (GS_OUT) 0.f, (GS_OUT) 0.f
-    };
+    GS_OUT output[4] = { (GS_OUT) 0.f, (GS_OUT) 0.f, (GS_OUT) 0.f, (GS_OUT) 0.f };
 
     VS_OUT vtx = input[0];
     uint id = (uint) vtx.id;
     if (0 == g_data[id].alive)
         return;
 
-    // 파티클 수명 진행률 비율 계산
+    // 레이저 특성을 반영한 길이와 두께 조절
     float ratio = g_data[id].curTime / g_data[id].lifeTime;
-    float scale = ((g_float_1 - g_float_0) * ratio + g_float_0) / 2.f;
+    float thickness = ((g_float_1 - g_float_0) * ratio + g_float_0) / 2.f; // 두께
+    float length = ((g_float_1 - g_float_0) * ratio + g_float_0) * 2.f; // 길이
 
-    // View Space
-    output[0].position = vtx.viewPos + float4(-scale, scale, 0.f, 0.f);
-    output[1].position = vtx.viewPos + float4(scale, scale, 0.f, 0.f);
-    output[2].position = vtx.viewPos + float4(scale, -scale, 0.f, 0.f);
-    output[3].position = vtx.viewPos + float4(-scale, -scale, 0.f, 0.f);
+    // View Space에서 수평 방향으로 레이저 확장
+    // 수직(y축) 대신 수평(x축)으로 확장하도록 변경
+    output[0].position = vtx.viewPos + float4(-length, thickness, 0.f, 0.f);
+    output[1].position = vtx.viewPos + float4(length, thickness, 0.f, 0.f);
+    output[2].position = vtx.viewPos + float4(length, -thickness, 0.f, 0.f);
+    output[3].position = vtx.viewPos + float4(-length, -thickness, 0.f, 0.f);
 
-    // Projection Space
-    output[0].position = mul(output[0].position, g_matProjection);
-    output[1].position = mul(output[1].position, g_matProjection);
-    output[2].position = mul(output[2].position, g_matProjection);
-    output[3].position = mul(output[3].position, g_matProjection);
+    // Projection Space 변환
+    [unroll]
+    for (int i = 0; i < 4; ++i)
+    {
+        output[i].position = mul(output[i].position, g_matProjection);
+        output[i].lifeRatio = ratio;
+        output[i].id = id;
+    }
 
-    // uv
+    // UV 좌표 (가로로 늘어난 형태)
     output[0].uv = float2(0.f, 0.f);
     output[1].uv = float2(1.f, 0.f);
     output[2].uv = float2(1.f, 1.f);
     output[3].uv = float2(0.f, 1.f);
 
-    // id
-    output[0].id = id;
-    output[1].id = id;
-    output[2].id = id;
-    output[3].id = id;
-
-    // 삼각형 스트립 추가
+    // 삼각형 스트립 생성
     outputStream.Append(output[0]);
     outputStream.Append(output[1]);
     outputStream.Append(output[2]);
@@ -116,50 +105,58 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 
 float4 PS_Main(GS_OUT input) : SV_Target
 {
-    // 텍스처 색상 샘플링
+    // 레이저 효과를 위한 색상 계산
     float4 texColor = g_textures.Sample(g_sam_0, input.uv);
-
-    // UV 좌표에서 중심(0.5, 0.5)까지의 거리 계산
-    float2 center = float2(0.5f, 0.5f);
-    float dist = distance(input.uv, center);
-
-    // 거리 기반 알파값 계산 (멀어질수록 알파값 감소)
-    // dist가 0일 때 알파값 1, dist가 0.5 이상이면 알파값 0
-    float alpha = saturate(1.0f - dist * 2.0f);
-
-    // 텍스처 색상에 알파값 적용
-    texColor.a *= alpha;
-
-    return texColor;
+    
+    // 시간에 따라 변화하는 레이저 색상
+    float time = g_data[input.id].curTime * 5.0f;
+    float3 baseColor = float3(0.0f, 0.7f, 1.0f); // 기본 레이저 색상 (청색)
+    float3 glowColor = float3(1.0f, 1.0f, 1.0f); // 백색 글로우
+    
+    // 펄스 효과
+    float pulse = (sin(time) * 0.5f + 0.5f);
+    
+    // 중심선 효과
+    float centerLine = 1.0f - abs(input.uv.x - 0.5f) * 2.0f;
+    centerLine = pow(centerLine, 3.0f); // 더 선명한 중심선
+    
+    // 최종 색상 계산
+    float3 finalColor = lerp(baseColor, glowColor, centerLine * pulse);
+    
+    // 알파값 계산
+    float alpha = texColor.a * centerLine;
+    
+    // 끝부분 페이드아웃
+    float edgeFade = 1.0f - abs(input.uv.y - 0.5f) * 2.0f;
+    alpha *= edgeFade;
+    
+    // 수명 기반 페이드아웃
+    float fadeOut = 1.0f - input.lifeRatio;
+    alpha *= fadeOut;
+    
+    return float4(finalColor * 1.5f, alpha); // 전체적인 밝기 증가
 }
 
+// 컴퓨트 셰이더 부분
 struct ComputeShared
 {
     int addCount;
     float3 padding;
 };
 
-// 컴퓨트 셰이더 입/출력
-// 파티클 데이터가 저장된 버퍼
 RWStructuredBuffer<Particle> g_particle : register(u0);
-// 활성화할 파티클 수를 관리하는 공유 데이터
 RWStructuredBuffer<ComputeShared> g_shared : register(u1);
 
-// CS_Main
-// g_vec2_1 : 델타 시간 / 누적 시간
-// g_int_0  : 최대 파티클 수
-// g_int_1  : 새로 활성화할 파티클 수
-// g_vec4_0 : 최소/최대 수명과 속도
 [numthreads(1024, 1, 1)]
 void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 {
     if (threadIndex.x >= g_int_0)
         return;
 
-    // 초기 시작 범위
-    float minX = -50.0f, maxX = 50.0f;
-    float minY = -50.0f, maxY = 50.0f;
-    float minZ = -50.0f, maxZ = 50.0f;
+    // 레이저 시작 위치 범위 조정 (더 집중된 형태로)
+    float minX = -10.0f, maxX = 10.0f;
+    float minY = -10.0f, maxY = 10.0f;
+    float minZ = -10.0f, maxZ = 10.0f;
 
     int maxCount = g_int_0;
     int addCount = g_int_1;
@@ -170,15 +167,11 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     float minSpeed = g_vec4_0.z;
     float maxSpeed = g_vec4_0.w;
 
-    // 활성화 가능한 파티클 수 관리
     g_shared[0].addCount = addCount;
-    // 스레드 동기화
     GroupMemoryBarrierWithGroupSync();
 
-    // 비활성 파티클 활성화
     if (g_particle[threadIndex.x].alive == 0 && g_shared[0].addCount > 0)
     {
-        // 활성화 가능한 파티클 수 감소
         while (true)
         {
             int remaining = g_shared[0].addCount;
@@ -188,8 +181,8 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             int expected = remaining;
             int desired = remaining - 1;
             int originalValue;
-
             InterlockedCompareExchange(g_shared[0].addCount, expected, desired, originalValue);
+            
             if (originalValue == expected)
             {
                 g_particle[threadIndex.x].alive = 1;
@@ -197,67 +190,41 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             }
         }
 
-        // 레이저 파티클 연산
         if (g_particle[threadIndex.x].alive == 1)
         {
             float x = ((float) threadIndex.x / (float) maxCount) + accTime;
             float y = ((float) threadIndex.y / (float) maxCount) + accTime;
 
-            // XZ 좌표는 랜덤하게 배치
+            // 레이저 시작점 설정
             g_particle[threadIndex.x].worldPos = float3(
                 lerp(minX, maxX, Rand(float2(x, accTime))),
                 lerp(minY, maxY, Rand(float2(y, accTime))),
                 minZ
             );
 
-            // 방향: Z축으로 고정 (일직선 이동)
-            g_particle[threadIndex.x].worldDir = float3(0.0f, 0.0f, 1.0f); // Z축 방향 고정
-
-            // 파티클 수명 설정
+            // 직선 방향 유지
+            g_particle[threadIndex.x].worldDir = normalize(float3(0.0f, 0.0f, 1.0f));
+            
+            // 수명 및 시간 설정
             g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * Rand(float2(x * accTime, accTime))) + minLifeTime;
             g_particle[threadIndex.x].curTime = 0.f;
         }
-
     }
-    // 기존 파티클 업데이트
-    else
+    else if (g_particle[threadIndex.x].alive == 1)
     {
-        // 현재 프레임의 deltaTime을 더해 파티클의 경과 시간 업데이트
         g_particle[threadIndex.x].curTime += deltaTime;
         if (g_particle[threadIndex.x].lifeTime < g_particle[threadIndex.x].curTime)
         {
-            // lifeTime보다 curTime이 커지면 파티클 비활성화
             g_particle[threadIndex.x].alive = 0;
             return;
         }
 
-        // 현재 경과 시간 비율
         float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
-
-        // 수명 비율에 따라 속도 결정
         float speed = (maxSpeed - minSpeed) * ratio + minSpeed;
-
-        // 현재 위치 업데이트
+        
+        // 직선 운동 유지
         g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
-
-        // Z축 기준 회전 각도 계산 (시간에 따라 회전)
-        float rotationAngle = g_particle[threadIndex.x].curTime * 10.0f; // 각도 = 시간 * 속도 (radians)
-
-        // Z축 회전 변환 행렬
-        float cosTheta = cos(rotationAngle);
-        float sinTheta = sin(rotationAngle);
-
-        // 원래 위치
-        float3 originalPos = g_particle[threadIndex.x].worldPos;
-
-        // Z축 회전을 적용하여 새 위치 계산
-        g_particle[threadIndex.x].worldPos = float3(
-        cosTheta * originalPos.x - sinTheta * originalPos.y, // X축 회전
-        sinTheta * originalPos.x + cosTheta * originalPos.y, // Y축 회전
-        originalPos.z                                        // Z축 고정
-    );
     }
-
 }
 
 #endif

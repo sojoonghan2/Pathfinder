@@ -107,17 +107,6 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     outputStream.RestartStrip();
 }
 
-// UV 계산 함수 추가
-float2 ComputeUVOffset(float4 position, float scale)
-{
-    float2 uvOffset = position.xy / position.w; // NDC 좌표 (-1~1)
-    uvOffset = uvOffset * 0.5f + 0.5f; // UV 좌표 (0~1)
-
-    // 파티클 크기만큼 UV를 조정
-    uvOffset += float2(scale, scale);
-    return saturate(uvOffset);
-}
-
 // Pixel Shader
 float4 PS_Main(GS_OUT input) : SV_Target
 {
@@ -125,14 +114,12 @@ float4 PS_Main(GS_OUT input) : SV_Target
     float4 particleColor = g_textures.Sample(g_sam_0, input.uv);
 
     // 원 모양 UV 처리
-    float2 center = float2(0.5, 0.5); // 원의 중심
+    float2 center = float2(0.5, 0.5);
     float distance = length(input.uv - center);
 
-    // 원 밖의 영역 투명 처리
-    if (distance > 0.5f) particleColor.a = 0.0f;
-
-    // 굴절 UV 계산(* 굴절 강도)
-    float2 refractedUV = input.uv + (particleColor.rg - 0.5f) * 0.05f;
+    // 굴절 UV 계산
+    // 0.5를 빼서 범위를 -0.5 ~ 0.5로 수정(전방향 굴절)
+    float2 refractedUV = input.uv + (particleColor.rg - 0.5f) * 0.05f; // * 굴절 강도
     // UV 좌표 범위 제한
     refractedUV = saturate(refractedUV);
 

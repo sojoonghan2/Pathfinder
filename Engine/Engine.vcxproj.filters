@@ -150,9 +150,6 @@
     <ClCompile Include="MeshData.cpp">
       <Filter>Object\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Animator.cpp">
-      <Filter>Object\Component</Filter>
-    </ClCompile>
     <ClCompile Include="TestDragon.cpp">
       <Filter>Script</Filter>
     </ClCompile>
@@ -217,6 +214,9 @@
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
     <ClCompile Include="TestPBRParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
   </ItemGroup>

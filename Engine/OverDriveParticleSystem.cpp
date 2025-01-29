@@ -5,9 +5,9 @@ OverDriveParticleSystem::OverDriveParticleSystem() : BaseParticleSystem()
 {
 	SetParticleInterval(0.001f, 0.0f);
 	SetParticleLifeTime(3.0f, 5.0f);
-	SetParticleSpeed(300.0f, 250.0f);
-	SetParticleScale(50.0f, 30.0f);
-	SetDuration(2.0f);
+	SetParticleSpeed(1000.0f, 800.0f);
+	SetParticleScale(100.0f, 50.0f);
+	SetDuration(1.0f);
 	SetOnceParticleNum(1);
 	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"OverDriveParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"OverDriveComputeParticle")->Clone());
 	shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"OverDriveParticleTexture", L"..\\Resources\\Texture\\Particle\\overDrive.png");

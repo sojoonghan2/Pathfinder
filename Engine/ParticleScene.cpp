@@ -328,7 +328,7 @@ void ParticleScene::LoadMyParticle()
 
 		// 좌표 컴포넌트 추가
 		razerParticle->AddComponent(make_shared<Transform>());
-		razerParticle->GetTransform()->SetLocalPosition(Vec3(-400.f, 100.f, 400.f));
+		razerParticle->GetTransform()->SetLocalPosition(Vec3(-400.f, 100.f, 0.f));
 		razerParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		// 파티클 시스템 컴포넌트 추가
