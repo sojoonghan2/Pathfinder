@@ -19,6 +19,7 @@
 #include "TestDragon.h"
 #include "TestPointLightScript.h"
 #include "WaterScript.h"
+#include "ModuleScript.h"
 
 #include "SphereCollider.h"
 
@@ -309,6 +310,7 @@ LuckyScene::LuckyScene()
 	}
 #pragma endregion
 
+// ¹°
 #pragma region Water
 	{
 		shared_ptr<GameObject> water = make_shared<GameObject>();
@@ -331,6 +333,37 @@ LuckyScene::LuckyScene()
 
 		water->AddComponent(meshRenderer);
 		activeScene->AddGameObject(water);
+	}
+#pragma endregion
+
+// ¸ðµâ
+#pragma region Module
+	for (int i{}; i < 3; ++i)
+	{
+		shared_ptr<GameObject> obj = make_shared<GameObject>();
+		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		obj->AddComponent(make_shared<Transform>());
+		obj->AddComponent(make_shared<ModuleScript>());
+		obj->GetTransform()->SetLocalScale(Vec3(300.f, 500.f, 100.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(-400.f + (i * 400), 0.f, 1.f));
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			meshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
+
+			shared_ptr<Texture> texture;
+			texture = GET_SINGLE(Resources)->Load<Texture>(L"TestModule", L"..\\Resources\\Texture\\Module\\TestModule.png");
+
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			meshRenderer->SetMaterial(material);
+		}
+		obj->AddComponent(meshRenderer);
+		activeScene->AddGameObject(obj);
 	}
 #pragma endregion
 }

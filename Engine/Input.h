@@ -22,6 +22,7 @@ enum class KEY_TYPE
 
 	T = 'T',
 	U = 'U',
+	I = 'I',
 
 	KEY_1 = '1',
 	KEY_2 = '2',

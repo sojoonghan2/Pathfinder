@@ -219,6 +219,9 @@
     <ClCompile Include="Animator.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
+    <ClCompile Include="ModuleScript.cpp">
+      <Filter>Script</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -403,6 +406,9 @@
     </ClInclude>
     <ClInclude Include="TestPBRParticleSystem.h">
       <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleScript.h">
+      <Filter>Script</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

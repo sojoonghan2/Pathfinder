@@ -58,7 +58,6 @@ void TestCameraScript::KeyboardInput()
     GetTransform()->SetLocalPosition(pos);
 }
 
-
 void TestCameraScript::MouseInput()
 {
 	// 마우스 오른쪽 버튼이 눌려 있는지 확인
