@@ -9,30 +9,34 @@
 
 void ModuleScript::LateUpdate()
 {
-	KeyboardInput();
-	MouseInput();
+    KeyboardInput();
+    MouseInput();
 }
 
 void ModuleScript::KeyboardInput()
 {
     // 스테이지 클리어 후 모듈 활성화
-    if (INPUT->GetButton(KEY_TYPE::I) && (way == WAIT)) // 임시용으로 I 누르면 모듈을 활성화
+    if (INPUT->GetButton(KEY_TYPE::I) && (way == WAIT))
     {
-        // 활성화 시키고 방향을 위로
         alive = true;
         way = UP;
+        _speed = 3000.0f; // 이동 시작 시 속도를 최대 속도로 설정
     }
 
     // 위로 이동
     if (alive && (way == UP))
     {
         Vec3 pos = GetTransform()->GetLocalPosition();
-        pos += Normalization(GetTransform()->GetUp()) * 1000.0f * DELTA_TIME;
+
+        _speed -= _acceleration * DELTA_TIME;
+
+        pos += Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
         GetTransform()->SetLocalPosition(pos);
 
-        if (GetTransform()->GetLocalPosition().y > 0.0f)
+        if (pos.y > 0.0f)
         {
             way = WAIT;
+            _speed = 3000.0f; // 이동 종료 후 속도 초기화
         }
     }
 
@@ -40,19 +44,28 @@ void ModuleScript::KeyboardInput()
     if (alive && (way == DOWN))
     {
         Vec3 pos = GetTransform()->GetLocalPosition();
-        pos -= Normalization(GetTransform()->GetUp()) * 1000.0f * DELTA_TIME;
+
+        _speed -= _acceleration * DELTA_TIME;
+
+        pos -= Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
         GetTransform()->SetLocalPosition(pos);
 
-        if (GetTransform()->GetLocalPosition().y < -800.0f)
+        if (pos.y < -800.0f)
         {
             way = WAIT;
             alive = false;
+            _speed = 3000.0f; // 이동 종료 후 속도 초기화
         }
     }
 }
 
 void ModuleScript::MouseInput()
 {
+    if (INPUT->GetButtonDown(KEY_TYPE::RBUTTON))
+    {
+        // 피킹 추가 예정
+    }
+
     if (INPUT->GetButtonDown(KEY_TYPE::LBUTTON))
     {
         if (alive && (way == WAIT)) way = DOWN;

@@ -14,4 +14,8 @@ public:
 private:
 	bool alive = false;
 	int way = WAIT;
+
+	float _speed = 3000.0f;
+	float _acceleration = 2000.0f;
+	float _minSpeed = 100.0f;
 };
