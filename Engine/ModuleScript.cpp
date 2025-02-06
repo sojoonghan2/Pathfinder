@@ -15,14 +15,15 @@ void ModuleScript::LateUpdate()
 
 void ModuleScript::KeyboardInput()
 {
-    // 모듈 보여주기
-    if (INPUT->GetButton(KEY_TYPE::I) && (way == WAIT))
+    // 스테이지 클리어 후 모듈 활성화
+    if (INPUT->GetButton(KEY_TYPE::I) && (way == WAIT)) // 임시용으로 I 누르면 모듈을 활성화
     {
+        // 활성화 시키고 방향을 위로
         alive = true;
         way = UP;
     }
 
-    // 이동
+    // 위로 이동
     if (alive && (way == UP))
     {
         Vec3 pos = GetTransform()->GetLocalPosition();
@@ -35,7 +36,7 @@ void ModuleScript::KeyboardInput()
         }
     }
 
-    // 이동
+    // 아래로 이동
     if (alive && (way == DOWN))
     {
         Vec3 pos = GetTransform()->GetLocalPosition();

@@ -32,6 +32,8 @@
 
 #include "SphereCollider.h"
 
+#include "GameModule.h"
+
 #define PARTICLEDEBUG	FALSE
 
 ParticleScene::ParticleScene()
@@ -241,7 +243,7 @@ ParticleScene::ParticleScene()
 #pragma region Module
 	for (int i{}; i < 3; ++i)
 	{
-		shared_ptr<GameObject> obj = make_shared<GameObject>();
+		shared_ptr<GameModule> obj = make_shared<GameModule>();
 		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 		obj->AddComponent(make_shared<Transform>());
 		obj->AddComponent(make_shared<ModuleScript>());
@@ -256,7 +258,7 @@ ParticleScene::ParticleScene()
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
 
 			shared_ptr<Texture> texture;
-			texture = GET_SINGLE(Resources)->Load<Texture>(L"TestModule", L"..\\Resources\\Texture\\Module\\TestModule.png");
+			texture = obj->GetTexture();
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
