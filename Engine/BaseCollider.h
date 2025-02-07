@@ -4,6 +4,7 @@
 enum class ColliderType
 {
 	Sphere,
+	Rectangle,
 };
 
 class BaseCollider : public Component

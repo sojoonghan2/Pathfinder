@@ -249,6 +249,9 @@
     <ClCompile Include="TitleScript.cpp">
       <Filter>Script\SceneScript</Filter>
     </ClCompile>
+    <ClCompile Include="RectangleCollider.cpp">
+      <Filter>Object\Component\Collider</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -457,6 +460,9 @@
     </ClInclude>
     <ClInclude Include="TitleScript.h">
       <Filter>Script\SceneScript</Filter>
+    </ClInclude>
+    <ClInclude Include="RectangleCollider.h">
+      <Filter>Object\Component\Collider</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

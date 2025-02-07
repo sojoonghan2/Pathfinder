@@ -7,6 +7,7 @@
 #include "Timer.h"
 #include "SceneManager.h"
 #include "Scene.h"
+#include "GameModule.h"
 
 void ModuleScript::LateUpdate()
 {
@@ -62,16 +63,36 @@ void ModuleScript::KeyboardInput()
 
 void ModuleScript::MouseInput()
 {
-    if (INPUT->GetButtonDown(KEY_TYPE::LBUTTON))
+    if (INPUT->GetButtonDown(KEY_TYPE::LBUTTON)) // 마우스 왼쪽 버튼 클릭
     {
-        // 모듈 아래로 내리기
+        // 현재 마우스 좌표 가져오기
+        const POINT& pos = INPUT->GetMousePos();
+
+        // 현재 씬에서 마우스 클릭한 오브젝트 찾기
+        shared_ptr<GameObject> pickedObject = GET_SINGLE(SceneManager)->Pick(pos.x, pos.y);
+
+        // 피킹된 오브젝트가 존재하는지 확인
+        if (pickedObject)
+        {
+            // GameModule 타입인지 확인 (다운캐스팅)
+            shared_ptr<GameModule> pickedModule = dynamic_pointer_cast<GameModule>(pickedObject);
+
+            if (pickedModule)
+            {
+                // 선택된 모듈 타입을 가져옴
+                int selectedModuleType = pickedModule->GetModuleType();
+
+                // 씬의 selectedModuleScript에 저장
+                GET_SINGLE(SceneManager)->GetActiveScene()->SetSelectedModuleType(selectedModuleType);
+
+                std::cout << "Selected Module Type: " << selectedModuleType + 1 << "\n-\n";
+            }
+        }
+
+        // 기존 로직 유지
         if (alive && (way == WAIT))
         {
             way = DOWN;
-            // 모듈을 피킹해서 해당 모듈의 type을 가져온 후 씬의 selectedModuleScript에 저장
-            int selectedModuleType = ATKUp; // 임시
-            GET_SINGLE(SceneManager)->GetActiveScene()->SetSelectedModuleType(selectedModuleType);
-            std::cout << "Selected Module Type: " << selectedModuleType << "\n-\n";
         }
     }
 }
