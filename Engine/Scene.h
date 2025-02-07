@@ -33,10 +33,14 @@ public:
 	void RemoveGameObject(shared_ptr<GameObject> gameObject);
 
 	const vector<shared_ptr<GameObject>>& GetGameObjects() { return _gameObjects; }
+	const int GetSelectedModuleType() { return _selectedModuleType; }
+
+	void SetSelectedModuleType(int type) { _selectedModuleType = type; }
 
 private:
 	vector<shared_ptr<GameObject>>		_gameObjects;
 	vector<shared_ptr<class Camera>>	_cameras;
 	vector<shared_ptr<class Light>>		_lights;
+	int									_selectedModuleType;
 };
 

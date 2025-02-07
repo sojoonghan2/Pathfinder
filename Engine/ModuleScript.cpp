@@ -6,6 +6,7 @@
 #include "Input.h"
 #include "Timer.h"
 #include "SceneManager.h"
+#include "Scene.h"
 
 void ModuleScript::LateUpdate()
 {
@@ -61,13 +62,16 @@ void ModuleScript::KeyboardInput()
 
 void ModuleScript::MouseInput()
 {
-    if (INPUT->GetButtonDown(KEY_TYPE::RBUTTON))
-    {
-        // 피킹 추가 예정
-    }
-
     if (INPUT->GetButtonDown(KEY_TYPE::LBUTTON))
     {
-        if (alive && (way == WAIT)) way = DOWN;
+        // 모듈 아래로 내리기
+        if (alive && (way == WAIT))
+        {
+            way = DOWN;
+            // 모듈을 피킹해서 해당 모듈의 type을 가져온 후 씬의 selectedModuleScript에 저장
+            int selectedModuleType = ATKUp; // 임시
+            GET_SINGLE(SceneManager)->GetActiveScene()->SetSelectedModuleType(selectedModuleType);
+            std::cout << "Selected Module Type: " << selectedModuleType << "\n-\n";
+        }
     }
 }

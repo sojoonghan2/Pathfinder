@@ -39,4 +39,3 @@ private:
 	array<wstring, MAX_LAYER> _layerNames;
 	map<wstring, uint8> _layerIndex;
 };
-

@@ -10,28 +10,24 @@ public:
 	GameModule();
 	void SetModuleAbility();
 
-	void ATKUp();
-	void DEFUp();
-	void HPUp();
-	void CRTDamageUp();
-	void CRTRateUp();
+	void IncreaseATKUp();
+	void IncreaseDEFUp();
+	void IncreaseHPUp();
+	void IncreaseCRTDamageUp();
+	void IncreaseCRTRateUp();
 
-	void BattleFanatic();
-	void Adjust();
-	void OverHeating();
-	void Gamester();
-	void EmergencyAssistance();
-	void Armor();
-	void EnhancedSiege();
+	void IncreaseBattleFanatic();
+	void IncreaseAdjust();
+	void IncreaseOverHeating();
+	void IncreaseGamester();
+	void IncreaseEmergencyAssistance();
+	void IncreaseArmor();
+	void IncreaseEnhancedSiege();
 
 	shared_ptr<Texture> GetTexture() { return texture; }
+	int GetModuleType() { return moduleType; }
 
 private:
-	// TODO:
-	// 플레이어 클래스를 만들게 되면
-	// 플레이어를 포인터로 가지고 있고(생성자에서 Player 할당)
-	// 모듈을 선택하면 해당 플레이어의 스텟 증가 함수를 만들어
-	// 모듈을 적용시키면 된다.
-
 	shared_ptr<Texture> texture;
+	int moduleType;
 };
