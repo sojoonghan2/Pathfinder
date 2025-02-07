@@ -1,11 +1,11 @@
 #pragma once
 #include "MasterScript.h"
 
-class TitleScript : public MasterScript
+class FactoryScript : public MasterScript
 {
 public:
-    TitleScript();
-    virtual ~TitleScript();
+    FactoryScript();
+    virtual ~FactoryScript();
 
     virtual void LateUpdate() override;
 

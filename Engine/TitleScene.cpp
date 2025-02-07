@@ -11,6 +11,7 @@
 #include "Camera.h"
 
 #include "TitleScript.h"
+#include "MasterScript.h"
 
 #include "Resources.h"
 #include "SphereCollider.h"

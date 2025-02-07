@@ -19,6 +19,7 @@
 #include "TestDragon.h"
 #include "TestPointLightScript.h"
 #include "WaterScript.h"
+#include "CrashScript.h"
 
 #include "SphereCollider.h"
 
@@ -53,6 +54,7 @@ CrashScene::CrashScene()
 		camera->AddComponent(make_shared<Transform>());
 		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=3000, FOV=45µµ
 		camera->AddComponent(make_shared<TestCameraScript>());
+		camera->AddComponent(make_shared<CrashScript>());
 		camera->GetCamera()->SetFar(10000.f);
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
@@ -123,8 +125,13 @@ CrashScene::CrashScene()
 			meshRenderer->SetMesh(sphereMesh);
 		}
 		{
-			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"TerrainCube");
-			meshRenderer->SetMaterial(material->Clone());
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Crash", L"..\\Resources\\Texture\\Crash.jpg");
+
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			meshRenderer->SetMaterial(material);
 		}
 		terraincube->AddComponent(meshRenderer);
 

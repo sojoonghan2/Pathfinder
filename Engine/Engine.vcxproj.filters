@@ -37,6 +37,12 @@
     <Filter Include="Shader\Particle">
       <UniqueIdentifier>{5f8fafc3-15e6-4b22-adb0-2be7447512c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Script\SceneScript">
+      <UniqueIdentifier>{358d7ced-88ac-469c-b0ef-74aa60466ec3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Script\ObjectScript">
+      <UniqueIdentifier>{eb7d48ae-19f7-451d-811d-a2770d7fbbc6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -96,9 +102,6 @@
     <ClCompile Include="SimpleMath.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="TestCameraScript.cpp">
-      <Filter>Script</Filter>
-    </ClCompile>
     <ClCompile Include="Resources.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
@@ -150,23 +153,11 @@
     <ClCompile Include="MeshData.cpp">
       <Filter>Object\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="TestDragon.cpp">
-      <Filter>Script</Filter>
-    </ClCompile>
-    <ClCompile Include="TestPointLightScript.cpp">
-      <Filter>Script</Filter>
-    </ClCompile>
     <ClCompile Include="LuckyScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="TitleScene.cpp">
       <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="TitleScript.cpp">
-      <Filter>Script</Filter>
-    </ClCompile>
-    <ClCompile Include="WaterScript.cpp">
-      <Filter>Script</Filter>
     </ClCompile>
     <ClCompile Include="BINLoader.cpp">
       <Filter>Utils</Filter>
@@ -188,9 +179,6 @@
     </ClCompile>
     <ClCompile Include="ParticleScene.cpp">
       <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="TestParticleScript.cpp">
-      <Filter>Script</Filter>
     </ClCompile>
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
@@ -219,11 +207,47 @@
     <ClCompile Include="Animator.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleScript.cpp">
-      <Filter>Script</Filter>
-    </ClCompile>
     <ClCompile Include="GameModule.cpp">
       <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashScript.cpp">
+      <Filter>Script\SceneScript</Filter>
+    </ClCompile>
+    <ClCompile Include="ExplorationScript.cpp">
+      <Filter>Script\SceneScript</Filter>
+    </ClCompile>
+    <ClCompile Include="FactoryScript.cpp">
+      <Filter>Script\SceneScript</Filter>
+    </ClCompile>
+    <ClCompile Include="LuckyScript.cpp">
+      <Filter>Script\SceneScript</Filter>
+    </ClCompile>
+    <ClCompile Include="MasterScript.cpp">
+      <Filter>Script\SceneScript</Filter>
+    </ClCompile>
+    <ClCompile Include="RuinsScript.cpp">
+      <Filter>Script\SceneScript</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="TestCameraScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="TestDragon.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="TestParticleScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="TestPointLightScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="WaterScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleScript.cpp">
+      <Filter>Script\SceneScript</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -287,9 +311,6 @@
     <ClInclude Include="SimpleMath.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="TestCameraScript.h">
-      <Filter>Script</Filter>
-    </ClInclude>
     <ClInclude Include="Resources.h">
       <Filter>Manager</Filter>
     </ClInclude>
@@ -344,23 +365,11 @@
     <ClInclude Include="Animator.h">
       <Filter>Object\Component</Filter>
     </ClInclude>
-    <ClInclude Include="TestDragon.h">
-      <Filter>Script</Filter>
-    </ClInclude>
-    <ClInclude Include="TestPointLightScript.h">
-      <Filter>Script</Filter>
-    </ClInclude>
     <ClInclude Include="LuckyScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="TitleScene.h">
       <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="TitleScript.h">
-      <Filter>Script</Filter>
-    </ClInclude>
-    <ClInclude Include="WaterScript.h">
-      <Filter>Script</Filter>
     </ClInclude>
     <ClInclude Include="BINLoader.h">
       <Filter>Utils</Filter>
@@ -382,9 +391,6 @@
     </ClInclude>
     <ClInclude Include="ParticleScene.h">
       <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="TestParticleScript.h">
-      <Filter>Script</Filter>
     </ClInclude>
     <ClInclude Include="ParticleSystem.h">
       <Filter>Object\Component\ParticleSystem</Filter>
@@ -410,11 +416,47 @@
     <ClInclude Include="TestPBRParticleSystem.h">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleScript.h">
-      <Filter>Script</Filter>
-    </ClInclude>
     <ClInclude Include="GameModule.h">
       <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="CrashScript.h">
+      <Filter>Script\SceneScript</Filter>
+    </ClInclude>
+    <ClInclude Include="ExplorationScript.h">
+      <Filter>Script\SceneScript</Filter>
+    </ClInclude>
+    <ClInclude Include="FactoryScript.h">
+      <Filter>Script\SceneScript</Filter>
+    </ClInclude>
+    <ClInclude Include="LuckyScript.h">
+      <Filter>Script\SceneScript</Filter>
+    </ClInclude>
+    <ClInclude Include="MasterScript.h">
+      <Filter>Script\SceneScript</Filter>
+    </ClInclude>
+    <ClInclude Include="RuinsScript.h">
+      <Filter>Script\SceneScript</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleScript.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="TestCameraScript.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="TestDragon.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="TestParticleScript.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="TestPointLightScript.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterScript.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleScript.h">
+      <Filter>Script\SceneScript</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

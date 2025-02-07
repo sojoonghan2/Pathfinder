@@ -24,6 +24,9 @@ enum class KEY_TYPE
 	U = 'U',
 	I = 'I',
 
+	ADD = VK_ADD,
+	SUBTRACT = VK_SUBTRACT,
+
 	KEY_1 = '1',
 	KEY_2 = '2',
 	KEY_3 = '3',
