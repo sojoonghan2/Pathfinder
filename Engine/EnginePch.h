@@ -221,6 +221,22 @@ struct AnimFrameParams
 	Vec4	translation;
 };
 
+enum ModuleType
+{
+	ATKUp, // 공격력 증폭
+	DEFUp, // 방어력 증폭
+	HPUp, // 체력 증폭
+	CRTDamageUp, // 치명타 데미지 증폭
+	CRTRateUp, // 치명타 확률 증폭
+	BattleFanatic, // 전투광
+	Adjust, // 적응
+	OverHeating, // 과열
+	Gamester, // 도박꾼
+	EmergencyAssistance, // 응급 지원
+	Armor, // 철갑
+	EnhancedSiege // 화력 강화
+};
+
 // 전역 인스턴스를 선언하여 엔진을 전역적으로 접근 가능하게 함
 extern unique_ptr<class Engine> GEngine;
 

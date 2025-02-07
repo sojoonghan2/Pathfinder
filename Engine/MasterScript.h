@@ -11,5 +11,7 @@ public:
 
 	void KeyboardInput();
 	void MouseInput();
+
+	void ApplyModuleAbillities();
 };
 
