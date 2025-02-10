@@ -280,7 +280,7 @@ shared_ptr<Texture> Resources::CreateTexture(const wstring& name, DXGI_FORMAT fo
 	return texture;
 }
 
-shared_ptr<Texture> Resources::CloneTexture(shared_ptr<Texture> originalTexture)
+shared_ptr<Texture> Resources::CloneRenderTargetTexture(shared_ptr<Texture> originalTexture)
 {
 	// 1. 원본 텍스처의 속성 가져오기
 	D3D12_RESOURCE_DESC desc = originalTexture->GetTex2D()->GetDesc();

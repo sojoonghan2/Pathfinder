@@ -146,14 +146,27 @@ void Scene::RenderFinal()
 	GET_SINGLE(Resources)->Get<Material>(L"Final")->PushGraphicsData();
 	GET_SINGLE(Resources)->Get<Mesh>(L"Rectangle")->Render();
 
-	shared_ptr<Texture> renderTargetTexture =
-		GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->GetRTTexture(backIndex);
+	// 렌더 타겟 텍스쳐 생성
+	{
+		shared_ptr<Texture> renderTargetTexture =
+			GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->GetRTTexture(backIndex);
 
-	// 복사본 생성
-	shared_ptr<Texture> copiedTexture = GET_SINGLE(Resources)->CloneTexture(renderTargetTexture);
+		// 복사본 생성
+		shared_ptr<Texture> copiedTexture = GET_SINGLE(Resources)->CloneRenderTargetTexture(renderTargetTexture);
 
-	// 복사본을 Resources에 설정
-	GET_SINGLE(Resources)->SetRenderTargetTexture(copiedTexture);
+		// 복사본을 Resources에 설정
+		GET_SINGLE(Resources)->SetRenderTargetTexture(copiedTexture);
+	}
+
+	// 컬러 텍스쳐 생성
+	{
+		shared_ptr<Texture> colorTexture =
+			GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->GetRTTexture(2);
+
+		shared_ptr<Texture> copiedTexture2 = GET_SINGLE(Resources)->CloneRenderTargetTexture(colorTexture);
+
+		GET_SINGLE(Resources)->SetColorTexture(copiedTexture2);
+	}
 }
 
 void Scene::RenderForward()

@@ -44,7 +44,10 @@ public:
 	void SetRenderTargetTexture(shared_ptr<Texture> renderTargetTexture) { _renderTargetTexture = renderTargetTexture; }
 	shared_ptr<Texture> GetRenderTargetTexture() { return _renderTargetTexture; }
 
-	shared_ptr<Texture> CloneTexture(shared_ptr<Texture> originalTexture);
+	void SetColorTexture(shared_ptr<Texture> colorTexture) { _colorTexture = colorTexture; }
+	shared_ptr<Texture> GetColorTexture() { return _colorTexture; }
+
+	shared_ptr<Texture> CloneRenderTargetTexture(shared_ptr<Texture> originalTexture);
 
 private:
 	void CreateDefaultShader();
@@ -55,6 +58,7 @@ private:
 	array<KeyObjMap, OBJECT_TYPE_COUNT> _resources;
 
 	shared_ptr<Texture> _renderTargetTexture;
+	shared_ptr<Texture> _colorTexture;
 };
 
 template<typename T>

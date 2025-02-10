@@ -20,5 +20,9 @@ void TestPBRParticleSystem::FinalUpdate()
 		GET_SINGLE(Resources)->GetRenderTargetTexture();
 	SetParticleTexture(1, screenTexture);
 
+	shared_ptr<Texture> colorTexture =
+		GET_SINGLE(Resources)->GetColorTexture();
+	SetParticleTexture(2, colorTexture);
+
 	BaseParticleSystem::FinalUpdate();
 }

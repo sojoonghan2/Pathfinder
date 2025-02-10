@@ -36,7 +36,7 @@
 
 #include "GameModule.h"
 
-#define PARTICLEDEBUG	FALSE
+#define PARTICLEDEBUG	TRUE
 
 ParticleScene::ParticleScene()
 {

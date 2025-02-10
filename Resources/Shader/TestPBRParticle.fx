@@ -124,7 +124,7 @@ float4 PS_Main(GS_OUT input) : SV_Target
     refractedUV = saturate(refractedUV);
 
     // ·»´õ Å¸°Ù ÅØ½ºÃ³¿¡¼­ ±¼ÀýµÈ ÇÈ¼¿ »ùÇÃ¸µ
-    float4 backgroundColor = g_textures1.Sample(g_sam_0, refractedUV);
+    float4 backgroundColor = g_textures2.Sample(g_sam_0, refractedUV);
 
     // ÆÄÆ¼Å¬°ú ¹è°æ È¥ÇÕ
     return lerp(backgroundColor, particleColor, particleColor.a);
