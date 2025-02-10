@@ -118,7 +118,7 @@ float4 PS_Main(GS_OUT input) : SV_Target
     float distance = length(input.uv - center);
     
     // 방울 바깥 영역은 원래 씬 컬러 유지
-    if (distance > 0.5f || particleColor.a < 0.03f)
+    if (distance > 0.5f || particleColor.a < 0.01f)
     {
         return g_textures1.Sample(g_sam_0, input.uv);
     }
