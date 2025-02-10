@@ -14,6 +14,7 @@ void ModuleScript::LateUpdate()
 {
     KeyboardInput();
     MouseInput();
+    if(selected) { SelectedAnimation(); }
 }
 
 void ModuleScript::KeyboardInput()
@@ -73,13 +74,14 @@ void ModuleScript::MouseInput()
         {
             shared_ptr<GameModule> gameModule = dynamic_pointer_cast<GameModule>(GetGameObject());
             GET_SINGLE(SceneManager)->GetActiveScene()->SetSelectedModuleType(gameModule->GetModuleType());
-            return;
+            selected = true;
         }
 
         // 기존 로직 유지
         if (alive && (way == WAIT))
         {
-            way = DOWN;
+            // 임시로 내려가지 않도록
+            // way = DOWN;
         }
     }
 }
@@ -100,3 +102,23 @@ bool ModuleScript::IsUIPicked(int mouseXpos, int mouseYpos)
     return (mouseXpos >= uiX - width && mouseXpos <= uiX + width &&
         mouseYpos >= uiY - height && mouseYpos <= uiY + height);
 }
+
+void ModuleScript::SelectedAnimation()
+{
+    shared_ptr<GameModule> gameModule = dynamic_pointer_cast<GameModule>(GetGameObject());
+
+    static float timeElapsed = 0.0f;
+    timeElapsed += DELTA_TIME * 2.0f;
+
+    float scaleX = 50.0f * cos(timeElapsed * 3.141592) + 350.0f;
+    float scaleY = 50.0f * cos(timeElapsed * 3.141592) + 550.0f;
+
+    gameModule->GetTransform()->SetLocalScale(Vec3(scaleX, scaleY, 0));
+
+    if (timeElapsed >= 1.0f)
+    {
+        timeElapsed = 0.0f; // 초기화
+        selected = false;   // 선택 해제
+    }
+}
+

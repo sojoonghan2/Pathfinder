@@ -12,6 +12,7 @@ public:
 	void KeyboardInput();
 	void MouseInput();
 
+	// 씬 전환될 때 호출
 	void ApplyModuleAbillities();
 };
 
