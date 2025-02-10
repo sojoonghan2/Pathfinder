@@ -11,6 +11,8 @@ public:
 	void KeyboardInput();
 	void MouseInput();
 
+	bool IsUIPicked(int mouseXpos, int mouseYpos);
+
 private:
 	bool alive = false;
 	int way = WAIT;

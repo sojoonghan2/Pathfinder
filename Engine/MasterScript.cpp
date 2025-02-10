@@ -41,6 +41,7 @@ void MasterScript::ApplyModuleAbillities()
 	// 모듈을 적용시키면 된다.
 
 	auto type = GET_SINGLE(SceneManager)->GetActiveScene()->GetSelectedModuleType();
+	std::cout << "Module Type: " << type + 1 << "\n";
 	switch (type)
 	{
 	case ATKUp:

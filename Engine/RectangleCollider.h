@@ -18,6 +18,6 @@ private:
 	BoundingBox _boundingBox;
 
 	// 로컬 기준
-	Vec3 _size = Vec3(10.f, 50.f, 10.f);
+	Vec3 _size = Vec3(300.f, 500.f, 100.f);
 	Vec3 _center = Vec3(0, 0, 0);
 };
