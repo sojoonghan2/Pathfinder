@@ -112,24 +112,21 @@ float4 PS_Main(GS_OUT input) : SV_Target
 {
     // 파티클 텍스처 샘플링
     float4 particleColor = g_textures.Sample(g_sam_0, input.uv);
-
-    // 원 모양 UV 처리
-    float2 center = float2(0.5, 0.5);
-    float distance = length(input.uv - center);
     
-    // 방울 바깥 영역은 원래 씬 컬러 유지
-    if (distance > 0.5f || particleColor.a < 0.01f)
+    // 알파 값이 0.01f보다 작으면(컬러가 없으면) 원래 파티클 컬러 유지
+    if (particleColor.a < 0.01f)
     {
-        return g_textures1.Sample(g_sam_0, input.uv);
+        return particleColor;
     }
 
     // 굴절 UV 계산
+    // 0.0 ~ 1.0이라는 범위를 사용하기 위해 rg 채널을 사용
     // 0.5를 빼서 범위를 -0.5 ~ 0.5로 수정(전방향 굴절)
     float2 refractedUV = input.uv + (particleColor.rg - 0.5f) * 0.05f; // * 굴절 강도
     // UV 좌표 범위 제한
     refractedUV = saturate(refractedUV);
 
-    // 렌더 타겟 텍스처에서 굴절된 픽셀 샘플링
+    // 렌더 타겟의 컬러 텍스처에서 굴절된 픽셀 샘플링
     float4 backgroundColor = g_textures2.Sample(g_sam_0, refractedUV);
 
     // 파티클과 배경 혼합
