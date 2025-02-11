@@ -248,6 +248,49 @@ ParticleScene::ParticleScene()
 	if (PARTICLEDEBUG) LoadDebugParticle();
 	else LoadMyParticle();
 
+// 수류탄
+#pragma region GRENADE
+	{
+		// 1. 기본 오브젝트 생성 및 설정
+		shared_ptr<GameObject> grenade = make_shared<GameObject>();
+		grenade->SetName(L"Grenade");
+		// 프러스텀 컬링 여부
+		grenade->SetCheckFrustum(true);
+		// 정적, 동적 여부
+		grenade->SetStatic(false);
+
+		// 2. Transform 컴포넌트 추가 및 설정
+		grenade->AddComponent(make_shared<Transform>());
+		grenade->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+		grenade->GetTransform()->SetLocalPosition(Vec3(0, 200.f, 100.f));
+
+		// 3. Collider 설정
+		grenade->AddComponent(make_shared<SphereCollider>());
+		dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetRadius(0.5f);
+		dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+
+		// 4. MeshRenderer 설정
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+			meshRenderer->SetMesh(sphereMesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Grenade", L"..\\Resources\\Texture\\Grenade.jpg");
+
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			meshRenderer->SetMaterial(material);
+		}
+		grenade->AddComponent(meshRenderer);
+
+		// 5. Scene에 추가
+		activeScene->AddGameObject(grenade);
+	}
+#pragma endregion
+
 // 모듈
 #pragma region Module
 	for (int i{}; i < 3; ++i)
@@ -371,7 +414,7 @@ void ParticleScene::LoadMyParticle()
 
 		// 좌표 컴포넌트 추가
 		razerParticle->AddComponent(make_shared<Transform>());
-		razerParticle->GetTransform()->SetLocalPosition(Vec3(-400.f, 100.f, 0.f));
+		razerParticle->GetTransform()->SetLocalPosition(Vec3(-400.f, 100.f, -300.f));
 		razerParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		// 파티클 시스템 컴포넌트 추가
