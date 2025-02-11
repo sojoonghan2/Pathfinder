@@ -147,29 +147,42 @@ float4 PS_Main(GS_OUT input) : SV_Target
 {
     float ratio = g_data[input.id].curTime / g_data[input.id].lifeTime;
     
-    // 균열 중심 색상
-    float3 startColor = float3(0.2f, 0.2f, 0.2f); // 짙은 회색 (바닥)
-    float3 endColor = float3(0.8f, 0.8f, 0.8f); // 흰색 (부서지는 경계)
+    // 진행도에 따른 색상 변화
+    float3 baseColor = float3(0.6f, 0.6f, 0.6f); // 기본 회색
+    float3 startColor = float3(0.8f, 0.7f, 0.5f); // 황토색
+    float3 endColor = float3(0.3f, 0.3f, 0.3f); // 어두운 회색
     
-    // 부드러운 색상 전환
-    float3 color = lerp(startColor, endColor, ratio);
-
-    // 거리 기반 알파값 조정
+    float3 color;
+    if (ratio < 0.3f)
+    {
+        // 초기: 밝은 색에서 기본색으로
+        color = lerp(startColor, baseColor, ratio / 0.3f);
+    }
+    else
+    {
+        // 후기: 기본색에서 어두운 색으로
+        color = lerp(baseColor, endColor, (ratio - 0.3f) / 0.7f);
+    }
+    
+    // 균열 패턴 생성
     float2 center = float2(0.5f, 0.5f);
     float dist = distance(input.uv, center);
-
-    float alpha = saturate(1.0f - dist * 2.0f); // 중심 1.0, 가장자리 0.0
-    alpha = pow(alpha, 2.5f); // 더 부드러운 흐려짐 효과
-
-    // 텍스처 샘플링 및 노이즈 적용
-    float2 uvOffset = float2(Rand(float2(input.id, ratio)) * 0.1f - 0.05f,
-                             Rand(float2(ratio, input.id)) * 0.1f - 0.05f);
-    float2 sampledUV = saturate(input.uv + uvOffset);
     
-    float4 texColor = g_textures.Sample(g_sam_0, sampledUV);
-
-    return float4(color, alpha) * texColor;
+    // 불규칙한 균열 패턴
+    float noise = Rand(float2(input.id, ratio)) * 0.2f;
+    float crackPattern = saturate(1.0f - dist * (2.0f + noise));
+    crackPattern = pow(crackPattern, 1.5f);
+    
+    float4 texColor = g_textures.Sample(g_sam_0, input.uv);
+    
+    // 알파값 수정
+    float fadeFactor = smoothstep(0.5f, 1.0f, ratio); // 50%부터 점진적 페이드아웃
+    float alpha = crackPattern * (1.0f - pow(fadeFactor, 2.0f)); // 천천히 감소
+    
+    // 최종 색상
+    return float4(color * texColor.rgb, alpha * texColor.a);
 }
+
 
 struct ComputeShared
 {
@@ -194,28 +207,19 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     if (threadIndex.x >= g_int_0)
         return;
 
-    // 초기 시작 범위
-    float minX = -100.0f, maxX = 100.0f;
-    float minZ = -100.0f, maxZ = 100.0f;
-
     int maxCount = g_int_0;
     int addCount = g_int_1;
     float deltaTime = g_vec2_1.x;
     float accTime = g_vec2_1.y;
     float minLifeTime = g_vec4_0.x;
     float maxLifeTime = g_vec4_0.y;
-    float minSpeed = g_vec4_0.z;
-    float maxSpeed = g_vec4_0.w;
 
-    // 활성화 가능한 파티클 수 관리
     g_shared[0].addCount = addCount;
-    // 스레드 동기화
     GroupMemoryBarrierWithGroupSync();
 
     // 비활성 파티클 활성화
     if (g_particle[threadIndex.x].alive == 0 && g_shared[0].addCount > 0)
     {
-        // 활성화 가능한 파티클 수 감소
         while (true)
         {
             int remaining = g_shared[0].addCount;
@@ -234,76 +238,82 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             }
         }
 
-        // 대격변 파티클 연산
         if (g_particle[threadIndex.x].alive == 1)
         {
             float x = ((float) threadIndex.x / (float) maxCount) + accTime;
-            // 삼각형 꼭짓점 정의
-            float2 A = float2(-300.0f, 500.0f);
-            float2 B = float2(300.0f, 500.0f);
-            float2 C = float2(0.0f, -50.0f);
-
-            // 균일한 삼각형 분포를 위한 수정된 바리센트릭 좌표 생성
-            float r1 = Rand(float2(x, accTime));
-            float r2 = Rand(float2(x * accTime, accTime));
-    
-            // 수정된 바리센트릭 좌표 계산
-            float u = 1.0f - sqrt(r1);
-            float v = r2 * sqrt(r1);
-            float w = 1.0f - u - v;
-    
-            // 삼각형 내부의 랜덤 좌표 계산
-            float2 randPosition = u * A + v * B + w * C;
-    
-            g_particle[threadIndex.x].worldPos = float3(randPosition.x, 0.0f, randPosition.y);
             
-            // 위치와 독립적인 수명 설정
-            float randomSeed = Rand(float2(accTime, threadIndex.x));
-            g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * randomSeed) + minLifeTime;
+            // 부채꼴 모양으로 파티클 생성 (Z+ 방향으로 변경)
+            float radius = lerp(50.0f, 200.0f, Rand(float2(x, accTime)));
+            float angle = lerp(-PI * 0.3f, PI * 0.3f, Rand(float2(x * accTime, accTime)));
+            
+            float posX = radius * sin(angle);
+            float posZ = radius * cos(angle);
+            
+            g_particle[threadIndex.x].worldPos = float3(posX, 0.0f, posZ);
+            
+            // 초기 방향 설정 (Z+ 방향으로 바깥쪽으로)
+            float3 direction = normalize(float3(posX,
+                lerp(100.0f, 300.0f, Rand(float2(x, angle))), // 높이
+                posZ));
+            
+            // 초기 속도 설정
+            float initialVelocity = lerp(1000.0f, 2000.0f, Rand(float2(accTime, x)));
+            g_particle[threadIndex.x].worldDir = direction * initialVelocity;
+            
+            // 수명 설정
+            g_particle[threadIndex.x].lifeTime = lerp(minLifeTime, maxLifeTime,
+                Rand(float2(accTime, threadIndex.x)));
             g_particle[threadIndex.x].curTime = 0.f;
         }
     }
-    // 기존 파티클 업데이트
-    else
+    // 활성 파티클 업데이트
+    else if (g_particle[threadIndex.x].alive == 1)
     {
-        // 현재 시간 업데이트
         g_particle[threadIndex.x].curTime += deltaTime;
-
-        // 균열이 점점 넓어지도록 속도를 다르게 설정
         float progress = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
 
-        // 초기 속도는 빠르게, 점점 느려지도록 설정
-        float3 velocity = g_particle[threadIndex.x].worldDir; // 파편의 기본 이동 방향
-        float initialSpeed = 5000.0f; // 초기 강한 속도 (지면 충격)
-        float gravity = -5000.0f; // 중력 (파편이 떨어지게 만듦)
-    
-        // 랜덤한 바람 효과 적용 (X, Z 방향 확산)
-        float windFactor = 0.5f;
-        float windX = (Rand(float2(progress, threadIndex.x)) - 0.5f) * windFactor;
-        float windZ = (Rand(float2(threadIndex.x, progress)) - 0.5f) * windFactor;
-
-        // 초기에는 빠르게 튀어오름
-        if (progress < 0.01f)
+        float3 velocity = g_particle[threadIndex.x].worldDir;
+        
+        // 중력 및 감속 효과
+        float gravity = -981.0f;
+        float dragFactor = 1.0f;
+        
+        // 진행도에 따른 중력 영향 조절
+        if (progress < 0.2f)
         {
-            velocity.y += initialSpeed * (1.0f - progress); // 점점 감속
+            // 초기에는 중력 영향 적게
+            velocity.y += gravity * deltaTime * 0.5f;
+            dragFactor = 0.3f;
         }
-        // 중력 적용 시작
-        else if (progress > 0.01f)
+        else
         {
+            // 이후 중력 영향 증가
             velocity.y += gravity * deltaTime;
+            dragFactor = lerp(0.3f, 1.0f, (progress - 0.2f) / 0.8f);
         }
-
-        // X, Z 방향 확산 (바람 효과 추가)
-        velocity.x += windX * deltaTime;
-        velocity.z += windZ * deltaTime;
-
-        // 위치 업데이트
+        
+        // 공기 저항
+        velocity *= (1.0f - dragFactor * deltaTime);
+        
+        // 지면 충돌 처리
+        if (g_particle[threadIndex.x].worldPos.y < 0.0f)
+        {
+            g_particle[threadIndex.x].worldPos.y = 0.0f;
+            velocity.y = -velocity.y * 0.4f; // 탄성 계수
+            velocity.xz *= 0.9f; // 마찰
+        }
+        
+        g_particle[threadIndex.x].worldDir = velocity;
         g_particle[threadIndex.x].worldPos += velocity * deltaTime;
 
-        // 수명이 다한 파티클 제거
-        if (g_particle[threadIndex.x].curTime >= g_particle[threadIndex.x].lifeTime)
+        if (g_particle[threadIndex.x].curTime >= g_particle[threadIndex.x].lifeTime * 0.95f)
         {
-            g_particle[threadIndex.x].alive = 0;
+            float fadeProgress = (g_particle[threadIndex.x].curTime - g_particle[threadIndex.x].lifeTime * 0.95f)
+                           / (g_particle[threadIndex.x].lifeTime * 0.05f);
+            if (fadeProgress >= 1.0f)
+            {
+                g_particle[threadIndex.x].alive = 0;
+            }
         }
     }
 }

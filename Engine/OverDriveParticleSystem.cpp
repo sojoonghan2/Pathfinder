@@ -17,7 +17,7 @@ OverDriveParticleSystem::OverDriveParticleSystem() : BaseParticleSystem()
 
 void OverDriveParticleSystem::FinalUpdate()
 {
-	shared_ptr<Texture> textur2 = GET_SINGLE(Resources)->GetRenderTargetTexture();
+	shared_ptr<Texture> textur2 = GET_SINGLE(Resources)->GetColorTexture();
 	SetParticleTexture(1, textur2);
 
 	BaseParticleSystem::FinalUpdate();

@@ -36,7 +36,7 @@
 
 #include "GameModule.h"
 
-#define PARTICLEDEBUG	TRUE
+#define PARTICLEDEBUG	FALSE
 
 ParticleScene::ParticleScene()
 {
@@ -346,7 +346,7 @@ void ParticleScene::LoadMyParticle()
 
 		// ÁÂÇ¥ ÄÄÆ÷³ÍÆ® Ãß°¡
 		cataclysmParticle->AddComponent(make_shared<Transform>());
-		cataclysmParticle->GetTransform()->SetLocalPosition(Vec3(0.f, -100.f, 400.f));
+		cataclysmParticle->GetTransform()->SetLocalPosition(Vec3(0.f, -100.f, -400.f));
 		cataclysmParticle->GetTransform()->SetLocalRotation(Vec3(0.0f, 90.0f, 0.0f));
 		cataclysmParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
