@@ -335,27 +335,27 @@ void ParticleScene::LoadMyParticle()
 {
 #pragma endregion
 
-// 불 파티클
-#pragma region FireParticle
+// 얼음 파티클
+#pragma region IceParticle
 	{
 		// 파티클 오브젝트 생성
-		shared_ptr<GameObject> fireParticle = make_shared<GameObject>();
-		wstring fireParticleName = L"FireParticle";
-		fireParticle->SetName(fireParticleName);
-		fireParticle->SetCheckFrustum(true);
-		fireParticle->SetStatic(false);
+		shared_ptr<GameObject> iceParticle = make_shared<GameObject>();
+		wstring iceParticleName = L"IceParticle";
+		iceParticle->SetName(iceParticleName);
+		iceParticle->SetCheckFrustum(true);
+		iceParticle->SetStatic(false);
 
 		// 좌표 컴포넌트 추가
-		fireParticle->AddComponent(make_shared<Transform>());
-		fireParticle->GetTransform()->SetLocalPosition(Vec3(400.f, 100.f, -400.f));
-		fireParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+		iceParticle->AddComponent(make_shared<Transform>());
+		iceParticle->GetTransform()->SetLocalPosition(Vec3(400.f, 100.f, -400.f));
+		iceParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		// 파티클 시스템 컴포넌트 추가
-		shared_ptr<FireParticleSystem> fireParticleSystem = make_shared<FireParticleSystem>();
-		fireParticle->AddComponent(make_shared<TestParticleScript>());
-		fireParticle->AddComponent(fireParticleSystem);
+		shared_ptr<IceParticleSystem> iceParticleSystem = make_shared<IceParticleSystem>();
+		iceParticle->AddComponent(make_shared<TestParticleScript>());
+		iceParticle->AddComponent(iceParticleSystem);
 
-		activeScene->AddGameObject(fireParticle);
+		activeScene->AddGameObject(iceParticle);
 	}
 #pragma endregion
 
