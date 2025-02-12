@@ -73,6 +73,8 @@ using namespace Microsoft::WRL;
 #define SCENESIZE		1000.f
 #define MAXMOVESIZE		500.f
 
+#define PI 3.14159265358979323846f
+
 // °¢Á¾ typedef
 using int8		= __int8;
 using int16		= __int16;
@@ -250,6 +252,7 @@ Vec3 Normalization(Vec3 vec);
 bool IsMatrixValid(const XMFLOAT4X4& matrix);
 void DecomposeMatrix(const XMFLOAT4X4& matrix, Vec3& position, Quaternion& rotation, Vec3& scale);
 Vec3 QuaternionToEuler(const Quaternion& q);
+float ToRadian(float degree);
 
 namespace MyProject
 {

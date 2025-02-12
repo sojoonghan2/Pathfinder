@@ -194,3 +194,9 @@ Matrix MyProject::MatrixRotationQuaternion(const Quaternion& quat)
 
     return result;
 }
+
+// 도(degree) -> 라디안(radian) 변환 함수
+float ToRadian(float degree)
+{
+    return degree * (PI / 180.0f);
+}

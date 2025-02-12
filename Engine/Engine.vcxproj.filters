@@ -252,6 +252,9 @@
     <ClCompile Include="RectangleCollider.cpp">
       <Filter>Object\Component\Collider</Filter>
     </ClCompile>
+    <ClCompile Include="TestGrenadeScript.cpp">
+      <Filter>Script</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -463,6 +466,9 @@
     </ClInclude>
     <ClInclude Include="RectangleCollider.h">
       <Filter>Object\Component\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="TestGrenadeScript.h">
+      <Filter>Script</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

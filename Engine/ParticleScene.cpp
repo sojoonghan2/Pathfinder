@@ -30,6 +30,7 @@
 #include "TestParticleScript.h"
 #include "ModuleScript.h"
 #include "MasterScript.h"
+#include "TestGrenadeScript.h"
 
 #include "SphereCollider.h"
 #include "RectangleCollider.h"
@@ -262,7 +263,8 @@ ParticleScene::ParticleScene()
 		// 2. Transform 컴포넌트 추가 및 설정
 		grenade->AddComponent(make_shared<Transform>());
 		grenade->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
-		grenade->GetTransform()->SetLocalPosition(Vec3(0, 200.f, 100.f));
+		grenade->GetTransform()->SetLocalPosition(Vec3(0, 0.f, -300.f));
+		grenade->AddComponent(make_shared<TestGrenadeScript>());
 
 		// 3. Collider 설정
 		grenade->AddComponent(make_shared<SphereCollider>());
@@ -285,6 +287,10 @@ ParticleScene::ParticleScene()
 			meshRenderer->SetMaterial(material);
 		}
 		grenade->AddComponent(meshRenderer);
+
+		// 파티클 시스템 컴포넌트 추가
+		shared_ptr<FireParticleSystem> iceParticleSystem = make_shared<FireParticleSystem>();
+		grenade->AddComponent(iceParticleSystem);
 
 		// 5. Scene에 추가
 		activeScene->AddGameObject(grenade);
@@ -327,30 +333,6 @@ ParticleScene::~ParticleScene() {}
 
 void ParticleScene::LoadMyParticle()
 {
-// 얼음 파티클
-#pragma region IceParticle
-	// 테스트 결과 100개를 만들면 fps 20까지 떨어짐
-	// VRS 테스트 시 파티클 100개 띄우면 될듯
-	{
-		// 파티클 오브젝트 생성
-		shared_ptr<GameObject> iceParticle = make_shared<GameObject>();
-		wstring iceParticleName = L"IceParticle";
-		iceParticle->SetName(iceParticleName);
-		iceParticle->SetCheckFrustum(true);
-		iceParticle->SetStatic(false);
-
-		// 좌표 컴포넌트 추가
-		iceParticle->AddComponent(make_shared<Transform>());
-		iceParticle->GetTransform()->SetLocalPosition(Vec3(-400.f, 100.f, -400.f));
-		iceParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
-
-		// 파티클 시스템 컴포넌트 추가
-		shared_ptr<IceParticleSystem> iceParticleSystem = make_shared<IceParticleSystem>();
-		iceParticle->AddComponent(make_shared<TestParticleScript>());
-		iceParticle->AddComponent(iceParticleSystem);
-
-		activeScene->AddGameObject(iceParticle);
-	}
 #pragma endregion
 
 // 불 파티클

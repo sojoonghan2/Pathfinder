@@ -4,6 +4,9 @@
 #include "params.fx"
 #include "utils.fx"
 
+#define PI 3.141592
+#define PI2 PI * 2
+
 struct Particle
 {
     float3  worldPos;
@@ -119,32 +122,30 @@ float4 PS_Main(GS_OUT input) : SV_Target
     // 파티클 수명 비율 계산
     float ratio = g_data[input.id].curTime / g_data[input.id].lifeTime;
 
-    // 노란색(초기), 빨간색(중간), 검은색(최종) 색상 정의
-    float3 startColor = float3(1.0f, 1.0f, 0.0f); // 노란색
-    float3 midColor = float3(1.0f, 0.0f, 0.0f); // 빨간색
-    float3 endColor = float3(0.0f, 0.0f, 0.0f); // 검은색
+    float3 startColor = float3(0.0f, 1.0f, 1.0f);
+    float3 midColor = float3(1.0f, 0.0f, 1.0f);
+    float3 endColor = float3(1.0f, 0.0f, 0.0f);
 
     // 색상 전환
     float3 color;
     if (ratio < 0.5f)
     {
-        // 0~0.5 구간: 노란색 -> 빨간색
         color = lerp(startColor, midColor, ratio * 2.0f);
     }
     else
     {
-        // 0.5~1.0 구간: 빨간색 -> 검은색
         color = lerp(midColor, endColor, (ratio - 0.5f) * 2.0f);
     }
     
-    // 투명도 효과
-    float alpha = 1.0f - ratio; // 서서히 투명해짐
-    
+    // 투명도 효과 (서서히 사라지는 효과)
+    float alpha = 0.8f - ratio;
+
     // 텍스처 샘플링 및 색상 적용
     float4 texColor = g_textures.Sample(g_sam_0, input.uv);
-    return float4(color, alpha) * texColor;
+    float4 texColor2 = g_textures.Sample(g_sam_0, input.uv * 0.5);
+    
+    return float4(color, alpha) * texColor * texColor2;
 }
-
 
 struct ComputeShared
 {
@@ -163,15 +164,32 @@ RWStructuredBuffer<ComputeShared> g_shared : register(u1);
 // g_int_0  : 최대 파티클 수
 // g_int_1  : 새로 활성화할 파티클 수
 // g_vec4_0 : 최소/최대 수명과 속도
+
+static const float radius = 50.0f;
+static const uint numPoints = 10;
+
+static const float3 startPositions[numPoints] =
+{
+    float3(radius * cos(0.0f), 0.0f, radius * sin(0.0f)),
+    float3(radius * cos(PI2 * 0.2f), 0.0f, radius * sin(PI2 * 0.2f)),
+    float3(radius * cos(PI2 * 0.4f), 0.0f, radius * sin(PI2 * 0.4f)),
+    float3(radius * cos(PI2 * 0.6f), 0.0f, radius * sin(PI2 * 0.6f)),
+    float3(radius * cos(PI2 * 0.8f), 0.0f, radius * sin(PI2 * 0.8f)),
+    float3(radius * cos(PI2 * 1.0f), 0.0f, radius * sin(PI2 * 1.0f)),
+    float3(radius * cos(PI2 * 1.2f), 0.0f, radius * sin(PI2 * 1.2f)),
+    float3(radius * cos(PI2 * 1.4f), 0.0f, radius * sin(PI2 * 1.4f)),
+    float3(radius * cos(PI2 * 1.6f), 0.0f, radius * sin(PI2 * 1.6f)),
+    float3(radius * cos(PI2 * 1.8f), 0.0f, radius * sin(PI2 * 1.8f))
+};
+
+// 배열 크기 정의
+static const int startPositionCount = 5;
+
 [numthreads(1024, 1, 1)]
 void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 {
     if (threadIndex.x >= g_int_0)
         return;
-
-    // 초기 시작 범위
-    float minX = -10.0f, maxX = 10.0f;
-    float minZ = -10.0f, maxZ = 10.0f;
 
     int maxCount = g_int_0;
     int addCount = g_int_1;
@@ -182,15 +200,11 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     float minSpeed = g_vec4_0.z;
     float maxSpeed = g_vec4_0.w;
 
-    // 활성화 가능한 파티클 수 관리
     g_shared[0].addCount = addCount;
-    // 스레드 동기화
     GroupMemoryBarrierWithGroupSync();
 
-    // 비활성 파티클 활성화
     if (g_particle[threadIndex.x].alive == 0 && g_shared[0].addCount > 0)
     {
-        // 활성화 가능한 파티클 수 감소
         while (true)
         {
             int remaining = g_shared[0].addCount;
@@ -209,20 +223,21 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             }
         }
 
-        // 불 파티클 연산
         if (g_particle[threadIndex.x].alive == 1)
         {
             float x = ((float) threadIndex.x / (float) maxCount) + accTime;
-
-            // r값을 고정으로 하면 불이 퍼지지 않게 할 수 있음
             float r1 = Rand(float2(x, accTime));
             float r2 = Rand(float2(x * accTime, accTime));
             float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
 
-            g_particle[threadIndex.x].worldPos = float3(
-                lerp(minX, maxX, r1), // X: 범위 내 랜덤 값
-                0.0f, // Y: 고정값
-                lerp(minZ, maxZ, r3) // Z: 범위 내 랜덤 값
+            // 여러 개의 시작 위치 중 하나를 선택
+            int randomIndex = (int) (Rand(float2(accTime, x)) * startPositionCount) % startPositionCount;
+            float3 startPos = startPositions[randomIndex];
+
+            g_particle[threadIndex.x].worldPos = startPos + float3(
+                lerp(-2.0f, 2.0f, r1), // X: 시작 위치에서 조금 랜덤하게 분산
+                0.0f,
+                lerp(-2.0f, 2.0f, r3) // Z: 시작 위치에서 조금 랜덤하게 분산
             );
 
             g_particle[threadIndex.x].worldDir = normalize(float3(r1 - 0.5f, 1.0f, r3 - 0.5f));
@@ -230,7 +245,6 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             g_particle[threadIndex.x].curTime = 0.f;
         }
     }
-    // 기존 파티클 업데이트
     else
     {
         g_particle[threadIndex.x].curTime += deltaTime;
@@ -245,5 +259,6 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
         g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
     }
 }
+
 
 #endif

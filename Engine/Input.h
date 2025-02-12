@@ -23,6 +23,7 @@ enum class KEY_TYPE
 	T = 'T',
 	U = 'U',
 	I = 'I',
+	Y = 'Y',
 
 	ADD = VK_ADD,
 	SUBTRACT = VK_SUBTRACT,
