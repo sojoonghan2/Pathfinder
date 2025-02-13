@@ -255,6 +255,12 @@
     <ClCompile Include="TestGrenadeScript.cpp">
       <Filter>Script</Filter>
     </ClCompile>
+    <ClCompile Include="BossScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="BossScript.cpp">
+      <Filter>Script\SceneScript</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -469,6 +475,12 @@
     </ClInclude>
     <ClInclude Include="TestGrenadeScript.h">
       <Filter>Script</Filter>
+    </ClInclude>
+    <ClInclude Include="BossScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="BossScript.h">
+      <Filter>Script\SceneScript</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

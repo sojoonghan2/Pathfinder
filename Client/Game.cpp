@@ -7,7 +7,7 @@ void Game::Init(const WindowInfo& info)
 {
 	GEngine->Init(info);
 
-	GET_SINGLE(SceneManager)->LoadScene(L"ParticleScene");
+	GET_SINGLE(SceneManager)->LoadScene(L"TitleScene");
 }
 
 void Game::Update()

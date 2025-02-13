@@ -16,7 +16,7 @@ void LuckyScript::LateUpdate() {
     {
         if (INPUT->GetButton(KEY_TYPE::SUBTRACT)) {
             ApplyModuleAbillities();
-            GET_SINGLE(SceneManager)->LoadScene(L"ParticleScene");
+            GET_SINGLE(SceneManager)->LoadScene(L"BossScene");
         }
     }
 }
