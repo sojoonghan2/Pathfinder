@@ -118,30 +118,28 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 
 float4 PS_Main(GS_OUT input) : SV_Target
 {
-    // 첫 번째 텍스처(g_textures[0]) 샘플링
-    float4 baseTexColor = g_textures.Sample(g_sam_0, input.uv);
+    // 파티클 텍스처 샘플링
+    float4 particleColor = g_textures.Sample(g_sam_0, input.uv);
+    
+    // 알파 값이 0.01f보다 작으면(컬러가 없으면) 원래 파티클 컬러 유지
+    if (particleColor.a < 0.5f)
+    {
+        return particleColor;
+    }
+    particleColor.a = 0.5;
 
-    // 두 번째 텍스처(g_textures[1]) 샘플링
-    float4 overlayTexColor = g_textures1.Sample(g_sam_0, input.uv);
+    // 굴절 UV 계산
+    // 0.0 ~ 1.0이라는 범위를 사용하기 위해 rg 채널을 사용
+    // 0.5를 빼서 범위를 -0.5 ~ 0.5로 수정(전방향 굴절)
+    float2 refractedUV = input.uv + (particleColor.rg - 0.5f) * 0.05f; // * 굴절 강도
+    // UV 좌표 범위 제한
+    refractedUV = saturate(refractedUV);
 
-    // 중심 거리 계산
-    float2 center = float2(0.5f, 0.5f);
-    float dist = distance(input.uv, center);
+    // 렌더 타겟의 컬러 텍스처에서 굴절된 픽셀 샘플링
+    float4 backgroundColor = g_textures1.Sample(g_sam_0, refractedUV);
 
-    // 거리 기반 알파값 조정 (중심에서 멀수록 투명)
-    float overlayAlpha = saturate(1.0f - dist * 2.0f);
-
-    // 파티클 수명 기반 알파값
-    float ratio = g_data[input.id].curTime / g_data[input.id].lifeTime;
-    float lifeAlpha = 1.0f - ratio;
-
-    // 최종 알파값
-    float finalAlpha = overlayAlpha * lifeAlpha;
-
-    // 텍스처 혼합
-    float4 finalColor = lerp(baseTexColor, overlayTexColor, finalAlpha);
-
-    return finalColor;
+    // 파티클과 배경 혼합
+    return lerp(backgroundColor, particleColor, particleColor.a);
 }
 
 struct ComputeShared
