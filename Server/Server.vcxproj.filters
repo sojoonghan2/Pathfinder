@@ -8,6 +8,9 @@
     <Filter Include="IOCP">
       <UniqueIdentifier>{fd62d002-d280-45ca-9345-51a6f0326057}</UniqueIdentifier>
     </Filter>
+    <Filter Include="pch">
+      <UniqueIdentifier>{61ec4e86-e1fc-4482-b2cd-6e41271c0126}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -19,7 +22,11 @@
     <ClInclude Include="IOCP.h">
       <Filter>IOCP</Filter>
     </ClInclude>
-    <ClInclude Include="define.h" />
-    <ClInclude Include="pch.h" />
+    <ClInclude Include="pch.h">
+      <Filter>pch</Filter>
+    </ClInclude>
+    <ClInclude Include="define.h">
+      <Filter>pch</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

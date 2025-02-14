@@ -6,6 +6,7 @@ constexpr int NAME_SIZE = 20;
 
 enum class IOOperation
 {
+	NONE,
 	ACCEPT,
 	RECV,
 	SEND
@@ -14,33 +15,30 @@ enum class IOOperation
 
 struct OverlappedEx
 {
-	WSAOVERLAPPED	overlapped;				// overlapped IO 구조체
-	SOCKET			client_socket;			// 클라이언트 소켓
-	WSABUF			wsabuf;					// 작업 버퍼
-	char			data_buffer[BUF_SIZE];	// 데이터 버퍼
-	IOOperation		operation;				// 동작 종류
+	WSAOVERLAPPED	over;				// overlapped IO 구조체
+	SOCKET			clientSocket{ INVALID_SOCKET }; // 클라이언트 소켓
+	WSABUF			wsabuf{};					// 작업 버퍼
+	char			dataBuffer[BUF_SIZE]{};	// 데이터 버퍼
+	IOOperation		operation{};				// 동작 종류
 
 	// recv 전용 생성자. 
 	OverlappedEx() :
-		client_socket	{ INVALID_SOCKET },
-		data_buffer		{},
 		operation		{ IOOperation::RECV }
 	{
 		wsabuf.len = BUF_SIZE;
-		wsabuf.buf = data_buffer;
-		ZeroMemory(&overlapped, sizeof(overlapped));
+		wsabuf.buf = dataBuffer;
+		ZeroMemory(&over, sizeof(over));
 	}
 };
 
 struct Session {
 
 	// RECV, SEND에 사용할 Overlapped 변수
-	OverlappedEx	overlapped_ex;
-	SOCKET			socket;
+	OverlappedEx	overEx;
+	SOCKET			clientSocket{INVALID_SOCKET};
 
-	Session() :
-		socket	{ INVALID_SOCKET }
+	Session()
 	{
-		ZeroMemory(&overlapped_ex, sizeof(overlapped_ex));
+		ZeroMemory(&overEx, sizeof(overEx));
 	}
 };
