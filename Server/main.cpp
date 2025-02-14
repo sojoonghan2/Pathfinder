@@ -1,96 +1,36 @@
-#include <WS2tcpip.h>
-#include <MSWSock.h>
-
-#include <thread>
-#include <vector>
-#include <array>
-#include <print>
-#include <iostream>
-
-#pragma comment(lib, "WS2_32.lib")
-#pragma comment(lib, "MSWSock.lib")
-
-constexpr int PORT_NUM = 4000;
-constexpr int BUF_SIZE = 200;
-constexpr int NAME_SIZE = 20;
+#include "pch.h"
 
 HANDLE		IOCPHandle = INVALID_HANDLE_VALUE;
 int SessionCnt;
-
-enum class IOOperation
-{
-	ACCEPT,
-	RECV,
-	SEND
-};
-
-//enum class IOState
-//{ 
-//	FREE,
-//	ALLOC,
-//	INGAME
-//};
-
-
-
-struct OverlappedEx
-{
-	WSAOVERLAPPED	overlapped; // overlapped IO 구조체
-	SOCKET			client_socket;		// 클라이언트 소켓
-	WSABUF			wsabuf;		// 작업 버퍼
-	char			data_buffer[BUF_SIZE]; // 데이터 버퍼
-	IOOperation		operation;	// 동작 종류
-
-	// recv 전용 생성자. 
-	OverlappedEx()
-	{
-		wsabuf.len = BUF_SIZE;
-		wsabuf.buf = data_buffer;
-		operation = IOOperation::RECV;
-		ZeroMemory(&overlapped, sizeof(overlapped));
-	}
-};
-
-struct Session {
-
-	// RECV, SEND에 사용할 Overlapped 변수
-	OverlappedEx	overlapped_ex;
-	SOCKET			socket;
-
-	Session() :
-		socket{ INVALID_SOCKET }
-	{
-		ZeroMemory(&overlapped_ex, sizeof(overlapped_ex));
-	}
-
-	void do_recv()
-	{
-		DWORD recv_flag = 0;
-		WSARecv(socket, &overlapped_ex.wsabuf, 1, 0, &recv_flag, &overlapped_ex.overlapped, 0);
-	}
-
-};
-
 std::array<Session, 10> SessionList;
 
 void worker(SOCKET listen_socket)
 {
 	std::println("Hello worker!");
+
 	while (true) {
-		DWORD num_bytes;
+		DWORD io_size;
 		ULONG_PTR key;
 		WSAOVERLAPPED* over = nullptr;
-		auto ret = GetQueuedCompletionStatus(IOCPHandle, &num_bytes, &key, &over, INFINITE);
-		OverlappedEx* ex_over = reinterpret_cast<OverlappedEx*>(over);
+
+		auto ret = GetQueuedCompletionStatus(
+			IOCPHandle,
+			&io_size,
+			&key,
+			&over,
+			INFINITE);
 
 		if (FALSE == ret) {
 			std::println("Client Error.\n {}", GetLastError());
 			exit(-1);
 		}
 
+		OverlappedEx* curr_over_ex = reinterpret_cast<OverlappedEx*>(over);
+
+
 		// 완료된 작업의 OverlappedEx 정보를 읽는다.
 		// 어떤 operation으로 완료되었는지 확인. 
-		switch (ex_over->operation) {
+		switch (curr_over_ex->operation) {
 
 			/**
 			* ACCEPT: AcceptEx() 작업 완료
@@ -100,36 +40,38 @@ void worker(SOCKET listen_socket)
 			// 세션 컨테이너에 소켓 정보 저장
 			int client_id = SessionCnt++;
 			std::println("New Client {} Accepted.", client_id);
-			SOCKET current_socket = ex_over->client_socket;
-			SessionList[client_id].socket = current_socket;
+			SOCKET curr_socket = curr_over_ex->client_socket;
+			SessionList[client_id].socket = curr_socket;
 
 			// IOCP 객체에 받아들인 클라이언트의 소켓을 연결
 			auto ret = CreateIoCompletionPort(
-				reinterpret_cast<HANDLE>(current_socket),
+				reinterpret_cast<HANDLE>(curr_socket),
 				IOCPHandle,
 				client_id,
 				0);
 
 			// WSARecv 호출.
 
-			// 다시 accept를 위한 새로운 소켓 생성
-			current_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 
-			// overlapped 
-			ZeroMemory(&ex_over->overlapped, sizeof(ex_over->overlapped));
-			ex_over->client_socket = current_socket;
-			ex_over->operation = IOOperation::ACCEPT;
+			// accept를 위한 새로운 소켓 생성
+			curr_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+
+			// Accept로 overlapped 설정 
+			ZeroMemory(&curr_over_ex->overlapped, sizeof(curr_over_ex->overlapped));
+			curr_over_ex->client_socket = curr_socket;
+			curr_over_ex->operation = IOOperation::ACCEPT;
 			int addr_size = sizeof(SOCKADDR_IN);
+			DWORD bytes_received{};
 
 			AcceptEx(
 				listen_socket,
-				current_socket,
-				ex_over->data_buffer,
+				curr_socket,
+				curr_over_ex->data_buffer,
 				0,
 				addr_size + 16,
 				addr_size + 16,
-				0,
-				&ex_over->overlapped
+				&bytes_received,
+				&curr_over_ex->overlapped
 			);
 			std::println("AcceptEx Successed.");
 			break;
@@ -233,6 +175,7 @@ int main()
 	accept_over.client_socket = accept_socket;
 	
 	int addr_size = sizeof(SOCKADDR_IN);
+	DWORD bytes_received{};
 
 	// listen_socket에 accept_socket 비동기 Accept 등록
 	AcceptEx(
@@ -242,7 +185,7 @@ int main()
 		0,
 		addr_size + 16,
 		addr_size + 16,
-		0,
+		&bytes_received,
 		&accept_over.overlapped
 	);
 
