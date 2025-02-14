@@ -145,25 +145,82 @@ RWStructuredBuffer<ComputeShared> g_shared : register(u1);
 
 groupshared int isGenerated;
 
-[numthreads(1, 1, 1)]
+[numthreads(1024, 1, 1)]
 void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 {
-    if (threadIndex.x == 0)
-        isGenerated = 0;
+    if (threadIndex.x >= g_int_0)
+        return;
 
+    int maxCount = g_int_0;
     int addCount = g_int_1;
+    int frameNumber = g_int_2;
+    float deltaTime = g_vec2_1.x;
+    float accTime = g_vec2_1.y;
+    float minLifeTime = g_vec4_0.x;
     float maxLifeTime = g_vec4_0.y;
+    float minSpeed = g_vec4_0.z;
+    float maxSpeed = g_vec4_0.w;
 
     g_shared[0].addCount = addCount;
     GroupMemoryBarrierWithGroupSync();
 
-    if (g_particle[threadIndex.x].alive == 0 && g_shared[0].addCount > 0 && isGenerated == 0)
+    if (g_particle[threadIndex.x].alive == 0)
     {
-        g_particle[threadIndex.x].worldPos = float3(0.0f, 0.0f, 0.0f);
-        g_particle[threadIndex.x].lifeTime = g_vec4_0.y;
-        g_particle[threadIndex.x].alive = 1;
+        while (true)
+        {
+            int remaining = g_shared[0].addCount;
+            if (remaining <= 0)
+                break;
 
-        InterlockedMax(isGenerated, 1);
+            int expected = remaining;
+            int desired = remaining - 1;
+            int originalValue;
+            InterlockedCompareExchange(g_shared[0].addCount, expected, desired, originalValue);
+
+            if (originalValue == expected)
+            {
+                g_particle[threadIndex.x].alive = 1;
+                break;
+            }
+        }
+
+        if (g_particle[threadIndex.x].alive == 1)
+        {
+            float x = ((float) threadIndex.x / (float) maxCount) + accTime;
+
+            float r1 = Rand(float2(x, accTime));
+            float r2 = Rand(float2(x * accTime, accTime));
+            float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
+
+            // [0.5~1] -> [0~1]
+            float3 noise =
+            {
+                2 * r1 - 1,
+                2 * r2 - 1,
+                2 * r3 - 1
+            };
+
+            // [0~1] -> [-1~1]
+            float3 dir = (noise - 0.5f) * 2.f;
+
+            g_particle[threadIndex.x].worldDir = normalize(dir);
+            g_particle[threadIndex.x].worldPos = (noise.xyz - 0.5f) * 25;
+            g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * noise.x) + minLifeTime;
+            g_particle[threadIndex.x].curTime = 0.f;
+        }
+    }
+    else
+    {
+        g_particle[threadIndex.x].curTime += deltaTime;
+        if (g_particle[threadIndex.x].lifeTime < g_particle[threadIndex.x].curTime)
+        {
+            g_particle[threadIndex.x].alive = 0;
+            return;
+        }
+
+        float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
+        float speed = (maxSpeed - minSpeed) * ratio + minSpeed;
+        g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
     }
 }
 

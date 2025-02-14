@@ -6,7 +6,7 @@ OverDriveParticleSystem::OverDriveParticleSystem() : BaseParticleSystem()
 	SetParticleInterval(0.001f, 0.0f);
 	SetParticleLifeTime(3.0f, 5.0f);
 	SetParticleSpeed(1000.0f, 800.0f);
-	SetParticleScale(100.0f, 50.0f);
+	SetParticleScale(200.0f, 100.0f);
 	SetDuration(1.0f);
 	SetOnceParticleNum(1);
 	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"OverDriveParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"OverDriveComputeParticle")->Clone());

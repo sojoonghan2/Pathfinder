@@ -3,10 +3,10 @@
 
 TestPBRParticleSystem::TestPBRParticleSystem() : BaseParticleSystem()
 {
-	SetParticleInterval(0.001f, 0.0f);
-	SetParticleLifeTime(1.0f, 1.0f);
-	SetParticleSpeed(0.0f, 0.0f);
-	SetParticleScale(500.0f, 300.0f);
+	SetParticleInterval(0.005f, 0.0f);
+	SetParticleLifeTime(0.5f, 0.1f);
+	SetParticleSpeed(50.0f, 30.0f);
+	SetParticleScale(200.0f, 100.0f);
 	SetDuration(10000000.0f);
 	SetOnceParticleNum(1);
 	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"TestPBRParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"TestPBRComputeParticle")->Clone());

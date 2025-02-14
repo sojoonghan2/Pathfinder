@@ -172,6 +172,8 @@
     <ClInclude Include="Animator.h" />
     <ClInclude Include="BaseCollider.h" />
     <ClInclude Include="BaseParticleSystem.h" />
+    <ClInclude Include="BossScene.h" />
+    <ClInclude Include="BossScript.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="BINLoader.h" />
     <ClInclude Include="CataclysmParticleSystem.h" />
@@ -245,6 +247,8 @@
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="BaseCollider.cpp" />
     <ClCompile Include="BaseParticleSystem.cpp" />
+    <ClCompile Include="BossScene.cpp" />
+    <ClCompile Include="BossScript.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="BINLoader.cpp" />
     <ClCompile Include="CataclysmParticleSystem.cpp" />
