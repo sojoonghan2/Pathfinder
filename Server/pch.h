@@ -13,4 +13,5 @@
 #include <iostream>
 
 #include "define.h"
+#include "protocol.h"
 

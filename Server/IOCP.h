@@ -11,7 +11,9 @@ public:
 
 private:
 
-	void worker();
+	void Worker();
+	void DoRecv(Session& session) const;
+	void ProcessPacket(int key, char* p);
 
 
 private:

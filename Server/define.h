@@ -15,10 +15,10 @@ enum class IOOperation
 
 struct OverlappedEx
 {
-	WSAOVERLAPPED	over;				// overlapped IO 구조체
+	WSAOVERLAPPED	over;					// overlapped IO 구조체
 	SOCKET			clientSocket{ INVALID_SOCKET }; // 클라이언트 소켓
 	WSABUF			wsabuf{};					// 작업 버퍼
-	char			dataBuffer[BUF_SIZE]{};	// 데이터 버퍼
+	char			dataBuffer[BUF_SIZE]{};		// 데이터 버퍼
 	IOOperation		operation{};				// 동작 종류
 
 	// recv 전용 생성자. 
@@ -31,11 +31,11 @@ struct OverlappedEx
 	}
 };
 
-struct Session {
-
-	// RECV, SEND에 사용할 Overlapped 변수
-	OverlappedEx	overEx;
-	SOCKET			clientSocket{INVALID_SOCKET};
+struct Session
+{
+	OverlappedEx	overEx;							// RECV에 사용할 Overlapped 변수
+	SOCKET			clientSocket{ INVALID_SOCKET };	
+	int				currentDataSize{};					// 패킷 재조립을 위한 남은 데이터 수 
 
 	Session()
 	{

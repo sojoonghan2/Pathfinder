@@ -91,7 +91,7 @@ bool IOCP::StartServer()
 	// 비동기 IO 작업 완료 확인 스레드 생성
 	std::vector<std::thread> worker_thread;
 	for (int i = 0; i < 1; ++i) {
-		worker_thread.emplace_back([this]() { worker(); });
+		worker_thread.emplace_back([this]() { Worker(); });
 	}
 	std::println("Created Worker Thread.");
 
@@ -103,7 +103,7 @@ bool IOCP::StartServer()
 	return true;
 }
 
-void IOCP::worker()
+void IOCP::Worker()
 {
 	std::println("Hello worker!");
 
@@ -150,7 +150,7 @@ void IOCP::worker()
 				0);
 
 			// WSARecv 호출.
-
+			DoRecv(sessionList[client_id]);
 
 			// accept를 위한 새로운 소켓 생성
 			curr_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
@@ -182,22 +182,22 @@ void IOCP::worker()
 		case IOOperation::RECV:
 		{
 			// 패킷 재조립
-			//int remain_data = num_bytes + clients[key]._prev_remain;
-			//char* p = ex_over->_send_buf;
-			//while (remain_data > 0) {
-			//	int packet_size = p[0];
-			//	if (packet_size <= remain_data) {
-			//		process_packet(static_cast<int>(key), p);
-			//		p = p + packet_size;
-			//		remain_data = remain_data - packet_size;
-			//	}
-			//	else break;
-			//}
-			//clients[key]._prev_remain = remain_data;
-			//if (remain_data > 0)
-			//	memcpy(ex_over->_send_buf, p, remain_data);
-			//clients[key].do_recv();
-			//break;
+			int remain_data = io_size + sessionList[key].currentDataSize;
+			char* p = curr_over_ex->dataBuffer;
+			while (remain_data > 0) {
+				int packet_size = p[0];
+				if (packet_size <= remain_data) {
+					ProcessPacket(static_cast<int>(key), p);
+					p = p + packet_size;
+					remain_data = remain_data - packet_size;
+				}
+				else break;
+			}
+			sessionList[key].currentDataSize = remain_data;
+			if (remain_data > 0)
+				memcpy(curr_over_ex->dataBuffer, p, remain_data);
+			DoRecv(sessionList[key]);
+
 			break;
 		}
 
@@ -214,6 +214,36 @@ void IOCP::worker()
 		}
 	}
 }
+
+void IOCP::DoRecv(Session& session) const
+{
+
+	DWORD recv_flag = 0;
+	OverlappedEx& over_ex = session.overEx;
+
+	ZeroMemory(over_ex.dataBuffer, sizeof(over_ex.dataBuffer));
+
+	// 현재 남은 만큼 recv한다. 
+	over_ex.wsabuf.len = BUF_SIZE - session.currentDataSize;
+	over_ex.wsabuf.buf = over_ex.dataBuffer + session.currentDataSize;
+
+	// 비동기 Recv
+	WSARecv(
+		over_ex.clientSocket,
+		&over_ex.wsabuf,
+		1,
+		0,
+		&recv_flag,
+		&over_ex.over,
+		0);
+}
+
+void IOCP::ProcessPacket(int key, char* p)
+{
+	std::println("Processing Packet.");
+}
+
+
 
 
 IOCP::~IOCP()
