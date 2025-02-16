@@ -107,7 +107,10 @@ TestScene::TestScene()
 */
 #pragma region TESTOBJ
     {
-        shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\AnimationTest\\bi-rp_nathan_animated_003_walking.fbx");
+        TestHuman* Robot = new TestHuman();
+        float robot_state = Robot->Get_state();
+
+        shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Robot_Enemy\\Neck_Mech_Walker_by_3DHaupt-(FBX 7.4 binary mit Animation).fbx");
 
         vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
@@ -117,11 +120,12 @@ TestScene::TestScene()
             gameObject->SetCheckFrustum(false);
             gameObject->AddComponent(make_shared<Transform>());
             gameObject->AddComponent(make_shared<TestHuman>());
-            gameObject->GetTransform()->SetLocalPosition(Vec3(50.f, 0.f, 0.f));
-            gameObject->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
-            gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 0.f, 90.f));
+            gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+            gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+            gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 0.f, 0.f));
             activeScene->AddGameObject(gameObject);
         }
+
     }
 #pragma endregion
 }
