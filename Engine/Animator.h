@@ -33,7 +33,6 @@ private:
 	int32							_frame = 0;
 	int32							_nextFrame = 0;
 	float							_frameRatio = 0;
-
 	shared_ptr<Material>			_computeMaterial;
 	shared_ptr<StructuredBuffer>	_boneFinalMatrix;  // 특정 프레임의 최종 행렬
 	bool							_boneFinalUpdated = false;

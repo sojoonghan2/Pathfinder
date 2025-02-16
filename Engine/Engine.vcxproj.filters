@@ -261,6 +261,9 @@
     <ClCompile Include="BossScript.cpp">
       <Filter>Script\SceneScript</Filter>
     </ClCompile>
+    <ClCompile Include="TestHuman.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -481,6 +484,9 @@
     </ClInclude>
     <ClInclude Include="BossScript.h">
       <Filter>Script\SceneScript</Filter>
+    </ClInclude>
+    <ClInclude Include="TestHuman.h">
+      <Filter>Script\ObjectScript</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
