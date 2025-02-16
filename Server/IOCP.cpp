@@ -181,7 +181,7 @@ void IOCP::Worker()
 		*/
 		case IOOperation::RECV:
 		{
-			// 패킷 재조립
+			// 패킷 재조립 (임시) 나중에 바꿀 예정
 			int remain_data = io_size + sessionList[key].currentDataSize;
 			char* p = curr_over_ex->dataBuffer;
 			while (remain_data > 0) {
@@ -208,7 +208,7 @@ void IOCP::Worker()
 		case IOOperation::SEND:
 		{
 			// 보낸 OVER_EXP 지우기.
-			// delete ex_over;
+			delete curr_over_ex;
 			break;
 		}
 		}
@@ -238,9 +238,17 @@ void IOCP::DoRecv(Session& session) const
 		0);
 }
 
+void IOCP::DoSend(Session& session, void* packet)
+{
+	OverlappedEx* send_over_ex = new OverlappedEx{ reinterpret_cast<unsigned char*>(packet) };
+	WSASend(session.clientSocket, &send_over_ex->wsabuf, 1, 0, 0, &send_over_ex->over, 0);
+}
+
 void IOCP::ProcessPacket(int key, char* p)
 {
 	std::println("Processing Packet.");
+	SCLoginPacket packet{};
+	DoSend(sessionList[key], reinterpret_cast<void*>(&packet));
 }
 
 

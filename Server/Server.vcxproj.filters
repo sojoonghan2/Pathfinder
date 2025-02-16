@@ -28,5 +28,8 @@
     <ClInclude Include="define.h">
       <Filter>pch</Filter>
     </ClInclude>
+    <ClInclude Include="protocol.h">
+      <Filter>pch</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

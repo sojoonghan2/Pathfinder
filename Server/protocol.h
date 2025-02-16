@@ -17,11 +17,19 @@ struct BasicPacket
 
 struct CSLoginPacket : BasicPacket
 {
+	CSLoginPacket()
+	{
+		type = PacketType::CS_LOGIN;
+	}
 };
 
 
 struct SCLoginPacket : BasicPacket
 {
+	SCLoginPacket()
+	{
+		type = PacketType::SC_LOGIN;
+	}
 };
 #pragma pack(pop)
 

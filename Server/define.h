@@ -29,6 +29,16 @@ struct OverlappedEx
 		wsabuf.buf = dataBuffer;
 		ZeroMemory(&over, sizeof(over));
 	}
+
+	// send 전용 생성자
+	OverlappedEx(unsigned char* packet)
+	{
+		wsabuf.len = packet[0];
+		wsabuf.buf = dataBuffer;
+		ZeroMemory(&over, sizeof(over));
+		operation = IOOperation::SEND;
+		memcpy(dataBuffer, packet, packet[0]);
+	}
 };
 
 struct Session
