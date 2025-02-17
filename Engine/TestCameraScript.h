@@ -13,6 +13,6 @@ public:
 	void MouseInput();
 
 private:
-	float		_speed = 1000.f;
+	float		_speed = 10000.f;
 };
 

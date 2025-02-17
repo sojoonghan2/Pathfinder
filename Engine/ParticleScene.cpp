@@ -131,7 +131,7 @@ ParticleScene::ParticleScene()
 		// 2. Transform 컴포넌트 추가 및 설정
 		terraincube->AddComponent(make_shared<Transform>());
 		// 씬의 임시 크기
-		terraincube->GetTransform()->SetLocalScale(Vec3(2000.f, 2000.f, 2000.f));
+		terraincube->GetTransform()->SetLocalScale(Vec3(10000.f, 10000.f, 10000.f));
 		// 씬의 임시 좌표
 		terraincube->GetTransform()->SetLocalPosition(Vec3(0, 800.f, 0.f));
 
@@ -196,7 +196,7 @@ ParticleScene::ParticleScene()
 
 		// 2. Transform 컴포넌트 추가 및 설정
 		obj->AddComponent(make_shared<Transform>());
-		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+		obj->GetTransform()->SetLocalScale(Vec3(1000.f, 1000.f, 1000.f));
 		obj->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
 		obj->AddComponent(make_shared<TestPointLightScript>());
 
