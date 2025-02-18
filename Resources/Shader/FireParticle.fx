@@ -165,7 +165,7 @@ RWStructuredBuffer<ComputeShared> g_shared : register(u1);
 // g_int_1  : 새로 활성화할 파티클 수
 // g_vec4_0 : 최소/최대 수명과 속도
 
-static const float radius = 50.0f;
+static const float radius = 150.0f;
 static const uint numPoints = 10;
 
 static const float3 startPositions[numPoints] =

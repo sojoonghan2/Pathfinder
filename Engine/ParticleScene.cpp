@@ -73,7 +73,7 @@ ParticleScene::ParticleScene()
 		camera->AddComponent(make_shared<TestCameraScript>());
 		camera->AddComponent(make_shared<RuinsScript>());
 		camera->GetCamera()->SetFar(100000.f);
-		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, 0.f));
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI는 안 찍음
 		activeScene->AddGameObject(camera);
@@ -133,7 +133,7 @@ ParticleScene::ParticleScene()
 		// 씬의 임시 크기
 		terraincube->GetTransform()->SetLocalScale(Vec3(10000.f, 10000.f, 10000.f));
 		// 씬의 임시 좌표
-		terraincube->GetTransform()->SetLocalPosition(Vec3(0, 800.f, 0.f));
+		terraincube->GetTransform()->SetLocalPosition(Vec3(0.f, 4900.f, 0.f));
 
 		// 3. MeshRenderer 설정
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -185,9 +185,9 @@ ParticleScene::ParticleScene()
 
 // 구 오브젝트과 포인트 조명
 #pragma region Object & Point Light
+	// 1. 기본 오브젝트 생성 및 설정
+	shared_ptr<GameObject> obj = make_shared<GameObject>();
 	{
-		// 1. 기본 오브젝트 생성 및 설정
-		shared_ptr<GameObject> obj = make_shared<GameObject>();
 		obj->SetName(L"OBJ");
 		// 프러스텀 컬링 여부
 		obj->SetCheckFrustum(true);
@@ -196,7 +196,7 @@ ParticleScene::ParticleScene()
 
 		// 2. Transform 컴포넌트 추가 및 설정
 		obj->AddComponent(make_shared<Transform>());
-		obj->GetTransform()->SetLocalScale(Vec3(1000.f, 1000.f, 1000.f));
+		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 		obj->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
 		obj->AddComponent(make_shared<TestPointLightScript>());
 
@@ -266,8 +266,11 @@ ParticleScene::ParticleScene()
 
 		// 2. Transform 컴포넌트 추가 및 설정
 		grenade->AddComponent(make_shared<Transform>());
-		grenade->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
-		grenade->GetTransform()->SetLocalPosition(Vec3(0, 0.f, -300.f));
+		grenade->GetTransform()->SetLocalScale(Vec3(30.f, 30.f, 30.f));
+		grenade->GetTransform()->SetParent(obj->GetTransform());
+		grenade->GetTransform()->GetTransform()->RemoveParent();
+		// 임시용: Transform 상속 시 scale도 상속받기 때문에 잠시 부모를 끊고 보이지 않는 위치로 보내버림
+		grenade->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
 		grenade->AddComponent(make_shared<TestGrenadeScript>());
 
 		// 3. Collider 설정
@@ -293,8 +296,9 @@ ParticleScene::ParticleScene()
 		grenade->AddComponent(meshRenderer);
 
 		// 파티클 시스템 컴포넌트 추가
-		shared_ptr<FireParticleSystem> iceParticleSystem = make_shared<FireParticleSystem>();
-		grenade->AddComponent(iceParticleSystem);
+		shared_ptr<FireParticleSystem> grenadeParticleSystem = make_shared<FireParticleSystem>();
+		grenadeParticleSystem->SetParticleScale(100.f, 80.f);
+		grenade->AddComponent(grenadeParticleSystem);
 
 		// 5. Scene에 추가
 		activeScene->AddGameObject(grenade);

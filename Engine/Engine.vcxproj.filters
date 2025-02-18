@@ -204,9 +204,6 @@
     <ClCompile Include="TestPBRParticleSystem.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Animator.cpp">
-      <Filter>Object\Component\ParticleSystem</Filter>
-    </ClCompile>
     <ClCompile Include="GameModule.cpp">
       <Filter>Object</Filter>
     </ClCompile>
@@ -263,6 +260,9 @@
     </ClCompile>
     <ClCompile Include="TestHuman.cpp">
       <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>Object\Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

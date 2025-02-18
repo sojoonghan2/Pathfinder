@@ -6,6 +6,7 @@
 #include "SceneManager.h"
 #include "GameObject.h"
 #include "ParticleSystem.h"
+#include "Transform.h"
 
 TestGrenadeScript::TestGrenadeScript() {}
 
@@ -31,9 +32,12 @@ void TestGrenadeScript::KeyboardInput()
     if (INPUT->GetButton(KEY_TYPE::Y))
     {
         // 초기화
-        Vec3 pos = Vec3(0.0f, 0.0f, -300.0f);
+        GetTransform()->RestoreParent();
+        auto parentPos = GetTransform()->GetParent().lock()->GetTransform()->GetLocalPosition();
+        Vec3 pos = parentPos;
         GetTransform()->SetLocalPosition(pos);
         _velocity = Vec3(0, 0, 0);
+        GetTransform()->RemoveParent();
 
         // 파티클 초기화
         auto particle_system = GetGameObject()->GetParticleSystem();
@@ -63,7 +67,7 @@ void TestGrenadeScript::MouseInput()
 void TestGrenadeScript::ThrowGrenade()
 {
     // 현재 위치 가져오기
-    Vec3 pos = GetTransform()->GetWorldPosition();
+    Vec3 pos = GetTransform()->GetLocalPosition();
 
     // 중력 적용 (y축 방향)
     _velocity.y += _gravity * DELTA_TIME;
