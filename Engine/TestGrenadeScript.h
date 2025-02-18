@@ -23,4 +23,6 @@ private:
 
     float _angle = 45.0f;
     float _power = 2000.0f;
+
+    float _timeSinceLanded;
 };

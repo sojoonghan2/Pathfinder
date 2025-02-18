@@ -44,6 +44,10 @@ public:
 	void SetStatic(bool flag) { _static = flag; }
 	bool IsStatic() { return _static; }
 
+	void SetRenderOff() { _isRender = false; }
+	void SetRenderOn() { _isRender = true; }
+	bool IsRender() { return _isRender; }
+
 private:
 	array<shared_ptr<Component>, FIXED_COMPONENT_COUNT> _components;
 	vector<shared_ptr<MonoBehaviour>> _scripts;
@@ -51,5 +55,7 @@ private:
 	bool _checkFrustum = true;
 	uint8 _layerIndex = 0;
 	bool _static = true;
+
+	bool _isRender = true;
 };
 
