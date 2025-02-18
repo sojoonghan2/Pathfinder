@@ -269,7 +269,7 @@ ParticleScene::ParticleScene()
 		grenade->GetTransform()->SetLocalScale(Vec3(30.f, 30.f, 30.f));
 		grenade->GetTransform()->SetParent(obj->GetTransform());
 		grenade->GetTransform()->GetTransform()->RemoveParent();
-		// 임시용: Transform 상속 시 scale도 상속받기 때문에 잠시 부모를 끊고 보이지 않는 위치로 보내버림
+		// Transform 상속 시 scale도 상속받기 때문에 잠시 부모를 끊고 보이지 않는 위치로 보내버림
 		grenade->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
 		grenade->AddComponent(make_shared<TestGrenadeScript>());
 

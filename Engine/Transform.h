@@ -37,20 +37,24 @@ public:
 
 public:
     // 부모 설정
-    void SetParent(shared_ptr<Transform> parent) {
+    void SetParent(shared_ptr<Transform> parent)
+    {
         _previousParent = _parent;
         _parent = parent;
     }
 
     // 부모 제거
-    void RemoveParent() {
+    void RemoveParent()
+    {
         _previousParent = _parent;
         _parent.reset();
     }
 
-    // 호적 복구
-    void RestoreParent() {
-        if (!_previousParent.expired()) {
+    // 부모 복구
+    void RestoreParent()
+    {
+        if (!_previousParent.expired())
+        {
             _parent = _previousParent.lock();
         }
     }
