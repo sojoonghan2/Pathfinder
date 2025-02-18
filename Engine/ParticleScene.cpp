@@ -65,10 +65,24 @@ ParticleScene::ParticleScene()
 
 // 카메라
 #pragma region Camera
+	shared_ptr<GameObject> obj = make_shared<GameObject>();
+	obj->SetName(L"OBJ");
+	// 프러스텀 컬링 여부
+	obj->SetCheckFrustum(true);
+	// 정적, 동적 여부
+	obj->SetStatic(false);
+
+	// 2. Transform 컴포넌트 추가 및 설정
+	obj->AddComponent(make_shared<Transform>());
+	obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+	obj->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+	obj->AddComponent(make_shared<TestPointLightScript>());
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
 		camera->SetName(L"Main_Camera");
 		camera->AddComponent(make_shared<Transform>());
+		camera->GetTransform()->SetParent(obj->GetTransform());
+		camera->GetTransform()->GetTransform()->RemoveParent();
 		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=3000, FOV=45도
 		camera->AddComponent(make_shared<TestCameraScript>());
 		camera->AddComponent(make_shared<RuinsScript>());
@@ -185,21 +199,7 @@ ParticleScene::ParticleScene()
 
 // 구 오브젝트과 포인트 조명
 #pragma region Object & Point Light
-	// 1. 기본 오브젝트 생성 및 설정
-	shared_ptr<GameObject> obj = make_shared<GameObject>();
 	{
-		obj->SetName(L"OBJ");
-		// 프러스텀 컬링 여부
-		obj->SetCheckFrustum(true);
-		// 정적, 동적 여부
-		obj->SetStatic(false);
-
-		// 2. Transform 컴포넌트 추가 및 설정
-		obj->AddComponent(make_shared<Transform>());
-		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
-		obj->AddComponent(make_shared<TestPointLightScript>());
-
 		// 3. Collider 설정
 		obj->AddComponent(make_shared<SphereCollider>());
 		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetRadius(0.5f);

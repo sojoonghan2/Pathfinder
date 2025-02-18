@@ -25,18 +25,21 @@ void TestCameraScript::KeyboardInput()
 {
     Vec3 pos = GetTransform()->GetLocalPosition();
 
-    // 이동 처리
-    if (INPUT->GetButton(KEY_TYPE::W))
-        pos += Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
+    if (!_playerCamera)
+    {
+        // 이동 처리
+        if (INPUT->GetButton(KEY_TYPE::W))
+            pos += Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
 
-    if (INPUT->GetButton(KEY_TYPE::S))
-        pos -= Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
+        if (INPUT->GetButton(KEY_TYPE::S))
+            pos -= Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
 
-    if (INPUT->GetButton(KEY_TYPE::A))
-        pos -= Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
+        if (INPUT->GetButton(KEY_TYPE::A))
+            pos -= Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
 
-    if (INPUT->GetButton(KEY_TYPE::D))
-        pos += Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
+        if (INPUT->GetButton(KEY_TYPE::D))
+            pos += Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
+    }
 
     // 맵 크기 제한
     float mapMinX = -4900.f;
@@ -54,6 +57,12 @@ void TestCameraScript::KeyboardInput()
     // 디버깅용 좌표 출력
     if (INPUT->GetButtonDown(KEY_TYPE::T))
         PRINTPOSITION;
+
+    if (INPUT->GetButtonDown(KEY_TYPE::TAB))
+    {
+        ToggleCamera();
+        std::cout << _playerCamera << "\n";
+    }
 
     GetTransform()->SetLocalPosition(pos);
 }
@@ -83,4 +92,23 @@ void TestCameraScript::MouseInput()
 		const POINT& pos2 = INPUT->GetMousePos();
 		GET_SINGLE(SceneManager)->Pick(pos2.x, pos2.y);
 	}
+}
+
+// TODO: 플레이어 카메라와 개발자 카메라를 토글로 분리, 수정 필요
+void TestCameraScript::ToggleCamera()
+{
+    _playerCamera = !_playerCamera;
+
+    if (_playerCamera)
+    {
+        GetTransform()->RestoreParent();
+        GetTransform()->SetLocalPosition(Vec3(0.f, 2.f, 0.f));
+        GetTransform()->SetLocalRotation(Vec3(0.f, 0.f, 0.f));
+    }
+    else
+    {
+        GetTransform()->RemoveParent();
+        GetTransform()->SetLocalPosition(Vec3(0.f, 5.f, -10.f));
+        GetTransform()->SetLocalRotation(Vec3(0.2f, 0.f, 0.f));
+    }
 }

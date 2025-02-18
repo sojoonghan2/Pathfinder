@@ -12,7 +12,12 @@ public:
 	void KeyboardInput();
 	void MouseInput();
 
+	// 카메라 전환
+	void ToggleCamera();
+
 private:
 	float		_speed = 10000.f;
+
+	bool		_playerCamera = false;
 };
 
