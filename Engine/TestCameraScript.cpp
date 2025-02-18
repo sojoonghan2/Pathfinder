@@ -95,6 +95,8 @@ void TestCameraScript::MouseInput()
 }
 
 // TODO: 플레이어 카메라와 개발자 카메라를 토글로 분리, 수정 필요
+// 부모를 스케일 하면 카메라 Transform도 스케일 되는 오류 존재
+// 높이를 서로 다른곳에서 토글을 시도하면 일정하지 않은 오류 존재
 void TestCameraScript::ToggleCamera()
 {
     _playerCamera = !_playerCamera;
