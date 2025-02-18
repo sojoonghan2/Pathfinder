@@ -31,7 +31,7 @@ TestScene::TestScene()
         camera->AddComponent(make_shared<Camera>());
         // 카메라를 움직일 수 있는 스크립트를 추가
         camera->AddComponent(make_shared<TestCameraScript>());
-        camera->GetCamera()->SetFar(10000.f);
+        camera->GetCamera()->SetFar(100000.f);
         camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
         uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
         camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI는 안 찍음
