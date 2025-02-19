@@ -20,6 +20,9 @@
     <ClCompile Include="SocketIO.cpp">
       <Filter>SocketIO</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\util.cpp">
+      <Filter>pch</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SocketIO.h">
@@ -29,6 +32,9 @@
       <Filter>pch</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\protocol.h">
+      <Filter>pch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\util.h">
       <Filter>pch</Filter>
     </ClInclude>
   </ItemGroup>

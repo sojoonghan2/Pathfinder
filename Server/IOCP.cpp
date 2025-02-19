@@ -8,6 +8,7 @@ bool IOCP::InitServer()
 	auto ret = WSAStartup(MAKEWORD(2, 2), &wsadata);
 	if (0 != ret) {
 		std::println("Error: WSAStartup() Failed.");
+		util::DisplayError();
 		return false;
 	}
 	std::println("WSAStartup() Successed.");
@@ -16,6 +17,7 @@ bool IOCP::InitServer()
 	SOCKET listen_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 	if (INVALID_SOCKET == listen_socket) {
 		std::println("Error: Failed to create listen socket.");
+		util::DisplayError();
 		return false;
 	}
 	std::println("Created listen socket.");
@@ -31,6 +33,7 @@ bool IOCP::InitServer()
 	ret = bind(listen_socket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));
 	if (0 != ret) {
 		std::println("Error: Failed to bind socket.");
+		util::DisplayError();
 		return false;
 	}
 	std::println("Bind Successed.");
@@ -39,6 +42,7 @@ bool IOCP::InitServer()
 	ret = listen(listen_socket, SOMAXCONN);
 	if (0 != ret) {
 		std::println("Error: Failed to listen.");
+		util::DisplayError();
 		return false;
 	}
 	std::println("Listen Successed.");
@@ -120,8 +124,7 @@ void IOCP::Worker()
 			INFINITE);
 
 		if (FALSE == ret) {
-			std::println("Client Error.\n {}", GetLastError());
-			exit(-1);
+			util::DisplayQuitError();
 		}
 
 		OverlappedEx* curr_over_ex = reinterpret_cast<OverlappedEx*>(over);
