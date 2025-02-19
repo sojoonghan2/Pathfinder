@@ -17,6 +17,9 @@
     <ClCompile Include="IOCP.cpp">
       <Filter>IOCP</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\util.cpp">
+      <Filter>pch</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IOCP.h">
@@ -28,7 +31,10 @@
     <ClInclude Include="define.h">
       <Filter>pch</Filter>
     </ClInclude>
-    <ClInclude Include="protocol.h">
+    <ClInclude Include="..\Common\protocol.h">
+      <Filter>pch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\util.h">
       <Filter>pch</Filter>
     </ClInclude>
   </ItemGroup>

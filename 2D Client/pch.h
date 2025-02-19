@@ -12,6 +12,5 @@
 #include <print>
 #include <iostream>
 
-#include "define.h"
 #include "../Common/protocol.h"
-
+#include "../Common/util.h"
