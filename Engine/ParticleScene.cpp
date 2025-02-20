@@ -162,8 +162,8 @@ ParticleScene::ParticleScene()
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
-			material->SetTexture(1, texture);
-			material->SetTexture(0, floorTexture);
+			material->SetTexture(0, texture);
+			material->SetTexture(1, floorTexture);
 			meshRenderer->SetMaterial(material);
 		}
 		terraincube->AddComponent(meshRenderer);
