@@ -549,5 +549,8 @@
     <FxCompile Include="..\Resources\Shader\TestPBRParticle.fx">
       <Filter>Shader\Particle</Filter>
     </FxCompile>
+    <FxCompile Include="..\Resources\Shader\terrainCube.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
