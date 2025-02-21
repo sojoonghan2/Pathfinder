@@ -10,6 +10,7 @@
 
 TestCameraScript::TestCameraScript()
 {
+    _offsetPosition = Vec3(0.f, 500.f, -300.f);
 }
 
 TestCameraScript::~TestCameraScript()
@@ -26,25 +27,9 @@ void TestCameraScript::LateUpdate()
         // 타겟이 될 플레이어 오브젝트를 찾음
         _target = GET_SINGLE(SceneManager)->FindObjectByName(L"OBJ");
 
-        // 1. 플레이어 위치 가져오기
+        // 타겟의 월드 position을 가져와서 offset을 더함
         Vec3 targetPos = _target->GetTransform()->GetLocalPosition();
-
-        // 2. 카메라 오프셋 설정 (측면에서 보기 위해 X값을 크게, Z값은 약간만 설정)
-        Vec3 offset = Vec3(500.f, 200.f, 100.f);  // X: 측면거리, Y: 높이, Z: 약간의 각도를 위한 값
-
-        // 3. 카메라 위치 설정
-        GetTransform()->SetLocalPosition(targetPos + offset);
-
-        // 4. 방향 벡터 계산 및 정규화
-        Vec3 dirToTarget = targetPos - GetTransform()->GetLocalPosition();
-        Vec3 dir = dirToTarget / dirToTarget.Length();
-
-        // 5. 카메라 회전 각도 계산 
-        float pitch = asin(dir.y);
-        float yaw = atan2(dir.x, dir.z);
-
-        // 6. 카메라 회전 설정
-        GetTransform()->SetLocalRotation(Vec3(pitch, yaw, 0.f));
+        GetTransform()->SetLocalPosition(targetPos + _offsetPosition);
     }
 }
 
@@ -55,7 +40,7 @@ void TestCameraScript::KeyboardInput()
     if (!_playerCamera)
     {
         // 이동 처리
-        if (INPUT->GetButton(KEY_TYPE::W))
+        if (INPUT->GetButton(KEY_TYPE::W)) 
             pos += Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
 
         if (INPUT->GetButton(KEY_TYPE::S))
@@ -66,6 +51,29 @@ void TestCameraScript::KeyboardInput()
 
         if (INPUT->GetButton(KEY_TYPE::D))
             pos += Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
+    }
+    else
+    {
+        // 이동 처리
+        if (INPUT->GetButton(KEY_TYPE::W)) {
+            _tempxRotation += 0.1;
+            std::cout << "xRotation: " << _tempxRotation << "\n";
+        }
+
+        if (INPUT->GetButton(KEY_TYPE::S)) {
+            _tempxRotation -= 0.1;
+            std::cout << "xRotation: " << _tempxRotation << "\n";
+        }
+
+        if (INPUT->GetButton(KEY_TYPE::A)) {
+            _tempyRotation += 0.1;
+            std::cout << "yRotation: " << _tempyRotation << "\n";
+        }
+
+        if (INPUT->GetButton(KEY_TYPE::D)) {
+            _tempyRotation -= 0.1;
+            std::cout << "yRotation: " << _tempyRotation << "\n";
+        }
     }
 
     // 맵 크기 제한
@@ -96,29 +104,30 @@ void TestCameraScript::KeyboardInput()
 
 void TestCameraScript::MouseInput()
 {
-	// 마우스 오른쪽 버튼이 눌려 있는지 확인
-	if (INPUT->GetButton(KEY_TYPE::LBUTTON))
-	{
-		// 마우스 이동량을 가져옴 (이 값은 프레임마다 갱신됨)
-		POINT mouseDelta = INPUT->GetMouseDelta();
+    // 플레이어 카메라 모드일 때는 마우스 입력에 의한 회전을 처리하지 않음
+    if (_playerCamera)
+    {
+        // 플레이어 카메라 모드에서는 초기 회전값 유지
+        Vec3 initialRotation = Vec3(_tempxRotation, _tempyRotation, 0.f);
+        GetTransform()->SetLocalRotation(initialRotation);
+        return;
+    }
 
-		// 현재 로컬 회전값을 가져옴
-		Vec3 rotation = GetTransform()->GetLocalRotation();
+    // 개발자 카메라 모드에서만 마우스 회전 처리
+    if (INPUT->GetButton(KEY_TYPE::LBUTTON))
+    {
+        POINT mouseDelta = INPUT->GetMouseDelta();
+        Vec3 rotation = GetTransform()->GetLocalRotation();
+        rotation.y += mouseDelta.x * 0.005f;
+        rotation.x += mouseDelta.y * 0.005f;
+        GetTransform()->SetLocalRotation(rotation);
+    }
 
-		// 마우스 X축 이동은 Y축 회전에 영향을 줌 (좌우 회전)
-		rotation.y += mouseDelta.x * 0.005f;
-
-		// 마우스 Y축 이동은 X축 회전에 영향을 줌 (상하 회전)
-		rotation.x += mouseDelta.y * 0.005f;
-
-		// 회전값을 다시 설정
-		GetTransform()->SetLocalRotation(rotation);
-	}
-	if (INPUT->GetButtonDown(KEY_TYPE::RBUTTON))
-	{
-		const POINT& pos2 = INPUT->GetMousePos();
-		GET_SINGLE(SceneManager)->Pick(pos2.x, pos2.y);
-	}
+    if (INPUT->GetButtonDown(KEY_TYPE::RBUTTON))
+    {
+        const POINT& pos2 = INPUT->GetMousePos();
+        GET_SINGLE(SceneManager)->Pick(pos2.x, pos2.y);
+    }
 }
 
 // TODO: 플레이어 카메라와 개발자 카메라를 토글로 분리, 수정 필요
@@ -131,13 +140,9 @@ void TestCameraScript::ToggleCamera()
     if (_playerCamera)
     {
         GetTransform()->RestoreParent();
-        GetTransform()->SetLocalPosition(Vec3(0.f, 2.f, 0.f));
-        GetTransform()->SetLocalRotation(Vec3(0.f, 0.f, 0.f));
     }
     else
     {
         GetTransform()->RemoveParent();
-        GetTransform()->SetLocalPosition(Vec3(0.f, 5.f, -10.f));
-        GetTransform()->SetLocalRotation(Vec3(0.2f, 0.f, 0.f));
     }
 }
