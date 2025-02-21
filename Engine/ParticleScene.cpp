@@ -82,8 +82,6 @@ ParticleScene::ParticleScene()
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
 		camera->SetName(L"Main_Camera");
 		camera->AddComponent(make_shared<Transform>());
-		camera->GetTransform()->SetParent(obj->GetTransform());
-		camera->GetTransform()->GetTransform()->RemoveParent();
 		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=3000, FOV=45µµ
 		camera->AddComponent(make_shared<TestCameraScript>());
 		camera->AddComponent(make_shared<RuinsScript>());

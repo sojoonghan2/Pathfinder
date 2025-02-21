@@ -6,6 +6,7 @@
 #include "Input.h"
 #include "Timer.h"
 #include "SceneManager.h"
+#include "Scene.h"
 
 TestCameraScript::TestCameraScript()
 {
@@ -19,6 +20,32 @@ void TestCameraScript::LateUpdate()
 {
 	KeyboardInput();
 	MouseInput();
+
+    if (_playerCamera)
+    {
+        // 타겟이 될 플레이어 오브젝트를 찾음
+        _target = GET_SINGLE(SceneManager)->FindObjectByName(L"OBJ");
+
+        // 1. 플레이어 위치 가져오기
+        Vec3 targetPos = _target->GetTransform()->GetLocalPosition();
+
+        // 2. 카메라 오프셋 설정 (측면에서 보기 위해 X값을 크게, Z값은 약간만 설정)
+        Vec3 offset = Vec3(500.f, 200.f, 100.f);  // X: 측면거리, Y: 높이, Z: 약간의 각도를 위한 값
+
+        // 3. 카메라 위치 설정
+        GetTransform()->SetLocalPosition(targetPos + offset);
+
+        // 4. 방향 벡터 계산 및 정규화
+        Vec3 dirToTarget = targetPos - GetTransform()->GetLocalPosition();
+        Vec3 dir = dirToTarget / dirToTarget.Length();
+
+        // 5. 카메라 회전 각도 계산 
+        float pitch = asin(dir.y);
+        float yaw = atan2(dir.x, dir.z);
+
+        // 6. 카메라 회전 설정
+        GetTransform()->SetLocalRotation(Vec3(pitch, yaw, 0.f));
+    }
 }
 
 void TestCameraScript::KeyboardInput()
