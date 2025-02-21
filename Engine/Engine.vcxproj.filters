@@ -264,6 +264,9 @@
     <ClCompile Include="Animator.cpp">
       <Filter>Object\Component</Filter>
     </ClCompile>
+    <ClCompile Include="GlitterParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -488,6 +491,9 @@
     <ClInclude Include="TestHuman.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
+    <ClInclude Include="GlitterParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -551,6 +557,9 @@
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\terrainCube.fx">
       <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\GlitterParticle.fx">
+      <Filter>Shader\Particle</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

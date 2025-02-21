@@ -22,6 +22,7 @@
 #include "CataclysmParticleSystem.h"
 #include "RazerParticleSystem.h"
 #include "OverDriveParticleSystem.h"
+#include "GlitterParticleSystem.h"
 #include "TestPBRParticleSystem.h"
 
 #include "TestDragon.h"
@@ -441,6 +442,30 @@ void ParticleScene::LoadMyParticle()
 		activeScene->AddGameObject(overDriveParticle);
 	}
 #pragma endregion
+
+// 반짝이 파티클
+#pragma region GlitterParticle
+	{
+		// 파티클 오브젝트 생성
+		shared_ptr<GameObject> gliggerParticle = make_shared<GameObject>();
+		wstring glitterParticleName = L"GlitterParticle";
+		gliggerParticle->SetName(glitterParticleName);
+		gliggerParticle->SetCheckFrustum(true);
+		gliggerParticle->SetStatic(false);
+
+		// 좌표 컴포넌트 추가
+		gliggerParticle->AddComponent(make_shared<Transform>());
+		gliggerParticle->GetTransform()->SetLocalPosition(Vec3(400.f, -100.f, -400.f));
+		gliggerParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+
+		// 파티클 시스템 컴포넌트 추가
+		shared_ptr<GlitterParticleSystem> gliggerParticleSystem = make_shared<GlitterParticleSystem>();
+		gliggerParticle->AddComponent(make_shared<TestParticleScript>());
+		gliggerParticle->AddComponent(gliggerParticleSystem);
+
+		activeScene->AddGameObject(gliggerParticle);
+	}
+#pragma endregion
 }
 
 void ParticleScene::LoadDebugParticle()
@@ -457,7 +482,7 @@ void ParticleScene::LoadDebugParticle()
 
 		// 좌표 컴포넌트 추가
 		testPBRParticle->AddComponent(make_shared<Transform>());
-		testPBRParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 400.f));
+		testPBRParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 1000.f, 400.f));
 		testPBRParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		// 파티클 시스템 컴포넌트 추가
