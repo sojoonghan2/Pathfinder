@@ -55,7 +55,7 @@ RuinsScene::RuinsScene()
 		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=3000, FOV=45도
 		camera->AddComponent(make_shared<TestCameraScript>());
 		camera->AddComponent(make_shared<RuinsScript>());
-		camera->GetCamera()->SetFar(10000.f);
+		camera->GetCamera()->SetFar(100000.f);
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI는 안 찍음
@@ -114,9 +114,9 @@ RuinsScene::RuinsScene()
 		// 2. Transform 컴포넌트 추가 및 설정
 		terraincube->AddComponent(make_shared<Transform>());
 		// 씬의 임시 크기
-		terraincube->GetTransform()->SetLocalScale(Vec3(2000.f, 2000.f, 2000.f));
+		terraincube->GetTransform()->SetLocalScale(Vec3(10000.f, 10000.f, 10000.f));
 		// 씬의 임시 좌표
-		terraincube->GetTransform()->SetLocalPosition(Vec3(0, 800.f, 0.f));
+		terraincube->GetTransform()->SetLocalPosition(Vec3(0.f, 4900.f, 0.f));
 
 		// 3. MeshRenderer 설정
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -127,10 +127,12 @@ RuinsScene::RuinsScene()
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
 			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\Ruins.jpg");
+			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"TestParticleFloor", L"..\\Resources\\Texture\\RuinsFloor.jpg");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
 			material->SetTexture(0, texture);
+			material->SetTexture(1, floorTexture);
 			meshRenderer->SetMaterial(material);
 		}
 		terraincube->AddComponent(meshRenderer);
@@ -206,6 +208,32 @@ RuinsScene::RuinsScene()
 
 		// 4. Scene에 추가
 		activeScene->AddGameObject(light);
+	}
+#pragma endregion
+
+// 물
+#pragma region Water
+	{
+		shared_ptr<GameObject> water = make_shared<GameObject>();
+		water->SetName(L"Water");
+		water->AddComponent(make_shared<Transform>());
+		water->AddComponent(make_shared<WaterScript>());
+		water->GetTransform()->SetLocalScale(Vec3(10000.f, 1.f, 10000.f));
+		water->GetTransform()->SetLocalPosition(Vec3(0.f, 10.f, 50.f));
+		water->SetStatic(true);
+
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> waterMesh = GET_SINGLE(Resources)->LoadPlanMesh();
+			meshRenderer->SetMesh(waterMesh);
+		}
+		{
+			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Water");
+			meshRenderer->SetMaterial(material);
+		}
+
+		water->AddComponent(meshRenderer);
+		activeScene->AddGameObject(water);
 	}
 #pragma endregion
 }

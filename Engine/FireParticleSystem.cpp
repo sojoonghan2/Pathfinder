@@ -5,7 +5,7 @@ FireParticleSystem::FireParticleSystem() : BaseParticleSystem()
 {
 	SetParticleInterval(0.01f, 0.0f);
 	SetParticleLifeTime(3.0f, 5.0f);
-	SetParticleSpeed(80.0f, 50.0f);
+	SetParticleSpeed(160.0f, 120.0f);
 	SetParticleScale(10.0f, 50.0f);
 	SetDuration(3.0f);
 	SetOnceParticleNum(5);

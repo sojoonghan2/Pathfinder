@@ -12,7 +12,7 @@ void Frustum::FinalUpdate()
 	Matrix matProjectionInv = Camera::S_MatProjection.Invert();
 	Matrix matInv = matProjectionInv * matViewInv;
 
-	float scale = 2.0f;
+	float scale = 10.0f;
 
 	vector<Vec3> worldPos =
 	{

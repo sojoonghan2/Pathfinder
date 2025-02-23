@@ -55,7 +55,7 @@ FactoryScene::FactoryScene()
 		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=3000, FOV=45도
 		camera->AddComponent(make_shared<TestCameraScript>());
 		camera->AddComponent(make_shared<FactoryScript>());
-		camera->GetCamera()->SetFar(10000.f);
+		camera->GetCamera()->SetFar(100000.f);
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI는 안 찍음
@@ -114,9 +114,9 @@ FactoryScene::FactoryScene()
 		// 2. Transform 컴포넌트 추가 및 설정
 		terraincube->AddComponent(make_shared<Transform>());
 		// 씬의 임시 크기
-		terraincube->GetTransform()->SetLocalScale(Vec3(2000.f, 2000.f, 2000.f));
+		terraincube->GetTransform()->SetLocalScale(Vec3(10000.f, 10000.f, 10000.f));
 		// 씬의 임시 좌표
-		terraincube->GetTransform()->SetLocalPosition(Vec3(0, 800.f, 0.f));
+		terraincube->GetTransform()->SetLocalPosition(Vec3(0, 4900.f, 0.f));
 
 		// 3. MeshRenderer 설정
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -127,10 +127,12 @@ FactoryScene::FactoryScene()
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
 			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Factory", L"..\\Resources\\Texture\\Factory.jpg");
+			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"TestParticleFloor", L"..\\Resources\\Texture\\RuinsFloor.jpg");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
 			material->SetTexture(0, texture);
+			material->SetTexture(1, floorTexture);
 			meshRenderer->SetMaterial(material);
 		}
 		terraincube->AddComponent(meshRenderer);

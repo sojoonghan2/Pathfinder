@@ -696,6 +696,40 @@ void Resources::CreateDefaultShader()
 		Add<Shader>(L"OverDriveComputeParticle", computeShader);
 	}
 
+	// GlitterParticle
+	{
+		ShaderInfo info =
+		{
+			// 파티클
+			SHADER_TYPE::PARTICLE,
+			// 뒷면 제거
+			RASTERIZER_TYPE::CULL_BACK,
+			// 뎁스 버퍼에 기록 X
+			DEPTH_STENCIL_TYPE::LESS_NO_WRITE,
+			// 알파 블렌딩
+			BLEND_TYPE::ALPHA_BLEND,
+			// 기본 도형: 점
+			D3D_PRIMITIVE_TOPOLOGY_POINTLIST
+		};
+
+		ShaderArg arg =
+		{
+			"VS_Main",
+			"",
+			"",
+			"GS_Main",
+			"PS_Main"
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\GlitterParticle.fx", info, arg);
+		Add<Shader>(L"GlitterParticle", shader);
+
+		shared_ptr<Shader> computeShader = make_shared<Shader>();
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\GlitterParticle.fx", "CS_Main", "cs_5_0");
+		Add<Shader>(L"GlitterComputeParticle", computeShader);
+	}
+
 	// TestPBRParticle
 	{
 		ShaderInfo info =
@@ -786,7 +820,7 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\deferred.fx", info);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\terrainCube.fx", info);
 		Add<Shader>(L"TerrainCube", shader);
 	}
 
@@ -934,6 +968,19 @@ void Resources::CreateDefaultMaterial()
 		Add<Material>(L"OverDriveComputeParticle", computeMaterial);
 	}
 
+	// GlitterParticle
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"GlitterParticle");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		Add<Material>(L"GlitterParticle", material);
+
+		shared_ptr<Shader> computShader = GET_SINGLE(Resources)->Get<Shader>(L"GlitterComputeParticle");
+		shared_ptr<Material> computeMaterial = make_shared<Material>();
+		computeMaterial->SetShader(computShader);
+		Add<Material>(L"GlitterComputeParticle", computeMaterial);
+	}
+
 	// TestPBRParticle
 	{
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TestPBRParticle");
@@ -988,12 +1035,10 @@ void Resources::CreateDefaultMaterial()
 	{
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
 		shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Gold", L"..\\Resources\\Texture\\Gold.jpg");
-		shared_ptr<Texture> texture2 = GET_SINGLE(Resources)->Load<Texture>(L"Gold_Normal", L"..\\Resources\\Texture\\Gold_Normal.png");
 
 		shared_ptr<Material> material = make_shared<Material>();
 		material->SetShader(shader);
 		material->SetTexture(0, texture);
-		material->SetTexture(1, texture2);
 		Add<Material>(L"TerrainCube", material);
 	}
 

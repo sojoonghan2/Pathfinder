@@ -46,12 +46,12 @@ void TestPointLightScript::KeyboardInput()
 	if (INPUT->GetButtonDown(KEY_TYPE::T)) PRINTPOSITION;
 
 	// ¸Ê Å©±â Á¦ÇÑ
-	float mapMinX = -900.0f;
-	float mapMaxX = 900.0f;
-	float mapMinZ = -900.0f;
-	float mapMaxZ = 900.0f;
-	float minY = -200.0f;
-	float maxY = 1700.0f;
+	float mapMinX = -4900.f;
+	float mapMaxX = 4900.f;
+	float mapMinZ = -4900.f;
+	float mapMaxZ = 4900.f;
+	float minY = 500.f;
+	float maxY = 9500.f;
 
 	// X, Y, Z ÁÂÇ¥¸¦ ¸Ê ¹üÀ§·Î Á¦ÇÑ
 	pos.x = max(mapMinX, min(pos.x, mapMaxX));

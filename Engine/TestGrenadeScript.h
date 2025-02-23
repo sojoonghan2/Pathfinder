@@ -22,5 +22,7 @@ private:
     float _gravity;
 
     float _angle = 45.0f;
-    float _power = 1000.0f;
+    float _power = 2000.0f;
+
+    float _timeSinceLanded;
 };

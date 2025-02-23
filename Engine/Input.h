@@ -27,6 +27,7 @@ enum class KEY_TYPE
 
 	ADD = VK_ADD,
 	SUBTRACT = VK_SUBTRACT,
+	TAB = VK_TAB,
 
 	KEY_1 = '1',
 	KEY_2 = '2',

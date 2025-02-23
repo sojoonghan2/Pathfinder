@@ -194,6 +194,7 @@
     <ClInclude Include="FireParticleSystem.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GlitterParticleSystem.h" />
     <ClInclude Include="LuckyScript.h" />
     <ClInclude Include="IceParticleSystem.h" />
     <ClInclude Include="Input.h" />
@@ -232,6 +233,7 @@
     <ClInclude Include="TestCameraScript.h" />
     <ClInclude Include="TestDragon.h" />
     <ClInclude Include="TestGrenadeScript.h" />
+    <ClInclude Include="TestHuman.h" />
     <ClInclude Include="TestParticleScript.h" />
     <ClInclude Include="TestPBRParticleSystem.h" />
     <ClInclude Include="TestPointLightScript.h" />
@@ -268,6 +270,7 @@
     <ClCompile Include="FireParticleSystem.cpp" />
     <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GlitterParticleSystem.cpp" />
     <ClCompile Include="LuckyScript.cpp" />
     <ClCompile Include="IceParticleSystem.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -311,6 +314,7 @@
     <ClCompile Include="TestCameraScript.cpp" />
     <ClCompile Include="TestDragon.cpp" />
     <ClCompile Include="TestGrenadeScript.cpp" />
+    <ClCompile Include="TestHuman.cpp" />
     <ClCompile Include="TestParticleScript.cpp" />
     <ClCompile Include="TestPBRParticleSystem.cpp" />
     <ClCompile Include="TestPointLightScript.cpp" />
@@ -331,6 +335,7 @@
     <FxCompile Include="..\Resources\Shader\compute.fx" />
     <FxCompile Include="..\Resources\Shader\deferred.fx" />
     <FxCompile Include="..\Resources\Shader\forward.fx" />
+    <FxCompile Include="..\Resources\Shader\GlitterParticle.fx" />
     <FxCompile Include="..\Resources\Shader\lighting.fx" />
     <FxCompile Include="..\Resources\Shader\math.fx" />
     <FxCompile Include="..\Resources\Shader\OverDriveParticle.fx" />
@@ -340,6 +345,7 @@
     <FxCompile Include="..\Resources\Shader\RazerParticle.fx" />
     <FxCompile Include="..\Resources\Shader\shadow.fx" />
     <FxCompile Include="..\Resources\Shader\skybox.fx" />
+    <FxCompile Include="..\Resources\Shader\terrainCube.fx" />
     <FxCompile Include="..\Resources\Shader\tessellation.fx" />
     <FxCompile Include="..\Resources\Shader\TestPBRParticle.fx" />
     <FxCompile Include="..\Resources\Shader\utils.fx" />
