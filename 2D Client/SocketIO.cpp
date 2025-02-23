@@ -1,35 +1,106 @@
 #include "pch.h"
 #include "SocketIO.h"
 
-void SocketIO::init()
+void SocketIO::Init()
 {
-    WSADATA wsa;
-    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) return;
+	// 윈도우 초기화
+	WSADATA wsa;
+	int ret = WSAStartup(MAKEWORD(2, 2), &wsa);
+	if (ret != 0) {
+		exit(-1);
+	}
 
-    // 소켓 생성
-    clientSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (clientSocket == INVALID_SOCKET); //err_quit("socket()");
+	// 소켓 생성
+	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+	if (serverSocket == INVALID_SOCKET) {
+		util::DisplayQuitError();
+	}
 
-    SOCKADDR_IN serveraddr;
-    memset(&serveraddr, 0, sizeof(serveraddr));
-    serveraddr.sin_family = AF_INET;
-    serveraddr.sin_port = htons(PORT_NUMBER);
+	std::println("SocketIO Init completed.");
+}
 
-    // inet_pton 사용하여 IP 주소 변환
-    if (inet_pton(AF_INET, SERVER_IP, &serveraddr.sin_addr) != 1) {
-        util::DisplayQuitError();
-    }
+void SocketIO::Start()
+{
+	// ADDR 설정
+	SOCKADDR_IN serveraddr;
+	memset(&serveraddr, 0, sizeof(serveraddr));
+	serveraddr.sin_family = AF_INET;
+	serveraddr.sin_port = htons(PORT_NUMBER);
 
-    // connect
-    int ret = connect(clientSocket, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
-    if (ret == SOCKET_ERROR) {
-        util::DisplayQuitError();
-    }
-    std::println("SocketIO Init completed.");
+	// inet_pton 사용하여 IP 주소 변환
+	int ret = inet_pton(AF_INET, SERVER_IP, &serveraddr.sin_addr);
+	if (1 != ret) {
+		util::DisplayQuitError();
+	}
+
+	// connect
+	ret = connect(serverSocket, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
+	if (SOCKET_ERROR == ret) {
+		util::DisplayQuitError();
+	}
+  
+	std::println("Connected to server successfully.");
+
+	// 스레드 생성
+	recvThread = std::thread{ [this]() { Worker(); } };
+}
+
+void SocketIO::Worker()
+{
+	std::println("Hi Worker");
+
+	while (true) {
+
+		int ret = DoRecv();
+		if (0 == ret || SOCKET_ERROR == ret) {
+			return;
+		}
+
+	}
+	std::println("Bye Worker");
+}
+
+int SocketIO::DoRecv()
+{
+	int recv_len = recv(
+		serverSocket,
+		recvBuffer.data(),
+		sizeof(packet::Header),
+		MSG_WAITALL);
+
+	// 정상적으로 통신 종료
+	if (0 == recv_len) {
+		std::println("Disconnected from server.");
+	}
+	// 오류 
+	else if (SOCKET_ERROR == recv_len) {
+		util::DisplayQuitError();
+	}
+	// 정상
+	else {
+		packet::Header* p_header{ reinterpret_cast<packet::Header*>(recvBuffer.data()) };
+		int remain_size = p_header->size - sizeof(packet::Header);
+		if (remain_size != 0) {
+
+			// 가변 길이 recv
+			recv_len = recv(
+				serverSocket,
+				recvBuffer.data() + sizeof(packet::Header),
+				remain_size,
+				MSG_WAITALL);
+		}
+
+		std::println("Successfully Recved.");
+	}
+
+	return recv_len;
 }
 
 SocketIO::~SocketIO()
 {
-    closesocket(clientSocket);
-    WSACleanup();
+	if (recvThread.joinable()) {
+		recvThread.join();  // 스레드 종료 대기
+	}
+	closesocket(serverSocket);
+	WSACleanup();
 }

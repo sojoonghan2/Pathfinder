@@ -159,7 +159,8 @@ int main() {
 	GameLoop timer;
 	Controller controller;
 	SocketIO socket_io;
-	socket_io.init();
+	socket_io.Init();
+	socket_io.Start();
 
 
 	while (window.isOpen()) {

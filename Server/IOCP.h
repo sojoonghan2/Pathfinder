@@ -3,8 +3,8 @@
 class IOCP
 {
 public:
-	bool InitServer();
-	bool StartServer();
+	bool Init();
+	bool Start();
 
 
 	~IOCP();

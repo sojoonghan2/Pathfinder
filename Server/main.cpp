@@ -6,11 +6,11 @@ int main()
 	
 	IOCP iocp;
 	
-	auto ret = iocp.InitServer();
+	auto ret = iocp.Init();
 	if (false == ret) {
 		return -1;
 	}
 
-	iocp.StartServer();
+	iocp.Start();
 	
 }

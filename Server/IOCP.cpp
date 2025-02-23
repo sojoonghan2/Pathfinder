@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "IOCP.h"
 
-bool IOCP::InitServer()
+bool IOCP::Init()
 {
 	// 윈도우 초기화
 	WSADATA wsadata;
@@ -50,7 +50,7 @@ bool IOCP::InitServer()
 	return true;
 }
 
-bool IOCP::StartServer()
+bool IOCP::Start()
 {
 	// 클라이언트 accept socket 생성
 	SOCKET accept_socket = WSASocket(
@@ -85,6 +85,7 @@ bool IOCP::StartServer()
 	// unsigned int num_thread{ std::thread::hardware_concurrency() };
 
 	// 비동기 IO 작업 완료 확인 스레드 생성
+	// worker_thread 따로 멤버변수로 뺴기
 	std::vector<std::thread> worker_thread;
 	for (int i = 0; i < 1; ++i) {
 		worker_thread.emplace_back([this]() { Worker(); });
@@ -244,7 +245,7 @@ void IOCP::DoSend(Session& session, void* packet)
 void IOCP::ProcessPacket(int key, char* p)
 {
 	std::println("Processing Packet.");
-	SCLoginPacket packet{};
+	packet::SCLogin packet{};
 	DoSend(sessionList[key], reinterpret_cast<void*>(&packet));
 }
 

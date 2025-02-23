@@ -1,17 +1,20 @@
 #pragma once
 class SocketIO
 {
-
 public:
-	void init();
-
-
-
+	void Init();
+	void Start();
 
 	~SocketIO();
 
+private:
+	void Worker();
+	int	 DoRecv();
+
 
 private:
-	SOCKET clientSocket{ INVALID_SOCKET };
+	SOCKET serverSocket{ INVALID_SOCKET };
+	std::thread	recvThread{};
+	std::array<char, BUFFER_SIZE> recvBuffer{};
 };
 

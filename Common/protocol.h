@@ -1,35 +1,39 @@
 #pragma once
 
-enum class PacketType : unsigned char
+#define PACKET_START namespace packet {
+#define PACKET_END }
+
+
+PACKET_START
+enum class Type : unsigned char
 {
 	CS_LOGIN,
 	SC_LOGIN
 };
 
 #pragma pack(push, 1)
-struct BasicPacket
+struct Header
 {
 	unsigned short	size;
-	PacketType		type;
+	Type			type;
 };
 
 
-
-struct CSLoginPacket : BasicPacket
+struct CSLogin : Header
 {
-	CSLoginPacket()
+	CSLogin()
 	{
-		type = PacketType::CS_LOGIN;
+		type = Type::CS_LOGIN;
 	}
 };
 
 
-struct SCLoginPacket : BasicPacket
+struct SCLogin : Header
 {
-	SCLoginPacket()
+	SCLogin()
 	{
-		type = PacketType::SC_LOGIN;
+		type = Type::SC_LOGIN;
 	}
 };
 #pragma pack(pop)
-
+PACKET_END
