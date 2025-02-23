@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SFML/Graphics.hpp>
+
 #include <WS2tcpip.h>
 #include <MSWSock.h>
 
@@ -11,6 +13,8 @@
 #include <array>
 #include <print>
 #include <iostream>
+#include <chrono>
 
+#include "define.h"
 #include "../Common/protocol.h"
 #include "../Common/util.h"

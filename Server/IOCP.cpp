@@ -7,51 +7,45 @@ bool IOCP::InitServer()
 	WSADATA wsadata;
 	auto ret = WSAStartup(MAKEWORD(2, 2), &wsadata);
 	if (0 != ret) {
-		std::println("Error: WSAStartup() Failed.");
 		util::DisplayError();
 		return false;
 	}
-	std::println("WSAStartup() Successed.");
 
 	// listen socket 소켓 만들기
-	SOCKET listen_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
-	if (INVALID_SOCKET == listen_socket) {
-		std::println("Error: Failed to create listen socket.");
+	listenSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
+	if (INVALID_SOCKET == listenSocket) {
 		util::DisplayError();
 		return false;
 	}
-	std::println("Created listen socket.");
 
 	// 소켓 주소 설정
 	SOCKADDR_IN server_addr;
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(PORT_NUM);
+	server_addr.sin_port = htons(PORT_NUMBER);
 	server_addr.sin_addr.S_un.S_addr = INADDR_ANY;
 
 	// bind
-	ret = bind(listen_socket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));
+	ret = bind(listenSocket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));
 	if (0 != ret) {
-		std::println("Error: Failed to bind socket.");
 		util::DisplayError();
 		return false;
 	}
-	std::println("Bind Successed.");
 
 	// listen
-	ret = listen(listen_socket, SOMAXCONN);
+	ret = listen(listenSocket, SOMAXCONN);
 	if (0 != ret) {
-		std::println("Error: Failed to listen.");
 		util::DisplayError();
 		return false;
 	}
-	std::println("Listen Successed.");
 
 	// IOCP 핸들 생성
 	IOCPHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
 
 	// 생성한 IOCP 핸들을 listen socket에 연결
-	CreateIoCompletionPort(reinterpret_cast<HANDLE>(listen_socket), IOCPHandle, 9999, 0);
+	CreateIoCompletionPort(reinterpret_cast<HANDLE>(listenSocket), IOCPHandle, 9999, 0);
+
+	std::println("IOCP Init Successed.");
 
 	return true;
 }
@@ -86,8 +80,6 @@ bool IOCP::StartServer()
 		&bytes_received,
 		&accept_over_ex.over
 	);
-
-	std::println("AcceptEx Successed.");
 
 
 	// unsigned int num_thread{ std::thread::hardware_concurrency() };
@@ -216,6 +208,8 @@ void IOCP::Worker()
 		}
 		}
 	}
+
+	std::println("Worker Ended.");
 }
 
 void IOCP::DoRecv(Session& session) const
@@ -227,7 +221,7 @@ void IOCP::DoRecv(Session& session) const
 	ZeroMemory(over_ex.dataBuffer, sizeof(over_ex.dataBuffer));
 
 	// 현재 남은 만큼 recv한다. 
-	over_ex.wsabuf.len = BUF_SIZE - session.currentDataSize;
+	over_ex.wsabuf.len = BUFFER_SIZE - session.currentDataSize;
 	over_ex.wsabuf.buf = over_ex.dataBuffer + session.currentDataSize;
 
 	// 비동기 Recv

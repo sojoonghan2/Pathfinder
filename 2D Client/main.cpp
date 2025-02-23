@@ -1,6 +1,5 @@
-#include <SFML/Graphics.hpp>
-#include <chrono>
-#include <print>
+#include "pch.h"
+#include "SocketIO.h"
 
 constexpr int GRID_CONUT{ 100 };
 constexpr int WINDOW_WIDTH{ 800 };
@@ -159,6 +158,9 @@ int main() {
 
 	GameLoop timer;
 	Controller controller;
+	SocketIO socket_io;
+	socket_io.init();
+
 
 	while (window.isOpen()) {
 
