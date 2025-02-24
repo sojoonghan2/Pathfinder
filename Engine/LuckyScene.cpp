@@ -25,6 +25,9 @@
 #include "SphereCollider.h"
 #include "GameModule.h"
 
+#include "GlitterParticleSystem.h"
+#include "TestParticleScript.h"
+
 LuckyScene::LuckyScene()
 {
 // 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
@@ -276,24 +279,28 @@ LuckyScene::LuckyScene()
 	}
 #pragma endregion
 
-// 로봇
-#pragma region BOT
+// 보물 상자
+#pragma region TREASUREBOX
 	{
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Bot\\Bot.fbx");
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\treasure_chest\\treasure_chest.fbx");
 
-		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+		vector<shared_ptr<GameObject>> treasureBox = meshData->Instantiate();
 
-		// Save가 잘 안됨, MeshData의 Save와 Load를 수정해야 함, 한번 로드 후 다시 로드하려면 msh 지워야 함
-		//meshData->SaveOrLoad(L"..\\Resources\\MeshData\\Dragon.msh", L"..\\Resources\\FBX\\Dragon.fbx");
-
-		for (auto& gameObject : gameObjects)
+		int index = 0;
+		for (auto& gameObject : treasureBox)
 		{
-			gameObject->SetName(L"Bot");
+			gameObject->SetName(L"TreasureChest");
 			gameObject->SetCheckFrustum(true);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, -200.f, 300.f));
-			gameObject->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
-			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.7f, 0.f, 0.f));
+
+			if (index == 0)
+				gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 1600.f, 400.f));
+			else
+				gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 1250.f, 0.f));
+
+			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(0.0f, 1.7f, 0.0f));
 			activeScene->AddGameObject(gameObject);
+			index++;
 		}
 	}
 #pragma endregion
@@ -329,7 +336,7 @@ LuckyScene::LuckyScene()
 		obj->AddComponent(make_shared<Transform>());
 		obj->AddComponent(make_shared<ModuleScript>());
 		obj->GetTransform()->SetLocalScale(Vec3(300.f, 500.f, 100.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(-400.f + (i * 400), 0.f, 1.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(-400.f + (i * 400), -800.f, 1.f));
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();

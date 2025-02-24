@@ -210,6 +210,25 @@ ExplorationScene::ExplorationScene()
 		activeScene->AddGameObject(light);
 	}
 #pragma endregion
+
+// ·Îº¿
+#pragma region SELFDESTRUCTIONROBOT
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\SelfDestructionRobot\\SelfDestructionRobot.fbx");
+
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		for (auto& gameObject : gameObjects)
+		{
+			gameObject->SetName(L"SelfDestructionRobot");
+			gameObject->SetCheckFrustum(true);
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.7f, 0.f, 0.f));
+			activeScene->AddGameObject(gameObject);
+		}
+	}
+#pragma endregion
 }
 
 ExplorationScene::~ExplorationScene() {}
