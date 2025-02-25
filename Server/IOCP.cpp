@@ -169,6 +169,10 @@ void IOCP::Worker()
 				&curr_over_ex->over
 			);
 			std::println("AcceptEx Successed.");
+
+			std::println("Temp Send.");
+			packet::SCLogin temp_packet;
+			DoSend(sessionList[client_id], &temp_packet);
 			break;
 		}
 
@@ -205,6 +209,7 @@ void IOCP::Worker()
 		{
 			// 보낸 OVER_EXP 지우기.
 			delete curr_over_ex;
+			std::println("Successfully sended.");
 			break;
 		}
 		}

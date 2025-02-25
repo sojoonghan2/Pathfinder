@@ -55,6 +55,7 @@ void SocketIO::Worker()
 		if (0 == ret || SOCKET_ERROR == ret) {
 			return;
 		}
+		ProcessPacket();
 
 	}
 	std::println("Bye Worker");
@@ -62,25 +63,31 @@ void SocketIO::Worker()
 
 int SocketIO::DoRecv()
 {
+	// 기존 버퍼 내용 초기화
+	recvBuffer.fill(0);
+
+	// 고정 길이 RECV
 	int recv_len = recv(
 		serverSocket,
 		recvBuffer.data(),
 		sizeof(packet::Header),
 		MSG_WAITALL);
 
-	// 정상적으로 통신 종료
+	// 예외처리
 	if (0 == recv_len) {
 		std::println("Disconnected from server.");
+		return recv_len;
 	}
-	// 오류 
 	else if (SOCKET_ERROR == recv_len) {
 		util::DisplayQuitError();
 	}
-	// 정상
+
+	// 정상적으로 받음
 	else {
 		packet::Header* p_header{ reinterpret_cast<packet::Header*>(recvBuffer.data()) };
 		int remain_size = p_header->size - sizeof(packet::Header);
-		if (remain_size != 0) {
+
+		if (remain_size > 0) {
 
 			// 가변 길이 recv
 			recv_len = recv(
@@ -88,12 +95,28 @@ int SocketIO::DoRecv()
 				recvBuffer.data() + sizeof(packet::Header),
 				remain_size,
 				MSG_WAITALL);
+
+			// 예외처리
+			if (0 == recv_len) {
+				std::println("Disconnected from server.");
+				return recv_len;
+			}
+			else if (SOCKET_ERROR == recv_len) {
+				util::DisplayQuitError();
+			}
 		}
 
 		std::println("Successfully Recved.");
 	}
 
 	return recv_len;
+}
+
+void SocketIO::ProcessPacket()
+{
+	packet::Header* p_header{ reinterpret_cast<packet::Header*>( recvBuffer.data()) };
+	std::println("Processed packet. Type : {}",
+		static_cast<unsigned short>(p_header->type));
 }
 
 SocketIO::~SocketIO()

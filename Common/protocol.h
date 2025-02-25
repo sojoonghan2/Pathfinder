@@ -7,6 +7,7 @@
 PACKET_START
 enum class Type : unsigned char
 {
+	NONE,
 	CS_LOGIN,
 	SC_LOGIN
 };
@@ -14,8 +15,8 @@ enum class Type : unsigned char
 #pragma pack(push, 1)
 struct Header
 {
-	unsigned short	size;
-	Type			type;
+	unsigned short	size{ sizeof(Header) };
+	Type			type{ Type::NONE };
 };
 
 
@@ -23,6 +24,7 @@ struct CSLogin : Header
 {
 	CSLogin()
 	{
+		size = sizeof(CSLogin);
 		type = Type::CS_LOGIN;
 	}
 };
@@ -32,6 +34,7 @@ struct SCLogin : Header
 {
 	SCLogin()
 	{
+		size = sizeof(SCLogin);
 		type = Type::SC_LOGIN;
 	}
 };
