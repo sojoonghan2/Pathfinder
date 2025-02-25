@@ -64,8 +64,6 @@ ParticleScene::ParticleScene()
 	}
 #pragma endregion
 
-// 카메라
-#pragma region Camera
 	shared_ptr<GameObject> obj = make_shared<GameObject>();
 	obj->SetName(L"OBJ");
 	// 프러스텀 컬링 여부
@@ -78,6 +76,9 @@ ParticleScene::ParticleScene()
 	obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 	obj->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 	obj->AddComponent(make_shared<TestPointLightScript>());
+
+// 카메라
+#pragma region Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
 		camera->SetName(L"Main_Camera");
