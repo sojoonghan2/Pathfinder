@@ -41,7 +41,7 @@ void LuckyScript::MouseInput()
         if (_treasureChest && _treasureChest->GetTransform())
         {
             Vec3 currentRotation = _treasureChest->GetTransform()->GetLocalRotation();
-            _treasureChest->GetTransform()->SetLocalRotation(currentRotation + Vec3(0.01f, 0.0f, 0.0f));
+            _treasureChest->GetTransform()->SetLocalRotation(currentRotation + Vec3(0.0f, 0.0f, 0.01f));
         }
     }
 }

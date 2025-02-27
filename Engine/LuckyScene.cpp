@@ -246,7 +246,9 @@ LuckyScene::LuckyScene()
 		int index = 0;
 		for (auto& gameObject : treasureBox)
 		{
-			gameObject->SetName(L"TreasureChest");
+			// 이름 설정
+			gameObject->SetName(L"TreasureChest" + std::to_wstring(index + 1));
+
 			gameObject->SetCheckFrustum(true);
 
 			if (index == 0)
@@ -254,13 +256,14 @@ LuckyScene::LuckyScene()
 			else
 			{
 				gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 50.f, 0.f));
-				shared_ptr<GlitterParticleSystem> gliggerParticleSystem = make_shared<GlitterParticleSystem>();
+				shared_ptr<GlitterParticleSystem> glitterParticleSystem = make_shared<GlitterParticleSystem>();
 				gameObject->AddComponent(make_shared<TestParticleScript>());
-				gameObject->AddComponent(gliggerParticleSystem);
+				gameObject->AddComponent(glitterParticleSystem);
 			}
 
 			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(0.0f, 1.7f, 0.0f));
+
 			activeScene->AddGameObject(gameObject);
 			index++;
 		}
