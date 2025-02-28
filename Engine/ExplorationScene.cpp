@@ -20,6 +20,7 @@
 #include "TestPointLightScript.h"
 #include "WaterScript.h"
 #include "ExplorationScript.h"
+#include "SelfDestructionRobotScript.h"
 
 #include "SphereCollider.h"
 
@@ -248,23 +249,47 @@ ExplorationScene::ExplorationScene()
 	}
 #pragma endregion
 
+// 전역 조명(삭제 예정)
+#pragma region Directional Light
+	{
+		// 1. light 오브젝트 생성 
+		shared_ptr<GameObject> light = make_shared<GameObject>();
+		light->SetName(L"Directional_Light");
+		light->AddComponent(make_shared<Transform>());
+		light->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+
+		// 2-1. light 컴포넌트 추가 및 속성 설정
+		light->AddComponent(make_shared<Light>());
+		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
+
+		// 2-2. DIRECTIONAL_LIGHT의 경우 조명 방향 설정
+		light->GetLight()->SetLightDirection(Vec3(0.f, 0.f, 0.f));
+
+		// 3. 조명 색상 및 강도 설정
+		light->GetLight()->SetDiffuse(Vec3(0.8f, 0.8f, 0.8f));
+		light->GetLight()->SetAmbient(Vec3(0.8f, 0.8f, 0.8f));
+		light->GetLight()->SetSpecular(Vec3(0.05f, 0.05f, 0.05f));
+
+		// 4. Scene에 추가
+		activeScene->AddGameObject(light);
+	}
+#pragma endregion
 
 // 로봇
 #pragma region SELFDESTRUCTIONROBOT
-	{
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\SelfDestructionRobot\\SelfDestructionRobot.fbx");
+	shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\SelfDestructionRobot\\SelfDestructionRobot.fbx");
 
+	for (int i{}; i < 1; ++i)
+	{
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
-		for (auto& gameObject : gameObjects)
-		{
-			gameObject->SetName(L"SelfDestructionRobot");
-			gameObject->SetCheckFrustum(true);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
-			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.7f, 0.f, 0.f));
-			activeScene->AddGameObject(gameObject);
-		}
+		gameObjects[0]->SetName(L"SelfDestructionRobot" + std::to_wstring(i + 1));
+		gameObjects[0]->SetCheckFrustum(true);
+		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.7f, 0.f, 0.f));
+		gameObjects[0]->AddComponent(make_shared<SelfDestructionRobotScript>());
+		activeScene->AddGameObject(gameObjects[0]);
 	}
 #pragma endregion
 }
