@@ -21,6 +21,8 @@ private:
 	HANDLE		IOCPHandle{ INVALID_HANDLE_VALUE };
 	int			sessionCnt{};
 	SOCKET		listenSocket{ INVALID_SOCKET };
+	SOCKET		acceptSocket{ INVALID_SOCKET };
+
 	std::array<Session, 10> sessionList{};
 };
 

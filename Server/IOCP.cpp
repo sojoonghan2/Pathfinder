@@ -53,7 +53,7 @@ bool IOCP::Init()
 bool IOCP::Start()
 {
 	// 클라이언트 accept socket 생성
-	SOCKET accept_socket = WSASocket(
+	acceptSocket = WSASocket(
 		AF_INET,
 		SOCK_STREAM,
 		0,
@@ -64,7 +64,7 @@ bool IOCP::Start()
 	// accpet를 위한 OverlappedEx 생성
 	OverlappedEx accept_over_ex;
 	accept_over_ex.operation = IOOperation::ACCEPT;
-	accept_over_ex.clientSocket = accept_socket;
+	accept_over_ex.clientSocket = acceptSocket;
 
 	int addr_size = sizeof(SOCKADDR_IN);
 	DWORD bytes_received{};
@@ -72,7 +72,7 @@ bool IOCP::Start()
 	// listen_socket에 accept_socket 비동기 Accept 등록
 	AcceptEx(
 		listenSocket,
-		accept_socket,
+		acceptSocket,
 		accept_over_ex.dataBuffer,
 		0,
 		addr_size + 16,
@@ -80,6 +80,7 @@ bool IOCP::Start()
 		&bytes_received,
 		&accept_over_ex.over
 	);
+	std::println("{}", acceptSocket);
 
 
 	// unsigned int num_thread{ std::thread::hardware_concurrency() };
@@ -132,15 +133,19 @@ void IOCP::Worker()
 			*/
 		case IOOperation::ACCEPT:
 		{
+			
+			
 			// 세션 컨테이너에 소켓 정보 저장
 			int client_id = sessionCnt++;
 			std::println("New Client {} Accepted.", client_id);
-			SOCKET curr_socket = curr_over_ex->clientSocket;
-			sessionList[client_id].clientSocket = curr_socket;
+
+			sessionList[client_id].currentDataSize = 0;
+			sessionList[client_id].clientSocket = acceptSocket;
+			sessionList[client_id].overEx.clientSocket = acceptSocket;
 
 			// IOCP 객체에 받아들인 클라이언트의 소켓을 연결
 			auto ret = CreateIoCompletionPort(
-				reinterpret_cast<HANDLE>(curr_socket),
+				reinterpret_cast<HANDLE>(acceptSocket),
 				IOCPHandle,
 				client_id,
 				0);
@@ -149,18 +154,17 @@ void IOCP::Worker()
 			DoRecv(sessionList[client_id]);
 
 			// accept를 위한 새로운 소켓 생성
-			curr_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+			acceptSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 
 			// Accept로 overlapped 설정 
 			ZeroMemory(&curr_over_ex->over, sizeof(curr_over_ex->over));
-			curr_over_ex->clientSocket = curr_socket;
-			curr_over_ex->operation = IOOperation::ACCEPT;
+			curr_over_ex->clientSocket = acceptSocket;
 			int addr_size = sizeof(SOCKADDR_IN);
 			DWORD bytes_received{};
 
 			AcceptEx(
 				listenSocket,
-				curr_socket,
+				acceptSocket,
 				curr_over_ex->dataBuffer,
 				0,
 				addr_size + 16,
@@ -172,6 +176,8 @@ void IOCP::Worker()
 
 			std::println("Temp Send.");
 			packet::SCLogin temp_packet;
+			std::println("{}", acceptSocket);
+
 			DoSend(sessionList[client_id], &temp_packet);
 			break;
 		}
@@ -182,6 +188,8 @@ void IOCP::Worker()
 		case IOOperation::RECV:
 		{
 			// 패킷 재조립 (임시) 나중에 바꿀 예정
+			std::println("successfully recved.");
+
 			int remain_data = io_size + sessionList[key].currentDataSize;
 			char* p = curr_over_ex->dataBuffer;
 			while (remain_data > 0) {
@@ -223,16 +231,16 @@ void IOCP::DoRecv(Session& session) const
 
 	DWORD recv_flag = 0;
 	OverlappedEx& over_ex = session.overEx;
-
-	ZeroMemory(over_ex.dataBuffer, sizeof(over_ex.dataBuffer));
+	ZeroMemory(&over_ex, sizeof(over_ex));
 
 	// 현재 남은 만큼 recv한다. 
 	over_ex.wsabuf.len = BUFFER_SIZE - session.currentDataSize;
 	over_ex.wsabuf.buf = over_ex.dataBuffer + session.currentDataSize;
+	over_ex.operation = IOOperation::RECV;
 
 	// 비동기 Recv
 	WSARecv(
-		over_ex.clientSocket,
+		session.clientSocket,
 		&over_ex.wsabuf,
 		1,
 		0,
@@ -250,8 +258,6 @@ void IOCP::DoSend(Session& session, void* packet)
 void IOCP::ProcessPacket(int key, char* p)
 {
 	std::println("Processing Packet.");
-	packet::SCLogin packet{};
-	DoSend(sessionList[key], reinterpret_cast<void*>(&packet));
 }
 
 

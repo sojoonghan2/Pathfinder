@@ -112,11 +112,26 @@ int SocketIO::DoRecv()
 	return recv_len;
 }
 
+void SocketIO::DoSend()
+{
+	std::println("Sending Packet.");
+	packet::CSLogin temp_packet;
+	std::array<char, BUFFER_SIZE> temp_buffer{};
+	memcpy(temp_buffer.data(), &temp_packet, sizeof(temp_packet));
+	int ret = send(serverSocket, temp_buffer.data(), sizeof(temp_packet), 0);
+	if (SOCKET_ERROR == ret) {
+		util::DisplayError();
+	}
+	std::println("Send Packet.");
+}
+
 void SocketIO::ProcessPacket()
 {
 	packet::Header* p_header{ reinterpret_cast<packet::Header*>( recvBuffer.data()) };
 	std::println("Processed packet. Type : {}",
 		static_cast<unsigned short>(p_header->type));
+	Sleep(1000);
+	DoSend();
 }
 
 SocketIO::~SocketIO()
