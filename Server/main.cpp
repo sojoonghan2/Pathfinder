@@ -12,5 +12,10 @@ int main()
 	}
 
 	iocp.Start();
+
+	// game loop
+	while (true) {
+
+	}
 	
 }

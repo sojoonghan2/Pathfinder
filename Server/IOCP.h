@@ -14,7 +14,7 @@ private:
 	void Worker();
 	void DoRecv(Session& session) const;
 	void DoSend(Session& session, void* packet);
-	void ProcessPacket(int key, char* p);
+	bool ProcessPacket(int key, char* p);
 
 
 private:
@@ -24,5 +24,6 @@ private:
 	SOCKET		acceptSocket{ INVALID_SOCKET };
 
 	std::array<Session, 10> sessionList{};
+	std::vector<std::thread> workers{};
 };
 

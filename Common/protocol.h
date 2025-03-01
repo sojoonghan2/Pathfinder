@@ -9,7 +9,9 @@ enum class Type : unsigned char
 {
 	NONE,
 	CS_LOGIN,
-	SC_LOGIN
+	SC_LOGIN,
+	SC_MOVE_PLAYER,
+	CS_MOVE_PLAYER,
 };
 
 #pragma pack(push, 1)
@@ -19,7 +21,7 @@ struct Header
 	Type			type{ Type::NONE };
 };
 
-
+// No Param
 struct CSLogin : Header
 {
 	CSLogin()
@@ -29,7 +31,7 @@ struct CSLogin : Header
 	}
 };
 
-
+// No Param
 struct SCLogin : Header
 {
 	SCLogin()
@@ -38,5 +40,40 @@ struct SCLogin : Header
 		type = Type::SC_LOGIN;
 	}
 };
+
+// Param:
+//	int playerId
+//	float x
+//	float y
+struct SCMovePlayer : Header
+{
+	int playerId{ 0 };
+	float x{ 0.f };
+	float y{ 0.f };
+
+	SCMovePlayer()
+	{
+		size = sizeof(SCMovePlayer);
+		type = Type::SC_MOVE_PLAYER;
+	}
+};
+
+// Param:
+//	int playerId
+//	float x
+//	float y
+struct CSMovePlayer : Header
+{
+	int playerId{ 0 };
+	float x{ 0.f };
+	float y{ 0.f };
+
+	CSMovePlayer()
+	{
+		size = sizeof(CSMovePlayer);
+		type = Type::CS_MOVE_PLAYER;
+	}
+};
+
 #pragma pack(pop)
 PACKET_END

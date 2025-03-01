@@ -80,23 +80,18 @@ bool IOCP::Start()
 		&bytes_received,
 		&accept_over_ex.over
 	);
-	std::println("{}", acceptSocket);
 
 
 	// unsigned int num_thread{ std::thread::hardware_concurrency() };
 
 	// 비동기 IO 작업 완료 확인 스레드 생성
 	// worker_thread 따로 멤버변수로 뺴기
-	std::vector<std::thread> worker_thread;
+
+
 	for (int i = 0; i < 1; ++i) {
-		worker_thread.emplace_back([this]() { Worker(); });
+		workers.emplace_back([this]() { Worker(); });
 	}
 	std::println("Created Worker Thread.");
-
-
-	for (auto& thread : worker_thread) {
-		thread.join();
-	}
 
 	return true;
 }
@@ -174,10 +169,9 @@ void IOCP::Worker()
 			);
 			std::println("AcceptEx Successed.");
 
+			// TEMP
 			std::println("Temp Send.");
 			packet::SCLogin temp_packet;
-			std::println("{}", acceptSocket);
-
 			DoSend(sessionList[client_id], &temp_packet);
 			break;
 		}
@@ -192,15 +186,24 @@ void IOCP::Worker()
 
 			int remain_data = io_size + sessionList[key].currentDataSize;
 			char* p = curr_over_ex->dataBuffer;
+
 			while (remain_data > 0) {
+
 				int packet_size = p[0];
 				if (packet_size <= remain_data) {
-					ProcessPacket(static_cast<int>(key), p);
+					bool ret = ProcessPacket(static_cast<int>(key), p);
+					if (false == ret) {
+						closesocket(sessionList[key].clientSocket);
+						ZeroMemory(&sessionList[key], sizeof(Session));
+						break;
+					}
 					p = p + packet_size;
 					remain_data = remain_data - packet_size;
 				}
 				else break;
+
 			}
+
 			sessionList[key].currentDataSize = remain_data;
 			if (remain_data > 0)
 				memcpy(curr_over_ex->dataBuffer, p, remain_data);
@@ -255,9 +258,34 @@ void IOCP::DoSend(Session& session, void* packet)
 	WSASend(session.clientSocket, &send_over_ex->wsabuf, 1, 0, 0, &send_over_ex->over, 0);
 }
 
-void IOCP::ProcessPacket(int key, char* p)
+bool IOCP::ProcessPacket(int key, char* p)
 {
 	std::println("Processing Packet.");
+	packet::Header* header = reinterpret_cast<packet::Header*>(p);
+	switch (header->type)
+	{
+	case packet::Type::CS_LOGIN:
+	{
+
+		std::println("CS_LOGIN Client {}", key);
+	}
+	break;
+
+	case packet::Type::CS_MOVE_PLAYER:
+	{
+
+		std::println("CS_MOVE_PACKET Client {}", key);
+	}
+	break;
+
+
+	default:
+	{
+		std::println("packet Error. disconnect Client {}", key);
+		return false;
+	}
+	}
+	return true;
 }
 
 
@@ -265,6 +293,11 @@ void IOCP::ProcessPacket(int key, char* p)
 
 IOCP::~IOCP()
 {
+	for (auto& thread : workers) {
+		if (thread.joinable()) {
+			thread.join();
+		}
+	}
 	closesocket(listenSocket);
 	WSACleanup();
 }

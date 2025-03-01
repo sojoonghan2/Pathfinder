@@ -11,6 +11,9 @@
     <Filter Include="pch">
       <UniqueIdentifier>{61ec4e86-e1fc-4482-b2cd-6e41271c0126}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object">
+      <UniqueIdentifier>{fe46f38b-d659-4903-9a80-c26f657f7ccb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -19,6 +22,9 @@
     </ClCompile>
     <ClCompile Include="..\Common\util.cpp">
       <Filter>pch</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -36,6 +42,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\util.h">
       <Filter>pch</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Object</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

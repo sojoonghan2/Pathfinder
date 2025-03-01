@@ -136,6 +136,7 @@
     <ClCompile Include="..\Common\util.cpp" />
     <ClCompile Include="IOCP.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\protocol.h" />
@@ -143,6 +144,7 @@
     <ClInclude Include="define.h" />
     <ClInclude Include="IOCP.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
