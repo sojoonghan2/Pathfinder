@@ -21,6 +21,8 @@ public:
     const Matrix& GetLocalToWorldMatrix() { return _matWorld; }
     Vec3 GetWorldPosition() { return _matWorld.Translation(); }
 
+    const Quaternion GetLocalRotationQuat() { return _quaternion; }
+
     Vec3 GetRight() { return _matWorld.Right(); }
     Vec3 GetUp() { return _matWorld.Up(); }
     Vec3 GetLook() { return _matWorld.Backward(); }

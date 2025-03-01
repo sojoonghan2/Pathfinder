@@ -9,5 +9,9 @@ public:
 
     virtual void LateUpdate() override;
 
+    void KeyboardInput();
+    void MouseInput();
+
 private:
+    shared_ptr<GameObject>  _treasureChest;
 };

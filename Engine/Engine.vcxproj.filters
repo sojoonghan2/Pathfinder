@@ -267,6 +267,9 @@
     <ClCompile Include="GlitterParticleSystem.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
+    <ClCompile Include="SelfDestructionRobotScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -493,6 +496,9 @@
     </ClInclude>
     <ClInclude Include="GlitterParticleSystem.h">
       <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SelfDestructionRobotScript.h">
+      <Filter>Script\ObjectScript</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

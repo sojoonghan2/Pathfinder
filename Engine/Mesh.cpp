@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "Mesh.h"
 #include "Engine.h"
 #include "Material.h"
@@ -53,7 +53,7 @@ shared_ptr<Mesh> Mesh::CreateFromFBX(const FbxMeshInfo* meshInfo, FBXLoader& loa
 	{
 		if (buffer.empty())
 		{
-			// FBX ÆÄÀÏÀÌ ÀÌ»óÇÏ´Ù. IndexBuffer°¡ ¾øÀ¸¸é ¿¡·¯ ³ª´Ï±î ÀÓ½Ã Ã³¸®
+			// FBX íŒŒì¼ì´ ì´ìƒí•˜ë‹¤. IndexBufferê°€ ì—†ìœ¼ë©´ ì—ëŸ¬ ë‚˜ë‹ˆê¹Œ ì„ì‹œ ì²˜ë¦¬
 			vector<uint32> defaultBuffer{ 0 };
 			mesh->CreateIndexBuffer(defaultBuffer);
 		}
@@ -116,8 +116,8 @@ void Mesh::CreateVertexBuffer(const vector<Vertex>& buffer)
 
 	// Initialize the vertex buffer view.
 	_vertexBufferView.BufferLocation = _vertexBuffer->GetGPUVirtualAddress();
-	_vertexBufferView.StrideInBytes = sizeof(Vertex); // Á¤Á¡ 1°³ Å©±â
-	_vertexBufferView.SizeInBytes = bufferSize; // ¹öÆÛÀÇ Å©±â	
+	_vertexBufferView.StrideInBytes = sizeof(Vertex); // ì •ì  1ê°œ í¬ê¸°
+	_vertexBufferView.SizeInBytes = bufferSize; // ë²„í¼ì˜ í¬ê¸°	
 }
 
 void Mesh::CreateIndexBuffer(const vector<uint32>& buffer)
@@ -190,7 +190,7 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 			for (int32 f = 0; f < size; f++)
 			{
 				FbxKeyFrameInfo& kf = vec[f];
-				// FBX¿¡¼­ ÆÄ½ÌÇÑ Á¤º¸µé·Î Ã¤¿öÁØ´Ù
+				// FBXì—ì„œ íŒŒì‹±í•œ ì •ë³´ë“¤ë¡œ ì±„ì›Œì¤€ë‹¤
 				KeyFrameInfo& kfInfo = info.keyFrames[b][f];
 				kfInfo.time = kf.time;
 				kfInfo.frame = static_cast<int32>(size);
@@ -226,13 +226,13 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 #pragma region SkinData
 	if (IsAnimMesh())
 	{
-		// BoneOffet Çà·Ä
+		// BoneOffet í–‰ë ¬
 		const int32 boneCount = static_cast<int32>(_bones.size());
 		vector<Matrix> offsetVec(boneCount);
 		for (size_t b = 0; b < boneCount; b++)
 			offsetVec[b] = _bones[b].matOffset;
 
-		// OffsetMatrix StructuredBuffer ¼¼ÆÃ
+		// OffsetMatrix StructuredBuffer ì„¸íŒ…
 		_offsetBuffer = make_shared<StructuredBuffer>();
 		_offsetBuffer->Init(sizeof(Matrix), static_cast<uint32>(offsetVec.size()), offsetVec.data());
 
@@ -241,7 +241,7 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 		{
 			AnimClipInfo& animClip = _animClips[i];
 
-			// ¾Ö´Ï¸ŞÀÌ¼Ç ÇÁ·¹ÀÓ Á¤º¸
+			// ì• ë‹ˆë©”ì´ì…˜ í”„ë ˆì„ ì •ë³´
 			vector<AnimFrameParams> frameParams;
 			frameParams.resize(_bones.size() * animClip.frameCount);
 
@@ -261,7 +261,7 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 				}
 			}
 
-			// StructuredBuffer ¼¼ÆÃ
+			// StructuredBuffer ì„¸íŒ…
 			_frameBuffer.push_back(make_shared<StructuredBuffer>());
 			_frameBuffer.back()->Init(sizeof(AnimFrameParams), static_cast<uint32>(frameParams.size()), frameParams.data());
 		}
