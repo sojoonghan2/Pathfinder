@@ -168,11 +168,6 @@ void IOCP::Worker()
 				&curr_over_ex->over
 			);
 			std::println("AcceptEx Successed.");
-
-			// TEMP
-			std::println("Temp Send.");
-			packet::SCLogin temp_packet;
-			DoSend(sessionList[client_id], &temp_packet);
 			break;
 		}
 
@@ -260,7 +255,6 @@ void IOCP::DoSend(Session& session, void* packet)
 
 bool IOCP::ProcessPacket(int key, char* p)
 {
-	std::println("Processing Packet.");
 	packet::Header* header = reinterpret_cast<packet::Header*>(p);
 	switch (header->type)
 	{

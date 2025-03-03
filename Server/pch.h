@@ -11,6 +11,7 @@
 #include <array>
 #include <print>
 #include <iostream>
+#include <random>
 
 #include "define.h"
 #include "../Common/protocol.h"

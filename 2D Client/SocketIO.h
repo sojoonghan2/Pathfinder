@@ -11,7 +11,10 @@ private:
 	void Worker();
 	// 반환값으로 받아온 버퍼의 길이를 가져옴
 	int	 DoRecv();
-	void DoSend();
+	
+
+	template <class _Packet, class ..._Args>
+	void DoSend(_Args ...args);
 
 	void ProcessPacket();
 
@@ -21,4 +24,22 @@ private:
 	std::thread	recvThread{};
 	std::array<char, BUFFER_SIZE> recvBuffer{};
 };
+
+
+template <class _Packet, class ..._Args>
+void SocketIO::DoSend(_Args ...args)
+{
+	// 패킷 생성
+	_Packet packet{ std::forward<_Args>(args)... };
+
+	// 버퍼에 패킷 내용 담기
+	std::array<char, BUFFER_SIZE> buffer{};
+	memcpy(buffer.data(), &packet, sizeof(packet));
+
+	// 보내기
+	int ret = send(serverSocket, buffer.data(), sizeof(packet), 0);
+	if (SOCKET_ERROR == ret) {
+		util::DisplayError();
+	}
+}
 

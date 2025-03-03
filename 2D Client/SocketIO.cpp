@@ -47,7 +47,8 @@ void SocketIO::Start()
 
 void SocketIO::Worker()
 {
-	std::println("Hi Worker");
+	std::println("Try Login.");
+	DoSend<packet::CSMovePlayer>(0, 1.f, 2.f);
 
 	while (true) {
 
@@ -112,25 +113,11 @@ int SocketIO::DoRecv()
 	return recv_len;
 }
 
-void SocketIO::DoSend()
-{
-	packet::CSMovePlayer temp_packet;
-	std::array<char, BUFFER_SIZE> temp_buffer{};
-	memcpy(temp_buffer.data(), &temp_packet, sizeof(temp_packet));
-	int ret = send(serverSocket, temp_buffer.data(), sizeof(temp_packet), 0);
-	if (SOCKET_ERROR == ret) {
-		util::DisplayError();
-	}
-}
-
 void SocketIO::ProcessPacket()
 {
 	packet::Header* p_header{ reinterpret_cast<packet::Header*>( recvBuffer.data()) };
 	std::println("Processed packet. Type : {}",
 		static_cast<unsigned short>(p_header->type));
-	DoSend();
-	Sleep(1000);
-	DoSend();
 }
 
 SocketIO::~SocketIO()

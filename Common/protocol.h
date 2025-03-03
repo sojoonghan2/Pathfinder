@@ -51,7 +51,10 @@ struct SCMovePlayer : Header
 	float x{ 0.f };
 	float y{ 0.f };
 
-	SCMovePlayer()
+	SCMovePlayer(const int playerId, const float x, const float y) :
+		playerId{playerId},
+		x{x},
+		y{y}
 	{
 		size = sizeof(SCMovePlayer);
 		type = Type::SC_MOVE_PLAYER;
@@ -68,7 +71,10 @@ struct CSMovePlayer : Header
 	float x{ 0.f };
 	float y{ 0.f };
 
-	CSMovePlayer()
+	CSMovePlayer(const int playerId, const float x, const float y) :
+		playerId{ playerId },
+		x{ x },
+		y{ y }
 	{
 		size = sizeof(CSMovePlayer);
 		type = Type::CS_MOVE_PLAYER;
