@@ -9,5 +9,9 @@ public:
 
     virtual void LateUpdate() override;
 
+    void Occupation();
+
 private:
+    shared_ptr<GameObject>  _water;
+    shared_ptr<GameObject>  _player;
 };
