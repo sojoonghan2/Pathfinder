@@ -1,2 +1,0 @@
-Walk forward: 5-25
-Jump: 80-120

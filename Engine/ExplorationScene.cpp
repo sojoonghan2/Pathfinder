@@ -191,13 +191,15 @@ ExplorationScene::ExplorationScene()
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"ExplorationScene", L"..\\Resources\\Texture\\Exploration.jpg");
-			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"TestParticleFloor", L"..\\Resources\\Texture\\RuinsFloor.jpg");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Exploration", L"..\\Resources\\Texture\\TerrainCube\\Exploration.jpg");
+			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"ExplorationFloor", L"..\\Resources\\Texture\\TerrainCube\\ExplorationFloor.jpg");
+			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"ExplorationTop", L"..\\Resources\\Texture\\TerrainCube\\ExplorationTop.jpg");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
 			material->SetTexture(0, texture);
 			material->SetTexture(1, floorTexture);
+			material->SetTexture(2, topTexture);
 			meshRenderer->SetMaterial(material);
 		}
 		terraincube->AddComponent(meshRenderer);

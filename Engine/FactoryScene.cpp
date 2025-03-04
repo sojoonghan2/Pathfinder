@@ -126,13 +126,15 @@ FactoryScene::FactoryScene()
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Factory", L"..\\Resources\\Texture\\Factory.jpg");
-			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"TestParticleFloor", L"..\\Resources\\Texture\\RuinsFloor.jpg");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Factory", L"..\\Resources\\Texture\\TerrainCube\\Factory.jpg");
+			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"FactoryFloor", L"..\\Resources\\Texture\\TerrainCube\\FactoryFloor.jpg");
+			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"FactoryTop", L"..\\Resources\\Texture\\TerrainCube\\FactoryTop.jpg");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
 			material->SetTexture(0, texture);
 			material->SetTexture(1, floorTexture);
+			material->SetTexture(2, topTexture);
 			meshRenderer->SetMaterial(material);
 		}
 		terraincube->AddComponent(meshRenderer);
