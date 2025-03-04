@@ -302,6 +302,36 @@ RuinsScene::RuinsScene()
 		activeScene->AddGameObject(water);
 	}
 #pragma endregion
+
+// 점령 구역
+#pragma region Occupation
+	{
+		shared_ptr<GameObject> occupation = make_shared<GameObject>();
+		occupation->SetName(L"Occupation");
+		occupation->AddComponent(make_shared<Transform>());
+		occupation->GetTransform()->SetLocalScale(Vec3(500.f, 1.f, 500.f));
+		occupation->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+		occupation->SetStatic(true);
+
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> occupationMesh = GET_SINGLE(Resources)->LoadPlanMesh();
+			meshRenderer->SetMesh(occupationMesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"OccupationTexture", L"..\\Resources\\Texture\\Occupation.png");
+
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			meshRenderer->SetMaterial(material);
+		}
+
+		occupation->AddComponent(meshRenderer);
+		activeScene->AddGameObject(occupation);
+	}
+#pragma endregion
 }
 
 RuinsScene::~RuinsScene() {}
