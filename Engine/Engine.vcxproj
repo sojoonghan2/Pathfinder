@@ -211,6 +211,7 @@
     <ClInclude Include="ModuleScript.h" />
     <ClInclude Include="MonoBehaviour.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="OccupationScript.h" />
     <ClInclude Include="OverDriveParticleSystem.h" />
     <ClInclude Include="ParticleScene.h" />
     <ClInclude Include="ParticleSystem.h" />
@@ -288,6 +289,7 @@
     <ClCompile Include="ModuleScript.cpp" />
     <ClCompile Include="MonoBehaviour.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="OccupationScript.cpp" />
     <ClCompile Include="OverDriveParticleSystem.cpp" />
     <ClCompile Include="ParticleScene.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
@@ -361,6 +363,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\math.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\Occupation.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>

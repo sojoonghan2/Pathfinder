@@ -270,6 +270,9 @@
     <ClCompile Include="SelfDestructionRobotScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
+    <ClCompile Include="OccupationScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -500,6 +503,9 @@
     <ClInclude Include="SelfDestructionRobotScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
+    <ClInclude Include="OccupationScript.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -566,6 +572,9 @@
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\GlitterParticle.fx">
       <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\Occupation.fx">
+      <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

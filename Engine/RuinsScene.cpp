@@ -19,6 +19,7 @@
 #include "TestDragon.h"
 #include "TestPointLightScript.h"
 #include "WaterScript.h"
+#include "OccupationScript.h"
 #include "RuinsScript.h"
 
 #include "SphereCollider.h"
@@ -305,13 +306,15 @@ RuinsScene::RuinsScene()
 
 // 점령 구역
 #pragma region Occupation
+	for (int i{}; i < 3; ++i)
 	{
 		shared_ptr<GameObject> occupation = make_shared<GameObject>();
-		occupation->SetName(L"Occupation");
+		occupation->SetName(L"Occupation" + std::to_wstring(i + 1));
 		occupation->AddComponent(make_shared<Transform>());
-		occupation->GetTransform()->SetLocalScale(Vec3(500.f, 1.f, 500.f));
-		occupation->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
-		occupation->SetStatic(true);
+		occupation->AddComponent(make_shared<OccupationScript>());
+		occupation->GetTransform()->SetLocalScale(Vec3(1000.f, 1.f, 1000.f));
+		occupation->GetTransform()->SetLocalPosition(Vec3(0.f, i * 300, 0.f));
+		occupation->SetStatic(false);
 
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
@@ -319,7 +322,7 @@ RuinsScene::RuinsScene()
 			meshRenderer->SetMesh(occupationMesh);
 		}
 		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Occupation");
 			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"OccupationTexture", L"..\\Resources\\Texture\\Occupation.png");
 
 			shared_ptr<Material> material = make_shared<Material>();

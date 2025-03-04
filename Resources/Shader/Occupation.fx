@@ -108,8 +108,13 @@ VS_TEX_OUT VS_Tex(VS_TEX_IN input)
 float4 PS_Tex(VS_TEX_OUT input) : SV_Target
 {
     float4 color = float4(1.f, 1.f, 1.f, 1.f);
+    
     if (g_tex_on_0)
         color = g_textures.Sample(g_sam_0, input.uv);
+    
+    // 알파 값이 0이면 픽셀을 버림
+    if (color.a == 0.0f)
+        discard;
 
     return color;
 }
