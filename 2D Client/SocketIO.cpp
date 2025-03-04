@@ -110,8 +110,6 @@ int SocketIO::DoRecv()
 				util::DisplayQuitError();
 			}
 		}
-
-		std::println("Successfully Recved.");
 	}
 
 	return recv_len;

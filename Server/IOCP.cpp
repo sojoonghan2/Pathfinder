@@ -9,6 +9,35 @@ std::default_random_engine dre{ rd() };
 std::uniform_real_distribution<float> urd{ 0.f, 49.f };
 
 
+class Timer {
+private:
+	using Clock = std::chrono::steady_clock;
+	using TimePoint = std::chrono::time_point<Clock>;
+	using MilliSeconds = std::chrono::duration<float, std::milli>; // 밀리초 단위로 변경
+
+	TimePoint lastFrame;
+	float deltaTimeMS; // 밀리초 단위의 델타타임
+
+public:
+	Timer() : lastFrame(Clock::now()), deltaTimeMS(0.0f) {}
+
+	float getDeltaTimeMS() const { return deltaTimeMS; }
+	float getDeltaTimeSeconds() const { return deltaTimeMS / 1000.0f; } // 초 단위 변환
+
+	void updateDeltaTime() {
+		TimePoint currentFrame = Clock::now();
+		deltaTimeMS = std::chrono::duration_cast<MilliSeconds>(currentFrame - lastFrame).count();
+		lastFrame = currentFrame;
+	}
+
+	float PeekDeltaTime() const {
+		TimePoint currentFrame = Clock::now();
+		return std::chrono::duration_cast<MilliSeconds>(currentFrame - lastFrame).count();
+	}
+};
+
+
+
 bool IOCP::Init()
 {
 	// 윈도우 초기화
@@ -99,7 +128,8 @@ bool IOCP::Start()
 	for (int i = 0; i < 1; ++i) {
 		workers.emplace_back([this]() { Worker(); });
 	}
-	std::println("Created Worker Thread.");
+	workers.emplace_back([this]() {TimerWorker(); });
+	std::println("Created Thread.");
 
 	return true;
 }
@@ -185,7 +215,6 @@ void IOCP::Worker()
 		case IOOperation::RECV:
 		{
 			// 패킷 재조립 (임시) 나중에 바꿀 예정
-			std::println("successfully recved.");
 
 			int remain_data = io_size + sessionList[key].currentDataSize;
 			char* p = curr_over_ex->dataBuffer;
@@ -223,13 +252,27 @@ void IOCP::Worker()
 		{
 			// 보낸 OVER_EXP 지우기.
 			delete curr_over_ex;
-			std::println("Successfully sended.");
 			break;
 		}
 		}
 	}
 
 	std::println("Worker Ended.");
+}
+
+void IOCP::TimerWorker()
+{
+	Timer timer;
+	while (true) {
+		if (timer.PeekDeltaTime() > 100.f) {
+			timer.updateDeltaTime();
+			for (int i = 0; i < sessionCnt; ++i) {
+				packet::SCMovePlayer packet{ i, players[i].x, players[i].y };
+				DoBroadcast(i, &packet);
+			}
+		}
+		std::this_thread::yield();
+	}
 }
 
 void IOCP::DoRecv(Session& session) const
@@ -275,7 +318,14 @@ bool IOCP::ProcessPacket(int key, char* p)
 		packet::SCLogin sc_login{ key };
 		DoSend(sessionList[key], &sc_login);
 
-		packet::SCMovePlayer sc_move_player{ key, urd(dre), urd(dre) };
+		for (int i = 0; i < sessionCnt - 1; ++i) {
+			packet::SCMovePlayer sc_move_player{ i, players[i].x, players[i].y };
+			DoSend(sessionList[key], &sc_move_player);
+		}
+
+		players[key].x = urd(dre);
+		players[key].y = urd(dre);
+		packet::SCMovePlayer sc_move_player{ key, players[key].x, players[key].y };
 		DoBroadcast(&sc_move_player);
 	}
 	break;
@@ -284,7 +334,6 @@ bool IOCP::ProcessPacket(int key, char* p)
 	{
 		packet::CSMovePlayer* packet = reinterpret_cast<packet::CSMovePlayer*>(p);
 
-		std::println("CS_MOVE_PACKET Client {}", key);
 		players[key].x = packet->x;
 		players[key].y = packet->y;
 	}
@@ -303,6 +352,14 @@ bool IOCP::ProcessPacket(int key, char* p)
 void IOCP::DoBroadcast(void* packet)
 {
 	for (int i = 0; i < sessionCnt; ++i) {
+		DoSend(sessionList[i], packet);
+	}
+}
+
+void IOCP::DoBroadcast(int key, void* packet)
+{
+	for (int i = 0; i < sessionCnt; ++i) {
+		if (key == i) continue;
 		DoSend(sessionList[i], packet);
 	}
 }

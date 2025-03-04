@@ -14,11 +14,12 @@ public:
 private:
 
 	void Worker();
+	void TimerWorker();
 	void DoRecv(Session& session) const;
 	void DoSend(Session& session, void* packet);
 	bool ProcessPacket(int key, char* p);
 	void DoBroadcast(void* packet);
-
+	void DoBroadcast(int key, void* packet);
 
 private:
 	HANDLE		IOCPHandle{ INVALID_HANDLE_VALUE };

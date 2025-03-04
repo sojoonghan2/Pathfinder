@@ -73,13 +73,17 @@ public:
 		deltaTimeMS = std::chrono::duration_cast<MilliSeconds>(currentFrame - lastFrame).count();
 		lastFrame = currentFrame;
 	}
+
+	float PeekDeltaTime() const {
+		TimePoint currentFrame = Clock::now();
+		return std::chrono::duration_cast<MilliSeconds>(currentFrame - lastFrame).count();
+	}
 };
 
 class Player
 {
 private:
 	// 단위 m
-	int id{-1};
 	Vec2f pos{};
 	float& x{pos.x};
 	float& y{pos.y};
@@ -148,7 +152,6 @@ public:
 
 	// getter and setter
 
-	void SetId(const int _id) { id = _id; }
 
 	void SetPosition(Vec2f _pos) { pos = _pos; }
 
@@ -156,6 +159,8 @@ public:
 	{ SetPosition(Vec2f{ _x, _y }); }
 
 	void SetShow(const bool _show) { show = _show; }
+
+	Vec2f GetPosition() const { return pos; }
 
 };
 
@@ -169,14 +174,16 @@ int main() {
 	sf::RectangleShape line{};
 	line.setFillColor(sf::Color::Black);
 
-	Player my_player;
-	my_player.SetShow(true);
-	Player other_player{ 0.f, 0.f, sf::Color::Blue };
-	Player other2_player{ 0.f, 0.f, sf::Color::Yellow };
-
-	// TODO: player를 고쳐야함. 
 	// 타이머의 1초마다 클라에서 현 move_packet 전송
 	// 타이머의 1초마다 서버에서 전체 player에게 모두 move_packet 전송
+
+	std::array<Player, 3> players{};
+	for (auto& player : players) {
+		player.SetFillColor(sf::Color::Black);
+	}
+
+
+	int my_id{ -1 };
 
 	Controller controller;
 	SocketIO socket_io;
@@ -199,24 +206,15 @@ int main() {
 			case packet::Type::SC_LOGIN:
 			{
 				packet::SCLogin packet = reinterpret_cast<packet::SCLogin&>(buffer);
-				my_player.SetId(packet.playerId);
-				
+				players[packet.playerId].SetFillColor(sf::Color::Red);
+				my_id = packet.playerId;
 			}
 			break;
 			case packet::Type::SC_MOVE_PLAYER:
 			{
 				packet::SCMovePlayer packet = reinterpret_cast<packet::SCMovePlayer&>(buffer);
-				if (0 == packet.playerId) {
-					my_player.SetPosition(packet.x, packet.y);
-				}
-				else if (1 == packet.playerId) {
-					other_player.SetShow(true);
-					other_player.SetPosition(packet.x, packet.y);
-				}
-				else {
-					other2_player.SetShow(true);
-					other2_player.SetPosition(packet.x, packet.y);
-				}
+				players[packet.playerId].SetShow(true);
+				players[packet.playerId].SetPosition(packet.x, packet.y);
 			}
 			break;
 			default:
@@ -283,18 +281,26 @@ int main() {
 		}
 
 
+
+
 		// --
-		// Timer Update
+		// Update
 		// --
+
+		// player
 		frame_timer.updateDeltaTime();
 		auto delta = frame_timer.getDeltaTimeSeconds();
 
+		if (0 <= my_id && my_id <= 2) {
+			players[my_id].Update(controller, delta);
 
-		// ---
-		// update
-		// ---
-
-		my_player.Update(controller, delta);
+			// send
+			if (send_timer.PeekDeltaTime() > 100.f) {
+				send_timer.updateDeltaTime();
+				auto pos = players[my_id].GetPosition();
+				socket_io.DoSend<packet::CSMovePlayer>(my_id, pos.x, pos.y);
+			}
+		}
 
 
 		// ---
@@ -316,8 +322,9 @@ int main() {
 			window.draw(line);
 		}
 
-		my_player.Draw(window);
-		other_player.Draw(window);
+		for (auto& player : players) {
+			player.Draw(window);
+		}
 
 		window.display();
 	}
