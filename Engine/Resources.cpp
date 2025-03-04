@@ -358,18 +358,14 @@ shared_ptr<Texture> Resources::CreateTextureFromResource(const wstring& name, Co
 
 shared_ptr<MeshData> Resources::LoadFBX(const wstring& path)
 {
-	wstring key = path;
+	shared_ptr<MeshData> meshData = MeshData::LoadFromFBX(path);
+	meshData->SetName(path + L"_" + std::to_wstring(rand()));
 
-	shared_ptr<MeshData> meshData = Get<MeshData>(key);
-	if (meshData)
-		return meshData;
-
-	meshData = MeshData::LoadFromFBX(path);
-	meshData->SetName(key);
-	Add(key, meshData);
+	Add(path + L"_" + std::to_wstring(rand()), meshData);
 
 	return meshData;
 }
+
 
 shared_ptr<class MeshData> Resources::LoadBIN(const wstring& path)
 {

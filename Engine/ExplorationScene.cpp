@@ -134,9 +134,10 @@ ExplorationScene::ExplorationScene()
 		light->GetLight()->SetLightRange(1000.f);
 
 		// 3. 조명 색상 및 강도 설정
-		light->GetLight()->SetDiffuse(Vec3(0.7f, 0.7f, 0.7f));
-		light->GetLight()->SetAmbient(Vec3(0.7f, 0.7f, 0.7f));
-		light->GetLight()->SetSpecular(Vec3(0.7f, 0.7f, 0.7f));
+		light->GetLight()->SetDiffuse(Vec3(2.0f, 2.0f, 2.0f));
+		light->GetLight()->SetAmbient(Vec3(1.2f, 1.2f, 1.2f));
+		light->GetLight()->SetSpecular(Vec3(2.5f, 2.5f, 2.5f));
+
 
 		// 4. Scene에 추가
 		activeScene->AddGameObject(light);
@@ -271,25 +272,57 @@ ExplorationScene::ExplorationScene()
 		light->GetLight()->SetSpecular(Vec3(0.05f, 0.05f, 0.05f));
 
 		// 4. Scene에 추가
-		activeScene->AddGameObject(light);
+		//activeScene->AddGameObject(light);
 	}
 #pragma endregion
 
 // 로봇
 #pragma region SELFDESTRUCTIONROBOT
-	shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\SelfDestructionRobot\\SelfDestructionRobot.fbx");
-
-	for (int i{}; i < 1; ++i)
 	{
-		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<float> disX(-4000.0f, 4000.0f);
+		std::uniform_real_distribution<float> disZ(-4000.0f, 4000.0f);
 
-		gameObjects[0]->SetName(L"SelfDestructionRobot" + std::to_wstring(i + 1));
-		gameObjects[0]->SetCheckFrustum(true);
-		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
-		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.7f, 0.f, 0.f));
-		gameObjects[0]->AddComponent(make_shared<SelfDestructionRobotScript>());
-		activeScene->AddGameObject(gameObjects[0]);
+		vector<Vec3> positions;
+		float minDistance = 300.0f;
+
+		for (int i = 0; i < 20; ++i)
+		{
+			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\SelfDestructionRobot\\SelfDestructionRobot.fbx");
+			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+			// 겹치지 않는 랜덤 위치 생성
+			Vec3 randomPos;
+			bool validPosition = false;
+			int maxAttempts = 100; // 무한 루프 방지
+
+			while (!validPosition && maxAttempts > 0)
+			{
+				randomPos = Vec3(disX(gen), -100.0f, disZ(gen));
+				validPosition = true;
+
+				for (const Vec3& pos : positions)
+				{
+					if ((randomPos - pos).Length() < minDistance)
+					{
+						validPosition = false;
+						break;
+					}
+				}
+				maxAttempts--;
+			}
+
+			positions.push_back(randomPos);
+
+			gameObjects[0]->SetName(L"SelfDestructionRobot" + std::to_wstring(i + 1));
+			gameObjects[0]->SetCheckFrustum(true);
+			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos); // 랜덤 위치 적용
+			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+			gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.7f, 0.f, 0.f));
+			gameObjects[0]->AddComponent(make_shared<SelfDestructionRobotScript>());
+			activeScene->AddGameObject(gameObjects[0]);
+		}
 	}
 #pragma endregion
 }
