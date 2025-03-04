@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Player.h"
+
 class IOCP
 {
 public:
@@ -15,6 +17,7 @@ private:
 	void DoRecv(Session& session) const;
 	void DoSend(Session& session, void* packet);
 	bool ProcessPacket(int key, char* p);
+	void DoBroadcast(void* packet);
 
 
 private:
@@ -25,5 +28,11 @@ private:
 
 	std::array<Session, 10> sessionList{};
 	std::vector<std::thread> workers{};
+
+
+	// temp
+public:
+	std::array<Vec2f, 3> players;
+
 };
 

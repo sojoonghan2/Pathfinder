@@ -14,17 +14,20 @@
     <Filter Include="Object">
       <UniqueIdentifier>{fe46f38b-d659-4903-9a80-c26f657f7ccb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{db7cb1aa-25c5-4be9-a58e-e600f7e7184f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="IOCP.cpp">
       <Filter>IOCP</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\util.cpp">
-      <Filter>pch</Filter>
-    </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\util.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -34,17 +37,17 @@
     <ClInclude Include="pch.h">
       <Filter>pch</Filter>
     </ClInclude>
-    <ClInclude Include="define.h">
-      <Filter>pch</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\protocol.h">
-      <Filter>pch</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\util.h">
-      <Filter>pch</Filter>
-    </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\protocol.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\util.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="define.h">
+      <Filter>pch</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

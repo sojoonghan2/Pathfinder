@@ -1,5 +1,13 @@
 #include "pch.h"
+#include "Player.h"
+
 #include "IOCP.h"
+
+
+std::random_device rd;
+std::default_random_engine dre{ rd() };
+std::uniform_real_distribution<float> urd{ 0.f, 49.f };
+
 
 bool IOCP::Init()
 {
@@ -247,6 +255,7 @@ void IOCP::DoRecv(Session& session) const
 		0);
 }
 
+
 void IOCP::DoSend(Session& session, void* packet)
 {
 	OverlappedEx* send_over_ex = new OverlappedEx{ reinterpret_cast<unsigned char*>(packet) };
@@ -262,13 +271,22 @@ bool IOCP::ProcessPacket(int key, char* p)
 	{
 
 		std::println("CS_LOGIN Client {}", key);
+
+		packet::SCLogin sc_login{ key };
+		DoSend(sessionList[key], &sc_login);
+
+		packet::SCMovePlayer sc_move_player{ key, urd(dre), urd(dre) };
+		DoBroadcast(&sc_move_player);
 	}
 	break;
 
 	case packet::Type::CS_MOVE_PLAYER:
 	{
+		packet::CSMovePlayer* packet = reinterpret_cast<packet::CSMovePlayer*>(p);
 
 		std::println("CS_MOVE_PACKET Client {}", key);
+		players[key].x = packet->x;
+		players[key].y = packet->y;
 	}
 	break;
 
@@ -282,6 +300,12 @@ bool IOCP::ProcessPacket(int key, char* p)
 	return true;
 }
 
+void IOCP::DoBroadcast(void* packet)
+{
+	for (int i = 0; i < sessionCnt; ++i) {
+		DoSend(sessionList[i], packet);
+	}
+}
 
 
 

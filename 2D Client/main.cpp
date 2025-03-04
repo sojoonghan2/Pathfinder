@@ -5,7 +5,7 @@ constexpr int GRID_CONUT{ 100 };
 constexpr int WINDOW_WIDTH{ 800 };
 constexpr int WINDOW_HEIGHT{ 800 };
 
-
+std::queue<std::array<char, BUFFER_SIZE>> packetQueue;
 
 // 플레이어 이동속도, 단위 m/s
 constexpr float PLAYER_SPEED{ 5.f };
@@ -53,7 +53,7 @@ public:
 	}
 };
 
-class GameLoop {
+class Timer {
 private:
 	using Clock = std::chrono::steady_clock;
 	using TimePoint = std::chrono::time_point<Clock>;
@@ -63,7 +63,7 @@ private:
 	float deltaTimeMS; // 밀리초 단위의 델타타임
 
 public:
-	GameLoop() : lastFrame(Clock::now()), deltaTimeMS(0.0f) {}
+	Timer() : lastFrame(Clock::now()), deltaTimeMS(0.0f) {}
 
 	float getDeltaTimeMS() const { return deltaTimeMS; }
 	float getDeltaTimeSeconds() const { return deltaTimeMS / 1000.0f; } // 초 단위 변환
@@ -79,35 +79,36 @@ class Player
 {
 private:
 	// 단위 m
-	float x{};
-	float y{};
+	int id{-1};
+	Vec2f pos{};
+	float& x{pos.x};
+	float& y{pos.y};
+	bool show{ false };
 	sf::RectangleShape Square{ sf::Vector2f(GRID_WIDTH_PIXEL, GRID_HEIGHT_PIXEL) };
 
 public:
 
-	Player(float x, float y, sf::Color color) :
-		x{x},
-		y{y}
+	Player(const float x, const float y, const sf::Color color, const bool show) :
+		pos{ x, y },
+		show{show}
 	{
-		setFillColor(color);
+		SetFillColor(color);
 	}
 
-	Player(float x, float y) :
-		Player{ x, y, sf::Color::Red }
+	Player(const float x, const float y, const sf::Color color) :
+		Player{ x, y, color, false }
 	{}
 
 	Player() :
-		Player{ 25.f, 25.f }
+		Player{ 25.f, 25.f, sf::Color::Red }
 	{}
 
-
-
-	void setFillColor(sf::Color color)
+	void SetFillColor(const sf::Color color)
 	{
 		Square.setFillColor(color);
 	}
 
-	void update(Controller& controller, float delta)
+	void Update(const Controller& controller, const float delta)
 	{
 		// 방향을 얻어냄
 		float dirX{}, dirY{};
@@ -131,8 +132,10 @@ public:
 		y += distance * dirY;
 	}
 
-	void draw(sf::RenderWindow& window)
+	void Draw(sf::RenderWindow& window)
 	{
+		if (not show) return;
+
 		// 윈도우 위치 계산
 		float windowX = x / MAP_SIZE * WINDOW_WIDTH;
 		float windowY = y / MAP_SIZE * WINDOW_HEIGHT;
@@ -141,6 +144,19 @@ public:
 		Square.setPosition(windowX, windowY);
 		window.draw(Square);
 	}
+
+
+	// getter and setter
+
+	void SetId(const int _id) { id = _id; }
+
+	void SetPosition(Vec2f _pos) { pos = _pos; }
+
+	void SetPosition(const float _x, const float _y)
+	{ SetPosition(Vec2f{ _x, _y }); }
+
+	void SetShow(const bool _show) { show = _show; }
+
 };
 
 
@@ -151,19 +167,69 @@ int main() {
 
 	// Init Resources
 	sf::RectangleShape line{};
-	line.setFillColor(sf::Color(sf::Color::Black));
+	line.setFillColor(sf::Color::Black);
 
 	Player my_player;
-	Player other_player{ 20.f, 20.f, sf::Color::Blue };
+	my_player.SetShow(true);
+	Player other_player{ 0.f, 0.f, sf::Color::Blue };
+	Player other2_player{ 0.f, 0.f, sf::Color::Yellow };
 
-	GameLoop timer;
+	// TODO: player를 고쳐야함. 
+	// 타이머의 1초마다 클라에서 현 move_packet 전송
+	// 타이머의 1초마다 서버에서 전체 player에게 모두 move_packet 전송
+
 	Controller controller;
 	SocketIO socket_io;
 	socket_io.Init();
 	socket_io.Start();
 
 
+	Timer frame_timer;
+	Timer send_timer;
 	while (window.isOpen()) {
+
+		// --
+		// process packet
+		// --
+		while (not packetQueue.empty()) {
+
+			auto& buffer = packetQueue.front();
+			packet::Header& header = reinterpret_cast<packet::Header&>(buffer);
+			switch (header.type) {
+			case packet::Type::SC_LOGIN:
+			{
+				packet::SCLogin packet = reinterpret_cast<packet::SCLogin&>(buffer);
+				my_player.SetId(packet.playerId);
+				
+			}
+			break;
+			case packet::Type::SC_MOVE_PLAYER:
+			{
+				packet::SCMovePlayer packet = reinterpret_cast<packet::SCMovePlayer&>(buffer);
+				if (0 == packet.playerId) {
+					my_player.SetPosition(packet.x, packet.y);
+				}
+				else if (1 == packet.playerId) {
+					other_player.SetShow(true);
+					other_player.SetPosition(packet.x, packet.y);
+				}
+				else {
+					other2_player.SetShow(true);
+					other2_player.SetPosition(packet.x, packet.y);
+				}
+			}
+			break;
+			default:
+			{
+				std::println("Packet Error.");
+			}
+			break;
+			}
+
+
+			packetQueue.pop();
+		}
+
 
 		// ---
 		// event
@@ -220,15 +286,15 @@ int main() {
 		// --
 		// Timer Update
 		// --
-		timer.updateDeltaTime();
-		auto delta = timer.getDeltaTimeSeconds();
+		frame_timer.updateDeltaTime();
+		auto delta = frame_timer.getDeltaTimeSeconds();
 
 
 		// ---
 		// update
 		// ---
 
-		my_player.update(controller, delta);
+		my_player.Update(controller, delta);
 
 
 		// ---
@@ -250,8 +316,8 @@ int main() {
 			window.draw(line);
 		}
 
-		my_player.draw(window);
-		other_player.draw(window);
+		my_player.Draw(window);
+		other_player.Draw(window);
 
 		window.display();
 	}

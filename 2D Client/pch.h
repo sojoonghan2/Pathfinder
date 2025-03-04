@@ -14,6 +14,7 @@
 #include <print>
 #include <iostream>
 #include <chrono>
+#include <queue>
 
 #include "define.h"
 #include "../Common/protocol.h"

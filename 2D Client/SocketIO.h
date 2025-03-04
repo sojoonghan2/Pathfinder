@@ -13,8 +13,8 @@ private:
 	int	 DoRecv();
 	
 
-	template <class _Packet, class ..._Args>
-	void DoSend(_Args ...args);
+	template <class Packet, class ...Args>
+	void DoSend(Args ...args);
 
 	void ProcessPacket();
 
@@ -26,11 +26,11 @@ private:
 };
 
 
-template <class _Packet, class ..._Args>
-void SocketIO::DoSend(_Args ...args)
+template <class Packet, class ...Args>
+void SocketIO::DoSend(Args ...args)
 {
 	// 패킷 생성
-	_Packet packet{ std::forward<_Args>(args)... };
+	Packet packet{ std::forward<Args>(args)... };
 
 	// 버퍼에 패킷 내용 담기
 	std::array<char, BUFFER_SIZE> buffer{};

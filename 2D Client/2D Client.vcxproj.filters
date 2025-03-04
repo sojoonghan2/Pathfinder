@@ -11,6 +11,9 @@
     <Filter Include="pch">
       <UniqueIdentifier>{97f7a2af-84bd-49d2-8d3b-c09233ab0b79}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{65ef0b8e-071d-49d9-a874-f11fbaac2c37}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -21,7 +24,7 @@
       <Filter>SocketIO</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\util.cpp">
-      <Filter>pch</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -31,11 +34,11 @@
     <ClInclude Include="pch.h">
       <Filter>pch</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\protocol.h">
-      <Filter>pch</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\util.h">
-      <Filter>pch</Filter>
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\protocol.h">
+      <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="define.h">
       <Filter>pch</Filter>
