@@ -85,7 +85,6 @@ ParticleScene::ParticleScene()
 		camera->AddComponent(make_shared<Transform>());
 		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=3000, FOV=45µµ
 		camera->AddComponent(make_shared<TestCameraScript>());
-		camera->AddComponent(make_shared<RuinsScript>());
 		camera->GetCamera()->SetFar(100000.f);
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, 0.f));
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
