@@ -82,7 +82,7 @@ PS_OUT PS_Main(VS_OUT input)
     // 텍스처 샘플링
     float4 mainTexture = g_textures.Sample(g_sam_0, input.uv);
     float4 bottomTexture = g_textures1.Sample(g_sam_0, input.uv);
-    float4 topTexture = g_textures.Sample(g_sam_0, input.uv);
+    float4 topTexture = g_textures2.Sample(g_sam_0, input.uv);
     
     // 최종 색상 블렌딩
     float4 color = mainTexture;

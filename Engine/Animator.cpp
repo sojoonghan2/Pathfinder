@@ -19,7 +19,7 @@ Animator::~Animator()
 
 void Animator::FinalUpdate()
 {
-
+    /*
     _updateTime += DELTA_TIME;
 
     const AnimClipInfo& animClip = _animClips->at(_clipIndex);
@@ -72,6 +72,7 @@ void Animator::FinalUpdate()
         _boneFinalMatrix->Init(sizeof(Matrix), finalTransforms.size());
     }
     _boneFinalMatrix->Update(finalTransforms.data(), finalTransforms.size() * sizeof(Matrix));
+    */
 }
 
 void Animator::SetAnimClip(const vector<AnimClipInfo>* animClips)

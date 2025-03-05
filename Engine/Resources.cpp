@@ -358,18 +358,14 @@ shared_ptr<Texture> Resources::CreateTextureFromResource(const wstring& name, Co
 
 shared_ptr<MeshData> Resources::LoadFBX(const wstring& path)
 {
-	wstring key = path;
+	shared_ptr<MeshData> meshData = MeshData::LoadFromFBX(path);
+	meshData->SetName(path + L"_" + std::to_wstring(rand()));
 
-	shared_ptr<MeshData> meshData = Get<MeshData>(key);
-	if (meshData)
-		return meshData;
-
-	meshData = MeshData::LoadFromFBX(path);
-	meshData->SetName(key);
-	Add(key, meshData);
+	Add(path + L"_" + std::to_wstring(rand()), meshData);
 
 	return meshData;
 }
+
 
 shared_ptr<class MeshData> Resources::LoadBIN(const wstring& path)
 {
@@ -446,6 +442,30 @@ void Resources::CreateDefaultShader()
 		shared_ptr<Shader> shader = make_shared<Shader>();
 		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\forward.fx", info, arg);
 		Add<Shader>(L"Texture", shader);
+	}
+
+	// Occupation (Forward)
+	{
+		ShaderInfo info =
+		{
+			SHADER_TYPE::FORWARD,
+			RASTERIZER_TYPE::CULL_NONE,
+			DEPTH_STENCIL_TYPE::NO_DEPTH_TEST_NO_WRITE,
+			BLEND_TYPE::ALPHA_BLEND
+		};
+
+		ShaderArg arg =
+		{
+			"VS_Tex",
+			"",
+			"",
+			"",
+			"PS_Tex"
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\Occupation.fx", info, arg);
+		Add<Shader>(L"Occupation", shader);
 	}
 
 	// DirLight

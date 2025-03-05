@@ -19,7 +19,9 @@
 #include "TestDragon.h"
 #include "TestPointLightScript.h"
 #include "WaterScript.h"
+#include "OccupationScript.h"
 #include "RuinsScript.h"
+#include "CrapScript.h"
 
 #include "SphereCollider.h"
 
@@ -79,6 +81,70 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
+// 구 오브젝트과 포인트 조명
+#pragma region Object & Point Light
+	{
+		// 1. 기본 오브젝트 생성 및 설정
+		shared_ptr<GameObject> obj = make_shared<GameObject>();
+		obj->SetName(L"OBJ");
+		// 프러스텀 컬링 여부
+		obj->SetCheckFrustum(true);
+		// 정적, 동적 여부
+		obj->SetStatic(false);
+
+		// 2. Transform 컴포넌트 추가 및 설정
+		obj->AddComponent(make_shared<Transform>());
+		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
+		obj->AddComponent(make_shared<TestPointLightScript>());
+
+		// 3. Collider 설정
+		obj->AddComponent(make_shared<SphereCollider>());
+		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetRadius(0.5f);
+		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+
+		// 4. MeshRenderer 설정
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+			meshRenderer->SetMesh(sphereMesh);
+		}
+		{
+			// GameObject 이름을 가진 머터리얼을 찾아 클론 후 메쉬 렌더러에 Set
+			// Resources.cpp로 가면 셰이더와 머터리얼의 생성을 확이해볼 수 있음
+			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"GameObject");
+			meshRenderer->SetMaterial(material->Clone());
+		}
+		obj->AddComponent(meshRenderer);
+
+		// 5. Scene에 추가
+		activeScene->AddGameObject(obj);
+
+		// 1. light 오브젝트 생성 
+		shared_ptr<GameObject> light = make_shared<GameObject>();
+		light->SetName(L"Point_Light");
+		light->AddComponent(make_shared<Transform>());
+		light->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
+
+		// 2-1. light 컴포넌트 추가 및 속성 설정
+		light->AddComponent(make_shared<Light>());
+		light->GetLight()->SetLightType(LIGHT_TYPE::POINT_LIGHT);
+		light->AddComponent(make_shared<TestPointLightScript>());
+
+		// 2-2. 점광원 특수 설정
+		light->GetLight()->SetLightRange(1000.f);
+
+		// 3. 조명 색상 및 강도 설정
+		light->GetLight()->SetDiffuse(Vec3(2.0f, 2.0f, 2.0f));
+		light->GetLight()->SetAmbient(Vec3(1.2f, 1.2f, 1.2f));
+		light->GetLight()->SetSpecular(Vec3(2.5f, 2.5f, 2.5f));
+
+
+		// 4. Scene에 추가
+		activeScene->AddGameObject(light);
+	}
+#pragma endregion
+
 // 스카이 박스
 #pragma region SkyBox
 	{
@@ -126,13 +192,15 @@ RuinsScene::RuinsScene()
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\Ruins.jpg");
-			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"TestParticleFloor", L"..\\Resources\\Texture\\RuinsFloor.jpg");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\Ruins.jpg");
+			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsFloor", L"..\\Resources\\Texture\\TerrainCube\\RuinsFloor.jpg");
+			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\RuinsTop.jpg");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
 			material->SetTexture(0, texture);
 			material->SetTexture(1, floorTexture);
+			material->SetTexture(2, topTexture);
 			meshRenderer->SetMaterial(material);
 		}
 		terraincube->AddComponent(meshRenderer);
@@ -219,7 +287,7 @@ RuinsScene::RuinsScene()
 		water->AddComponent(make_shared<Transform>());
 		water->AddComponent(make_shared<WaterScript>());
 		water->GetTransform()->SetLocalScale(Vec3(10000.f, 1.f, 10000.f));
-		water->GetTransform()->SetLocalPosition(Vec3(0.f, 10.f, 50.f));
+		water->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 50.f));
 		water->SetStatic(true);
 
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -234,6 +302,88 @@ RuinsScene::RuinsScene()
 
 		water->AddComponent(meshRenderer);
 		activeScene->AddGameObject(water);
+	}
+#pragma endregion
+
+// 로봇
+#pragma region SELFDESTRUCTIONROBOT
+	{
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<float> disX(-4000.0f, 4000.0f);
+		std::uniform_real_distribution<float> disZ(-4000.0f, 4000.0f);
+
+		vector<Vec3> positions;
+		float minDistance = 300.0f;
+
+		for (int i = 0; i < 20; ++i)
+		{
+			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\CyberCraps\\CyberCraps.fbx");
+			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+			// 겹치지 않는 랜덤 위치 생성
+			Vec3 randomPos;
+			bool validPosition = false;
+			int maxAttempts = 100;
+
+			while (!validPosition && maxAttempts > 0)
+			{
+				randomPos = Vec3(disX(gen), 500.0f, disZ(gen));
+				validPosition = true;
+
+				for (const Vec3& pos : positions)
+				{
+					if ((randomPos - pos).Length() < minDistance)
+					{
+						validPosition = false;
+						break;
+					}
+				}
+				maxAttempts--;
+			}
+
+			positions.push_back(randomPos);
+
+			gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i + 1));
+			gameObjects[0]->SetCheckFrustum(true);
+			gameObjects[0]->AddComponent(make_shared<CrapScript>());
+			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
+			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(50.f, 50.f, 50.f));
+			gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5f, 0.f, 0.f));
+			activeScene->AddGameObject(gameObjects[0]);
+		}
+	}
+#pragma endregion
+
+// 점령 구역
+#pragma region Occupation
+	for (int i{}; i < 3; ++i)
+	{
+		shared_ptr<GameObject> occupation = make_shared<GameObject>();
+		occupation->SetName(L"Occupation" + std::to_wstring(i + 1));
+		occupation->AddComponent(make_shared<Transform>());
+		occupation->AddComponent(make_shared<OccupationScript>());
+		occupation->GetTransform()->SetLocalScale(Vec3(2000.f, 1.f, 2000.f));
+		occupation->GetTransform()->SetLocalPosition(Vec3(0.f, i * 300, 0.f));
+		occupation->SetStatic(false);
+
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> occupationMesh = GET_SINGLE(Resources)->LoadPlanMesh();
+			meshRenderer->SetMesh(occupationMesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Occupation");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"OccupationTexture", L"..\\Resources\\Texture\\Occupation.png");
+
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			meshRenderer->SetMaterial(material);
+		}
+
+		occupation->AddComponent(meshRenderer);
+		activeScene->AddGameObject(occupation);
 	}
 #pragma endregion
 }
