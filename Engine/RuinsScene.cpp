@@ -286,7 +286,7 @@ RuinsScene::RuinsScene()
 		water->AddComponent(make_shared<Transform>());
 		water->AddComponent(make_shared<WaterScript>());
 		water->GetTransform()->SetLocalScale(Vec3(10000.f, 1.f, 10000.f));
-		water->GetTransform()->SetLocalPosition(Vec3(0.f, 10.f, 50.f));
+		water->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 50.f));
 		water->SetStatic(true);
 
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -312,7 +312,7 @@ RuinsScene::RuinsScene()
 		occupation->SetName(L"Occupation" + std::to_wstring(i + 1));
 		occupation->AddComponent(make_shared<Transform>());
 		occupation->AddComponent(make_shared<OccupationScript>());
-		occupation->GetTransform()->SetLocalScale(Vec3(1000.f, 1.f, 1000.f));
+		occupation->GetTransform()->SetLocalScale(Vec3(2000.f, 1.f, 2000.f));
 		occupation->GetTransform()->SetLocalPosition(Vec3(0.f, i * 300, 0.f));
 		occupation->SetStatic(false);
 

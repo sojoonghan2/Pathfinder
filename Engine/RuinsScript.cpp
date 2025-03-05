@@ -30,8 +30,15 @@ void RuinsScript::Occupation()
 
     auto playerPos = _player->GetTransform()->GetLocalPosition();
 
-    if (playerPos.x >= -1000.0f && playerPos.x <= 1000.0f &&
-        playerPos.z >= -1000.0f && playerPos.z <= 1000.0f)
+    if (playerPos.x >= -2000.0f && playerPos.x <= 2000.0f &&
+        playerPos.z >= -2000.0f && playerPos.z <= 2000.0f)
+    {
+        Vec3 pos = _water->GetTransform()->GetLocalPosition();
+        pos.y -= 0.2f;
+        _water->GetTransform()->SetLocalPosition(pos);
+        std::cout << "Water yPos: " << pos.y << "\n";
+    }
+    else
     {
         Vec3 pos = _water->GetTransform()->GetLocalPosition();
         pos.y += 0.1f;
