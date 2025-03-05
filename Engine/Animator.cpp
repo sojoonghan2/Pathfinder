@@ -19,7 +19,6 @@ Animator::~Animator()
 
 void Animator::FinalUpdate()
 {
-    // FBX 로드를 위한 애니메이션 임시 주석 처리
     /*
     _updateTime += DELTA_TIME;
 

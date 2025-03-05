@@ -21,6 +21,7 @@
 #include "WaterScript.h"
 #include "OccupationScript.h"
 #include "RuinsScript.h"
+#include "CrapScript.h"
 
 #include "SphereCollider.h"
 
@@ -345,8 +346,9 @@ RuinsScene::RuinsScene()
 
 			gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i + 1));
 			gameObjects[0]->SetCheckFrustum(true);
+			gameObjects[0]->AddComponent(make_shared<CrapScript>());
 			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
-			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(50.f, 50.f, 50.f));
 			gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5f, 0.f, 0.f));
 			activeScene->AddGameObject(gameObjects[0]);
 		}

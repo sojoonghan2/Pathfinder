@@ -180,6 +180,7 @@
     <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="CrapScript.h" />
     <ClInclude Include="CrashScene.h" />
     <ClInclude Include="CrashScript.h" />
     <ClInclude Include="d3dx12.h" />
@@ -259,6 +260,7 @@
     <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
+    <ClCompile Include="CrapScript.cpp" />
     <ClCompile Include="CrashScene.cpp" />
     <ClCompile Include="CrashScript.cpp" />
     <ClCompile Include="Device.cpp" />
