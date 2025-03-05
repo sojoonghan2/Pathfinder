@@ -304,6 +304,55 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
+// 로봇
+#pragma region SELFDESTRUCTIONROBOT
+	{
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<float> disX(-4000.0f, 4000.0f);
+		std::uniform_real_distribution<float> disZ(-4000.0f, 4000.0f);
+
+		vector<Vec3> positions;
+		float minDistance = 300.0f;
+
+		for (int i = 0; i < 20; ++i)
+		{
+			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\CyberCraps\\CyberCraps.fbx");
+			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+			// 겹치지 않는 랜덤 위치 생성
+			Vec3 randomPos;
+			bool validPosition = false;
+			int maxAttempts = 100;
+
+			while (!validPosition && maxAttempts > 0)
+			{
+				randomPos = Vec3(disX(gen), 500.0f, disZ(gen));
+				validPosition = true;
+
+				for (const Vec3& pos : positions)
+				{
+					if ((randomPos - pos).Length() < minDistance)
+					{
+						validPosition = false;
+						break;
+					}
+				}
+				maxAttempts--;
+			}
+
+			positions.push_back(randomPos);
+
+			gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i + 1));
+			gameObjects[0]->SetCheckFrustum(true);
+			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
+			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+			gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5f, 0.f, 0.f));
+			activeScene->AddGameObject(gameObjects[0]);
+		}
+	}
+#pragma endregion
+
 // 점령 구역
 #pragma region Occupation
 	for (int i{}; i < 3; ++i)

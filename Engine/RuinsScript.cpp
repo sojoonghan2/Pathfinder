@@ -25,8 +25,8 @@ void RuinsScript::LateUpdate() {
 
 void RuinsScript::Occupation()
 {
-    _water = GET_SINGLE(SceneManager)->FindObjectByName(L"Water");
-    _player = GET_SINGLE(SceneManager)->FindObjectByName(L"OBJ");
+    if(GET_SINGLE(SceneManager)->FindObjectByName(L"Water")) _water = GET_SINGLE(SceneManager)->FindObjectByName(L"Water");
+    if(GET_SINGLE(SceneManager)->FindObjectByName(L"OBJ")) _player = GET_SINGLE(SceneManager)->FindObjectByName(L"OBJ");
 
     auto playerPos = _player->GetTransform()->GetLocalPosition();
 
