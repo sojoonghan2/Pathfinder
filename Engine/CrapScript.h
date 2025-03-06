@@ -1,27 +1,23 @@
 #pragma once
 #include "MonoBehaviour.h"
 
-enum class AnimationState 
-{
-	Idle,
-	Walk
-};
-
-
 class CrapScript : public MonoBehaviour
 {
 public:
-	float		_speed = 1000.f;
-	float		anicount = 0;
+    CrapScript();
 	virtual void Update() override;
-	float		animation_state = 0;
-
-	float Get_state() {
-		return animation_state;
-	}
-	void SetAnimationState(AnimationState state);
-	AnimationState _currentState = AnimationState::Idle;
 
 private:
+    void MoveRandomly();
+    void CheckBoundary();
+
+private:
+    float _speed = 1000.f;
+    Vec3 _direction;
+    float _changeDirectionTime = 10.0f;
+    float _elapsedTime = 0.0f;
+
+    bool _isMoving = false;
+    float _pauseDuration{};
 };
 

@@ -19,7 +19,7 @@ Animator::~Animator()
 
 void Animator::FinalUpdate()
 {
-    /*
+    
     _updateTime += DELTA_TIME;
 
     const AnimClipInfo& animClip = _animClips->at(_clipIndex);
@@ -44,27 +44,32 @@ void Animator::FinalUpdate()
         const BoneInfo& bone = _bones->at(i);
 
         // 현재와 다음 프레임의 키프레임 데이터 가져오기
-        const KeyFrameInfo& currentKeyFrame = animClip.keyFrames[i][_frame];
-        const KeyFrameInfo& nextKeyFrame = animClip.keyFrames[i][_nextFrame];
+        if (i < animClip.keyFrames.size() &&
+            _frame < animClip.keyFrames[i].size() &&
+            _nextFrame < animClip.keyFrames[i].size())
+        {
+            const KeyFrameInfo& currentKeyFrame = animClip.keyFrames[i][_frame];
+            const KeyFrameInfo& nextKeyFrame = animClip.keyFrames[i][_nextFrame];
 
-        // 스케일, 회전, 이동 데이터 보간
-        Vec3 interpolatedScale = MyProject::Lerp(currentKeyFrame.scale, nextKeyFrame.scale, _frameRatio);
-        Quaternion interpolatedRotation = MyProject::QuaternionSlerp(currentKeyFrame.rotation, nextKeyFrame.rotation, _frameRatio);
-        Vec3 interpolatedTranslation = MyProject::Lerp(currentKeyFrame.translate, nextKeyFrame.translate, _frameRatio);
+            // 스케일, 회전, 이동 데이터 보간
+            Vec3 interpolatedScale = MyProject::Lerp(currentKeyFrame.scale, nextKeyFrame.scale, _frameRatio);
+            Quaternion interpolatedRotation = MyProject::QuaternionSlerp(currentKeyFrame.rotation, nextKeyFrame.rotation, _frameRatio);
+            Vec3 interpolatedTranslation = MyProject::Lerp(currentKeyFrame.translate, nextKeyFrame.translate, _frameRatio);
 
-        // 보간된 트랜스폼으로 행렬 생성
-        Matrix blendedTransform = MyProject::MatrixAffineTransformation(interpolatedScale, interpolatedRotation, interpolatedTranslation);
+            // 보간된 트랜스폼으로 행렬 생성
+            Matrix blendedTransform = MyProject::MatrixAffineTransformation(interpolatedScale, interpolatedRotation, interpolatedTranslation);
 
-        // 부모의 최종 트랜스폼 적용
-        if (bone.parentIndex >= 0) {
-            blendedTransform = finalTransforms[bone.parentIndex] * blendedTransform;
+            // 부모의 최종 트랜스폼 적용
+            if (bone.parentIndex >= 0) {
+                blendedTransform = finalTransforms[bone.parentIndex] * blendedTransform;
+            }
+
+            // 본 오프셋 적용
+            blendedTransform = blendedTransform * bone.matOffset;
+
+            // 최종 트랜스폼 저장
+            finalTransforms[i] = blendedTransform;
         }
-
-        // 본 오프셋 적용
-        blendedTransform = blendedTransform * bone.matOffset;
-
-        // 최종 트랜스폼 저장
-        finalTransforms[i] = blendedTransform;
     }
 
     // GPU 데이터 업데이트 (StructuredBuffer에 업로드)
@@ -72,7 +77,7 @@ void Animator::FinalUpdate()
         _boneFinalMatrix->Init(sizeof(Matrix), finalTransforms.size());
     }
     _boneFinalMatrix->Update(finalTransforms.data(), finalTransforms.size() * sizeof(Matrix));
-    */
+    
 }
 
 void Animator::SetAnimClip(const vector<AnimClipInfo>* animClips)
@@ -107,7 +112,6 @@ void Animator::PushData()
 void Animator::Play(uint32 idx)
 {
 	assert(idx < _animClips->size());
-    cout << _animClips->size() << endl;
 	_clipIndex = idx;
 	_updateTime = 0.f;
 }

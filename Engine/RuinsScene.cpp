@@ -318,7 +318,7 @@ RuinsScene::RuinsScene()
 
 		for (int i = 0; i < 20; ++i)
 		{
-			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\CyberCraps\\CyberCraps.fbx");
+			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
 			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
 			// 겹치지 않는 랜덤 위치 생성
@@ -328,7 +328,7 @@ RuinsScene::RuinsScene()
 
 			while (!validPosition && maxAttempts > 0)
 			{
-				randomPos = Vec3(disX(gen), 500.0f, disZ(gen));
+				randomPos = Vec3(disX(gen), 0.0f, disZ(gen));
 				validPosition = true;
 
 				for (const Vec3& pos : positions)
@@ -348,8 +348,7 @@ RuinsScene::RuinsScene()
 			gameObjects[0]->SetCheckFrustum(true);
 			gameObjects[0]->AddComponent(make_shared<CrapScript>());
 			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
-			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(50.f, 50.f, 50.f));
-			gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5f, 0.f, 0.f));
+			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 			activeScene->AddGameObject(gameObjects[0]);
 		}
 	}
