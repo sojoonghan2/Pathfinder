@@ -1,10 +1,10 @@
 #include "pch.h"
 #include "SocketIO.h"
 
-
+// temp
 extern std::queue<std::array<char, BUFFER_SIZE>> packetQueue;
 
-NETWORK_START
+
 void SocketIO::Init()
 {
 	// 윈도우 초기화
@@ -42,12 +42,12 @@ void SocketIO::Start()
 	if (SOCKET_ERROR == ret) {
 		util::DisplayQuitError();
 	}
-  
+
 	std::println("Connected to server successfully.");
 
 	// 스레드 생성
 	recvThread = std::thread{ [this]() { Worker(); } };
-	
+
 	// 로그인 알림
 	DoSend<packet::CSLogin>();
 }
@@ -115,9 +115,9 @@ int SocketIO::DoRecv()
 	return recv_len;
 }
 
-void SocketIO::ProcessPacket()       
+void SocketIO::ProcessPacket()
 {
-	
+
 	packetQueue.push(recvBuffer);
 
 }
@@ -130,4 +130,3 @@ SocketIO::~SocketIO()
 	closesocket(serverSocket);
 	WSACleanup();
 }
-NETWORK_END

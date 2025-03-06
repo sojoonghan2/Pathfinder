@@ -43,6 +43,9 @@
     <Filter Include="Script\ObjectScript">
       <UniqueIdentifier>{eb7d48ae-19f7-451d-811d-a2770d7fbbc6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{95ae09dd-fa82-4c25-bb2c-b0d4ce4c6c49}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -275,6 +278,12 @@
     </ClCompile>
     <ClCompile Include="CrapScript.cpp">
       <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketIO.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\util.cpp">
+      <Filter>Network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -511,6 +520,15 @@
     </ClInclude>
     <ClInclude Include="CrapScript.h">
       <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketIO.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\protocol.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\util.h">
+      <Filter>Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

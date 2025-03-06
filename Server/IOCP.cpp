@@ -220,7 +220,6 @@ void IOCP::Worker()
 			char* p = curr_over_ex->dataBuffer;
 
 			while (remain_data > 0) {
-
 				int packet_size = p[0];
 				if (packet_size <= remain_data) {
 					bool ret = ProcessPacket(static_cast<int>(key), p);

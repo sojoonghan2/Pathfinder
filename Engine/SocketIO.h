@@ -1,6 +1,4 @@
 #pragma once
-
-NETWORK_START
 class SocketIO
 {
 public:
@@ -8,13 +6,13 @@ public:
 	void Start();
 
 	~SocketIO();
-	
+
 	// temp
 public:
 	void Worker();
 	// 반환값으로 받아온 버퍼의 길이를 가져옴
 	int	 DoRecv();
-	
+
 
 	template <class Packet, class ...Args>
 	void DoSend(Args ...args);
@@ -45,4 +43,4 @@ void SocketIO::DoSend(Args ...args)
 		util::DisplayError();
 	}
 }
-NETWORK_END
+

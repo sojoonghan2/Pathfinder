@@ -6,18 +6,37 @@
 // °¢Á¾ include
 #include <windows.h>
 #include <tchar.h>
+
 #include <memory>
 #include <string>
 #include <vector>
 #include <array>
 #include <list>
 #include <map>
+#include <queue>
+
 #include <fstream>
+#include <print>
+
 #include <random>
+
+#include <thread>
+#include <chrono>
 using namespace std;
 
 #include <filesystem>
 namespace fs = std::filesystem;
+
+
+
+#include <WS2tcpip.h>
+#include <MSWSock.h>
+
+#pragma comment(lib, "WS2_32.lib")
+#pragma comment(lib, "MSWSock.lib")
+
+#include "../Common/protocol.h"
+#include "../Common/util.h"
 
 #include "d3dx12.h"
 #include "SimpleMath.h"

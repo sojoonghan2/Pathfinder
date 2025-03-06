@@ -23,6 +23,8 @@ void TestPointLightScript::LateUpdate()
 
 void TestPointLightScript::KeyboardInput()
 {
+	// 여기서 받아서 위치 계산 후 
+
 	Vec3 pos = GetTransform()->GetLocalPosition();
 
 	if (INPUT->GetButton(KEY_TYPE::UP))

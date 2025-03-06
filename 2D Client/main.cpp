@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "SocketIO.h"
+#include "NetworkTimer.h"
 
 constexpr int GRID_CONUT{ 100 };
 constexpr int WINDOW_WIDTH{ 800 };
@@ -21,7 +22,7 @@ constexpr float GRID_HEIGHT_PIXEL
 	{ static_cast<float>(WINDOW_HEIGHT) / static_cast<float>(GRID_CONUT) };
 
 
-using StatusType = char;
+using StatusType = unsigned char;
 
 enum class KeyboardStatus : StatusType
 {
@@ -50,33 +51,6 @@ public:
 	bool getKeyBoardStatus(KeyboardStatus key) const
 	{
 		return keyboardStatus & static_cast<StatusType>(key);
-	}
-};
-
-class Timer {
-private:
-	using Clock = std::chrono::steady_clock;
-	using TimePoint = std::chrono::time_point<Clock>;
-	using MilliSeconds = std::chrono::duration<float, std::milli>; // 밀리초 단위로 변경
-
-	TimePoint lastFrame;
-	float deltaTimeMS; // 밀리초 단위의 델타타임
-
-public:
-	Timer() : lastFrame(Clock::now()), deltaTimeMS(0.0f) {}
-
-	float getDeltaTimeMS() const { return deltaTimeMS; }
-	float getDeltaTimeSeconds() const { return deltaTimeMS / 1000.0f; } // 초 단위 변환
-
-	void updateDeltaTime() {
-		TimePoint currentFrame = Clock::now();
-		deltaTimeMS = std::chrono::duration_cast<MilliSeconds>(currentFrame - lastFrame).count();
-		lastFrame = currentFrame;
-	}
-
-	float PeekDeltaTime() const {
-		TimePoint currentFrame = Clock::now();
-		return std::chrono::duration_cast<MilliSeconds>(currentFrame - lastFrame).count();
 	}
 };
 
@@ -186,13 +160,14 @@ int main() {
 	int my_id{ -1 };
 
 	Controller controller;
-	SocketIO socket_io;
+	network::SocketIO socket_io;
 	socket_io.Init();
 	socket_io.Start();
 
 
-	Timer frame_timer;
-	Timer send_timer;
+	network::Timer frame_timer;
+	network::Timer send_timer;
+
 	while (window.isOpen()) {
 
 		// --
