@@ -27,7 +27,7 @@ CrapScript::CrapScript()
     _pauseDuration = pauseDis(gen); // 처음 정지 상태의 랜덤 시간 설정
 }
 
-void CrapScript::Update()
+void CrapScript::LateUpdate()
 {
     _elapsedTime += DELTA_TIME;
 
