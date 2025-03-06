@@ -27,8 +27,6 @@ using namespace std;
 #include <filesystem>
 namespace fs = std::filesystem;
 
-
-
 #include <WS2tcpip.h>
 #include <MSWSock.h>
 
@@ -224,6 +222,10 @@ public:								\
     std::cout << std::string(GetGameObject()->GetName().begin(), GetGameObject()->GetName().end()) << ": " << "(" << GetTransform()->GetLocalPosition().x << ", " \
               << GetTransform()->GetLocalPosition().y << ", " \
               << GetTransform()->GetLocalPosition().z << ")" << std::endl
+
+#define NETWORK_START	namespace network {
+#define NETWORK_END		}	
+
 
 struct TransformParams
 {

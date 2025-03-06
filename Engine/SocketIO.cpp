@@ -2,8 +2,9 @@
 #include "SocketIO.h"
 
 // temp
-extern std::queue<std::array<char, BUFFER_SIZE>> packetQueue;
+// extern std::queue<std::array<char, BUFFER_SIZE>> packetQueue;
 
+NETWORK_START
 
 void SocketIO::Init()
 {
@@ -130,3 +131,5 @@ SocketIO::~SocketIO()
 	closesocket(serverSocket);
 	WSACleanup();
 }
+
+NETWORK_END

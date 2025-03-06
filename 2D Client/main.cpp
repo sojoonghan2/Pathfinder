@@ -24,7 +24,7 @@ constexpr float GRID_HEIGHT_PIXEL
 
 using StatusType = unsigned char;
 
-enum class KeyboardStatus : StatusType
+enum class KeyStatus : StatusType
 {
 	Down = 0x01,
 	Up = 0x02,
@@ -38,17 +38,17 @@ private:
 	StatusType keyboardStatus{};
 
 public:
-	void applyKeyboardStatus(KeyboardStatus key)
+	void applyKeyboardStatus(KeyStatus key)
 	{
 		keyboardStatus |= static_cast<StatusType>(key);
 	}
 
-	void disapplyKeyboardStatus(KeyboardStatus key)
+	void disapplyKeyboardStatus(KeyStatus key)
 	{
 		keyboardStatus &= ~static_cast<StatusType>(key);
 	}
 
-	bool getKeyBoardStatus(KeyboardStatus key) const
+	bool getKeyBoardStatus(KeyStatus key) const
 	{
 		return keyboardStatus & static_cast<StatusType>(key);
 	}
@@ -90,10 +90,10 @@ public:
 	{
 		// 방향을 얻어냄
 		float dirX{}, dirY{};
-		if (controller.getKeyBoardStatus(KeyboardStatus::Left)) { dirX--; }
-		if (controller.getKeyBoardStatus(KeyboardStatus::Right)) { dirX++; }
-		if (controller.getKeyBoardStatus(KeyboardStatus::Up)) { dirY--; }
-		if (controller.getKeyBoardStatus(KeyboardStatus::Down)) { dirY++; }
+		if (controller.getKeyBoardStatus(KeyStatus::Left)) { dirX--; }
+		if (controller.getKeyBoardStatus(KeyStatus::Right)) { dirX++; }
+		if (controller.getKeyBoardStatus(KeyStatus::Up)) { dirY--; }
+		if (controller.getKeyBoardStatus(KeyStatus::Down)) { dirY++; }
 
 		// 방향 정규화
 		float length = std::sqrt(dirX * dirX + dirY * dirY);
@@ -221,16 +221,16 @@ int main() {
 				switch (event.key.code)
 				{
 				case sf::Keyboard::W:
-					controller.applyKeyboardStatus(KeyboardStatus::Up);
+					controller.applyKeyboardStatus(KeyStatus::Up);
 					break;
 				case sf::Keyboard::S:
-					controller.applyKeyboardStatus(KeyboardStatus::Down);
+					controller.applyKeyboardStatus(KeyStatus::Down);
 					break;
 				case sf::Keyboard::D:
-					controller.applyKeyboardStatus(KeyboardStatus::Right);
+					controller.applyKeyboardStatus(KeyStatus::Right);
 					break;
 				case sf::Keyboard::A:
-					controller.applyKeyboardStatus(KeyboardStatus::Left);
+					controller.applyKeyboardStatus(KeyStatus::Left);
 					break;
 				}
 				break;
@@ -239,16 +239,16 @@ int main() {
 				switch (event.key.code)
 				{
 				case sf::Keyboard::W:
-					controller.disapplyKeyboardStatus(KeyboardStatus::Up);
+					controller.disapplyKeyboardStatus(KeyStatus::Up);
 					break;
 				case sf::Keyboard::S:
-					controller.disapplyKeyboardStatus(KeyboardStatus::Down);
+					controller.disapplyKeyboardStatus(KeyStatus::Down);
 					break;
 				case sf::Keyboard::D:
-					controller.disapplyKeyboardStatus(KeyboardStatus::Right);
+					controller.disapplyKeyboardStatus(KeyStatus::Right);
 					break;
 				case sf::Keyboard::A:
-					controller.disapplyKeyboardStatus(KeyboardStatus::Left);
+					controller.disapplyKeyboardStatus(KeyStatus::Left);
 					break;
 				}
 				break;
