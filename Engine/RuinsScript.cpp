@@ -36,14 +36,12 @@ void RuinsScript::Occupation()
         Vec3 pos = _water->GetTransform()->GetLocalPosition();
         pos.y -= 0.2f;
         _water->GetTransform()->SetLocalPosition(pos);
-        std::cout << "Water yPos: " << pos.y << "\n";
     }
     else
     {
         Vec3 pos = _water->GetTransform()->GetLocalPosition();
         pos.y += 0.1f;
         _water->GetTransform()->SetLocalPosition(pos);
-        std::cout << "Water yPos: " << pos.y << "\n";
     }
 
 }

@@ -12,39 +12,23 @@
 
 void CrapScript::Update()
 {
-
-	bool isMoving = false;
-
-	if (INPUT->GetButton(KEY_TYPE::Z))
+	if (INPUT->GetButtonDown(KEY_TYPE::KEY_1))
 	{
-		SetAnimationState(AnimationState::Walk);
-		isMoving = true;
-		Vec3 pos = GetTransform()->GetLocalPosition();
-		// * 애니메이션 존재할 경우 작동
-		pos += Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
-
-		GetTransform()->SetLocalPosition(pos);
-	} 
-	else if (INPUT->GetButton(KEY_TYPE::C))
-	{
-		cout << "이동중" << endl;
-		SetAnimationState(AnimationState::Walk);
-		isMoving = true;
-		Vec3 pos = GetTransform()->GetLocalPosition();
 		int32 count = GetAnimator()->GetAnimCount();
 		int32 currentIndex = GetAnimator()->GetCurrentClipIndex();
-		anicount = (currentIndex + 1) % count;
-		GetAnimator()->Play(anicount);
-		pos -= Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;   
 
-		GetTransform()->SetLocalPosition(pos);
+		int32 index = (currentIndex + 1) % count;
+		GetAnimator()->Play(index);
 	}
 
-	if (!isMoving) {
-		cout << "이동 없음 → Idle 상태로 변경" << endl;
-		SetAnimationState(AnimationState::Idle);
-	}
+	if (INPUT->GetButtonDown(KEY_TYPE::KEY_2))
+	{
+		int32 count = GetAnimator()->GetAnimCount();
+		int32 currentIndex = GetAnimator()->GetCurrentClipIndex();
 
+		int32 index = (currentIndex - 1 + count) % count;
+		GetAnimator()->Play(index);
+	}
 }
 
 // 여기부터
