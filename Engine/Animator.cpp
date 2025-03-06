@@ -69,7 +69,6 @@ void Animator::FinalUpdate()
 
             // 최종 트랜스폼 저장
             finalTransforms[i] = blendedTransform;
-            std::cout << i << "\n";
         }
     }
 
@@ -113,7 +112,6 @@ void Animator::PushData()
 void Animator::Play(uint32 idx)
 {
 	assert(idx < _animClips->size());
-    cout << _animClips->size() << endl;
 	_clipIndex = idx;
 	_updateTime = 0.f;
 }
