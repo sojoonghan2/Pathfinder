@@ -1,5 +1,13 @@
 #pragma once
 
+
+#include <WS2tcpip.h>
+#include <MSWSock.h>
+
+#pragma comment(lib, "WS2_32.lib")
+#pragma comment(lib, "MSWSock.lib")
+
+
 // std::byte 사용하지 않음
 #define _HAS_STD_BYTE 0
 
@@ -26,13 +34,6 @@ using namespace std;
 
 #include <filesystem>
 namespace fs = std::filesystem;
-
-#include <WS2tcpip.h>
-#include <MSWSock.h>
-
-#pragma comment(lib, "WS2_32.lib")
-#pragma comment(lib, "MSWSock.lib")
-
 #include "../Common/protocol.h"
 #include "../Common/util.h"
 

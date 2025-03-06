@@ -14,14 +14,14 @@ struct OverlappedEx
 	WSAOVERLAPPED	over;					// overlapped IO 구조체
 	SOCKET			clientSocket{ INVALID_SOCKET }; // 클라이언트 소켓
 	WSABUF			wsabuf{};					// 작업 버퍼
-	char			dataBuffer[BUFFER_SIZE]{};		// 데이터 버퍼
+	char			dataBuffer[network::BUFFER_SIZE]{};		// 데이터 버퍼
 	IOOperation		operation{};				// 동작 종류
 
 	// recv 전용 생성자. 
 	OverlappedEx() :
 		operation		{ IOOperation::RECV }
 	{
-		wsabuf.len = BUFFER_SIZE;
+		wsabuf.len = network::BUFFER_SIZE;
 		wsabuf.buf = dataBuffer;
 		ZeroMemory(&over, sizeof(over));
 	}

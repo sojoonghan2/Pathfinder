@@ -1,9 +1,5 @@
 #pragma once
 
-#define NETWORK_START	namespace network {
-#define NETWORK_END		}	
-
-
 struct Vec2f
 {
 	float x{};

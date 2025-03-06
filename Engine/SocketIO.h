@@ -4,14 +4,28 @@ NETWORK_START
 
 class SocketIO
 {
-public:
-	void Init();
-	void Start();
+private:							
+	SocketIO() {}
+
+public:								
+	static SocketIO* GetInstance()
+	{
+		static SocketIO instance;	
+		return &instance;		
+	}
 
 	~SocketIO();
 
-	// temp
 public:
+
+	using BufferType = std::array<char, BUFFER_SIZE>;
+
+
+	void Init();
+	void Update();
+
+	// temp
+private:
 	void Worker();
 	// 반환값으로 받아온 버퍼의 길이를 가져옴
 	int	 DoRecv();
@@ -26,7 +40,9 @@ public:
 private:
 	SOCKET serverSocket{ INVALID_SOCKET };
 	std::thread	recvThread{};
-	std::array<char, BUFFER_SIZE> recvBuffer{};
+	std::queue<BufferType> bufferQueue;
+
+
 };
 
 

@@ -285,9 +285,6 @@
     <ClCompile Include="..\Common\util.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="NetworkManager.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -531,9 +528,6 @@
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\util.h">
-      <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="NetworkManager.h">
       <Filter>Network</Filter>
     </ClInclude>
   </ItemGroup>

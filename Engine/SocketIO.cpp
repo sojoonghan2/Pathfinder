@@ -21,11 +21,6 @@ void SocketIO::Init()
 		util::DisplayQuitError();
 	}
 
-	std::println("SocketIO Init completed.");
-}
-
-void SocketIO::Start()
-{
 	// ADDR 설정
 	SOCKADDR_IN serveraddr;
 	memset(&serveraddr, 0, sizeof(serveraddr));
@@ -33,7 +28,7 @@ void SocketIO::Start()
 	serveraddr.sin_port = htons(PORT_NUMBER);
 
 	// inet_pton 사용하여 IP 주소 변환
-	int ret = inet_pton(AF_INET, SERVER_IP, &serveraddr.sin_addr);
+	ret = inet_pton(AF_INET, SERVER_IP, &serveraddr.sin_addr);
 	if (1 != ret) {
 		util::DisplayQuitError();
 	}
@@ -53,6 +48,12 @@ void SocketIO::Start()
 	DoSend<packet::CSLogin>();
 }
 
+void SocketIO::Update()
+{
+
+}
+
+
 void SocketIO::Worker()
 {
 	while (true) {
@@ -61,21 +62,18 @@ void SocketIO::Worker()
 		if (0 == ret || SOCKET_ERROR == ret) {
 			return;
 		}
-		ProcessPacket();
-
 	}
-	std::println("Bye Worker");
 }
 
-int SocketIO::DoRecv()
+int SocketIO::DoRecv() 
 {
 	// 기존 버퍼 내용 초기화
-	recvBuffer.fill(0);
+	BufferType buffer{};
 
 	// 고정 길이 RECV
 	int recv_len = recv(
 		serverSocket,
-		recvBuffer.data(),
+		buffer.data(),
 		sizeof(packet::Header),
 		MSG_WAITALL);
 
@@ -90,7 +88,7 @@ int SocketIO::DoRecv()
 
 	// 정상적으로 받음
 	else {
-		packet::Header* p_header{ reinterpret_cast<packet::Header*>(recvBuffer.data()) };
+		packet::Header* p_header{ reinterpret_cast<packet::Header*>(buffer.data()) };
 		int remain_size = p_header->size - sizeof(packet::Header);
 
 		if (remain_size > 0) {
@@ -98,7 +96,7 @@ int SocketIO::DoRecv()
 			// 가변 길이 recv
 			recv_len = recv(
 				serverSocket,
-				recvBuffer.data() + sizeof(packet::Header),
+				buffer.data() + sizeof(packet::Header),
 				remain_size,
 				MSG_WAITALL);
 
@@ -113,13 +111,14 @@ int SocketIO::DoRecv()
 		}
 	}
 
+	std::println("recieved.");
+	bufferQueue.emplace(buffer);
 	return recv_len;
 }
 
 void SocketIO::ProcessPacket()
 {
 
-	packetQueue.push(recvBuffer);
 
 }
 

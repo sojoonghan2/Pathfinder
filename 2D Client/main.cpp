@@ -6,7 +6,7 @@ constexpr int GRID_CONUT{ 100 };
 constexpr int WINDOW_WIDTH{ 800 };
 constexpr int WINDOW_HEIGHT{ 800 };
 
-std::queue<std::array<char, BUFFER_SIZE>> packetQueue;
+std::queue<std::array<char, network::BUFFER_SIZE>> packetQueue;
 
 // 플레이어 이동속도, 단위 m/s
 constexpr float PLAYER_SPEED{ 5.f };

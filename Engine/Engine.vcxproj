@@ -214,7 +214,6 @@
     <ClInclude Include="GameModule.h" />
     <ClInclude Include="ModuleScript.h" />
     <ClInclude Include="MonoBehaviour.h" />
-    <ClInclude Include="NetworkManager.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="OccupationScript.h" />
     <ClInclude Include="OverDriveParticleSystem.h" />
@@ -296,7 +295,6 @@
     <ClCompile Include="GameModule.cpp" />
     <ClCompile Include="ModuleScript.cpp" />
     <ClCompile Include="MonoBehaviour.cpp" />
-    <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="OccupationScript.cpp" />
     <ClCompile Include="OverDriveParticleSystem.cpp" />
