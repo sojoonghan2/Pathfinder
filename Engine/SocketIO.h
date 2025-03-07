@@ -51,6 +51,12 @@ private:
 	std::array<Player, 3> players{};
 	int myId{};
 	NetworkTimer sendTimer;
+
+	// temp
+public:
+	std::array<Player, 3> players{};
+	int myId{};
+
 };
 
 

@@ -11,6 +11,10 @@ NETWORK_START
 constexpr float PLAYER_SPEED_MPS{ 5.f };
 constexpr float PLAYER_SPEED_MPMS{ PLAYER_SPEED_MPS / 1000.f };
 
+// 단위 m
+constexpr float MAP_SIZE_M{ 50.f };
+constexpr float PLAYER_SIZE_M{ 0.5f };
+
 void SocketIO::Init()
 {
 	// 윈도우 초기화
@@ -60,15 +64,19 @@ void SocketIO::Update()
 	if (-1 != myId) {
 		if (INPUT->GetButton(KEY_TYPE::UP)) {
 			players[myId].y -= PLAYER_SPEED_MPS * DELTA_TIME;
+			players[myId].y = min(players[myId].y, (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 		}
 		if (INPUT->GetButton(KEY_TYPE::DOWN)) {
 			players[myId].y += PLAYER_SPEED_MPS * DELTA_TIME;
+			players[myId].y = max(players[myId].y, (MAP_SIZE_M * 0.5f - PLAYER_SIZE_M * 0.5f));
 		}
 		if (INPUT->GetButton(KEY_TYPE::LEFT)) {
 			players[myId].x -= PLAYER_SPEED_MPS * DELTA_TIME;
+			players[myId].x = min(players[myId].x, -(MAP_SIZE_M * 0.5f - PLAYER_SIZE_M * 0.5f));
 		}
 		if (INPUT->GetButton(KEY_TYPE::RIGHT)) {
 			players[myId].x += PLAYER_SPEED_MPS * DELTA_TIME;
+			players[myId].x = max(players[myId].x, (MAP_SIZE_M * 0.5f - PLAYER_SIZE_M * 0.5f));
 		}
 
 		if (sendTimer.PeekDeltaTime() > 100.f) {

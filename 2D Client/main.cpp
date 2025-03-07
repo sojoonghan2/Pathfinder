@@ -9,11 +9,12 @@ constexpr int WINDOW_HEIGHT{ 800 };
 std::queue<std::array<char, network::BUFFER_SIZE>> packetQueue;
 
 // 플레이어 이동속도, 단위 m/s
-constexpr float PLAYER_SPEED{ 5.f };
+constexpr float PLAYER_SPEED_MPS{ 5.f };
 
 // 단위 m
-constexpr float MAP_SIZE{ 50.f };
-constexpr float GRID_SIZE{ MAP_SIZE / static_cast<float>(GRID_CONUT) };
+constexpr float MAP_SIZE_M{ 50.f };
+constexpr float PLAYER_SIZE_M{ 0.5f };
+constexpr float GRID_SIZE{ MAP_SIZE_M / static_cast<float>(GRID_CONUT) };
 
 
 constexpr float GRID_WIDTH_PIXEL
@@ -103,11 +104,14 @@ public:
 		}
 
 		// 이동거리 계산
-		float distance = delta * PLAYER_SPEED;
+		float distance = delta * PLAYER_SPEED_MPS;
 	
 		// 최종 위치 계산
 		x += distance * dirX;
+		x = std::max(x, )
 		y += distance * dirY;
+
+
 	}
 
 	void Draw(sf::RenderWindow& window)
@@ -115,8 +119,8 @@ public:
 		if (not show) return;
 
 		// 윈도우 위치 계산
-		float windowX = x / MAP_SIZE * WINDOW_WIDTH + (WINDOW_WIDTH * 0.5f);
-		float windowY = y / MAP_SIZE * WINDOW_HEIGHT + (WINDOW_HEIGHT * 0.5f);
+		float windowX = x / MAP_SIZE_M * WINDOW_WIDTH + (WINDOW_WIDTH * 0.5f);
+		float windowY = y / MAP_SIZE_M * WINDOW_HEIGHT + (WINDOW_HEIGHT * 0.5f);
 
 		// 윈도우 위치에 표시
 		Square.setPosition(windowX, windowY);
