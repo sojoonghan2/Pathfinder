@@ -1,10 +1,15 @@
 #include "pch.h"
 #include "SocketIO.h"
 
-// temp
-// extern std::queue<std::array<char, BUFFER_SIZE>> packetQueue;
+#include "Input.h"
+#include "Timer.h"
+
 
 NETWORK_START
+
+// 플레이어 이동속도, 단위 m/s
+constexpr float PLAYER_SPEED_MPS{ 5.f };
+constexpr float PLAYER_SPEED_MPMS{ PLAYER_SPEED_MPS / 1000.f };
 
 void SocketIO::Init()
 {
@@ -50,7 +55,28 @@ void SocketIO::Init()
 
 void SocketIO::Update()
 {
+	ProcessPacket();
 
+	if (-1 != myId) {
+		if (INPUT->GetButton(KEY_TYPE::UP)) {
+			players[myId].y -= PLAYER_SPEED_MPMS * DELTA_TIME;
+		}
+		if (INPUT->GetButton(KEY_TYPE::DOWN)) {
+			players[myId].y += PLAYER_SPEED_MPMS * DELTA_TIME;
+		}
+		if (INPUT->GetButton(KEY_TYPE::LEFT)) {
+			players[myId].x -= PLAYER_SPEED_MPMS * DELTA_TIME;
+		}
+		if (INPUT->GetButton(KEY_TYPE::RIGHT)) {
+			players[myId].x += PLAYER_SPEED_MPMS * DELTA_TIME;
+		}
+
+	}
+
+	if (sendTimer.PeekDeltaTime() > 100.f) {
+		sendTimer.updateDeltaTime();
+		DoSend<packet::CSMovePlayer>(myId, players[myId].x, players[myId].x);
+	}
 }
 
 
@@ -111,7 +137,6 @@ int SocketIO::DoRecv()
 		}
 	}
 
-	std::println("recieved.");
 	bufferQueue.emplace(buffer);
 	return recv_len;
 }
@@ -119,7 +144,32 @@ int SocketIO::DoRecv()
 void SocketIO::ProcessPacket()
 {
 
+	while (not bufferQueue.empty()) {
 
+		auto& buffer = bufferQueue.front();
+		packet::Header& header = reinterpret_cast<packet::Header&>(buffer);
+		switch (header.type) {
+		case packet::Type::SC_LOGIN:
+		{
+			packet::SCLogin packet = reinterpret_cast<packet::SCLogin&>(buffer);
+			myId = packet.playerId;
+		}
+		break;
+		case packet::Type::SC_MOVE_PLAYER:
+		{
+			packet::SCMovePlayer packet = reinterpret_cast<packet::SCMovePlayer&>(buffer);
+			players[packet.playerId].x = packet.x;
+			players[packet.playerId].y = packet.y;
+		}
+		break;
+		default:
+		{
+			std::println("Packet Error.");
+		}
+		break;
+		}
+		bufferQueue.pop();
+	}
 }
 
 SocketIO::~SocketIO()
