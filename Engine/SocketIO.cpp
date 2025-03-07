@@ -59,23 +59,22 @@ void SocketIO::Update()
 
 	if (-1 != myId) {
 		if (INPUT->GetButton(KEY_TYPE::UP)) {
-			players[myId].y -= PLAYER_SPEED_MPMS * DELTA_TIME;
+			players[myId].y -= PLAYER_SPEED_MPS * DELTA_TIME;
 		}
 		if (INPUT->GetButton(KEY_TYPE::DOWN)) {
-			players[myId].y += PLAYER_SPEED_MPMS * DELTA_TIME;
+			players[myId].y += PLAYER_SPEED_MPS * DELTA_TIME;
 		}
 		if (INPUT->GetButton(KEY_TYPE::LEFT)) {
-			players[myId].x -= PLAYER_SPEED_MPMS * DELTA_TIME;
+			players[myId].x -= PLAYER_SPEED_MPS * DELTA_TIME;
 		}
 		if (INPUT->GetButton(KEY_TYPE::RIGHT)) {
-			players[myId].x += PLAYER_SPEED_MPMS * DELTA_TIME;
+			players[myId].x += PLAYER_SPEED_MPS * DELTA_TIME;
 		}
 
-	}
-
-	if (sendTimer.PeekDeltaTime() > 100.f) {
-		sendTimer.updateDeltaTime();
-		DoSend<packet::CSMovePlayer>(myId, players[myId].x, players[myId].x);
+		if (sendTimer.PeekDeltaTime() > 100.f) {
+			sendTimer.updateDeltaTime();
+			DoSend<packet::CSMovePlayer>(myId, players[myId].x, players[myId].y);
+		}
 	}
 }
 
@@ -152,6 +151,7 @@ void SocketIO::ProcessPacket()
 		case packet::Type::SC_LOGIN:
 		{
 			packet::SCLogin packet = reinterpret_cast<packet::SCLogin&>(buffer);
+			std::println("SC_LOGIN, id : {}", packet.playerId);
 			myId = packet.playerId;
 		}
 		break;

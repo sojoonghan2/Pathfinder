@@ -49,7 +49,7 @@ private:
 	std::thread	recvThread{};
 	std::queue<BufferType> bufferQueue;
 	std::array<Player, 3> players{};
-	int myId;
+	int myId{};
 	NetworkTimer sendTimer;
 };
 
