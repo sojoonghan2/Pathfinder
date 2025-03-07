@@ -285,6 +285,9 @@
     <ClCompile Include="..\Common\util.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="NetworkTimer.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -528,6 +531,9 @@
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\util.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkTimer.h">
       <Filter>Network</Filter>
     </ClInclude>
   </ItemGroup>

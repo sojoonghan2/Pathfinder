@@ -2,7 +2,7 @@
 
 NETWORK_START
 
-class Timer
+class NetworkTimer
 {
 private:
 	using Clock = std::chrono::high_resolution_clock;
@@ -13,7 +13,7 @@ private:
 	float deltaTimeMS; // 밀리초 단위의 델타타임
 
 public:
-	Timer() : lastFrame(Clock::now()), deltaTimeMS(0.0f) {}
+	NetworkTimer() : lastFrame(Clock::now()), deltaTimeMS(0.0f) {}
 
 	float getDeltaTimeMS() const { return deltaTimeMS; }
 	float getDeltaTimeSeconds() const { return deltaTimeMS / 1000.0f; } // 초 단위 변환

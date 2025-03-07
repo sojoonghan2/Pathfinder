@@ -165,8 +165,8 @@ int main() {
 	socket_io.Start();
 
 
-	network::Timer frame_timer;
-	network::Timer send_timer;
+	network::NetworkTimer frame_timer;
+	network::NetworkTimer send_timer;
 
 	while (window.isOpen()) {
 
