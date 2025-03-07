@@ -81,8 +81,8 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// 구 오브젝트과 포인트 조명
-#pragma region Object & Point Light
+// 구 오브젝트
+#pragma region Object
 	{
 		// 1. 기본 오브젝트 생성 및 설정
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
@@ -119,29 +119,6 @@ RuinsScene::RuinsScene()
 
 		// 5. Scene에 추가
 		activeScene->AddGameObject(obj);
-
-		// 1. light 오브젝트 생성 
-		shared_ptr<GameObject> light = make_shared<GameObject>();
-		light->SetName(L"Point_Light");
-		light->AddComponent(make_shared<Transform>());
-		light->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
-
-		// 2-1. light 컴포넌트 추가 및 속성 설정
-		light->AddComponent(make_shared<Light>());
-		light->GetLight()->SetLightType(LIGHT_TYPE::POINT_LIGHT);
-		light->AddComponent(make_shared<TestPointLightScript>());
-
-		// 2-2. 점광원 특수 설정
-		light->GetLight()->SetLightRange(1000.f);
-
-		// 3. 조명 색상 및 강도 설정
-		light->GetLight()->SetDiffuse(Vec3(2.0f, 2.0f, 2.0f));
-		light->GetLight()->SetAmbient(Vec3(1.2f, 1.2f, 1.2f));
-		light->GetLight()->SetSpecular(Vec3(2.5f, 2.5f, 2.5f));
-
-
-		// 4. Scene에 추가
-		activeScene->AddGameObject(light);
 	}
 #pragma endregion
 
@@ -210,38 +187,24 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// *********************************************
-// UI 테스트
-// 0. 월드 공간 위치 정보
-// 1. 노말 벡터 정보
-// 2. 색상 정보
-// 3. 분산광 결과
-// 4. 반사광 결과
-// 5. 그림자
-// *********************************************
-#pragma region UI_Test
-	for (int32 i = 0; i < 6; i++)
+// 점령 중 UI
+#pragma region UI
 	{
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
 		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 		obj->AddComponent(make_shared<Transform>());
-		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(-350.f + (i * 120), 250.f, 500.f));
+		obj->SetName(L"OccupationUI");
+		obj->GetTransform()->SetLocalScale(Vec3(1500.f, 1000.f, 100.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(0.f, 250.f, 500.f));
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
 			meshRenderer->SetMesh(mesh);
 		}
 		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
 
-			shared_ptr<Texture> texture;
-			if (i < 3)
-				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->GetRTTexture(i);
-			else if (i < 5)
-				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->GetRTTexture(i - 3);
-			else
-				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->GetRTTexture(0);
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"OccupationUI", L"..\\Resources\\Texture\\OccupationUI.png");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
@@ -318,7 +281,7 @@ RuinsScene::RuinsScene()
 
 		for (int i = 0; i < 20; ++i)
 		{
-			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\CyberCraps\\CyberCraps.fbx");
+			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
 			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
 			// 겹치지 않는 랜덤 위치 생성
@@ -328,7 +291,7 @@ RuinsScene::RuinsScene()
 
 			while (!validPosition && maxAttempts > 0)
 			{
-				randomPos = Vec3(disX(gen), 500.0f, disZ(gen));
+				randomPos = Vec3(disX(gen), 0.0f, disZ(gen));
 				validPosition = true;
 
 				for (const Vec3& pos : positions)
@@ -348,8 +311,7 @@ RuinsScene::RuinsScene()
 			gameObjects[0]->SetCheckFrustum(true);
 			gameObjects[0]->AddComponent(make_shared<CrapScript>());
 			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
-			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(50.f, 50.f, 50.f));
-			gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5f, 0.f, 0.f));
+			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 			activeScene->AddGameObject(gameObjects[0]);
 		}
 	}

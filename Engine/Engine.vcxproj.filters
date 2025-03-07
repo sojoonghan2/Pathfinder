@@ -600,5 +600,8 @@
     <FxCompile Include="..\Resources\Shader\Occupation.fx">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="..\Resources\Shader\UI.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

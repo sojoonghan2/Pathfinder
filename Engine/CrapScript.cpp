@@ -7,66 +7,96 @@
 #include "Resources.h"
 #include "SceneManager.h"
 #include "Scene.h"
+#include "GameObject.h"
+#include "Transform.h"
 
-// 이동하는 거
+CrapScript::CrapScript()
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> angleDis(0.0f, 360.0f);
+    std::uniform_real_distribution<float> pauseDis(1.0f, 5.0f); // 정지 시간 범위: 1초 ~ 5초
+
+    float angle = angleDis(gen) * (3.141592f / 180.0f);
+    _direction.x = cos(angle);
+    _direction.z = sin(angle);
+    _direction.y = 0.0f;
+
+    _isMoving = false;
+    _elapsedTime = 0.0f;
+    _pauseDuration = pauseDis(gen); // 처음 정지 상태의 랜덤 시간 설정
+}
 
 void CrapScript::Update()
 {
+    _elapsedTime += DELTA_TIME;
 
-	bool isMoving = false;
+    // 이동 상태일 때는 일정 시간 후 정지
+    if (_isMoving && _elapsedTime >= 3.0f) // 이동 시간 고정 3초
+    {
+        _isMoving = false;
+        _elapsedTime = 0.0f;
 
-	if (INPUT->GetButton(KEY_TYPE::Z))
-	{
-		SetAnimationState(AnimationState::Walk);
-		isMoving = true;
-		Vec3 pos = GetTransform()->GetLocalPosition();
-		// * 애니메이션 존재할 경우 작동
-		pos += Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
+        // 정지 상태 지속 시간 랜덤 설정 (1~5초)
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<float> pauseDis(1.0f, 5.0f);
+        _pauseDuration = pauseDis(gen);
 
-		GetTransform()->SetLocalPosition(pos);
-	} 
-	else if (INPUT->GetButton(KEY_TYPE::C))
-	{
-		cout << "이동중" << endl;
-		SetAnimationState(AnimationState::Walk);
-		isMoving = true;
-		Vec3 pos = GetTransform()->GetLocalPosition();
-		int32 count = GetAnimator()->GetAnimCount();
-		int32 currentIndex = GetAnimator()->GetCurrentClipIndex();
-		anicount = (currentIndex + 1) % count;
-		GetAnimator()->Play(anicount);
-		pos -= Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;   
+        // 애니메이션을 IDLE로 변경
+        int32 count = GetAnimator()->GetAnimCount();
+        int32 currentIndex = GetAnimator()->GetCurrentClipIndex();
+        int32 index = (currentIndex + 1) % count;
+        GetAnimator()->Play(index);
+    }
 
-		GetTransform()->SetLocalPosition(pos);
-	}
+    // 정지 상태일 때는 랜덤한 시간 후 이동
+    if (!_isMoving && _elapsedTime >= _pauseDuration)
+    {
+        _isMoving = true;
+        _elapsedTime = 0.0f;
 
-	if (!isMoving) {
-		cout << "이동 없음 → Idle 상태로 변경" << endl;
-		SetAnimationState(AnimationState::Idle);
-	}
+        // 애니메이션을 WALK로 변경
+        int32 count = GetAnimator()->GetAnimCount();
+        int32 currentIndex = GetAnimator()->GetCurrentClipIndex();
+        int32 index = (currentIndex + 1) % count;
+        GetAnimator()->Play(index);
+    }
 
+    if (_isMoving)
+    {
+        MoveRandomly();
+        CheckBoundary();
+    }
 }
 
-// 여기부터
-void CrapScript::SetAnimationState(AnimationState state)
+void CrapScript::MoveRandomly()
 {
-	if (_currentState == state) {
-		return;
-	}
+    Vec3 pos = GetTransform()->GetLocalPosition();
+    pos += _direction * _speed * DELTA_TIME;
+    GetTransform()->SetLocalPosition(pos);
+}
 
-	_currentState = state;
-	shared_ptr<Animator> animator = GetAnimator();
+void CrapScript::CheckBoundary()
+{
+    Vec3 pos = GetTransform()->GetLocalPosition();
 
-	// FBX파일에 애니메이션이 여러개 저장되어 있는 경우 번호에 따라 다르게 표시된다
-	if (state == AnimationState::Idle)
-	{
-		cout << "애니메이션 변경" << endl;
-		animator->Play(0);
-	}
-	else if (state == AnimationState::Walk)
-	{
-		cout << "애니메이션 변경" << endl;
-		animator->Play(1);
-	}
+    float mapMinX = -4900.f;
+    float mapMaxX = 4900.f;
+    float mapMinZ = -4900.f;
+    float mapMaxZ = 4900.f;
 
+    if (pos.x <= mapMinX || pos.x >= mapMaxX)
+    {
+        _direction.x *= -1;
+        pos.x = max(mapMinX, min(pos.x, mapMaxX));
+    }
+
+    if (pos.z <= mapMinZ || pos.z >= mapMaxZ)
+    {
+        _direction.z *= -1;
+        pos.z = max(mapMinZ, min(pos.z, mapMaxZ));
+    }
+
+    GetTransform()->SetLocalPosition(pos);
 }

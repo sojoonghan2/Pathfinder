@@ -4,6 +4,7 @@
 #include "Engine.h"
 #include "SceneManager.h"
 #include "GameObject.h"
+#include "Timer.h"
 
 RuinsScript::RuinsScript() {}
 
@@ -22,11 +23,11 @@ void RuinsScript::LateUpdate() {
 
     Occupation();
 }
-
 void RuinsScript::Occupation()
 {
-    if(GET_SINGLE(SceneManager)->FindObjectByName(L"Water")) _water = GET_SINGLE(SceneManager)->FindObjectByName(L"Water");
-    if(GET_SINGLE(SceneManager)->FindObjectByName(L"OBJ")) _player = GET_SINGLE(SceneManager)->FindObjectByName(L"OBJ");
+    if (GET_SINGLE(SceneManager)->FindObjectByName(L"Water")) _water = GET_SINGLE(SceneManager)->FindObjectByName(L"Water");
+    if (GET_SINGLE(SceneManager)->FindObjectByName(L"OBJ")) _player = GET_SINGLE(SceneManager)->FindObjectByName(L"OBJ");
+    if (GET_SINGLE(SceneManager)->FindObjectByName(L"OccupationUI")) _occupationUI = GET_SINGLE(SceneManager)->FindObjectByName(L"OccupationUI");
 
     auto playerPos = _player->GetTransform()->GetLocalPosition();
 
@@ -36,14 +37,29 @@ void RuinsScript::Occupation()
         Vec3 pos = _water->GetTransform()->GetLocalPosition();
         pos.y -= 0.2f;
         _water->GetTransform()->SetLocalPosition(pos);
-        std::cout << "Water yPos: " << pos.y << "\n";
+        BlinkUI();
     }
     else
     {
         Vec3 pos = _water->GetTransform()->GetLocalPosition();
         pos.y += 0.1f;
         _water->GetTransform()->SetLocalPosition(pos);
-        std::cout << "Water yPos: " << pos.y << "\n";
+        _occupationUI->SetRenderOff();
+    }
+}
+
+void RuinsScript::BlinkUI()
+{
+    _elapsedTime += DELTA_TIME;
+
+    if (_elapsedTime >= _blinkTime) // _blinkTime(1초)마다 상태 변경
+    {
+        _isVisible = !_isVisible; // 상태 반전
+        _elapsedTime = 0.0f; // 타이머 초기화
     }
 
+    if (_isVisible)
+        _occupationUI->SetRenderOn();
+    else
+        _occupationUI->SetRenderOff();
 }
