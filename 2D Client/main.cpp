@@ -78,7 +78,7 @@ public:
 	{}
 
 	Player() :
-		Player{ 25.f, 25.f, sf::Color::Red }
+		Player{ 0.f, 0.f, sf::Color::Red }
 	{}
 
 	void SetFillColor(const sf::Color color)
@@ -115,8 +115,8 @@ public:
 		if (not show) return;
 
 		// 윈도우 위치 계산
-		float windowX = x / MAP_SIZE * WINDOW_WIDTH;
-		float windowY = y / MAP_SIZE * WINDOW_HEIGHT;
+		float windowX = x / MAP_SIZE * WINDOW_WIDTH + (WINDOW_WIDTH * 0.5f);
+		float windowY = y / MAP_SIZE * WINDOW_HEIGHT + (WINDOW_HEIGHT * 0.5f);
 
 		// 윈도우 위치에 표시
 		Square.setPosition(windowX, windowY);

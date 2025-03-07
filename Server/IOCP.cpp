@@ -6,7 +6,7 @@
 
 std::random_device rd;
 std::default_random_engine dre{ rd() };
-std::uniform_real_distribution<float> urd{ 0.f, 49.f };
+std::uniform_real_distribution<float> urd{ -24.f, 24.f };
 
 
 class Timer {
