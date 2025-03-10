@@ -220,9 +220,9 @@ FactoryScene::FactoryScene()
 		gameObjects[0]->SetName(L"Generator");
 		gameObjects[0]->SetCheckFrustum(true);
 		gameObjects[0]->AddComponent(make_shared<TestDragon>());
-		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, 2000.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(1.3f, 0.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(1000.f, 1000.f, 1000.f));
+		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, 1000.0f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.7f, 0.0f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(1.f, 1.f, 1.f));
 		activeScene->AddGameObject(gameObjects[0]);
 	}
 #pragma endregion
