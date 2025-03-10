@@ -28,6 +28,7 @@ public:
 
 	void Init();
 	void Update();
+	int GetNextId();
 
 	// temp
 private:
@@ -47,11 +48,12 @@ private:
 	std::thread	recvThread{};
 	std::queue<BufferType> bufferQueue;
 	NetworkTimer sendTimer;
+	int nextId{ 0 };
 
 	// temp
 public:
 	std::array<Player, 3> players{};
-	int myId{};
+	int myId{-1};
 
 };
 

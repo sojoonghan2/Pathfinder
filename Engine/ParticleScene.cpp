@@ -33,6 +33,7 @@
 #include "MasterScript.h"
 #include "TestGrenadeScript.h"
 #include "RuinsScript.h"
+#include "TestOtherPlayerScript.h"
 
 #include "SphereCollider.h"
 #include "RectangleCollider.h"
@@ -190,24 +191,28 @@ ParticleScene::ParticleScene()
 
     // 구 오브젝트과 포인트 조명
 #pragma region Object & Point Light
+
+    shared_ptr<GameObject> obj = make_shared<GameObject>();
+    obj->SetName(L"OBJ");
+    // 프러스텀 컬링 여부
+    obj->SetCheckFrustum(true);
+    // 정적, 동적 여부
+    obj->SetStatic(false);
+
+    // 2. Transform 컴포넌트 추가 및 설정
+    obj->AddComponent(make_shared<Transform>());
+    obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+    obj->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+    obj->AddComponent(make_shared<TestPointLightScript>());
+    // 3. Collider 설정
+    obj->AddComponent(make_shared<SphereCollider>());
+    dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetRadius(0.5f);
+    dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+
+
     {
 
-        shared_ptr<GameObject> obj = make_shared<GameObject>();
-        obj->SetName(L"OBJ");
-        // 프러스텀 컬링 여부
-        obj->SetCheckFrustum(true);
-        // 정적, 동적 여부
-        obj->SetStatic(false);
 
-        // 2. Transform 컴포넌트 추가 및 설정
-        obj->AddComponent(make_shared<Transform>());
-        obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-        obj->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
-        obj->AddComponent(make_shared<TestPointLightScript>());
-        // 3. Collider 설정
-        obj->AddComponent(make_shared<SphereCollider>());
-        dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetRadius(0.5f);
-        dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 
         // 4. MeshRenderer 설정
         shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -251,139 +256,48 @@ ParticleScene::ParticleScene()
 #pragma endregion
 
 
+#pragma region OtherPlayer
+
+
     {
+        std::array<shared_ptr<GameObject>, 2> obj{};
+        for (int i = 0; i < 2; ++i) {
+            obj[i] = make_shared<GameObject>();
+            obj[i]->SetName(L"OtherPlayer" + std::to_wstring(i + 1));
+            // 프러스텀 컬링 여부
+            obj[i]->SetCheckFrustum(true);
+            // 정적, 동적 여부
+            obj[i]->SetStatic(false);
 
-    shared_ptr<GameObject> op2 = make_shared<GameObject>();
-    op2->SetName(L"OBJ");
-    // 프러스텀 컬링 여부
-    op2->SetCheckFrustum(true);
-    // 정적, 동적 여부
-    op2->SetStatic(false);
+            // 2. Transform 컴포넌트 추가 및 설정
+            obj[i]->AddComponent(make_shared<Transform>());
+            obj[i]->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+            obj[i]->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+            obj[i]->AddComponent(make_shared<TestOtherPlayerScript>());
 
-    // 2. Transform 컴포넌트 추가 및 설정
-    op2->AddComponent(make_shared<Transform>());
-    op2->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-    op2->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
-    op2->AddComponent(make_shared<TestPointLightScript>());
-    // 3. Collider 설정
-    op2->AddComponent(make_shared<SphereCollider>());
-    dynamic_pointer_cast<SphereCollider>(op2->GetCollider())->SetRadius(0.5f);
-    dynamic_pointer_cast<SphereCollider>(op2->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+            // 3. Collider 설정
+            obj[i]->AddComponent(make_shared<SphereCollider>());
+            dynamic_pointer_cast<SphereCollider>(obj[i]->GetCollider())->SetRadius(0.5f);
+            dynamic_pointer_cast<SphereCollider>(obj[i]->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 
-    // 4. MeshRenderer 설정
-    shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-    {
-        shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
-        meshRenderer->SetMesh(sphereMesh);
-    }
-    {
-        // GameObject 이름을 가진 머터리얼을 찾아 클론 후 메쉬 렌더러에 Set
-        // Resources.cpp로 가면 셰이더와 머터리얼의 생성을 확이해볼 수 있음
-        shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"GameObject");
-        meshRenderer->SetMaterial(material->Clone());
-    }
-    op2->AddComponent(meshRenderer);
+            // 4. MeshRenderer 설정
+            shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+            {
+                shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+                meshRenderer->SetMesh(sphereMesh);
+            }
+            {
+                // GameObject 이름을 가진 머터리얼을 찾아 클론 후 메쉬 렌더러에 Set
+                // Resources.cpp로 가면 셰이더와 머터리얼의 생성을 확이해볼 수 있음
+                shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"GameObject");
+                meshRenderer->SetMaterial(material->Clone());
+            }
+            obj[i]->AddComponent(meshRenderer);
 
-    // 5. Scene에 추가
-    activeScene->AddGameObject(op2);
-    }
-
-
-    if (PARTICLEDEBUG) LoadDebugParticle();
-    else
-    {
-        LoadMyParticle();
-        LoadDebugParticle();
-    }
-
-// 수류탄
-#pragma region GRENADE
-    {
-        // 1. 기본 오브젝트 생성 및 설정
-        shared_ptr<GameObject> grenade = make_shared<GameObject>();
-        grenade->SetName(L"Grenade");
-        // 프러스텀 컬링 여부
-        grenade->SetCheckFrustum(true);
-        // 정적, 동적 여부
-        grenade->SetStatic(false);
-
-        // 2. Transform 컴포넌트 추가 및 설정
-        grenade->AddComponent(make_shared<Transform>());
-        grenade->GetTransform()->SetLocalScale(Vec3(30.f, 30.f, 30.f));
-        grenade->GetTransform()->SetParent(obj->GetTransform());
-        grenade->GetTransform()->GetTransform()->RemoveParent();
-        // Transform 상속 시 scale도 상속받기 때문에 잠시 부모를 끊고 보이지 않는 위치로 보내버림
-        grenade->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
-        grenade->AddComponent(make_shared<TestGrenadeScript>());
-
-        // 3. Collider 설정
-        grenade->AddComponent(make_shared<SphereCollider>());
-        dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetRadius(0.5f);
-        dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
-
-        // 4. MeshRenderer 설정
-        shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-        {
-            shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
-            meshRenderer->SetMesh(sphereMesh);
+            // 5. Scene에 추가
+            activeScene->AddGameObject(obj[i]);
         }
-        {
-            shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
-            shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Grenade", L"..\\Resources\\Texture\\Grenade.jpg");
-
-            shared_ptr<Material> material = make_shared<Material>();
-            material->SetShader(shader);
-            material->SetTexture(0, texture);
-            meshRenderer->SetMaterial(material);
-        }
-        grenade->AddComponent(meshRenderer);
-
-        // 파티클 시스템 컴포넌트 추가
-        shared_ptr<FireParticleSystem> grenadeParticleSystem = make_shared<FireParticleSystem>();
-        grenadeParticleSystem->SetParticleScale(100.f, 80.f);
-        grenade->AddComponent(grenadeParticleSystem);
-
-        // 5. Scene에 추가
-        activeScene->AddGameObject(grenade);
     }
-#pragma endregion
-
-// 모듈
-#pragma region Module
-    for (int i{}; i < 3; ++i)
-    {
-        shared_ptr<GameModule> obj = make_shared<GameModule>();
-        obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
-        obj->AddComponent(make_shared<Transform>());
-        obj->AddComponent(make_shared<ModuleScript>());
-        obj->GetTransform()->SetLocalScale(Vec3(300.f, 500.f, 100.f));
-        obj->GetTransform()->SetLocalPosition(Vec3(-400.f + (i * 400), -800.f, 1.f));
-        shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-        {
-            shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-            meshRenderer->SetMesh(mesh);
-        }
-        {
-            shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
-
-            shared_ptr<Texture> texture;
-            texture = obj->GetTexture();
-
-            shared_ptr<Material> material = make_shared<Material>();
-            material->SetShader(shader);
-            material->SetTexture(0, texture);
-            meshRenderer->SetMaterial(material);
-        }
-        obj->AddComponent(meshRenderer);
-        activeScene->AddGameObject(obj);
-    }
-#pragma endregion
-}
-
-ParticleScene::~ParticleScene() {}
-
-void ParticleScene::LoadMyParticle()
-{
 #pragma endregion
 
 // 얼음 파티클

@@ -7,6 +7,7 @@
 #include "Timer.h"
 #include "SceneManager.h"
 #include "MessageManager.h"
+#include "SocketIO.h"
 
 TestPointLightScript::TestPointLightScript()
 {
@@ -19,13 +20,18 @@ TestPointLightScript::~TestPointLightScript()
 void TestPointLightScript::LateUpdate()
 {
 #ifdef NETWORK_ENABLE
-	auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(ObjectId::PLAYER);
-	while (not queue.empty()) {
-		auto& message = queue.front();
-		SetPosition(message.first, message.second);
 
-		queue.pop();
+	// temp
+	int id = GET_SINGLE(SocketIO)->myId;
+	if (-1 != id) {
+		auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(id);
+		while (not queue.empty()) {
+			auto& message = queue.front();
+			SetPosition(message.first, message.second);
+			queue.pop();
+		}
 	}
+
 #endif // NETWORK_ENABLE
 
 	KeyboardInput();

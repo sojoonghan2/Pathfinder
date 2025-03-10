@@ -1,12 +1,5 @@
 #pragma once
 
-enum class ObjectId
-{
-	NONE,
-	PLAYER
-};
-
-
 class MessageManager
 {
 	DECLARE_SINGLE(MessageManager)
@@ -16,10 +9,10 @@ public:
 	using QueueType = std::queue<std::pair<float, float>>;
 
 	// temp
-	void InsertMessage(ObjectId id, float x, float y);
-	QueueType& GetMessageQueue(ObjectId id);
+	void InsertMessage(int id, float x, float y);
+	QueueType& GetMessageQueue(int id);
 
 private:
-	std::unordered_map<ObjectId, QueueType> messageMap;
+	std::unordered_map<int, QueueType> messageMap;
 };
 

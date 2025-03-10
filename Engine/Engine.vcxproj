@@ -243,6 +243,7 @@
     <ClInclude Include="TestDragon.h" />
     <ClInclude Include="TestGrenadeScript.h" />
     <ClInclude Include="TestHuman.h" />
+    <ClInclude Include="TestOtherPlayerScript.h" />
     <ClInclude Include="TestParticleScript.h" />
     <ClInclude Include="TestPBRParticleSystem.h" />
     <ClInclude Include="TestPointLightScript.h" />
@@ -331,6 +332,7 @@
     <ClCompile Include="TestDragon.cpp" />
     <ClCompile Include="TestGrenadeScript.cpp" />
     <ClCompile Include="TestHuman.cpp" />
+    <ClCompile Include="TestOtherPlayerScript.cpp" />
     <ClCompile Include="TestParticleScript.cpp" />
     <ClCompile Include="TestPBRParticleSystem.cpp" />
     <ClCompile Include="TestPointLightScript.cpp" />

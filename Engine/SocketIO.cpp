@@ -166,9 +166,8 @@ void SocketIO::ProcessPacket()
 		case packet::Type::SC_MOVE_PLAYER:
 		{
 			packet::SCMovePlayer packet = reinterpret_cast<packet::SCMovePlayer&>(buffer);
-			if (myId == packet.playerId) {
-				GET_SINGLE(MessageManager)->InsertMessage(ObjectId::PLAYER, packet.x, packet.y);
-			}
+
+			GET_SINGLE(MessageManager)->InsertMessage(packet.playerId, packet.x, packet.y);
 			players[packet.playerId].x = packet.x;
 			players[packet.playerId].y = packet.y;
 		}
@@ -181,6 +180,13 @@ void SocketIO::ProcessPacket()
 		}
 		bufferQueue.pop();
 	}
+}
+
+int SocketIO::GetNextId()
+{
+	if (-1 == myId) { return -1; }
+	if (nextId == myId) { ++nextId; }
+	return nextId++;
 }
 
 SocketIO::~SocketIO()
