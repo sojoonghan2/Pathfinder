@@ -3,9 +3,9 @@
 
 #include "Input.h"
 #include "Timer.h"
+#include "MessageManager.h"
 
 
-NETWORK_START
 
 // 플레이어 이동속도, 단위 m/s
 constexpr float PLAYER_SPEED_MPS{ 5.f };
@@ -68,15 +68,15 @@ void SocketIO::Update()
 		}
 		if (INPUT->GetButton(KEY_TYPE::DOWN)) {
 			players[myId].y += PLAYER_SPEED_MPS * DELTA_TIME;
-			players[myId].y = max(players[myId].y, (MAP_SIZE_M * 0.5f - PLAYER_SIZE_M * 0.5f));
+			players[myId].y = max(players[myId].y, -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 		}
 		if (INPUT->GetButton(KEY_TYPE::LEFT)) {
 			players[myId].x -= PLAYER_SPEED_MPS * DELTA_TIME;
-			players[myId].x = min(players[myId].x, -(MAP_SIZE_M * 0.5f - PLAYER_SIZE_M * 0.5f));
+			players[myId].x = min(players[myId].x, (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 		}
 		if (INPUT->GetButton(KEY_TYPE::RIGHT)) {
 			players[myId].x += PLAYER_SPEED_MPS * DELTA_TIME;
-			players[myId].x = max(players[myId].x, (MAP_SIZE_M * 0.5f - PLAYER_SIZE_M * 0.5f));
+			players[myId].x = max(players[myId].x, -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 		}
 
 		if (sendTimer.PeekDeltaTime() > 100.f) {
@@ -166,6 +166,9 @@ void SocketIO::ProcessPacket()
 		case packet::Type::SC_MOVE_PLAYER:
 		{
 			packet::SCMovePlayer packet = reinterpret_cast<packet::SCMovePlayer&>(buffer);
+			if (myId == packet.playerId) {
+				GET_SINGLE(MessageManager)->InsertMessage(ObjectId::PLAYER, packet.x, packet.y);
+			}
 			players[packet.playerId].x = packet.x;
 			players[packet.playerId].y = packet.y;
 		}
@@ -188,5 +191,3 @@ SocketIO::~SocketIO()
 	closesocket(serverSocket);
 	WSACleanup();
 }
-
-NETWORK_END

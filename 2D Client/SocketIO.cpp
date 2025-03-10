@@ -1,9 +1,8 @@
 #include "pch.h"
 #include "SocketIO.h"
 
-extern std::queue<std::array<char, network::BUFFER_SIZE>> packetQueue;
+extern std::queue<std::array<char, BUFFER_SIZE>> packetQueue;
 
-NETWORK_START
 void SocketIO::Init()
 {
 	// 윈도우 초기화
@@ -129,4 +128,3 @@ SocketIO::~SocketIO()
 	closesocket(serverSocket);
 	WSACleanup();
 }
-NETWORK_END

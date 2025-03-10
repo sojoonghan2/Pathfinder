@@ -1,8 +1,6 @@
 #pragma once
 #include "NetworkTimer.h"
 
-NETWORK_START
-
 struct Player
 {
 	float x{};
@@ -48,8 +46,6 @@ private:
 	SOCKET serverSocket{ INVALID_SOCKET };
 	std::thread	recvThread{};
 	std::queue<BufferType> bufferQueue;
-	std::array<Player, 3> players{};
-	int myId{};
 	NetworkTimer sendTimer;
 
 	// temp
@@ -76,5 +72,3 @@ void SocketIO::DoSend(Args ...args)
 		util::DisplayError();
 	}
 }
-
-NETWORK_END

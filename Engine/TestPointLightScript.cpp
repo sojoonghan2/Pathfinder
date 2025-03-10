@@ -6,6 +6,7 @@
 #include "Input.h"
 #include "Timer.h"
 #include "SceneManager.h"
+#include "MessageManager.h"
 
 TestPointLightScript::TestPointLightScript()
 {
@@ -17,6 +18,14 @@ TestPointLightScript::~TestPointLightScript()
 
 void TestPointLightScript::LateUpdate()
 {
+	auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(ObjectId::PLAYER);
+	while (not queue.empty()) {
+		auto& message = queue.front();
+		SetPosition(message.first, message.second);
+
+		queue.pop();
+	}
+
 	KeyboardInput();
 	MouseInput();
 }
@@ -48,10 +57,10 @@ void TestPointLightScript::KeyboardInput()
 	if (INPUT->GetButtonDown(KEY_TYPE::T)) PRINTPOSITION;
 
 	// ¸Ê Å©±â Á¦ÇÑ
-	float mapMinX = -4900.f;
-	float mapMaxX = 4900.f;
-	float mapMinZ = -4900.f;
-	float mapMaxZ = 4900.f;
+	float mapMinX = -4950.f;
+	float mapMaxX = 4950.f;
+	float mapMinZ = -4950.f;
+	float mapMaxZ = 4950.f;
 	float minY = 500.f;
 	float maxY = 9500.f;
 
@@ -66,4 +75,13 @@ void TestPointLightScript::KeyboardInput()
 void TestPointLightScript::MouseInput()
 {
 	
+}
+
+void TestPointLightScript::SetPosition(float x, float z)
+{
+	Vec3 pos = GetTransform()->GetLocalPosition();
+	pos.x = x * 100.f;
+	pos.z = z * 100.f;
+
+	GetTransform()->SetLocalPosition(pos);
 }

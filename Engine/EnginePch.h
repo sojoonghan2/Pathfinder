@@ -224,9 +224,6 @@ public:								\
               << GetTransform()->GetLocalPosition().y << ", " \
               << GetTransform()->GetLocalPosition().z << ")" << std::endl
 
-#define NETWORK_START	namespace network {
-#define NETWORK_END		}	
-
 
 struct TransformParams
 {

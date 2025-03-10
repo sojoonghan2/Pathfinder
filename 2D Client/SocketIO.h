@@ -1,6 +1,5 @@
 #pragma once
 
-NETWORK_START
 class SocketIO
 {
 public:
@@ -45,4 +44,3 @@ void SocketIO::DoSend(Args ...args)
 		util::DisplayError();
 	}
 }
-NETWORK_END

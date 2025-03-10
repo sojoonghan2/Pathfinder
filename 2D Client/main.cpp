@@ -6,7 +6,7 @@ constexpr int GRID_CONUT{ 100 };
 constexpr int WINDOW_WIDTH{ 800 };
 constexpr int WINDOW_HEIGHT{ 800 };
 
-std::queue<std::array<char, network::BUFFER_SIZE>> packetQueue;
+std::queue<std::array<char, BUFFER_SIZE>> packetQueue;
 
 // 플레이어 이동속도, 단위 m/s
 constexpr float PLAYER_SPEED_MPS{ 5.f };
@@ -108,8 +108,12 @@ public:
 	
 		// 최종 위치 계산
 		x += distance * dirX;
-		x = std::max(x, )
+		x = std::max(x, -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
+		x = std::min(x, (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 		y += distance * dirY;
+		y = std::max(y, -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
+		y = std::min(y, (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
+
 
 
 	}
@@ -164,13 +168,13 @@ int main() {
 	int my_id{ -1 };
 
 	Controller controller;
-	network::SocketIO socket_io;
+	SocketIO socket_io;
 	socket_io.Init();
 	socket_io.Start();
 
 
-	network::NetworkTimer frame_timer;
-	network::NetworkTimer send_timer;
+	NetworkTimer frame_timer;
+	NetworkTimer send_timer;
 
 	while (window.isOpen()) {
 

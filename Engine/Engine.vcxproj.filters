@@ -46,6 +46,9 @@
     <Filter Include="Network">
       <UniqueIdentifier>{95ae09dd-fa82-4c25-bb2c-b0d4ce4c6c49}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network\Common">
+      <UniqueIdentifier>{5d949c5a-61e8-4edd-b218-5dde9aee1d50}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -282,11 +285,14 @@
     <ClCompile Include="SocketIO.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\util.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
     <ClCompile Include="NetworkTimer.cpp">
       <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageManager.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\util.cpp">
+      <Filter>Network\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -527,14 +533,17 @@
     <ClInclude Include="SocketIO.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\protocol.h">
+    <ClInclude Include="NetworkTimer.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageManager.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\util.h">
-      <Filter>Network</Filter>
+      <Filter>Network\Common</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkTimer.h">
-      <Filter>Network</Filter>
+    <ClInclude Include="..\Common\protocol.h">
+      <Filter>Network\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

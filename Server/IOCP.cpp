@@ -59,7 +59,7 @@ bool IOCP::Init()
 	SOCKADDR_IN server_addr;
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(network::PORT_NUMBER);
+	server_addr.sin_port = htons(PORT_NUMBER);
 	server_addr.sin_addr.S_un.S_addr = INADDR_ANY;
 
 	// bind
@@ -282,7 +282,7 @@ void IOCP::DoRecv(Session& session) const
 	ZeroMemory(&over_ex, sizeof(over_ex));
 
 	// 현재 남은 만큼 recv한다. 
-	over_ex.wsabuf.len = network::BUFFER_SIZE - session.currentDataSize;
+	over_ex.wsabuf.len = BUFFER_SIZE - session.currentDataSize;
 	over_ex.wsabuf.buf = over_ex.dataBuffer + session.currentDataSize;
 	over_ex.operation = IOOperation::RECV;
 

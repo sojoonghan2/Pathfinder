@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "NetworkTimer.h"
 
-NETWORK_START
-
 
 void NetworkTimer::updateDeltaTime()
 {
@@ -17,4 +15,3 @@ float NetworkTimer::PeekDeltaTime() const
 	return std::chrono::duration_cast<MilliSeconds>(currentFrame - lastFrame).count();
 }
 
-NETWORK_END

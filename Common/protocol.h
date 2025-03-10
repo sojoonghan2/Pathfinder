@@ -6,12 +6,10 @@
 #define PACKET_START	namespace packet {
 #define PACKET_END		}
 
-NETWORK_START
 constexpr int PORT_NUMBER = 4000;
 constexpr int BUFFER_SIZE = 200;
 
 constexpr const char* SERVER_IP = "127.0.0.1";
-NETWORK_END
 
 PACKET_START
 enum class Type : unsigned char
