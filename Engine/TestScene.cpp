@@ -110,7 +110,7 @@ TestScene::TestScene()
         TestHuman* Robot = new TestHuman();
         float robot_state = Robot->Get_state();
 
-        shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Robot_Enemy\\Neck_Mech_Walker_by_3DHaupt-(FBX 7.4 binary mit Animation).fbx");
+        shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Dragon\\Dragon.fbx");
 
         vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
