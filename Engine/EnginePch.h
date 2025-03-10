@@ -11,6 +11,9 @@
 // std::byte 사용하지 않음
 #define _HAS_STD_BYTE 0
 
+// 네트워크 기능 사용
+#define NETWORK_ENABLE
+
 // 각종 include
 #include <windows.h>
 #include <tchar.h>
@@ -92,6 +95,7 @@ using namespace Microsoft::WRL;
 #define MAXMOVESIZE		500.f
 
 #define PI 3.14159265358979323846f
+
 
 // 각종 typedef
 using int8		= __int8;

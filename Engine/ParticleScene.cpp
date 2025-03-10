@@ -43,7 +43,7 @@
 
 ParticleScene::ParticleScene()
 {
-// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
+    // 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
 #pragma region ComputeShader
     {
         shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"ComputeShader");
@@ -64,20 +64,7 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
-    shared_ptr<GameObject> obj = make_shared<GameObject>();
-    obj->SetName(L"OBJ");
-    // 프러스텀 컬링 여부
-    obj->SetCheckFrustum(true);
-    // 정적, 동적 여부
-    obj->SetStatic(false);
-
-    // 2. Transform 컴포넌트 추가 및 설정
-    obj->AddComponent(make_shared<Transform>());
-    obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-    obj->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
-    obj->AddComponent(make_shared<TestPointLightScript>());
-
-// 카메라
+    // 카메라
 
 #pragma region Camera
     {
@@ -94,7 +81,7 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
-// UI 카메라
+    // UI 카메라
 #pragma region UI_Camera
     {
         shared_ptr<GameObject> camera = make_shared<GameObject>();
@@ -110,7 +97,7 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
-// 스카이 박스
+    // 스카이 박스
 #pragma region SkyBox
     {
         shared_ptr<GameObject> skybox = make_shared<GameObject>();
@@ -134,7 +121,7 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
-// 터레인 큐브
+    // 터레인 큐브
 #pragma region TerrainCube
     {
         // 1. 기본 오브젝트 생성 및 설정
@@ -175,7 +162,7 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
-// 전역 조명
+    // 전역 조명
 #pragma region Directional Light
     {
         // 1. light 오브젝트 생성 
@@ -201,9 +188,22 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
-// 구 오브젝트과 포인트 조명
+    // 구 오브젝트과 포인트 조명
 #pragma region Object & Point Light
     {
+
+        shared_ptr<GameObject> obj = make_shared<GameObject>();
+        obj->SetName(L"OBJ");
+        // 프러스텀 컬링 여부
+        obj->SetCheckFrustum(true);
+        // 정적, 동적 여부
+        obj->SetStatic(false);
+
+        // 2. Transform 컴포넌트 추가 및 설정
+        obj->AddComponent(make_shared<Transform>());
+        obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+        obj->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+        obj->AddComponent(make_shared<TestPointLightScript>());
         // 3. Collider 설정
         obj->AddComponent(make_shared<SphereCollider>());
         dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetRadius(0.5f);
@@ -249,6 +249,45 @@ ParticleScene::ParticleScene()
         activeScene->AddGameObject(light);
     }
 #pragma endregion
+
+
+    {
+
+    shared_ptr<GameObject> op2 = make_shared<GameObject>();
+    op2->SetName(L"OBJ");
+    // 프러스텀 컬링 여부
+    op2->SetCheckFrustum(true);
+    // 정적, 동적 여부
+    op2->SetStatic(false);
+
+    // 2. Transform 컴포넌트 추가 및 설정
+    op2->AddComponent(make_shared<Transform>());
+    op2->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+    op2->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+    op2->AddComponent(make_shared<TestPointLightScript>());
+    // 3. Collider 설정
+    op2->AddComponent(make_shared<SphereCollider>());
+    dynamic_pointer_cast<SphereCollider>(op2->GetCollider())->SetRadius(0.5f);
+    dynamic_pointer_cast<SphereCollider>(op2->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+
+    // 4. MeshRenderer 설정
+    shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+    {
+        shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+        meshRenderer->SetMesh(sphereMesh);
+    }
+    {
+        // GameObject 이름을 가진 머터리얼을 찾아 클론 후 메쉬 렌더러에 Set
+        // Resources.cpp로 가면 셰이더와 머터리얼의 생성을 확이해볼 수 있음
+        shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"GameObject");
+        meshRenderer->SetMaterial(material->Clone());
+    }
+    op2->AddComponent(meshRenderer);
+
+    // 5. Scene에 추가
+    activeScene->AddGameObject(op2);
+    }
+
 
     if (PARTICLEDEBUG) LoadDebugParticle();
     else
