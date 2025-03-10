@@ -22,6 +22,7 @@
 #include "FactoryScript.h"
 
 #include "SphereCollider.h"
+#include "TestDragon.h"
 
 FactoryScene::FactoryScene()
 {
@@ -143,30 +144,6 @@ FactoryScene::FactoryScene()
 	}
 #pragma endregion
 
-// 스카이 박스
-#pragma region SkyBox
-	{
-		shared_ptr<GameObject> skybox = make_shared<GameObject>();
-		skybox->AddComponent(make_shared<Transform>());
-		skybox->SetCheckFrustum(true);
-		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-		{
-			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
-			meshRenderer->SetMesh(sphereMesh);
-		}
-		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Skybox");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Sky01", L"..\\Resources\\Texture\\Sky01.jpg");
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, texture);
-			meshRenderer->SetMaterial(material);
-		}
-		skybox->AddComponent(meshRenderer);
-		activeScene->AddGameObject(skybox);
-	}
-#pragma endregion
-
 // 터레인 큐브
 #pragma region TerrainCube
 	{
@@ -274,6 +251,22 @@ FactoryScene::FactoryScene()
 
 		// 4. Scene에 추가
 		activeScene->AddGameObject(light);
+	}
+#pragma endregion
+
+// 공급기
+#pragma region Generator
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Generator\\Generator.fbx");
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		gameObjects[0]->SetName(L"Generator");
+		gameObjects[0]->SetCheckFrustum(true);
+		gameObjects[0]->AddComponent(make_shared<TestDragon>());
+		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, 2000.0f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(1.3f, 0.0f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(1000.f, 1000.f, 1000.f));
+		activeScene->AddGameObject(gameObjects[0]);
 	}
 #pragma endregion
 }
