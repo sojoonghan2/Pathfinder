@@ -103,6 +103,47 @@ BossScene::BossScene()
 	}
 #pragma endregion
 
+// 구 오브젝트
+#pragma region Object
+	{
+		// 1. 기본 오브젝트 생성 및 설정
+		shared_ptr<GameObject> obj = make_shared<GameObject>();
+		obj->SetName(L"OBJ");
+		// 프러스텀 컬링 여부
+		obj->SetCheckFrustum(true);
+		// 정적, 동적 여부
+		obj->SetStatic(false);
+
+		// 2. Transform 컴포넌트 추가 및 설정
+		obj->AddComponent(make_shared<Transform>());
+		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
+		obj->AddComponent(make_shared<TestPointLightScript>());
+
+		// 3. Collider 설정
+		obj->AddComponent(make_shared<SphereCollider>());
+		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetRadius(0.5f);
+		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+
+		// 4. MeshRenderer 설정
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+			meshRenderer->SetMesh(sphereMesh);
+		}
+		{
+			// GameObject 이름을 가진 머터리얼을 찾아 클론 후 메쉬 렌더러에 Set
+			// Resources.cpp로 가면 셰이더와 머터리얼의 생성을 확이해볼 수 있음
+			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"GameObject");
+			meshRenderer->SetMaterial(material->Clone());
+		}
+		obj->AddComponent(meshRenderer);
+
+		// 5. Scene에 추가
+		activeScene->AddGameObject(obj);
+	}
+#pragma endregion
+
 // 터레인 큐브
 #pragma region TerrainCube
 	{
@@ -144,49 +185,6 @@ BossScene::BossScene()
 	}
 #pragma endregion
 
-// *********************************************
-// UI 테스트
-// 0. 월드 공간 위치 정보
-// 1. 노말 벡터 정보
-// 2. 색상 정보
-// 3. 분산광 결과
-// 4. 반사광 결과
-// 5. 그림자
-// *********************************************
-#pragma region UI_Test
-	for (int32 i = 0; i < 6; i++)
-	{
-		shared_ptr<GameObject> obj = make_shared<GameObject>();
-		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
-		obj->AddComponent(make_shared<Transform>());
-		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(-350.f + (i * 120), 250.f, 500.f));
-		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-		{
-			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-			meshRenderer->SetMesh(mesh);
-		}
-		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
-
-			shared_ptr<Texture> texture;
-			if (i < 3)
-				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->GetRTTexture(i);
-			else if (i < 5)
-				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->GetRTTexture(i - 3);
-			else
-				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->GetRTTexture(0);
-
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, texture);
-			meshRenderer->SetMaterial(material);
-		}
-		obj->AddComponent(meshRenderer);
-		activeScene->AddGameObject(obj);
-	}
-#pragma endregion
-
 // 전역 조명
 #pragma region Directional Light
 	{
@@ -210,6 +208,22 @@ BossScene::BossScene()
 
 		// 4. Scene에 추가
 		activeScene->AddGameObject(light);
+	}
+#pragma endregion
+
+// 보스
+#pragma region Generator
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Boss\\Boss.fbx");
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		gameObjects[0]->SetName(L"Boss");
+		gameObjects[0]->SetCheckFrustum(true);
+		gameObjects[0]->AddComponent(make_shared<TestDragon>());
+		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, 2000.0f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(1.3f, 0.0f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(1000.f, 1000.f, 1000.f));
+		activeScene->AddGameObject(gameObjects[0]);
 	}
 #pragma endregion
 }
