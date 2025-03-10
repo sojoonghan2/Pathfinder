@@ -1,4 +1,6 @@
-﻿#include "pch.h"
+﻿#include <d3d12.h>
+
+#include "pch.h"
 #include "Mesh.h"
 #include "Engine.h"
 #include "Material.h"
@@ -7,11 +9,126 @@
 #include "BINLoader.h"
 #include "StructuredBuffer.h"
 
-Mesh::Mesh() : Object(OBJECT_TYPE::MESH)
-{
+////////////////////////////////////////////////////////////////////////// VRS �۾� �� //////////////////////////////////////////////////////////////////////////
+ComPtr<ID3D12Resource> _shadingRateImage;
 
+void Mesh::CreateVRSImage(UINT width, UINT height)
+{
+	if (!_supportsVRS)
+		return;
+
+	D3D12_RESOURCE_DESC vrsDesc = {};
+	vrsDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	vrsDesc.Width = width / 16;   // VRS ���� 16x16 ��� ����
+	vrsDesc.Height = height / 16;
+	vrsDesc.DepthOrArraySize = 1;
+	vrsDesc.MipLevels = 1;
+	vrsDesc.Format = DXGI_FORMAT_R8_UINT;
+	vrsDesc.SampleDesc.Count = 1;
+	vrsDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	vrsDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+	D3D12_HEAP_PROPERTIES heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	HRESULT hr = DEVICE->CreateCommittedResource(
+		&heapProps,
+		D3D12_HEAP_FLAG_NONE,
+		&vrsDesc,
+		D3D12_RESOURCE_STATE_COMMON,
+		nullptr,
+		IID_PPV_ARGS(&_shadingRateImage)
+	);
+
+	if (FAILED(hr))
+	{
+		printf("VRS �� ���� ����!\n");
+	}
 }
 
+void Mesh::CreateVRSUploadBuffer(UINT width, UINT height)
+{
+	if (!_supportsVRS)
+		return;
+
+	UINT bufferSize = width * height * sizeof(UINT8);
+
+	D3D12_HEAP_PROPERTIES uploadHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	D3D12_RESOURCE_DESC uploadBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
+
+	HRESULT hr = DEVICE->CreateCommittedResource(
+		&uploadHeapProps,
+		D3D12_HEAP_FLAG_NONE,
+		&uploadBufferDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&_vrsUploadBuffer)
+	);
+
+	if (FAILED(hr))
+	{
+		printf("VRS ���ε� ���� ���� ����!\n");
+	}
+}
+
+void Mesh::UploadVRSData()
+{
+	if (!_supportsVRS)
+		return;
+
+	UINT width = _shadingRateImage->GetDesc().Width;
+	UINT height = _shadingRateImage->GetDesc().Height;
+
+	UINT8* vrsData = new UINT8[width * height];
+
+	// ����: ȭ���� ������ ������ 2x2 ��� ���
+	for (UINT y = 0; y < height; y++)
+	{
+		for (UINT x = 0; x < width; x++)
+		{
+			if (x < width / 2)
+				vrsData[y * width + x] = D3D12_SHADING_RATE_1X1;  // �⺻ ���̵� ����Ʈ
+			else
+				vrsData[y * width + x] = D3D12_SHADING_RATE_2X2;  // 2x2 ���
+		}
+	}
+
+	// ���ε� ���ۿ� ������ ����
+	void* mappedMemory;
+	_vrsUploadBuffer->Map(0, nullptr, &mappedMemory);
+	memcpy(mappedMemory, vrsData, width * height * sizeof(UINT8));
+	_vrsUploadBuffer->Unmap(0, nullptr);
+
+	delete[] vrsData;
+
+	// VRS ���� GPU�� ����
+	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		_shadingRateImage.Get(),
+		D3D12_RESOURCE_STATE_COMMON,
+		D3D12_RESOURCE_STATE_COPY_DEST
+	);
+	GRAPHICS_CMD_LIST->ResourceBarrier(1, &barrier);
+
+	GRAPHICS_CMD_LIST->CopyResource(_shadingRateImage.Get(), _vrsUploadBuffer.Get());
+
+	barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		_shadingRateImage.Get(),
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		D3D12_RESOURCE_STATE_COMMON
+	);
+	GRAPHICS_CMD_LIST->ResourceBarrier(1, &barrier);
+}
+
+Mesh::Mesh() : Object(OBJECT_TYPE::MESH)
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS6 options6 = {};
+	if (SUCCEEDED(DEVICE->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS6, &options6, sizeof(options6))))
+	{
+		_supportsVRS = (options6.VariableShadingRateTier != D3D12_VARIABLE_SHADING_RATE_TIER_NOT_SUPPORTED);
+		_shadingRateTier = options6.VariableShadingRateTier;
+	}
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 Mesh::~Mesh()
 {
 
@@ -25,11 +142,42 @@ void Mesh::Create(const vector<Vertex>& vertexBuffer, const vector<uint32>& inde
 
 void Mesh::Render(uint32 instanceCount, uint32 idx)
 {
+	// ���� �� �ε��� ���� ����
 	GRAPHICS_CMD_LIST->IASetVertexBuffers(0, 1, &_vertexBufferView); // Slot: (0~15)
 	GRAPHICS_CMD_LIST->IASetIndexBuffer(&_vecIndexInfo[idx].bufferView);
 
 	GEngine->GetGraphicsDescHeap()->CommitTable();
 
+	/////////////////////////////// VRS /////////////////////////////////////
+	if (_supportsVRS && _shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2 && _shadingRateImage)
+	{
+		// RSSetShadingRateImage�� ID3D12GraphicsCommandList5������ �����ǹǷ�, QueryInterface�� ȹ��
+		ComPtr<ID3D12GraphicsCommandList5> commandList5;
+		GRAPHICS_CMD_LIST->QueryInterface(IID_PPV_ARGS(&commandList5));
+
+		if (commandList5)
+		{
+			commandList5->RSSetShadingRateImage(_shadingRateImage.Get());
+		}
+	}
+
+	// ù ��° ��ο� ȣ�� (VRS ����� ����)
+	GRAPHICS_CMD_LIST->DrawIndexedInstanced(_vecIndexInfo[idx].count, instanceCount, 0, 0, 0);
+
+	// VRS ���� ���� (���̵� ����Ʈ �̹��� ����)
+	if (_supportsVRS && _shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2 && _shadingRateImage)
+	{
+		ComPtr<ID3D12GraphicsCommandList5> commandList5;
+		GRAPHICS_CMD_LIST->QueryInterface(IID_PPV_ARGS(&commandList5));
+
+		if (commandList5)
+		{
+			commandList5->RSSetShadingRateImage(nullptr);
+		}
+	}
+	/////////////////////////////// VRS /////////////////////////////////////
+
+	// �� ��° ��ο� ȣ�� (VRS ������ ����)
 	GRAPHICS_CMD_LIST->DrawIndexedInstanced(_vecIndexInfo[idx].count, instanceCount, 0, 0, 0);
 }
 
@@ -53,7 +201,7 @@ shared_ptr<Mesh> Mesh::CreateFromFBX(const FbxMeshInfo* meshInfo, FBXLoader& loa
 	{
 		if (buffer.empty())
 		{
-			// FBX 파일이 이상하다. IndexBuffer가 없으면 에러 나니까 임시 처리
+			// FBX ������ �̻��ϴ�. IndexBuffer�� ������ ���� ���ϱ� �ӽ� ó��
 			vector<uint32> defaultBuffer{ 0 };
 			mesh->CreateIndexBuffer(defaultBuffer);
 		}
@@ -116,8 +264,8 @@ void Mesh::CreateVertexBuffer(const vector<Vertex>& buffer)
 
 	// Initialize the vertex buffer view.
 	_vertexBufferView.BufferLocation = _vertexBuffer->GetGPUVirtualAddress();
-	_vertexBufferView.StrideInBytes = sizeof(Vertex); // 정점 1개 크기
-	_vertexBufferView.SizeInBytes = bufferSize; // 버퍼의 크기	
+	_vertexBufferView.StrideInBytes = sizeof(Vertex); // ���� 1�� ũ��
+	_vertexBufferView.SizeInBytes = bufferSize; // ������ ũ��	
 }
 
 void Mesh::CreateIndexBuffer(const vector<uint32>& buffer)
@@ -190,7 +338,7 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 			for (int32 f = 0; f < size; f++)
 			{
 				FbxKeyFrameInfo& kf = vec[f];
-				// FBX에서 파싱한 정보들로 채워준다
+				// FBX���� �Ľ��� ������� ä���ش�
 				KeyFrameInfo& kfInfo = info.keyFrames[b][f];
 				kfInfo.time = kf.time;
 				kfInfo.frame = static_cast<int32>(size);
@@ -226,13 +374,13 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 #pragma region SkinData
 	if (IsAnimMesh())
 	{
-		// BoneOffet 행렬
+		// BoneOffet ���
 		const int32 boneCount = static_cast<int32>(_bones.size());
 		vector<Matrix> offsetVec(boneCount);
 		for (size_t b = 0; b < boneCount; b++)
 			offsetVec[b] = _bones[b].matOffset;
 
-		// OffsetMatrix StructuredBuffer 세팅
+		// OffsetMatrix StructuredBuffer ����
 		_offsetBuffer = make_shared<StructuredBuffer>();
 		_offsetBuffer->Init(sizeof(Matrix), static_cast<uint32>(offsetVec.size()), offsetVec.data());
 
@@ -241,7 +389,7 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 		{
 			AnimClipInfo& animClip = _animClips[i];
 
-			// 애니메이션 프레임 정보
+			// �ִϸ��̼� ������ ����
 			vector<AnimFrameParams> frameParams;
 			frameParams.resize(_bones.size() * animClip.frameCount);
 
@@ -261,7 +409,7 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 				}
 			}
 
-			// StructuredBuffer 세팅
+			// StructuredBuffer ����
 			_frameBuffer.push_back(make_shared<StructuredBuffer>());
 			_frameBuffer.back()->Init(sizeof(AnimFrameParams), static_cast<uint32>(frameParams.size()), frameParams.data());
 		}

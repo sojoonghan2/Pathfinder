@@ -6,6 +6,7 @@
 class Material;
 class StructuredBuffer;
 
+
 struct IndexBufferInfo
 {
 	ComPtr<ID3D12Resource>		buffer;
@@ -50,9 +51,19 @@ public:
 
 	static shared_ptr<Mesh> CreateFromFBX(const struct FbxMeshInfo* meshInfo, class FBXLoader& loader);
 	static shared_ptr<Mesh> CreateFromBIN(const struct BINInfo* meshInfo, shared_ptr<BINLoader> loader);
+	////////////////////////////////////////////////////////////////////////// VRS 작업 중 //////////////////////////////////////////////////////////////////////////
+
+	void CreateVRSImage(UINT width, UINT height);
+	void UploadVRSData();
+	ComPtr<ID3D12Resource> _vrsUploadBuffer;
+	void CreateVRSUploadBuffer(UINT width, UINT height);
+
+	////////////////////////////////////////////////////////////////////////// VRS 작업 중 //////////////////////////////////////////////////////////////////////////
 
 	void SetTransform(shared_ptr<Transform> v) { _transform = v; };
 	shared_ptr<Transform> GetTransform() { return _transform; };
+	bool _supportsVRS = false;
+	D3D12_VARIABLE_SHADING_RATE_TIER _shadingRateTier = D3D12_VARIABLE_SHADING_RATE_TIER_NOT_SUPPORTED;
 
 private:
 	void CreateVertexBuffer(const vector<Vertex>& buffer);
