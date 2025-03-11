@@ -19,22 +19,27 @@ MeshData::~MeshData()
 
 shared_ptr<MeshData> MeshData::LoadFromFBX(const wstring& path)
 {
+	// 로더 생성
 	FBXLoader loader;
 	loader.LoadFbx(path);
 
+	// meshData 객체 생성
 	shared_ptr<MeshData> meshData = make_shared<MeshData>();
 
+	// 로더가 로드한 FBX 파일 내 모든 Mesh에 대해 반복 처리
 	for (int32 i = 0; i < loader.GetMeshCount(); i++)
 	{
+		// FBXLoader에서 읽은 Mesh 정보를 기반으로 Mesh 객체 생성
 		shared_ptr<Mesh> mesh = Mesh::CreateFromFBX(&loader.GetMesh(i), loader);
 
+		// 이름이 없을 경우 기본 이름 설정
 		if (mesh->GetName().empty())
 		{
-			// 이름이 없을 경우 기본 이름 설정
 			wstring defaultName = L"Mesh_" + to_wstring(i);
 			mesh->SetName(defaultName);
 		}
 
+		// Mesh 객체 리소스 관리 목록에 추가
 		GET_SINGLE(Resources)->Add<Mesh>(mesh->GetName(), mesh);
 
 		// Material 찾아서 연동
@@ -45,6 +50,7 @@ shared_ptr<MeshData> MeshData::LoadFromFBX(const wstring& path)
 			materials.push_back(material);
 		}
 
+		// MeshData에 저장
 		MeshRenderInfo info = {};
 		info.mesh = mesh;
 		info.materials = materials;

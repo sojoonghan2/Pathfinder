@@ -358,14 +358,18 @@ shared_ptr<Texture> Resources::CreateTextureFromResource(const wstring& name, Co
 
 shared_ptr<MeshData> Resources::LoadFBX(const wstring& path)
 {
+	// FBX 로드
 	shared_ptr<MeshData> meshData = MeshData::LoadFromFBX(path);
+
+	// 이름 설정
 	meshData->SetName(path + L"_" + std::to_wstring(rand()));
 
+	// 리소스 관리 목록에 추가
 	Add(path + L"_" + std::to_wstring(rand()), meshData);
 
+	// meshData 반환
 	return meshData;
 }
-
 
 shared_ptr<class MeshData> Resources::LoadBIN(const wstring& path)
 {
