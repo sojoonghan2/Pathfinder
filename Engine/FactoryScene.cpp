@@ -118,29 +118,6 @@ FactoryScene::FactoryScene()
 
 		// 5. Scene에 추가
 		activeScene->AddGameObject(obj);
-
-		// 1. light 오브젝트 생성 
-		shared_ptr<GameObject> light = make_shared<GameObject>();
-		light->SetName(L"Point_Light");
-		light->AddComponent(make_shared<Transform>());
-		light->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
-
-		// 2-1. light 컴포넌트 추가 및 속성 설정
-		light->AddComponent(make_shared<Light>());
-		light->GetLight()->SetLightType(LIGHT_TYPE::POINT_LIGHT);
-		light->AddComponent(make_shared<TestPointLightScript>());
-
-		// 2-2. 점광원 특수 설정
-		light->GetLight()->SetLightRange(1000.f);
-
-		// 3. 조명 색상 및 강도 설정
-		light->GetLight()->SetDiffuse(Vec3(2.0f, 2.0f, 2.0f));
-		light->GetLight()->SetAmbient(Vec3(1.2f, 1.2f, 1.2f));
-		light->GetLight()->SetSpecular(Vec3(2.5f, 2.5f, 2.5f));
-
-
-		// 4. Scene에 추가
-		activeScene->AddGameObject(light);
 	}
 #pragma endregion
 
@@ -220,9 +197,9 @@ FactoryScene::FactoryScene()
 		gameObjects[0]->SetName(L"Generator");
 		gameObjects[0]->SetCheckFrustum(true);
 		gameObjects[0]->AddComponent(make_shared<TestDragon>());
-		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, 0.0f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(2000.0f, -200.0f, 2000.0f));
 		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.6f, 0.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(1.f, 1.f, 1.f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
 		activeScene->AddGameObject(gameObjects[0]);
 	}
 #pragma endregion
