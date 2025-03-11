@@ -63,11 +63,11 @@ void SocketIO::Update()
 
 	if (-1 != myId) {
 		if (INPUT->GetButton(KEY_TYPE::UP)) {
-			players[myId].y -= PLAYER_SPEED_MPS * DELTA_TIME;
+			players[myId].y += PLAYER_SPEED_MPS * DELTA_TIME;
 			players[myId].y = min(players[myId].y, (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 		}
 		if (INPUT->GetButton(KEY_TYPE::DOWN)) {
-			players[myId].y += PLAYER_SPEED_MPS * DELTA_TIME;
+			players[myId].y -= PLAYER_SPEED_MPS * DELTA_TIME;
 			players[myId].y = max(players[myId].y, -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 		}
 		if (INPUT->GetButton(KEY_TYPE::LEFT)) {
@@ -79,7 +79,7 @@ void SocketIO::Update()
 			players[myId].x = max(players[myId].x, -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 		}
 
-		if (sendTimer.PeekDeltaTime() > 100.f) {
+		if (sendTimer.PeekDeltaTime() > 50.f) {
 			sendTimer.updateDeltaTime();
 			DoSend<packet::CSMovePlayer>(myId, players[myId].x, players[myId].y);
 		}

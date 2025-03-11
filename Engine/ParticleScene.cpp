@@ -299,7 +299,12 @@ ParticleScene::ParticleScene()
         }
     }
 #pragma endregion
+}
 
+ParticleScene::~ParticleScene() {}
+
+void ParticleScene::LoadMyParticle()
+{
 // 얼음 파티클
 #pragma region IceParticle
     {

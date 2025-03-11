@@ -263,7 +263,7 @@ void IOCP::TimerWorker()
 {
 	Timer timer;
 	while (true) {
-		if (timer.PeekDeltaTime() > 100.f) {
+		if (timer.PeekDeltaTime() > 50.f) {
 			timer.updateDeltaTime();
 			for (int i = 0; i < sessionCnt; ++i) {
 				packet::SCMovePlayer packet{ i, players[i].x, players[i].y };

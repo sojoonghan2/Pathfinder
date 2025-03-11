@@ -72,6 +72,8 @@ public:
 		show{show}
 	{
 		SetFillColor(color);
+		sf::FloatRect bounds = Square.getLocalBounds();
+		Square.setOrigin(bounds.width / 2, bounds.height / 2);
 	}
 
 	Player(const float x, const float y, const sf::Color color) :
@@ -106,11 +108,11 @@ public:
 		// 이동거리 계산
 		float distance = delta * PLAYER_SPEED_MPS;
 	
-		// 최종 위치 계산
+		// 최종 위치 계산, dirextx 좌표계로 변환
 		x += distance * dirX;
 		x = std::max(x, -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 		x = std::min(x, (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
-		y += distance * dirY;
+		y += distance * dirY * -1.f;
 		y = std::max(y, -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 		y = std::min(y, (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 
@@ -124,7 +126,7 @@ public:
 
 		// 윈도우 위치 계산
 		float windowX = x / MAP_SIZE_M * WINDOW_WIDTH + (WINDOW_WIDTH * 0.5f);
-		float windowY = y / MAP_SIZE_M * WINDOW_HEIGHT + (WINDOW_HEIGHT * 0.5f);
+		float windowY = -y / MAP_SIZE_M * WINDOW_HEIGHT + (WINDOW_HEIGHT * 0.5f);
 
 		// 윈도우 위치에 표시
 		Square.setPosition(windowX, windowY);
@@ -228,16 +230,16 @@ int main() {
 			case sf::Event::KeyPressed:
 				switch (event.key.code)
 				{
-				case sf::Keyboard::W:
+				case sf::Keyboard::W: case sf::Keyboard::Up:
 					controller.applyKeyboardStatus(KeyStatus::Up);
 					break;
-				case sf::Keyboard::S:
+				case sf::Keyboard::S: case sf::Keyboard::Down:
 					controller.applyKeyboardStatus(KeyStatus::Down);
 					break;
-				case sf::Keyboard::D:
+				case sf::Keyboard::D: case sf::Keyboard::Right:
 					controller.applyKeyboardStatus(KeyStatus::Right);
 					break;
-				case sf::Keyboard::A:
+				case sf::Keyboard::A: case sf::Keyboard::Left:
 					controller.applyKeyboardStatus(KeyStatus::Left);
 					break;
 				}
@@ -246,16 +248,16 @@ int main() {
 			case sf::Event::KeyReleased:
 				switch (event.key.code)
 				{
-				case sf::Keyboard::W:
+				case sf::Keyboard::W: case sf::Keyboard::Up:
 					controller.disapplyKeyboardStatus(KeyStatus::Up);
 					break;
-				case sf::Keyboard::S:
+				case sf::Keyboard::S: case sf::Keyboard::Down:
 					controller.disapplyKeyboardStatus(KeyStatus::Down);
 					break;
-				case sf::Keyboard::D:
+				case sf::Keyboard::D: case sf::Keyboard::Right:
 					controller.disapplyKeyboardStatus(KeyStatus::Right);
-					break;
-				case sf::Keyboard::A:
+					break; 
+				case sf::Keyboard::A: case sf::Keyboard::Left:
 					controller.disapplyKeyboardStatus(KeyStatus::Left);
 					break;
 				}
@@ -278,7 +280,7 @@ int main() {
 			players[my_id].Update(controller, delta);
 
 			// send
-			if (send_timer.PeekDeltaTime() > 100.f) {
+			if (send_timer.PeekDeltaTime() > 50.f) {
 				send_timer.updateDeltaTime();
 				auto pos = players[my_id].GetPosition();
 				socket_io.DoSend<packet::CSMovePlayer>(my_id, pos.x, pos.y);

@@ -88,8 +88,8 @@ void TestPointLightScript::MouseInput()
 void TestPointLightScript::SetPosition(float x, float z)
 {
 	Vec3 pos = GetTransform()->GetLocalPosition();
-	pos.x = x * 100.f;
-	pos.z = z * 100.f;
+	pos.x = x * 200.f;
+	pos.z = z * 200.f;
 
 	GetTransform()->SetLocalPosition(pos);
 }
