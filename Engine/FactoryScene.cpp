@@ -22,6 +22,7 @@
 #include "FactoryScript.h"
 
 #include "SphereCollider.h"
+#include "TestDragon.h"
 
 FactoryScene::FactoryScene()
 {
@@ -117,53 +118,6 @@ FactoryScene::FactoryScene()
 
 		// 5. Scene에 추가
 		activeScene->AddGameObject(obj);
-
-		// 1. light 오브젝트 생성 
-		shared_ptr<GameObject> light = make_shared<GameObject>();
-		light->SetName(L"Point_Light");
-		light->AddComponent(make_shared<Transform>());
-		light->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
-
-		// 2-1. light 컴포넌트 추가 및 속성 설정
-		light->AddComponent(make_shared<Light>());
-		light->GetLight()->SetLightType(LIGHT_TYPE::POINT_LIGHT);
-		light->AddComponent(make_shared<TestPointLightScript>());
-
-		// 2-2. 점광원 특수 설정
-		light->GetLight()->SetLightRange(1000.f);
-
-		// 3. 조명 색상 및 강도 설정
-		light->GetLight()->SetDiffuse(Vec3(2.0f, 2.0f, 2.0f));
-		light->GetLight()->SetAmbient(Vec3(1.2f, 1.2f, 1.2f));
-		light->GetLight()->SetSpecular(Vec3(2.5f, 2.5f, 2.5f));
-
-
-		// 4. Scene에 추가
-		activeScene->AddGameObject(light);
-	}
-#pragma endregion
-
-// 스카이 박스
-#pragma region SkyBox
-	{
-		shared_ptr<GameObject> skybox = make_shared<GameObject>();
-		skybox->AddComponent(make_shared<Transform>());
-		skybox->SetCheckFrustum(true);
-		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-		{
-			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
-			meshRenderer->SetMesh(sphereMesh);
-		}
-		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Skybox");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Sky01", L"..\\Resources\\Texture\\Sky01.jpg");
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, texture);
-			meshRenderer->SetMaterial(material);
-		}
-		skybox->AddComponent(meshRenderer);
-		activeScene->AddGameObject(skybox);
 	}
 #pragma endregion
 
@@ -208,49 +162,6 @@ FactoryScene::FactoryScene()
 	}
 #pragma endregion
 
-// *********************************************
-// UI 테스트
-// 0. 월드 공간 위치 정보
-// 1. 노말 벡터 정보
-// 2. 색상 정보
-// 3. 분산광 결과
-// 4. 반사광 결과
-// 5. 그림자
-// *********************************************
-#pragma region UI_Test
-	for (int32 i = 0; i < 6; i++)
-	{
-		shared_ptr<GameObject> obj = make_shared<GameObject>();
-		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
-		obj->AddComponent(make_shared<Transform>());
-		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(-350.f + (i * 120), 250.f, 500.f));
-		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-		{
-			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-			meshRenderer->SetMesh(mesh);
-		}
-		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
-
-			shared_ptr<Texture> texture;
-			if (i < 3)
-				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->GetRTTexture(i);
-			else if (i < 5)
-				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->GetRTTexture(i - 3);
-			else
-				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->GetRTTexture(0);
-
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, texture);
-			meshRenderer->SetMaterial(material);
-		}
-		obj->AddComponent(meshRenderer);
-		activeScene->AddGameObject(obj);
-	}
-#pragma endregion
-
 // 전역 조명
 #pragma region Directional Light
 	{
@@ -274,6 +185,22 @@ FactoryScene::FactoryScene()
 
 		// 4. Scene에 추가
 		activeScene->AddGameObject(light);
+	}
+#pragma endregion
+
+// 공급기
+#pragma region Generator
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Generator\\Generator.fbx");
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		gameObjects[0]->SetName(L"Generator");
+		gameObjects[0]->SetCheckFrustum(true);
+		gameObjects[0]->AddComponent(make_shared<TestDragon>());
+		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(2000.0f, -200.0f, 2000.0f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.6f, 0.0f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
+		activeScene->AddGameObject(gameObjects[0]);
 	}
 #pragma endregion
 }

@@ -258,6 +258,7 @@ vector<shared_ptr<GameObject>> MeshData::Instantiate()
 		for (uint32 i = 0; i < info.materials.size(); i++)
 			gameObject->GetMeshRenderer()->SetMaterial(info.materials[i], i);
 
+		//여가 문제는 맞음
 		if (info.mesh->IsAnimMesh())
 		{
 			shared_ptr<Animator> animator = make_shared<Animator>();

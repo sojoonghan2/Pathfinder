@@ -379,6 +379,7 @@ void FBXLoader::LoadBones(FbxNode* node, int32 idx, int32 parentIdx)
 		LoadBones(node->GetChild(i), static_cast<int32>(_bones.size()), idx);
 }
 
+// 여기서 animclip을 얻어야하는데 못 얻고 잇다 즉 fbx로더 문제
 void FBXLoader::LoadAnimationInfo()
 {
 	_scene->FillAnimStackNameArray(OUT _animNames);

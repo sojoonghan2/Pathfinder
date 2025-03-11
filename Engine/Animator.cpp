@@ -77,13 +77,18 @@ void Animator::FinalUpdate()
         _boneFinalMatrix->Init(sizeof(Matrix), finalTransforms.size());
     }
     _boneFinalMatrix->Update(finalTransforms.data(), finalTransforms.size() * sizeof(Matrix));
-    
+
 }
 
 void Animator::SetAnimClip(const vector<AnimClipInfo>* animClips)
 {
-	_animClips = animClips;
+    if (!animClips || animClips->empty()) {  
+        std::cerr << "Error: animClips is nullptr or empty!" << std::endl;
+        return;
+    }
+    _animClips = animClips;
 }
+
 
 void Animator::PushData()
 {
@@ -111,7 +116,15 @@ void Animator::PushData()
 // 플레이 수정
 void Animator::Play(uint32 idx)
 {
-	assert(idx < _animClips->size());
-	_clipIndex = idx;
-	_updateTime = 0.f;
+    if (!_animClips || _animClips->empty()) {
+        std::cerr << "Error: _animClips is nullptr or empty!" << std::endl;
+        return;
+    }
+    if (idx >= _animClips->size()) {
+        std::cerr << "Error: idx (" << idx << ") is out of range!" << std::endl;
+        return;
+    }
+
+    _clipIndex = idx;
+    _updateTime = 0.f;
 }
