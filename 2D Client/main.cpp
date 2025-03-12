@@ -155,13 +155,9 @@ int main() {
 	// 타이머의 1초마다 클라에서 현 move_packet 전송
 	// 타이머의 1초마다 서버에서 전체 player에게 모두 move_packet 전송
 
-	std::array<Player, 3> players{};
-	for (auto& player : players) {
-		player.SetFillColor(sf::Color::Black);
-	}
 
-
-	int my_id{ -1 };
+	std::unordered_map<int, Player> players{};
+	int my_id = -1;
 
 	Controller controller;
 	SocketIO socket_io;
@@ -186,13 +182,17 @@ int main() {
 			{
 				packet::SCLogin packet = reinterpret_cast<packet::SCLogin&>(buffer);
 				players[packet.playerId].SetFillColor(sf::Color::Red);
+				players[packet.playerId].SetShow(true);
 				my_id = packet.playerId;
 			}
 			break;
 			case packet::Type::SC_MOVE_PLAYER:
 			{
 				packet::SCMovePlayer packet = reinterpret_cast<packet::SCMovePlayer&>(buffer);
-				players[packet.playerId].SetShow(true);
+				if (not players.contains(packet.playerId)) {
+					players[packet.playerId].SetFillColor(sf::Color::Black);
+					players[packet.playerId].SetShow(true);
+				}
 				players[packet.playerId].SetPosition(packet.x, packet.y);
 			}
 			break;
@@ -250,7 +250,7 @@ int main() {
 					break;
 				case sf::Keyboard::D: case sf::Keyboard::Right:
 					controller.disapplyKeyboardStatus(KeyStatus::Right);
-					break; 
+					break;
 				case sf::Keyboard::A: case sf::Keyboard::Left:
 					controller.disapplyKeyboardStatus(KeyStatus::Left);
 					break;
@@ -270,7 +270,7 @@ int main() {
 		frame_timer.updateDeltaTime();
 		auto delta = frame_timer.getDeltaTimeSeconds();
 
-		if (0 <= my_id && my_id <= 2) {
+		if (-1 != my_id) {
 			players[my_id].Update(controller, delta);
 
 			// send
@@ -301,7 +301,7 @@ int main() {
 			window.draw(line);
 		}
 
-		for (auto& player : players) {
+		for (auto& [_, player] : players) {
 			player.Draw(window);
 		}
 

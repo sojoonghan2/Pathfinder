@@ -124,20 +124,18 @@ bool IOCP::Start()
 	// 비동기 IO 작업 완료 확인 스레드 생성
 	// worker_thread 따로 멤버변수로 뺴기
 
-
-	for (int i = 0; i < 1; ++i) {
+	int thread_nubmer = std::thread::hardware_concurrency();
+	for (int i = 0; i < thread_nubmer; ++i) {
 		workers.emplace_back([this]() { Worker(); });
 	}
 	workers.emplace_back([this]() {TimerWorker(); });
-	std::println("Created Thread.");
+	std::println("Created {} Threads", thread_nubmer);
 
 	return true;
 }
 
 void IOCP::Worker()
 {
-	std::println("Hello worker!");
-
 	while (true) {
 		DWORD io_size;
 		ULONG_PTR key;
@@ -205,7 +203,6 @@ void IOCP::Worker()
 				&bytes_received,
 				&curr_over_ex->over
 			);
-			std::println("AcceptEx Successed.");
 			break;
 		}
 
@@ -314,7 +311,7 @@ bool IOCP::ProcessPacket(int key, char* p)
 
 		std::println("CS_LOGIN Client {}", key);
 
-		packet::SCLogin sc_login{ key };
+		packet::SCLogin sc_login{ key % 3 };
 		DoSend(sessionList[key], &sc_login);
 
 		for (int i = 0; i < sessionCnt - 1; ++i) {
@@ -324,7 +321,8 @@ bool IOCP::ProcessPacket(int key, char* p)
 
 		players[key].x = urd(dre);
 		players[key].y = urd(dre);
-		packet::SCMovePlayer sc_move_player{ key, players[key].x, players[key].y };
+		// 이 부분을 맵 당 broadcast로 변경해야함
+		packet::SCMovePlayer sc_move_player{ key % 3, players[key].x, players[key].y };
 		DoBroadcast(&sc_move_player);
 	}
 	break;

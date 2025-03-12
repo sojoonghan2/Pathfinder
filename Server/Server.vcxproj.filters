@@ -17,6 +17,9 @@
     <Filter Include="Common">
       <UniqueIdentifier>{db7cb1aa-25c5-4be9-a58e-e600f7e7184f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{13c78809-694a-44a9-bf08-3351995b5446}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -28,6 +31,12 @@
     </ClCompile>
     <ClCompile Include="..\Common\util.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Stage.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -48,6 +57,12 @@
     </ClInclude>
     <ClInclude Include="define.h">
       <Filter>pch</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Stage.h">
+      <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -97,7 +97,7 @@ using namespace Microsoft::WRL;
 
 #define PI 3.14159265358979323846f
 
-constexpr int METER_TO_CLIENT { 200.f };
+constexpr float METER_TO_CLIENT { 200.f };
 
 // °¢Á¾ typedef
 using int8		= __int8;
