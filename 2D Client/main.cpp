@@ -8,12 +8,6 @@ constexpr int WINDOW_HEIGHT{ 800 };
 
 std::queue<std::array<char, BUFFER_SIZE>> packetQueue;
 
-// 플레이어 이동속도, 단위 m/s
-constexpr float PLAYER_SPEED_MPS{ 5.f };
-
-// 단위 m
-constexpr float MAP_SIZE_M{ 50.f };
-constexpr float PLAYER_SIZE_M{ 0.5f };
 constexpr float GRID_SIZE{ MAP_SIZE_M / static_cast<float>(GRID_CONUT) };
 
 

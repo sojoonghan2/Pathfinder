@@ -52,5 +52,8 @@
     <ClInclude Include="NetworkTimer.h">
       <Filter>Tool</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\CommonDefine.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
