@@ -65,10 +65,10 @@ void TestPointLightScript::KeyboardInput()
 	if (INPUT->GetButtonDown(KEY_TYPE::T)) PRINTPOSITION;
 
 	// ¸Ê Å©±â Á¦ÇÑ
-	float mapMinX = -4950.f;
-	float mapMaxX = 4950.f;
-	float mapMinZ = -4950.f;
-	float mapMaxZ = 4950.f;
+	float mapMinX = -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f * METER_TO_CLIENT;
+	float mapMaxX = (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f * METER_TO_CLIENT;
+	float mapMinZ = -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f * METER_TO_CLIENT;
+	float mapMaxZ = (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f * METER_TO_CLIENT;
 	float minY = 500.f;
 	float maxY = 9500.f;
 
@@ -88,8 +88,8 @@ void TestPointLightScript::MouseInput()
 void TestPointLightScript::SetPosition(float x, float z)
 {
 	Vec3 pos = GetTransform()->GetLocalPosition();
-	pos.x = x * 200.f;
-	pos.z = z * 200.f;
+	pos.x = x * METER_TO_CLIENT;
+	pos.z = z * METER_TO_CLIENT;
 
 	GetTransform()->SetLocalPosition(pos);
 }

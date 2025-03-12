@@ -12,7 +12,7 @@
 #define _HAS_STD_BYTE 0
 
 // 네트워크 기능 사용
-// #define NETWORK_ENABLE
+#define NETWORK_ENABLE
 
 // 각종 include
 #include <windows.h>
@@ -39,6 +39,7 @@ using namespace std;
 namespace fs = std::filesystem;
 #include "../Common/protocol.h"
 #include "../Common/util.h"
+#include "../Common/CommonDefine.h"
 
 #include "d3dx12.h"
 #include "SimpleMath.h"
@@ -96,6 +97,7 @@ using namespace Microsoft::WRL;
 
 #define PI 3.14159265358979323846f
 
+constexpr int METER_TO_CLIENT { 200.f };
 
 // 각종 typedef
 using int8		= __int8;

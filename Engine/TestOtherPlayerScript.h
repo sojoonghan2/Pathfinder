@@ -13,7 +13,7 @@ public:
 	void SetPosition(float x, float z);
 
 private:
-	float		_speed = 1000.f;
+	float		_speed = PLAYER_SPEED_MPS * METER_TO_CLIENT;
 	int			id = -1;
 
 };

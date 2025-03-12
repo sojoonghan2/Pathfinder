@@ -1,8 +1,5 @@
 #pragma once
 
-#define NETWORK_START	namespace network {
-#define NETWORK_END		}
-
 #define PACKET_START	namespace packet {
 #define PACKET_END		}
 

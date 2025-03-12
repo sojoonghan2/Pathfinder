@@ -43,9 +43,9 @@ void TestOtherPlayerScript::LateUpdate()
 void TestOtherPlayerScript::SetPosition(float x, float z)
 {
 	Vec3 pos = GetTransform()->GetLocalPosition();
-	pos.x = x * 200.f;
+	pos.x = x * METER_TO_CLIENT;
 	pos.y = 500.f;
-	pos.z = z * 200.f;
+	pos.z = z * METER_TO_CLIENT;
 
 	GetTransform()->SetLocalPosition(pos);
 }
