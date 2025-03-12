@@ -45,22 +45,22 @@ void TestPointLightScript::KeyboardInput()
 	Vec3 pos = GetTransform()->GetLocalPosition();
 
 	if (INPUT->GetButton(KEY_TYPE::UP))
-		pos += Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
-
-	if (INPUT->GetButton(KEY_TYPE::DOWN))
-		pos -= Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
-
-	if (INPUT->GetButton(KEY_TYPE::LEFT))
-		pos -= Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
-
-	if (INPUT->GetButton(KEY_TYPE::RIGHT))
-		pos += Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
-
-	if (INPUT->GetButton(KEY_TYPE::PAGEUP))
 		pos += Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
 
-	if (INPUT->GetButton(KEY_TYPE::PAGEDOWN))
+	if (INPUT->GetButton(KEY_TYPE::DOWN))
 		pos -= Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
+
+	if (INPUT->GetButton(KEY_TYPE::LEFT))
+		pos += Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
+
+	if (INPUT->GetButton(KEY_TYPE::RIGHT))
+		pos -= Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
+
+	if (INPUT->GetButton(KEY_TYPE::PAGEUP))
+		pos += Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
+
+	if (INPUT->GetButton(KEY_TYPE::PAGEDOWN))
+		pos -= Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
 
 	if (INPUT->GetButtonDown(KEY_TYPE::T)) PRINTPOSITION;
 
@@ -69,7 +69,7 @@ void TestPointLightScript::KeyboardInput()
 	float mapMaxX = (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f * METER_TO_CLIENT;
 	float mapMinZ = -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f * METER_TO_CLIENT;
 	float mapMaxZ = (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f * METER_TO_CLIENT;
-	float minY = 500.f;
+	float minY = 0.f;
 	float maxY = 9500.f;
 
 	// X, Y, Z ÁÂÇ¥¸¦ ¸Ê ¹üÀ§·Î Á¦ÇÑ
