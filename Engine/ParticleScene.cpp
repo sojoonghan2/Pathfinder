@@ -65,8 +65,7 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
-    // 카메라
-
+// 카메라
 #pragma region Camera
     {
         shared_ptr<GameObject> camera = make_shared<GameObject>();
@@ -82,7 +81,7 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
-    // UI 카메라
+// UI 카메라
 #pragma region UI_Camera
     {
         shared_ptr<GameObject> camera = make_shared<GameObject>();
@@ -98,7 +97,7 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
-    // 스카이 박스
+// 스카이 박스
 #pragma region SkyBox
     {
         shared_ptr<GameObject> skybox = make_shared<GameObject>();
@@ -122,7 +121,7 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
-    // 터레인 큐브
+// 터레인 큐브
 #pragma region TerrainCube
     {
         // 1. 기본 오브젝트 생성 및 설정
@@ -163,7 +162,7 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
-    // 전역 조명
+// 전역 조명
 #pragma region Directional Light
     {
         // 1. light 오브젝트 생성 
@@ -189,7 +188,7 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
-    // 플레이어
+// 플레이어
 #pragma region Player
     {
         shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Monster\\Monster.fbx");
@@ -199,19 +198,54 @@ ParticleScene::ParticleScene()
         gameObjects[0]->SetCheckFrustum(false);
         gameObjects[0]->AddComponent(make_shared<TestDragon>());
         gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-        gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.7f, 3.4f, 0.0f));
+        gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
         gameObjects[0]->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
         gameObjects[0]->AddComponent(make_shared<TestPointLightScript>());
 
         // 5. Scene에 추가
         activeScene->AddGameObject(gameObjects[0]);
+
+        shared_ptr<GameObject> grenade = make_shared<GameObject>();
+        grenade->SetName(L"Grenade");
+        grenade->SetCheckFrustum(true);
+        grenade->SetStatic(false);
+
+        grenade->AddComponent(make_shared<Transform>());
+        grenade->GetTransform()->SetLocalScale(Vec3(30.f, 30.f, 30.f));
+        grenade->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+        grenade->GetTransform()->GetTransform()->RemoveParent();
+        grenade->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
+        grenade->AddComponent(make_shared<TestGrenadeScript>());
+
+        grenade->AddComponent(make_shared<SphereCollider>());
+        dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetRadius(0.5f);
+        dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+
+        shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+        {
+            shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+            meshRenderer->SetMesh(sphereMesh);
+        }
+        {
+            shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
+            shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Grenade", L"..\\Resources\\Texture\\Grenade.jpg");
+
+            shared_ptr<Material> material = make_shared<Material>();
+            material->SetShader(shader);
+            material->SetTexture(0, texture);
+            meshRenderer->SetMaterial(material);
+        }
+        grenade->AddComponent(meshRenderer);
+
+        shared_ptr<FireParticleSystem> grenadeParticleSystem = make_shared<FireParticleSystem>();
+        grenadeParticleSystem->SetParticleScale(100.f, 80.f);
+        grenade->AddComponent(grenadeParticleSystem);
+
+        activeScene->AddGameObject(grenade);
     }
 #pragma endregion
 
-
 #pragma region OtherPlayer
-
-
     {
         std::array<shared_ptr<GameObject>, 2> obj{};
         for (int i = 0; i < 2; ++i) {
@@ -252,13 +286,16 @@ ParticleScene::ParticleScene()
         }
     }
 #pragma endregion
+
+    LoadMyParticle();
+    LoadDebugParticle();
 }
 
 ParticleScene::~ParticleScene() {}
 
 void ParticleScene::LoadMyParticle()
 {
-    // 얼음 파티클
+// 얼음 파티클
 #pragma region IceParticle
     {
         // 파티클 오브젝트 생성
@@ -282,7 +319,7 @@ void ParticleScene::LoadMyParticle()
     }
 #pragma endregion
 
-    // 대격변 파티클
+// 대격변 파티클
 #pragma region CataclysmParticle
     {
         // 파티클 오브젝트 생성
@@ -307,7 +344,7 @@ void ParticleScene::LoadMyParticle()
     }
 #pragma endregion
 
-    // 레이저 파티클
+// 레이저 파티클
 #pragma region RazerParticle
     {
         // 파티클 오브젝트 생성
@@ -331,7 +368,7 @@ void ParticleScene::LoadMyParticle()
     }
 #pragma endregion
 
-    // 오버 드라이브 파티클
+// 오버 드라이브 파티클
 #pragma region OverDriveParticle
     {
         // 파티클 오브젝트 생성
@@ -355,7 +392,7 @@ void ParticleScene::LoadMyParticle()
     }
 #pragma endregion
 
-    // 반짝이 파티클
+// 반짝이 파티클
 #pragma region GlitterParticle
     {
         // 파티클 오브젝트 생성
@@ -382,7 +419,7 @@ void ParticleScene::LoadMyParticle()
 
 void ParticleScene::LoadDebugParticle()
 {
-    // 테스트 PBR 파티클
+// 테스트 PBR 파티클
 #pragma region TestPBRParticle
     {
         // 파티클 오브젝트 생성
