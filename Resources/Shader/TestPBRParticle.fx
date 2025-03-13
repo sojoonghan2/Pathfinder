@@ -1,21 +1,35 @@
+<<<<<<< Updated upstream:Resources/Shader/TestPBRParticle.fx
 #ifndef _TESTPBRPARTICLE_FX_
 #define _TESTPBRPARTICLE_FX_
+=======
+#ifndef _REFRECTION_PARTICLE_FX_
+#define _REFRECTION_PARTICLE_FX_
+>>>>>>> Stashed changes:Resources/Shader/refraction_particle.fx
 
 #include "params.fx"
 #include "utils.fx"
 
-struct Particle
+struct RefractionParticle
 {
+<<<<<<< Updated upstream:Resources/Shader/TestPBRParticle.fx
     float3 worldPos;
     float curTime;
     float3 worldDir;
     float lifeTime;
     int alive;
     float3 padding;
+=======
+    float3 worldPos; // 12
+    float curTime; // 4
+    float3 worldDir; // 12
+    float lifeTime; // 4
+    int alive; // 4
+    float3 padding; // 12
+>>>>>>> Stashed changes:Resources/Shader/refraction_particle.fx
 };
 
 // StructuredBuffer 정의
-StructuredBuffer<Particle> g_data : register(t9);
+StructuredBuffer<RefractionParticle> g_data : register(t9);
 
 struct VS_IN
 {
@@ -33,7 +47,15 @@ struct VS_OUT
     float id : ID;
 };
 
+<<<<<<< Updated upstream:Resources/Shader/TestPBRParticle.fx
 // Vertex Shader
+=======
+// VS_MAIN
+// g_float_0        : Start Scale
+// g_float_1        : End Scale
+// g_textures[0]    : Particle Texture
+
+>>>>>>> Stashed changes:Resources/Shader/refraction_particle.fx
 VS_OUT VS_Main(VS_IN input)
 {
     VS_OUT output = (VS_OUT) 0.f;
@@ -140,7 +162,14 @@ struct ComputeShared
     float3 padding;
 };
 
+<<<<<<< Updated upstream:Resources/Shader/TestPBRParticle.fx
 RWStructuredBuffer<Particle> g_particle : register(u0);
+=======
+// 컴퓨트 셰이더 입/출력
+// 파티클 데이터가 저장된 버퍼
+RWStructuredBuffer<RefractionParticle> g_particle : register(u0);
+// 활성화할 파티클 수를 관리하는 공유 데이터
+>>>>>>> Stashed changes:Resources/Shader/refraction_particle.fx
 RWStructuredBuffer<ComputeShared> g_shared : register(u1);
 
 groupshared int isGenerated;
@@ -164,7 +193,12 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     g_shared[0].addCount = addCount;
     GroupMemoryBarrierWithGroupSync();
 
+<<<<<<< Updated upstream:Resources/Shader/TestPBRParticle.fx
     if (g_particle[threadIndex.x].alive == 0)
+=======
+    // 1. 비활성 파티클 활성화
+    if (g_particle[threadIndex.x].alive == 0 && g_shared[0].addCount > 0)
+>>>>>>> Stashed changes:Resources/Shader/refraction_particle.fx
     {
         while (true)
         {
