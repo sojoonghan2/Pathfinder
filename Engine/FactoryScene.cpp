@@ -24,6 +24,8 @@
 #include "SphereCollider.h"
 #include "GeneratorScript.h"
 
+#include "IceParticleSystem.h"
+
 FactoryScene::FactoryScene()
 {
 // 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
@@ -221,6 +223,7 @@ FactoryScene::FactoryScene()
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(2000.0f, -200.0f, 2000.0f));
 		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.6f, 0.0f, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(1.f, 1.f, 1.f));
+		gameObjects[0]->AddComponent(make_shared<IceParticleSystem>());
 		activeScene->AddGameObject(gameObjects[0]);
 	}
 #pragma endregion

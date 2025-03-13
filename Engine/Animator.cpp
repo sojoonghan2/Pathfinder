@@ -132,3 +132,12 @@ void Animator::Stop()
 {
     _isPlaying = false;
 }
+
+bool Animator::IsAnimationFinished()
+{
+    if (!_animClips || _clipIndex >= _animClips->size())
+        return false;
+
+    const AnimClipInfo& animClip = _animClips->at(_clipIndex);
+    return _updateTime >= animClip.duration;
+}

@@ -22,6 +22,8 @@ public:
 	void Play(uint32 idx);
 	void Stop();
 
+	bool IsAnimationFinished();
+
 public:
 	virtual void FinalUpdate() override;
 
