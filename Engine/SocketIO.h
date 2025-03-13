@@ -48,11 +48,12 @@ private:
 	std::thread	recvThread{};
 	std::queue<BufferType> bufferQueue;
 	NetworkTimer sendTimer;
-	int nextId{ 0 };
+	std::vector<int> idList;
+	int idCount{ 0 };
 
 	// temp
 public:
-	std::array<Player, 3> players{};
+	std::unordered_map<int, Player> players{};
 	int myId{-1};
 
 };

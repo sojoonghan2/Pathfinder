@@ -157,7 +157,11 @@ void SocketIO::ProcessPacket()
 		case packet::Type::SC_MOVE_PLAYER:
 		{
 			packet::SCMovePlayer packet = reinterpret_cast<packet::SCMovePlayer&>(buffer);
-
+			if (idList.end() == std::find(idList.begin(), idList.end(), packet.playerId) &&
+				packet.playerId != myId) {
+				idList.push_back(packet.playerId);
+				std::println("{} put success.", packet.playerId);
+			}
 			GET_SINGLE(MessageManager)->InsertMessage(packet.playerId, packet.x, packet.y);
 			players[packet.playerId].x = packet.x;
 			players[packet.playerId].y = packet.y;
@@ -175,9 +179,11 @@ void SocketIO::ProcessPacket()
 
 int SocketIO::GetNextId()
 {
-	if (-1 == myId) { return -1; }
-	if (nextId == myId) { ++nextId; }
-	return nextId++;
+	if (idList.size() <= idCount) {
+		return -1;
+	}
+	std::println("{} get success", idList[idCount]);
+	return idList[idCount++];
 }
 
 SocketIO::~SocketIO()
