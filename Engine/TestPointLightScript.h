@@ -11,10 +11,12 @@ public:
 
 	void KeyboardInput();
 	void MouseInput();
+	void Animation();
 
 	void SetPosition(float x, float z);
 
 private:
 	float		_speed = 1000.f;
+	bool		_isMove = false;
 };
 

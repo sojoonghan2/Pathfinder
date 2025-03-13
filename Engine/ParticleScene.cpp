@@ -202,7 +202,6 @@ ParticleScene::ParticleScene()
         gameObjects[0]->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
         gameObjects[0]->AddComponent(make_shared<TestPointLightScript>());
 
-        // 5. Scene¿¡ Ãß°¡
         activeScene->AddGameObject(gameObjects[0]);
 
         shared_ptr<GameObject> grenade = make_shared<GameObject>();

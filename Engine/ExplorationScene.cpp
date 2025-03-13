@@ -80,8 +80,8 @@ ExplorationScene::ExplorationScene()
 	}
 #pragma endregion
 
-// 구 오브젝트과 포인트 조명
-#pragma region Object & Point Light
+// 플레이어
+#pragma region Player
 	{
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Monster\\Monster.fbx");
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
@@ -90,11 +90,10 @@ ExplorationScene::ExplorationScene()
 		gameObjects[0]->SetCheckFrustum(false);
 		gameObjects[0]->AddComponent(make_shared<TestDragon>());
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.7f, 3.4f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 		gameObjects[0]->AddComponent(make_shared<TestPointLightScript>());
 
-		// 5. Scene에 추가
 		activeScene->AddGameObject(gameObjects[0]);
 
 		// -----이유를 못찾은 오류-----

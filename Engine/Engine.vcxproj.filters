@@ -297,6 +297,9 @@
     <ClCompile Include="TestOtherPlayerScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratorScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -549,6 +552,9 @@
       <Filter>Network\Common</Filter>
     </ClInclude>
     <ClInclude Include="TestOtherPlayerScript.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratorScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
   </ItemGroup>

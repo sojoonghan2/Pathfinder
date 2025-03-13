@@ -22,7 +22,7 @@
 #include "FactoryScript.h"
 
 #include "SphereCollider.h"
-#include "TestDragon.h"
+#include "GeneratorScript.h"
 
 FactoryScene::FactoryScene()
 {
@@ -83,18 +83,33 @@ FactoryScene::FactoryScene()
 // 플레이어
 #pragma region Player
 	{
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Monster\\Monster.fbx");
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
 		gameObjects[0]->SetName(L"OBJ");
 		gameObjects[0]->SetCheckFrustum(false);
-		gameObjects[0]->AddComponent(make_shared<TestDragon>());
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.7f, 3.4f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
 		gameObjects[0]->AddComponent(make_shared<TestPointLightScript>());
 
-		// 5. Scene에 추가
+		activeScene->AddGameObject(gameObjects[0]);
+	}
+#pragma endregion
+
+// 몬스터
+#pragma region Monster
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Monster\\Monster.fbx");
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		gameObjects[0]->SetName(L"FactoryMonster");
+		gameObjects[0]->SetCheckFrustum(false);
+		gameObjects[0]->AddComponent(make_shared<TestDragon>());
+		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, 0.0f, 2000.0f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 0.0f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(4.f, 4.f, 4.f));
+
 		activeScene->AddGameObject(gameObjects[0]);
 	}
 #pragma endregion
@@ -140,6 +155,34 @@ FactoryScene::FactoryScene()
 	}
 #pragma endregion
 
+#pragma region FactoryMonsterHpUI
+	{
+		shared_ptr<GameObject> obj = make_shared<GameObject>();
+		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		obj->AddComponent(make_shared<Transform>());
+		obj->SetName(L"FactoryMonsterHpUI");
+		obj->GetTransform()->SetLocalScale(Vec3(1000.f, 150.f, 10.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(0.f, 350.f, 500.f));
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			meshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"FactoryMonsterHpUI", L"..\\Resources\\Texture\\FactoryMonsterHpUI.png");
+
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			meshRenderer->SetMaterial(material);
+		}
+		obj->AddComponent(meshRenderer);
+		activeScene->AddGameObject(obj);
+	}
+#pragma endregion
+
 // 전역 조명
 #pragma region Directional Light
 	{
@@ -174,10 +217,10 @@ FactoryScene::FactoryScene()
 
 		gameObjects[0]->SetName(L"Generator");
 		gameObjects[0]->SetCheckFrustum(true);
-		gameObjects[0]->AddComponent(make_shared<TestDragon>());
+		gameObjects[0]->AddComponent(make_shared<GeneratorScript>());
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(2000.0f, -200.0f, 2000.0f));
 		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.6f, 0.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(1.f, 1.f, 1.f));
 		activeScene->AddGameObject(gameObjects[0]);
 	}
 #pragma endregion
