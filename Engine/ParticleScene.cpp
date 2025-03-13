@@ -203,31 +203,14 @@ ParticleScene::ParticleScene()
         gameObjects[0]->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
         gameObjects[0]->AddComponent(make_shared<TestPointLightScript>());
 
-<<<<<<< Updated upstream
         // 5. Scene에 추가
         activeScene->AddGameObject(gameObjects[0]);
     }
-=======
-		// 파티클 시스템 컴포넌트 추가(true: 굴절 파티클)
-		shared_ptr<IceParticleSystem> iceParticleSystem = make_shared<IceParticleSystem>(true);
-		iceParticle->AddComponent(make_shared<TestParticleScript>());
-		iceParticle->AddComponent(iceParticleSystem);
-
-		activeScene->AddGameObject(iceParticle);
-	}
->>>>>>> Stashed changes
 #pragma endregion
 
 
 #pragma region OtherPlayer
 
-<<<<<<< Updated upstream
-=======
-		// 파티클 시스템 컴포넌트 추가
-		shared_ptr<FireParticleSystem> fireParticleSystem = make_shared<FireParticleSystem>(false);
-		fireParticle->AddComponent(make_shared<TestParticleScript>());
-		fireParticle->AddComponent(fireParticleSystem);
->>>>>>> Stashed changes
 
     {
         std::array<shared_ptr<GameObject>, 2> obj{};
@@ -275,7 +258,7 @@ ParticleScene::~ParticleScene() {}
 
 void ParticleScene::LoadMyParticle()
 {
-// 얼음 파티클
+    // 얼음 파티클
 #pragma region IceParticle
     {
         // 파티클 오브젝트 생성
@@ -299,7 +282,7 @@ void ParticleScene::LoadMyParticle()
     }
 #pragma endregion
 
-// 대격변 파티클
+    // 대격변 파티클
 #pragma region CataclysmParticle
     {
         // 파티클 오브젝트 생성
@@ -324,7 +307,7 @@ void ParticleScene::LoadMyParticle()
     }
 #pragma endregion
 
-// 레이저 파티클
+    // 레이저 파티클
 #pragma region RazerParticle
     {
         // 파티클 오브젝트 생성
@@ -348,7 +331,7 @@ void ParticleScene::LoadMyParticle()
     }
 #pragma endregion
 
-// 오버 드라이브 파티클
+    // 오버 드라이브 파티클
 #pragma region OverDriveParticle
     {
         // 파티클 오브젝트 생성
@@ -372,7 +355,7 @@ void ParticleScene::LoadMyParticle()
     }
 #pragma endregion
 
-// 반짝이 파티클
+    // 반짝이 파티클
 #pragma region GlitterParticle
     {
         // 파티클 오브젝트 생성
@@ -399,7 +382,7 @@ void ParticleScene::LoadMyParticle()
 
 void ParticleScene::LoadDebugParticle()
 {
-// 테스트 PBR 파티클
+    // 테스트 PBR 파티클
 #pragma region TestPBRParticle
     {
         // 파티클 오브젝트 생성
