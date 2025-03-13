@@ -7,7 +7,7 @@ void Game::Init(const WindowInfo& info)
 {
 	GEngine->Init(info);
 
-	GET_SINGLE(SceneManager)->LoadScene(L"FactoryScene");
+	GET_SINGLE(SceneManager)->LoadScene(L"BossScene");
 }
 
 void Game::Update()

@@ -190,7 +190,7 @@ CrashScene::CrashScene()
 // 플레이어
 #pragma region Player
 	{
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Monster\\Monster.fbx");
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
 		gameObjects[0]->SetName(L"OBJ");
