@@ -148,11 +148,15 @@ void IOCP::Worker()
 			&over,
 			INFINITE);
 
-		if (FALSE == ret) {
-			util::DisplayQuitError();
-		}
-
 		OverlappedEx* curr_over_ex = reinterpret_cast<OverlappedEx*>(over);
+		
+		if (FALSE == ret) {
+			closesocket(sessionList[key].clientSocket);
+			// Send 일경우 보낸 curr_ex는 제거
+			if (curr_over_ex->operation == IOOperation::SEND) {
+				delete curr_over_ex;
+			}
+		}
 
 
 		// 완료된 작업의 OverlappedEx 정보를 읽는다.
@@ -319,6 +323,7 @@ bool IOCP::ProcessPacket(int key, char* p)
 			DoSend(sessionList[key], &sc_move_player);
 		}
 
+		// 
 		players[key].x = urd(dre);
 		players[key].y = urd(dre);
 		// 이 부분을 맵 당 broadcast로 변경해야함
@@ -348,6 +353,7 @@ bool IOCP::ProcessPacket(int key, char* p)
 
 void IOCP::DoBroadcast(void* packet)
 {
+	// todo: 수정
 	for (int i = 0; i < sessionCnt; ++i) {
 		DoSend(sessionList[i], packet);
 	}
@@ -355,6 +361,7 @@ void IOCP::DoBroadcast(void* packet)
 
 void IOCP::DoBroadcast(int key, void* packet)
 {
+	// todo: 수정
 	for (int i = 0; i < sessionCnt; ++i) {
 		if (key == i) continue;
 		DoSend(sessionList[i], packet);

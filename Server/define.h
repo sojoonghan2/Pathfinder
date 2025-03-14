@@ -1,5 +1,7 @@
 #pragma once
 
+constexpr int ROOM_COUNT = 100;
+
 enum class IOOperation
 {
 	NONE,
@@ -48,3 +50,17 @@ struct Session
 		ZeroMemory(&overEx, sizeof(overEx));
 	}
 };
+
+// ╫л╠шео
+#define DECLARE_SINGLE(type)		\
+private:							\
+	type() {}						\
+	~type() {}						\
+public:								\
+	static type* GetInstance()		\
+	{								\
+		static type instance;		\
+		return &instance;			\
+	}								\
+
+#define GET_SINGLE(type)	type::GetInstance()
