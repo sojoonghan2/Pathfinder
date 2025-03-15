@@ -81,7 +81,7 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-	// 플레이어
+// 플레이어
 #pragma region Player
 	{
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
