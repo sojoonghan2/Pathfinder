@@ -149,7 +149,7 @@ LuckyScene::LuckyScene()
 	}
 #pragma endregion
 
-	// 플레이어
+// 플레이어
 #pragma region Player
 	{
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
@@ -160,7 +160,7 @@ LuckyScene::LuckyScene()
 		gameObjects[0]->AddComponent(make_shared<TestDragon>());
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
 		gameObjects[0]->AddComponent(make_shared<TestPointLightScript>());
 
 		activeScene->AddGameObject(gameObjects[0]);
@@ -208,43 +208,16 @@ LuckyScene::LuckyScene()
 
 			gameObject->SetCheckFrustum(true);
 
-			if (index == 0)
-				gameObject->GetTransform()->SetLocalPosition(Vec3(50.f, 400.f, 310.f));
-			else
-			{
-				gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 50.f, 0.f));
-				shared_ptr<GlitterParticleSystem> glitterParticleSystem = make_shared<GlitterParticleSystem>();
-				gameObject->AddComponent(make_shared<TestParticleScript>());
-				gameObject->AddComponent(glitterParticleSystem);
-			}
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 50.f, 0.f));
+			shared_ptr<GlitterParticleSystem> glitterParticleSystem = make_shared<GlitterParticleSystem>();
+			gameObject->AddComponent(make_shared<TestParticleScript>());
+			gameObject->AddComponent(glitterParticleSystem);
 
-			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-			gameObject->GetTransform()->SetLocalRotation(Vec3(0.0f, 1.7f, 0.0f));
-
+			gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(0.0f, 1.5708f, 1.5708f));
+			if (index != 1) gameObject->SetRenderOff();
 			activeScene->AddGameObject(gameObject);
 			index++;
-		}
-	}
-#pragma endregion
-
-// 플레이어
-#pragma region PLAYER
-	{
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Halo 5 Noble\\Halo 5 Noble.fbx");
-
-		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
-
-		// Save가 잘 안됨, MeshData의 Save와 Load를 수정해야 함, 한번 로드 후 다시 로드하려면 msh 지워야 함
-		//meshData->SaveOrLoad(L"..\\Resources\\MeshData\\Dragon.msh", L"..\\Resources\\FBX\\Dragon.fbx");
-
-		for (auto& gameObject : gameObjects)
-		{
-			gameObject->SetName(L"Player");
-			gameObject->SetCheckFrustum(true);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(200.f, -200.f, 300.f));
-			gameObject->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
-			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.7f, 0.f, 0.f));
-			activeScene->AddGameObject(gameObject);
 		}
 	}
 #pragma endregion
