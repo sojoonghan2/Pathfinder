@@ -32,7 +32,7 @@ void Game::Init(const WindowInfo& info)
 #endif
 
 #ifdef LUCKYLOAD
-	GET_SINGLE(SceneManager)->LoadScene(L"LuckyLoad");
+	GET_SINGLE(SceneManager)->LoadScene(L"LuckyScene");
 #endif
 
 #ifdef BOSSLOAD
