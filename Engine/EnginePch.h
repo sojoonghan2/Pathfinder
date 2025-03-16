@@ -119,9 +119,9 @@ using Matrix	= DirectX::SimpleMath::Matrix;
 //#define FACTORYLOAD
 //#define EXPLORATIONLOAD
 //#define CRASHLOAD
-//#define LUCKYLOAD
+#define LUCKYLOAD
 //#define BOSSLOAD
-#define PARTICLELOAD
+//#define PARTICLELOAD
 //#define TESTLOAD
 
 
