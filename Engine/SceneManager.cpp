@@ -41,29 +41,46 @@ void SceneManager::Init()
 	shared_ptr<TitleScene> titleScene = make_shared<TitleScene>();
 	scenes[L"TitleScene"] = titleScene->GetScene();
 
+#if defined(RUINSLOAD) || defined(ALLLOAD)
 	shared_ptr<RuinsScene> ruinsScene = make_shared<RuinsScene>();
 	scenes[L"RuinsScene"] = ruinsScene->GetScene();
+#endif
 
+#if defined(FACTORYLOAD) || defined(ALLLOAD)
 	shared_ptr<FactoryScene> factoryScene = make_shared<FactoryScene>();
 	scenes[L"FactoryScene"] = factoryScene->GetScene();
+#endif
 
+#if defined(EXPLORATIONLOAD) || defined(ALLLOAD)
 	shared_ptr<ExplorationScene> explorationScene = make_shared<ExplorationScene>();
 	scenes[L"ExplorationScene"] = explorationScene->GetScene();
+#endif
 
+#if defined(CRASHLOAD) || defined(ALLLOAD)
 	shared_ptr<CrashScene> crashScene = make_shared<CrashScene>();
 	scenes[L"CrashScene"] = crashScene->GetScene();
+#endif
 
+#if defined(LUCKYLOAD) || defined(ALLLOAD)
 	shared_ptr<LuckyScene> luckyScene = make_shared<LuckyScene>();
 	scenes[L"LuckyScene"] = luckyScene->GetScene();
+#endif
 
+#if defined(BOSSLOAD) || defined(ALLLOAD)
 	shared_ptr<BossScene> bossScene = make_shared<BossScene>();
 	scenes[L"BossScene"] = bossScene->GetScene();
+#endif
 
+#if defined(TESTLOAD) || defined(ALLLOAD)
 	shared_ptr<TestScene> testScene = make_shared<TestScene>();
 	scenes[L"TestScene"] = testScene->GetScene();
+#endif
 
+#if defined(PARTICLELOAD) || defined(ALLLOAD)
 	shared_ptr<ParticleScene> particleScene = make_shared<ParticleScene>();
 	scenes[L"ParticleScene"] = particleScene->GetScene();
+#endif
+
 #pragma endregion
 }
 

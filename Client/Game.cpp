@@ -7,7 +7,46 @@ void Game::Init(const WindowInfo& info)
 {
 	GEngine->Init(info);
 
-	GET_SINGLE(SceneManager)->LoadScene(L"LuckyScene");
+#ifdef ALLLOAD
+	GET_SINGLE(SceneManager)->LoadScene(L"TitleScene");
+#endif
+
+#ifdef TITLELOAD
+	GET_SINGLE(SceneManager)->LoadScene(L"TitleScene");
+#endif
+
+#ifdef RUINSLOAD
+	GET_SINGLE(SceneManager)->LoadScene(L"RuinsScene");
+#endif
+
+#ifdef FACTORYLOAD
+	GET_SINGLE(SceneManager)->LoadScene(L"FactoryScene");
+#endif
+
+#ifdef EXPLORATIONLOAD
+	GET_SINGLE(SceneManager)->LoadScene(L"ExplorationScene");
+#endif
+
+#ifdef CRASHLOAD
+	GET_SINGLE(SceneManager)->LoadScene(L"CrashScene");
+#endif
+
+#ifdef LUCKYLOAD
+	GET_SINGLE(SceneManager)->LoadScene(L"LuckyLoad");
+#endif
+
+#ifdef BOSSLOAD
+	GET_SINGLE(SceneManager)->LoadScene(L"BossScene");
+#endif
+
+#ifdef PARTICLELOAD
+	GET_SINGLE(SceneManager)->LoadScene(L"ParticleScene");
+#endif
+
+#ifdef TESTLOAD
+	GET_SINGLE(SceneManager)->LoadScene(L"TestScene");
+#endif
+
 }
 
 void Game::Update()
