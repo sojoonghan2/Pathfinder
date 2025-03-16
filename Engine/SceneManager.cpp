@@ -18,21 +18,19 @@
 #include "MeshData.h"
 #include "TestDragon.h"
 
+#include "LoadingScene.h"
 #include "TitleScene.h"
 #include "ParticleScene.h"
-
 #include "RuinsScene.h"
 #include "FactoryScene.h"
 #include "ExplorationScene.h"
 #include "CrashScene.h"
 #include "LuckyScene.h"
 #include "BossScene.h"
-
 #include "TestScene.h"
 
 void SceneManager::Init()
 {
-// ·¹ÀÌ¾î
 #pragma region LayerMask
 	SetLayerName(0, L"Default");
 	SetLayerName(1, L"UI");
@@ -41,42 +39,47 @@ void SceneManager::Init()
 	shared_ptr<TitleScene> titleScene = make_shared<TitleScene>();
 	scenes[L"TitleScene"] = titleScene->GetScene();
 
-#if defined(RUINSLOAD) || defined(ALLLOAD)
+#if define(ALLLOAD)
+	shared_ptr<LoadingScene> loadingScene = make_shared<LoadingScene>();
+	scenes[L"LoadingScene"] = loadingScene->GetScene();
+#endif
+
+#if defined(RUINSLOAD)
 	shared_ptr<RuinsScene> ruinsScene = make_shared<RuinsScene>();
 	scenes[L"RuinsScene"] = ruinsScene->GetScene();
 #endif
 
-#if defined(FACTORYLOAD) || defined(ALLLOAD)
+#if defined(FACTORYLOAD)
 	shared_ptr<FactoryScene> factoryScene = make_shared<FactoryScene>();
 	scenes[L"FactoryScene"] = factoryScene->GetScene();
 #endif
 
-#if defined(EXPLORATIONLOAD) || defined(ALLLOAD)
+#if defined(EXPLORATIONLOAD)
 	shared_ptr<ExplorationScene> explorationScene = make_shared<ExplorationScene>();
 	scenes[L"ExplorationScene"] = explorationScene->GetScene();
 #endif
 
-#if defined(CRASHLOAD) || defined(ALLLOAD)
+#if defined(CRASHLOAD)
 	shared_ptr<CrashScene> crashScene = make_shared<CrashScene>();
 	scenes[L"CrashScene"] = crashScene->GetScene();
 #endif
 
-#if defined(LUCKYLOAD) || defined(ALLLOAD)
+#if defined(LUCKYLOAD)
 	shared_ptr<LuckyScene> luckyScene = make_shared<LuckyScene>();
 	scenes[L"LuckyScene"] = luckyScene->GetScene();
 #endif
 
-#if defined(BOSSLOAD) || defined(ALLLOAD)
+#if defined(BOSSLOAD)
 	shared_ptr<BossScene> bossScene = make_shared<BossScene>();
 	scenes[L"BossScene"] = bossScene->GetScene();
 #endif
 
-#if defined(TESTLOAD) || defined(ALLLOAD)
+#if defined(TESTLOAD)
 	shared_ptr<TestScene> testScene = make_shared<TestScene>();
 	scenes[L"TestScene"] = testScene->GetScene();
 #endif
 
-#if defined(PARTICLELOAD) || defined(ALLLOAD)
+#if defined(PARTICLELOAD)
 	shared_ptr<ParticleScene> particleScene = make_shared<ParticleScene>();
 	scenes[L"ParticleScene"] = particleScene->GetScene();
 #endif
@@ -112,6 +115,11 @@ void SceneManager::LoadScene(wstring sceneName)
 
 void SceneManager::ChangeScene(wstring sceneName) {
 	_activeScene = scenes.at(sceneName);
+}
+
+void SceneManager::RegisterScene(const wstring& name, shared_ptr<Scene> scene)
+{
+	scenes[name] = scene;
 }
 
 void SceneManager::SetLayerName(uint8 index, const wstring& name)

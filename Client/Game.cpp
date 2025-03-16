@@ -8,7 +8,7 @@ void Game::Init(const WindowInfo& info)
 	GEngine->Init(info);
 
 #ifdef ALLLOAD
-	GET_SINGLE(SceneManager)->LoadScene(L"TitleScene");
+	GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
 #endif
 
 #ifdef TITLELOAD
