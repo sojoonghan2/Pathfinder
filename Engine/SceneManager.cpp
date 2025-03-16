@@ -39,7 +39,7 @@ void SceneManager::Init()
 	shared_ptr<TitleScene> titleScene = make_shared<TitleScene>();
 	scenes[L"TitleScene"] = titleScene->GetScene();
 
-#if define(ALLLOAD)
+#if defined(ALLLOAD)
 	shared_ptr<LoadingScene> loadingScene = make_shared<LoadingScene>();
 	scenes[L"LoadingScene"] = loadingScene->GetScene();
 #endif
