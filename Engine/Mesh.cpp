@@ -1,10 +1,7 @@
-<<<<<<< Updated upstream
-ï»?include "pch.h"
-=======
+
 #include <d3d12.h>
 
 #include "pch.h"
->>>>>>> Stashed changes
 #include "Mesh.h"
 #include "Engine.h"
 #include "Material.h"
