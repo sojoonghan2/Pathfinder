@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "SocketIO.h"
-#include "NetworkTimer.h"
 
 constexpr int GRID_CONUT{ 100 };
 constexpr int WINDOW_WIDTH{ 800 };
@@ -165,8 +164,8 @@ int main() {
 	socket_io.Start();
 
 
-	NetworkTimer frame_timer;
-	NetworkTimer send_timer;
+	util::Timer frame_timer;
+	util::Timer send_timer;
 
 	while (window.isOpen()) {
 

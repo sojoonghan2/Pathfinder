@@ -29,9 +29,6 @@
     <ClCompile Include="..\Common\util.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="NetworkTimer.cpp">
-      <Filter>Tool</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SocketIO.h">
@@ -48,9 +45,6 @@
     </ClInclude>
     <ClInclude Include="define.h">
       <Filter>pch</Filter>
-    </ClInclude>
-    <ClInclude Include="NetworkTimer.h">
-      <Filter>Tool</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\CommonDefine.h">
       <Filter>Common</Filter>

@@ -142,7 +142,6 @@
   <ItemGroup>
     <ClCompile Include="..\Common\util.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="NetworkTimer.cpp" />
     <ClCompile Include="SocketIO.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -150,7 +149,6 @@
     <ClInclude Include="..\Common\protocol.h" />
     <ClInclude Include="..\Common\util.h" />
     <ClInclude Include="define.h" />
-    <ClInclude Include="NetworkTimer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SocketIO.h" />
   </ItemGroup>

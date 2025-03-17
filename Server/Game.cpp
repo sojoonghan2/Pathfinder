@@ -1,32 +1,97 @@
 #include "pch.h"
 #include "Game.h"
 
-bool Game::EnterRoom(int id)
+std::random_device rd;
+std::default_random_engine dre{ rd() };
+std::uniform_real_distribution<float> timeDist{ 2.f, 4.f };
+std::uniform_real_distribution<float> posDist{ -24.f, 24.f };
+
+bool Game::RegisterClient(int id)
 {
-	for (auto& room : rooms) {
-		room.lock();
-		auto number = room.players.size();
-		if (number >= 3) {
-			room.unlock();
-			continue;
+	// 클라이언트에 매치메이킹 패킷이 도착하였을 경우
+	// 클라이언트 아이디를 우선순위 큐에 넣고 사이즈 검사
+	// 사이즈가 3이상이면 클라이언트 3개를 뽑아냄.
+	
+	// 만약 클라이언트 3개를 뽑는데 실패한다면
+	// 여태 뽑은 클라이언트 id를 우선순위를 높혀서 다시 매치메이킹 큐에 저장
+	
+	// 번호 3개를 뽑는데 성공한다면 
+	// 플레이어 번호를 3개 플레이어 큐에서 꺼냄.
+	// 꺼낸 번호 3개를 각각 클라이언트에 부여
+	// 방 번호 큐에서 번호를 하나를 꺼내와
+	// 그 번호의 방에 플레이어 아이디를 저장.
+	matchmakingQueue.push(id);
+
+	float waiting_time = timeDist(dre);
+	std::array<int, 3> client_ids{};
+	bool loop{ false };
+	bool match{ false };
+	util::Timer pop_timer;
+	int count{ 1 };
+	do {
+		loop = false;
+
+		// 매치메이킹 큐에 세명이 찰 경우 3명을 뽑음
+		if (matchmakingQueue.unsafe_size() >= 3) {
+			for (auto& id : client_ids) {
+				if (not matchmakingQueue.try_pop(id)) {
+					loop = true;
+					break;
+				}
+			}
+			match = true;
 		}
-		room.players
-		room.unlock();
-		roomHash.insert({ id, &room });
+		
+		// 실패하면 대기시간을 점점 더 늘려가면서 재시도
+		if (loop) {
+			pop_timer.updateDeltaTime();
+			while (pop_timer.PeekDeltaTime() < waiting_time) {
+				std::this_thread::yield();
+			}
+			waiting_time += timeDist(dre) * count++;
+		}
+	} while (loop);
+
+
+	if (match) {
+		int roomId = -1;
+		std::array<int, 3> player_ids{};
+		while (roomQueue.try_pop(roomId)) {
+			std::this_thread::yield();
+		}
+		for (int i = 0; i < 3; ++i) {
+			while (playerQueue.try_pop(player_ids[i])) {
+				std::this_thread::yield();
+			}
+			roomList[roomId].playerIdList[i] = player_ids[i];
+			idInfoTable.insert(std::make_pair(
+				client_ids[i], ClientIdInfo{ player_ids[i], roomId }));
+			playerList[i].x = posDist(dre);
+			playerList[i].y = posDist(dre);
+			playerList[i].clientId = client_ids[i];
+		}
+
 	}
+
 }
 
 void Game::SetPosition(const int id, Vec2f pos)
 {
-
+	playerList[idInfoTable[id].playerid].pos = pos;
 }
 
-void Game::SetRandomPosition(const int id)
+std::array<int, 3> Game::GetRoomPlayers(const int id)
 {
-	
+	return roomList[idInfoTable[id].roomid].playerIdList;
 }
 
-std::vector<int> Game::GetRoomPlayers(const int id)
+void Game::Init()
 {
-	roomHash.find(id)
+	for (int i = 0; i < PLAYER_COUNT; ++i) {
+		playerQueue.push(i);
+	}
+
+	for (int i = 0; i < ROOM_COUNT; ++i) {
+		roomQueue.push(i);
+	}
 }

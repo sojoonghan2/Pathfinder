@@ -1,5 +1,4 @@
 #pragma once
-#include "NetworkTimer.h"
 
 struct Player
 {
@@ -47,7 +46,7 @@ private:
 	SOCKET serverSocket{ INVALID_SOCKET };
 	std::thread	recvThread{};
 	std::queue<BufferType> bufferQueue;
-	NetworkTimer sendTimer;
+	util::Timer sendTimer;
 	std::vector<int> idList;
 	int idCount{ 0 };
 

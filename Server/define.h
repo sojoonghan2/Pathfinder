@@ -1,6 +1,7 @@
 #pragma once
 
-constexpr int ROOM_COUNT = 100;
+constexpr int ROOM_COUNT = 300;
+constexpr int PLAYER_COUNT = 1000;
 
 enum class IOOperation
 {
@@ -10,6 +11,26 @@ enum class IOOperation
 	SEND
 };
 
+// temp
+struct Room
+{
+	std::array<int, 3> playerIdList{};
+};
+
+struct ClientIdInfo
+{
+	int playerid{ -1 };
+	int roomid{ -1 };
+};
+
+struct Player
+{
+	Vec2f pos{};
+	int clientId{ -1 };
+	float& x = pos.x;
+	float& y = pos.y;
+
+};
 
 struct OverlappedEx
 {
@@ -39,23 +60,24 @@ struct OverlappedEx
 	}
 };
 
-struct Session
+struct ClientInfo
 {
 	OverlappedEx	overEx;							// RECV에 사용할 Overlapped 변수
 	SOCKET			clientSocket{ INVALID_SOCKET };	
 	int				currentDataSize{};					// 패킷 재조립을 위한 남은 데이터 수 
+	ClientIdInfo	clientIdInfo{};
 
-	Session()
+	ClientInfo()
 	{
 		ZeroMemory(&overEx, sizeof(overEx));
 	}
 };
 
+
 // 싱글턴
 #define DECLARE_SINGLE(type)		\
 private:							\
 	type() {}						\
-	~type() {}						\
 public:								\
 	static type* GetInstance()		\
 	{								\

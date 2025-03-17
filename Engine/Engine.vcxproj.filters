@@ -285,9 +285,6 @@
     <ClCompile Include="SocketIO.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="NetworkTimer.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
     <ClCompile Include="MessageManager.cpp">
       <Filter>Network</Filter>
     </ClCompile>
@@ -534,9 +531,6 @@
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
     <ClInclude Include="SocketIO.h">
-      <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="NetworkTimer.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="MessageManager.h">

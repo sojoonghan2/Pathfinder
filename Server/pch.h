@@ -14,6 +14,7 @@
 #include <random>
 #include <unordered_map>
 #include <concurrent_unordered_map.h>
+#include <concurrent_queue.h>
 
 #include <atomic>
 #include <mutex>

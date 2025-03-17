@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "IOCP.h"
-
+#include "Game.h"
 
 int main()
 {
@@ -11,6 +11,8 @@ int main()
 	if (false == ret) {
 		return -1;
 	}
+
+	GET_SINGLE(Game)->Init();
 
 	iocp.Start();
 

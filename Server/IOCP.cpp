@@ -2,41 +2,7 @@
 #include "Player.h"
 
 #include "IOCP.h"
-
-
-std::random_device rd;
-std::default_random_engine dre{ rd() };
-std::uniform_real_distribution<float> urd{ -24.f, 24.f };
-
-
-class Timer {
-private:
-	using Clock = std::chrono::steady_clock;
-	using TimePoint = std::chrono::time_point<Clock>;
-	using MilliSeconds = std::chrono::duration<float, std::milli>; // 밀리초 단위로 변경
-
-	TimePoint lastFrame;
-	float deltaTimeMS; // 밀리초 단위의 델타타임
-
-public:
-	Timer() : lastFrame(Clock::now()), deltaTimeMS(0.0f) {}
-
-	float getDeltaTimeMS() const { return deltaTimeMS; }
-	float getDeltaTimeSeconds() const { return deltaTimeMS / 1000.0f; } // 초 단위 변환
-
-	void updateDeltaTime() {
-		TimePoint currentFrame = Clock::now();
-		deltaTimeMS = std::chrono::duration_cast<MilliSeconds>(currentFrame - lastFrame).count();
-		lastFrame = currentFrame;
-	}
-
-	float PeekDeltaTime() const {
-		TimePoint currentFrame = Clock::now();
-		return std::chrono::duration_cast<MilliSeconds>(currentFrame - lastFrame).count();
-	}
-};
-
-
+#include "Game.h"
 
 bool IOCP::Init()
 {
@@ -128,7 +94,7 @@ bool IOCP::Start()
 	for (int i = 0; i < thread_nubmer; ++i) {
 		workers.emplace_back([this]() { Worker(); });
 	}
-	workers.emplace_back([this]() {TimerWorker(); });
+	workers.emplace_back([this]() { TimerWorker(); });
 	std::println("Created {} Threads", thread_nubmer);
 
 	return true;
@@ -151,7 +117,8 @@ void IOCP::Worker()
 		OverlappedEx* curr_over_ex = reinterpret_cast<OverlappedEx*>(over);
 		
 		if (FALSE == ret) {
-			closesocket(sessionList[key].clientSocket);
+			// TODO: ERROR
+			closesocket(clientInfoHash[key].clientSocket);
 			// Send 일경우 보낸 curr_ex는 제거
 			if (curr_over_ex->operation == IOOperation::SEND) {
 				delete curr_over_ex;
@@ -174,9 +141,9 @@ void IOCP::Worker()
 			int client_id = sessionCnt++;
 			std::println("New Client {} Accepted.", client_id);
 
-			sessionList[client_id].currentDataSize = 0;
-			sessionList[client_id].clientSocket = acceptSocket;
-			sessionList[client_id].overEx.clientSocket = acceptSocket;
+			clientInfoHash[client_id].currentDataSize = 0;
+			clientInfoHash[client_id].clientSocket = acceptSocket;
+			clientInfoHash[client_id].overEx.clientSocket = acceptSocket;
 
 			// IOCP 객체에 받아들인 클라이언트의 소켓을 연결
 			auto ret = CreateIoCompletionPort(
@@ -186,7 +153,7 @@ void IOCP::Worker()
 				0);
 
 			// WSARecv 호출.
-			DoRecv(sessionList[client_id]);
+			DoRecv(clientInfoHash[client_id]);
 
 			// accept를 위한 새로운 소켓 생성
 			acceptSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
@@ -217,7 +184,7 @@ void IOCP::Worker()
 		{
 			// 패킷 재조립 (임시) 나중에 바꿀 예정
 
-			int remain_data = io_size + sessionList[key].currentDataSize;
+			int remain_data = io_size + clientInfoHash[key].currentDataSize;
 			char* p = curr_over_ex->dataBuffer;
 
 			while (remain_data > 0) {
@@ -225,8 +192,9 @@ void IOCP::Worker()
 				if (packet_size <= remain_data) {
 					bool ret = ProcessPacket(static_cast<int>(key), p);
 					if (false == ret) {
-						closesocket(sessionList[key].clientSocket);
-						ZeroMemory(&sessionList[key], sizeof(Session));
+						// Todo
+						closesocket(clientInfoHash[key].clientSocket);
+						ZeroMemory(&clientInfoHash[key], sizeof(ClientInfo));
 						break;
 					}
 					p = p + packet_size;
@@ -236,10 +204,10 @@ void IOCP::Worker()
 
 			}
 
-			sessionList[key].currentDataSize = remain_data;
+			clientInfoHash[key].currentDataSize = remain_data;
 			if (remain_data > 0)
 				memcpy(curr_over_ex->dataBuffer, p, remain_data);
-			DoRecv(sessionList[key]);
+			DoRecv(clientInfoHash[key]);
 
 			break;
 		}
@@ -262,11 +230,12 @@ void IOCP::Worker()
 
 void IOCP::TimerWorker()
 {
-	Timer timer;
+	util::Timer timer;
 	while (true) {
 		if (timer.PeekDeltaTime() > 50.f) {
 			timer.updateDeltaTime();
 			for (int i = 0; i < sessionCnt; ++i) {
+				// Todo: getPosition
 				packet::SCMovePlayer packet{ i, players[i].x, players[i].y };
 				DoBroadcast(i, &packet);
 			}
@@ -275,7 +244,7 @@ void IOCP::TimerWorker()
 	}
 }
 
-void IOCP::DoRecv(Session& session) const
+void IOCP::DoRecv(ClientInfo& session) const
 {
 
 	DWORD recv_flag = 0;
@@ -299,7 +268,7 @@ void IOCP::DoRecv(Session& session) const
 }
 
 
-void IOCP::DoSend(Session& session, void* packet)
+void IOCP::DoSend(ClientInfo& session, void* packet)
 {
 	OverlappedEx* send_over_ex = new OverlappedEx{ reinterpret_cast<unsigned char*>(packet) };
 	WSASend(session.clientSocket, &send_over_ex->wsabuf, 1, 0, 0, &send_over_ex->over, 0);
@@ -315,17 +284,9 @@ bool IOCP::ProcessPacket(int key, char* p)
 
 		std::println("CS_LOGIN Client {}", key);
 
-		packet::SCLogin sc_login{ key % 3 };
-		DoSend(sessionList[key], &sc_login);
+		packet::SCLogin sc_login{ key };
+		DoSend(clientInfoHash[key], &sc_login);
 
-		for (int i = 0; i < sessionCnt - 1; ++i) {
-			packet::SCMovePlayer sc_move_player{ i, players[i].x, players[i].y };
-			DoSend(sessionList[key], &sc_move_player);
-		}
-
-		// 
-		players[key].x = urd(dre);
-		players[key].y = urd(dre);
 		// 이 부분을 맵 당 broadcast로 변경해야함
 		packet::SCMovePlayer sc_move_player{ key % 3, players[key].x, players[key].y };
 		DoBroadcast(&sc_move_player);
@@ -335,9 +296,8 @@ bool IOCP::ProcessPacket(int key, char* p)
 	case packet::Type::CS_MOVE_PLAYER:
 	{
 		packet::CSMovePlayer* packet = reinterpret_cast<packet::CSMovePlayer*>(p);
-
-		players[key].x = packet->x;
-		players[key].y = packet->y;
+		GET_SINGLE(Game)->SetPosition( packet->playerId,
+			Vec2f{ packet->x, packet->y });
 	}
 	break;
 
@@ -355,7 +315,7 @@ void IOCP::DoBroadcast(void* packet)
 {
 	// todo: 수정
 	for (int i = 0; i < sessionCnt; ++i) {
-		DoSend(sessionList[i], packet);
+		DoSend(clientInfoHash[i], packet);
 	}
 }
 
@@ -364,7 +324,7 @@ void IOCP::DoBroadcast(int key, void* packet)
 	// todo: 수정
 	for (int i = 0; i < sessionCnt; ++i) {
 		if (key == i) continue;
-		DoSend(sessionList[i], packet);
+		DoSend(clientInfoHash[i], packet);
 	}
 }
 
