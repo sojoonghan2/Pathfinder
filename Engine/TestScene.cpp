@@ -110,7 +110,7 @@ TestScene::TestScene()
         TestHuman* Robot = new TestHuman();
         float robot_state = Robot->Get_state();
 
-        shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\char\\spaceops.fbx");
+        shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\char\\Stepping Backward.fbx");
 
         vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
@@ -121,7 +121,7 @@ TestScene::TestScene()
             gameObject->AddComponent(make_shared<Transform>());
             gameObject->AddComponent(make_shared<TestHuman>());
             gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
-            gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+            gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
             gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 0.f, 0.f));
             activeScene->AddGameObject(gameObject);
         }

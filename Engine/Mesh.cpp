@@ -375,13 +375,13 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 #pragma region SkinData
 	if (IsAnimMesh())
 	{
-		// BoneOffet ?됰젹
+		// BoneOffset 저장
 		const int32 boneCount = static_cast<int32>(_bones.size());
 		vector<Matrix> offsetVec(boneCount);
 		for (size_t b = 0; b < boneCount; b++)
 			offsetVec[b] = _bones[b].matOffset;
 
-		// OffsetMatrix StructuredBuffer ?명똿
+		// OffsetMatrix StructuredBuffer 할당
 		_offsetBuffer = make_shared<StructuredBuffer>();
 		_offsetBuffer->Init(sizeof(Matrix), static_cast<uint32>(offsetVec.size()), offsetVec.data());
 
@@ -390,27 +390,35 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 		{
 			AnimClipInfo& animClip = _animClips[i];
 
-			// ?좊땲硫붿씠???꾨젅???뺣낫
-			vector<AnimFrameParams> frameParams;
-			frameParams.resize(_bones.size() * animClip.frameCount);
+			// 애니메이션 프레임 파라미터 벡터 크기 수정
+			size_t totalFrameCount = boneCount * animClip.frameCount;
+			vector<AnimFrameParams> frameParams(totalFrameCount);
 
 			for (int32 b = 0; b < boneCount; b++)
 			{
 				const int32 keyFrameCount = static_cast<int32>(animClip.keyFrames[b].size());
 				for (int32 f = 0; f < keyFrameCount; f++)
 				{
-					int32 idx = static_cast<int32>(boneCount * f + b);
+					int32 idx = boneCount * f + b;
 
-					frameParams[idx] = AnimFrameParams
+					// 인덱스 범위 검사 추가
+					if (idx < static_cast<int32>(frameParams.size()))
 					{
-						Vec4(animClip.keyFrames[b][f].scale),
-						animClip.keyFrames[b][f].rotation, // Quaternion
-						Vec4(animClip.keyFrames[b][f].translate)
-					};
+						frameParams[idx] = AnimFrameParams
+						{
+							Vec4(animClip.keyFrames[b][f].scale),
+							animClip.keyFrames[b][f].rotation, // Quaternion
+							Vec4(animClip.keyFrames[b][f].translate)
+						};
+					}
+					else
+					{
+						printf("Warning: Index out of bounds (idx: %d, max: %d)\n", idx, static_cast<int32>(frameParams.size()) - 1);
+					}
 				}
 			}
 
-			// StructuredBuffer ?명똿
+			// StructuredBuffer 할당
 			_frameBuffer.push_back(make_shared<StructuredBuffer>());
 			_frameBuffer.back()->Init(sizeof(AnimFrameParams), static_cast<uint32>(frameParams.size()), frameParams.data());
 		}
