@@ -174,44 +174,17 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 
         if (g_particle[threadIndex.x].alive == 1)
         {
-            float x = ((float) threadIndex.x / (float) maxCount) + accTime;
-            float r1 = Rand(float2(x, accTime));
-            float r2 = Rand(float2(x * accTime, accTime));
-            float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
-            
             // 사각형 패턴으로 초기 위치 설정
             float size = 100.0f; // 사각형의 한 변 길이
             g_particle[threadIndex.x].worldPos = float3(
-                (r1 * 2.0f - 1.0f) * size * 2, // X: -size ~ size
-                0.0f,
-                (r2 * 2.0f - 1.0f) * size // Z: -size ~ size
+                0.0f, 0.0f, 0.0f
             );
 
             // 상승 방향 설정
             g_particle[threadIndex.x].worldDir = float3(0.0f, 1.0f, 0.0f);
-            g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * r2) + minLifeTime;
+            g_particle[threadIndex.x].lifeTime = minLifeTime;
             g_particle[threadIndex.x].curTime = 0.0f;
         }
-    }
-    else
-    {
-        g_particle[threadIndex.x].curTime += deltaTime;
-        
-        if (g_particle[threadIndex.x].lifeTime < g_particle[threadIndex.x].curTime)
-        {
-            g_particle[threadIndex.x].alive = 0;
-            return;
-        }
-
-        float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
-        float speed = (maxSpeed - minSpeed) * (1.0f - ratio) + minSpeed;
-        
-        // 위로 상승하는 이동
-        g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
-
-        // Y축 움직임에 sin 함수 추가
-        float amplitude = 1.0f;
-        g_particle[threadIndex.x].worldPos.y += sin(PI * ratio) * amplitude * deltaTime;
     }
 }
 
