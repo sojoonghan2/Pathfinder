@@ -122,7 +122,42 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 
 float4 PS_Main(GS_OUT input) : SV_Target
 {
-    return g_textures.Sample(g_sam_0, input.uv);
+    float ratio = g_data[input.id].curTime / g_data[input.id].lifeTime;
+    
+    // 진행도에 따른 색상 변화
+    float3 baseColor = float3(0.6f, 0.6f, 0.6f); // 기본 회색
+    float3 startColor = float3(0.8f, 0.7f, 0.5f); // 황토색
+    float3 endColor = float3(0.3f, 0.3f, 0.3f); // 어두운 회색
+    
+    float3 color;
+    if (ratio < 0.3f)
+    {
+        // 초기: 밝은 색에서 기본색으로
+        color = lerp(startColor, baseColor, ratio / 0.3f);
+    }
+    else
+    {
+        // 후기: 기본색에서 어두운 색으로
+        color = lerp(baseColor, endColor, (ratio - 0.3f) / 0.7f);
+    }
+    
+    // 균열 패턴 생성
+    float2 center = float2(0.5f, 0.5f);
+    float dist = distance(input.uv, center);
+    
+    // 불규칙한 균열 패턴
+    float noise = Rand(float2(input.id, ratio)) * 0.2f;
+    float crackPattern = saturate(1.0f - dist * (2.0f + noise));
+    crackPattern = pow(crackPattern, 1.5f);
+    
+    float4 texColor = g_textures.Sample(g_sam_0, input.uv);
+    
+    // 알파값 수정
+    float fadeFactor = smoothstep(0.5f, 1.0f, ratio); // 50%부터 점진적 페이드아웃
+    float alpha = crackPattern * (1.0f - pow(fadeFactor, 2.0f)); // 천천히 감소
+    
+    // 최종 색상
+    return float4(color * texColor.rgb, alpha * texColor.a);
 }
 
 struct ComputeShared
