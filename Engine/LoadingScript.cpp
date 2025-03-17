@@ -44,9 +44,6 @@ void LoadingScript::StartLoadingThread()
     // 디버그 출력
     cout << "Starting loading thread..." << endl;
 
-    // 뮤텍스 생성 및 로딩 스레드 시작
-    static std::mutex m;
-
     // 이전 스레드가 있으면 정리
     if (loadThread != nullptr && loadThread->joinable())
     {
@@ -55,7 +52,7 @@ void LoadingScript::StartLoadingThread()
     }
 
     // 새 스레드 생성 및 시작
-    loadThread = new std::thread(&LoadingScript::SceneLoad, this, std::ref(m));
+    loadThread = new std::thread(&LoadingScript::SceneLoad, this);
 }
 
 void LoadingScript::LateUpdate()
@@ -84,12 +81,11 @@ void LoadingScript::LateUpdate()
     }
 }
 
-void LoadingScript::SceneLoad(std::mutex& m)
+void LoadingScript::SceneLoad()
 {
     cout << "SceneLoad thread started" << endl;
 
     // 씬 로딩 작업 수행
-    m.lock();
     {
         cout << "Loading TitleScene..." << endl;
         shared_ptr<TitleScene> titleScene = make_shared<TitleScene>();
@@ -119,7 +115,6 @@ void LoadingScript::SceneLoad(std::mutex& m)
         shared_ptr<BossScene> bossScene = make_shared<BossScene>();
         GET_SINGLE(SceneManager)->RegisterScene(L"BossScene", bossScene->GetScene());
     }
-    m.unlock();
 
     // 로딩 완료 플래그 설정
     cout << "Scene loading completed, setting loadEnd flag" << endl;
