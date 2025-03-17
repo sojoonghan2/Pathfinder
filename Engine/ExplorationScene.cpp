@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "ExplorationScene.h"
 #include "SceneManager.h"
 #include "Scene.h"
@@ -26,12 +26,12 @@
 
 ExplorationScene::ExplorationScene()
 {
-// ÄÄÇ»Æ® ¼ÎÀÌ´õ, ¸ÖÆ¼¾²·¹µå·Î ÀÛ¾÷ÀÌ °¡´É
+// ì»´í“¨íŠ¸ ì…°ì´ë”, ë©€í‹°ì“°ë ˆë“œë¡œ ì‘ì—…ì´ ê°€ëŠ¥
 #pragma region ComputeShader
 	{
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"ComputeShader");
 
-		// UAV ¿ë Texture »ı¼º
+		// UAV ìš© Texture ìƒì„±
 		shared_ptr<Texture> texture = GET_SINGLE(Resources)->CreateTexture(L"UAVTexture",
 			DXGI_FORMAT_R8G8B8A8_UNORM, 1024, 1024,
 			CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE,
@@ -42,29 +42,29 @@ ExplorationScene::ExplorationScene()
 		material->SetInt(0, 1);
 		GEngine->GetComputeDescHeap()->SetUAV(texture->GetUAVHandle(), UAV_REGISTER::u0);
 
-		// ¾²·¹µå ±×·ì (1 * 1024 * 1)
+		// ì“°ë ˆë“œ ê·¸ë£¹ (1 * 1024 * 1)
 		material->Dispatch(1, 1024, 1);
 	}
 #pragma endregion
 
-// Ä«¸Ş¶ó
+// ì¹´ë©”ë¼
 #pragma region Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
 		camera->SetName(L"Main_Camera");
 		camera->AddComponent(make_shared<Transform>());
-		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=3000, FOV=45µµ
+		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=3000, FOV=45ë„
 		camera->AddComponent(make_shared<TestCameraScript>());
 		camera->AddComponent(make_shared<ExplorationScript>());
 		camera->GetCamera()->SetFar(100000.f);
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
-		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI´Â ¾È ÂïÀ½
+		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UIëŠ” ì•ˆ ì°ìŒ
 		activeScene->AddGameObject(camera);
 	}
 #pragma endregion
 
-// UI Ä«¸Ş¶ó
+// UI ì¹´ë©”ë¼
 #pragma region UI_Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
@@ -74,77 +74,74 @@ ExplorationScene::ExplorationScene()
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		camera->GetCamera()->SetProjectionType(PROJECTION_TYPE::ORTHOGRAPHIC);
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
-		camera->GetCamera()->SetCullingMaskAll(); // ´Ù ²ô°í
-		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false); // UI¸¸ ÂïÀ½
+		camera->GetCamera()->SetCullingMaskAll(); // ë‹¤ ë„ê³ 
+		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false); // UIë§Œ ì°ìŒ
 		activeScene->AddGameObject(camera);
 	}
 #pragma endregion
 
-// ±¸ ¿ÀºêÁ§Æ®°ú Æ÷ÀÎÆ® Á¶¸í
-#pragma region Object & Point Light
+// í”Œë ˆì´ì–´
+#pragma region Player
 	{
-		// 1. ±âº» ¿ÀºêÁ§Æ® »ı¼º ¹× ¼³Á¤
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		gameObjects[0]->SetName(L"OBJ");
+		gameObjects[0]->SetCheckFrustum(false);
+		gameObjects[0]->AddComponent(make_shared<TestDragon>());
+		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
+		gameObjects[0]->AddComponent(make_shared<TestPointLightScript>());
+
+		activeScene->AddGameObject(gameObjects[0]);
+
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
 		obj->SetName(L"OBJ");
-		// ÇÁ·¯½ºÅÒ ÄÃ¸µ ¿©ºÎ
 		obj->SetCheckFrustum(true);
-		// Á¤Àû, µ¿Àû ¿©ºÎ
 		obj->SetStatic(false);
 
-		// 2. Transform ÄÄÆ÷³ÍÆ® Ãß°¡ ¹× ¼³Á¤
 		obj->AddComponent(make_shared<Transform>());
+		obj->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 		obj->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
-		obj->AddComponent(make_shared<TestPointLightScript>());
-
-		// 3. Collider ¼³Á¤
-		obj->AddComponent(make_shared<SphereCollider>());
-		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetRadius(0.5f);
-		dynamic_pointer_cast<SphereCollider>(obj->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
-
-		// 4. MeshRenderer ¼³Á¤
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
 			meshRenderer->SetMesh(sphereMesh);
 		}
 		{
-			// GameObject ÀÌ¸§À» °¡Áø ¸ÓÅÍ¸®¾óÀ» Ã£¾Æ Å¬·Ğ ÈÄ ¸Ş½¬ ·»´õ·¯¿¡ Set
-			// Resources.cpp·Î °¡¸é ¼ÎÀÌ´õ¿Í ¸ÓÅÍ¸®¾óÀÇ »ı¼ºÀ» È®ÀÌÇØº¼ ¼ö ÀÖÀ½
 			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"GameObject");
 			meshRenderer->SetMaterial(material->Clone());
 		}
 		obj->AddComponent(meshRenderer);
-
-		// 5. Scene¿¡ Ãß°¡
+		obj->SetRenderOff();
 		activeScene->AddGameObject(obj);
-
-		// 1. light ¿ÀºêÁ§Æ® »ı¼º 
+		
+		// 1. light ì˜¤ë¸Œì íŠ¸ ìƒì„± 
 		shared_ptr<GameObject> light = make_shared<GameObject>();
 		light->SetName(L"Point_Light");
 		light->AddComponent(make_shared<Transform>());
-		light->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
+		light->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 
-		// 2-1. light ÄÄÆ÷³ÍÆ® Ãß°¡ ¹× ¼Ó¼º ¼³Á¤
+		// 2-1. light ì»´í¬ë„ŒíŠ¸ ì¶”ê°€ ë° ì†ì„± ì„¤ì •
 		light->AddComponent(make_shared<Light>());
 		light->GetLight()->SetLightType(LIGHT_TYPE::POINT_LIGHT);
-		light->AddComponent(make_shared<TestPointLightScript>());
 
-		// 2-2. Á¡±¤¿ø Æ¯¼ö ¼³Á¤
+		// 2-2. ì ê´‘ì› íŠ¹ìˆ˜ ì„¤ì •
 		light->GetLight()->SetLightRange(1000.f);
 
-		// 3. Á¶¸í »ö»ó ¹× °­µµ ¼³Á¤
-		light->GetLight()->SetDiffuse(Vec3(2.0f, 2.0f, 2.0f));
+		// 3. ì¡°ëª… ìƒ‰ìƒ ë° ê°•ë„ ì„¤ì •
+		light->GetLight()->SetDiffuse(Vec3(1.0f, 1.0f, 1.0f));
 		light->GetLight()->SetAmbient(Vec3(1.2f, 1.2f, 1.2f));
 		light->GetLight()->SetSpecular(Vec3(2.5f, 2.5f, 2.5f));
 
-
-		// 4. Scene¿¡ Ãß°¡
+		// 4. Sceneì— ì¶”ê°€
 		activeScene->AddGameObject(light);
 	}
 #pragma endregion
 
-// ½ºÄ«ÀÌ ¹Ú½º
+// ìŠ¤ì¹´ì´ ë°•ìŠ¤
 #pragma region SkyBox
 	{
 		shared_ptr<GameObject> skybox = make_shared<GameObject>();
@@ -168,22 +165,22 @@ ExplorationScene::ExplorationScene()
 	}
 #pragma endregion
 
-// ÅÍ·¹ÀÎ Å¥ºê
+// í„°ë ˆì¸ íë¸Œ
 #pragma region TerrainCube
 	{
-		// 1. ±âº» ¿ÀºêÁ§Æ® »ı¼º ¹× ¼³Á¤
+		// 1. ê¸°ë³¸ ì˜¤ë¸Œì íŠ¸ ìƒì„± ë° ì„¤ì •
 		shared_ptr<GameObject> terraincube = make_shared<GameObject>();
 		terraincube->AddComponent(make_shared<Transform>());
 		terraincube->SetCheckFrustum(true);
 
-		// 2. Transform ÄÄÆ÷³ÍÆ® Ãß°¡ ¹× ¼³Á¤
+		// 2. Transform ì»´í¬ë„ŒíŠ¸ ì¶”ê°€ ë° ì„¤ì •
 		terraincube->AddComponent(make_shared<Transform>());
-		// ¾ÀÀÇ ÀÓ½Ã Å©±â
+		// ì”¬ì˜ ì„ì‹œ í¬ê¸°
 		terraincube->GetTransform()->SetLocalScale(Vec3(10000.f, 10000.f, 10000.f));
-		// ¾ÀÀÇ ÀÓ½Ã ÁÂÇ¥
+		// ì”¬ì˜ ì„ì‹œ ì¢Œí‘œ
 		terraincube->GetTransform()->SetLocalPosition(Vec3(0, 4900.f, 0.f));
 
-		// 3. MeshRenderer ¼³Á¤
+		// 3. MeshRenderer ì„¤ì •
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadCubeMesh();
@@ -204,19 +201,19 @@ ExplorationScene::ExplorationScene()
 		}
 		terraincube->AddComponent(meshRenderer);
 
-		// 4. Scene¿¡ Ãß°¡
+		// 4. Sceneì— ì¶”ê°€
 		activeScene->AddGameObject(terraincube);
 	}
 #pragma endregion
 
 // *********************************************
-// UI Å×½ºÆ®
-// 0. ¿ùµå °ø°£ À§Ä¡ Á¤º¸
-// 1. ³ë¸» º¤ÅÍ Á¤º¸
-// 2. »ö»ó Á¤º¸
-// 3. ºĞ»ê±¤ °á°ú
-// 4. ¹İ»ç±¤ °á°ú
-// 5. ±×¸²ÀÚ
+// UI í…ŒìŠ¤íŠ¸
+// 0. ì›”ë“œ ê³µê°„ ìœ„ì¹˜ ì •ë³´
+// 1. ë…¸ë§ ë²¡í„° ì •ë³´
+// 2. ìƒ‰ìƒ ì •ë³´
+// 3. ë¶„ì‚°ê´‘ ê²°ê³¼
+// 4. ë°˜ì‚¬ê´‘ ê²°ê³¼
+// 5. ê·¸ë¦¼ì
 // *********************************************
 #pragma region UI_Test
 	for (int32 i = 0; i < 6; i++)
@@ -252,33 +249,33 @@ ExplorationScene::ExplorationScene()
 	}
 #pragma endregion
 
-// Àü¿ª Á¶¸í(»èÁ¦ ¿¹Á¤)
+// ì „ì—­ ì¡°ëª…(ì‚­ì œ ì˜ˆì •)
 #pragma region Directional Light
 	{
-		// 1. light ¿ÀºêÁ§Æ® »ı¼º 
+		// 1. light ì˜¤ë¸Œì íŠ¸ ìƒì„± 
 		shared_ptr<GameObject> light = make_shared<GameObject>();
 		light->SetName(L"Directional_Light");
 		light->AddComponent(make_shared<Transform>());
 		light->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 
-		// 2-1. light ÄÄÆ÷³ÍÆ® Ãß°¡ ¹× ¼Ó¼º ¼³Á¤
+		// 2-1. light ì»´í¬ë„ŒíŠ¸ ì¶”ê°€ ë° ì†ì„± ì„¤ì •
 		light->AddComponent(make_shared<Light>());
 		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
 
-		// 2-2. DIRECTIONAL_LIGHTÀÇ °æ¿ì Á¶¸í ¹æÇâ ¼³Á¤
+		// 2-2. DIRECTIONAL_LIGHTì˜ ê²½ìš° ì¡°ëª… ë°©í–¥ ì„¤ì •
 		light->GetLight()->SetLightDirection(Vec3(0.f, 0.f, 0.f));
 
-		// 3. Á¶¸í »ö»ó ¹× °­µµ ¼³Á¤
+		// 3. ì¡°ëª… ìƒ‰ìƒ ë° ê°•ë„ ì„¤ì •
 		light->GetLight()->SetDiffuse(Vec3(0.8f, 0.8f, 0.8f));
 		light->GetLight()->SetAmbient(Vec3(0.8f, 0.8f, 0.8f));
 		light->GetLight()->SetSpecular(Vec3(0.05f, 0.05f, 0.05f));
 
-		// 4. Scene¿¡ Ãß°¡
+		// 4. Sceneì— ì¶”ê°€
 		//activeScene->AddGameObject(light);
 	}
 #pragma endregion
 
-// ·Îº¿
+// ë¡œë´‡
 #pragma region SELFDESTRUCTIONROBOT
 	{
 		std::random_device rd;
@@ -294,10 +291,10 @@ ExplorationScene::ExplorationScene()
 			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\SelfDestructionRobot\\SelfDestructionRobot.fbx");
 			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
-			// °ãÄ¡Áö ¾Ê´Â ·£´ı À§Ä¡ »ı¼º
+			// ê²¹ì¹˜ì§€ ì•ŠëŠ” ëœë¤ ìœ„ì¹˜ ìƒì„±
 			Vec3 randomPos;
 			bool validPosition = false;
-			int maxAttempts = 100; // ¹«ÇÑ ·çÇÁ ¹æÁö
+			int maxAttempts = 100; // ë¬´í•œ ë£¨í”„ ë°©ì§€
 
 			while (!validPosition && maxAttempts > 0)
 			{
@@ -319,7 +316,7 @@ ExplorationScene::ExplorationScene()
 
 			gameObjects[0]->SetName(L"SelfDestructionRobot" + std::to_wstring(i + 1));
 			gameObjects[0]->SetCheckFrustum(true);
-			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos); // ·£´ı À§Ä¡ Àû¿ë
+			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos); // ëœë¤ ìœ„ì¹˜ ì ìš©
 			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 			gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.7f, 0.f, 0.f));
 			gameObjects[0]->AddComponent(make_shared<SelfDestructionRobotScript>());

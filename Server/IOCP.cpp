@@ -6,7 +6,7 @@
 
 std::random_device rd;
 std::default_random_engine dre{ rd() };
-std::uniform_real_distribution<float> urd{ 0.f, 49.f };
+std::uniform_real_distribution<float> urd{ -24.f, 24.f };
 
 
 class Timer {
@@ -220,7 +220,6 @@ void IOCP::Worker()
 			char* p = curr_over_ex->dataBuffer;
 
 			while (remain_data > 0) {
-
 				int packet_size = p[0];
 				if (packet_size <= remain_data) {
 					bool ret = ProcessPacket(static_cast<int>(key), p);
@@ -264,7 +263,7 @@ void IOCP::TimerWorker()
 {
 	Timer timer;
 	while (true) {
-		if (timer.PeekDeltaTime() > 100.f) {
+		if (timer.PeekDeltaTime() > 50.f) {
 			timer.updateDeltaTime();
 			for (int i = 0; i < sessionCnt; ++i) {
 				packet::SCMovePlayer packet{ i, players[i].x, players[i].y };

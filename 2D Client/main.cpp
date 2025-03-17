@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "SocketIO.h"
+#include "NetworkTimer.h"
 
 constexpr int GRID_CONUT{ 100 };
 constexpr int WINDOW_WIDTH{ 800 };
@@ -8,11 +9,12 @@ constexpr int WINDOW_HEIGHT{ 800 };
 std::queue<std::array<char, BUFFER_SIZE>> packetQueue;
 
 // 플레이어 이동속도, 단위 m/s
-constexpr float PLAYER_SPEED{ 5.f };
+constexpr float PLAYER_SPEED_MPS{ 5.f };
 
 // 단위 m
-constexpr float MAP_SIZE{ 50.f };
-constexpr float GRID_SIZE{ MAP_SIZE / static_cast<float>(GRID_CONUT) };
+constexpr float MAP_SIZE_M{ 50.f };
+constexpr float PLAYER_SIZE_M{ 0.5f };
+constexpr float GRID_SIZE{ MAP_SIZE_M / static_cast<float>(GRID_CONUT) };
 
 
 constexpr float GRID_WIDTH_PIXEL
@@ -21,9 +23,9 @@ constexpr float GRID_HEIGHT_PIXEL
 	{ static_cast<float>(WINDOW_HEIGHT) / static_cast<float>(GRID_CONUT) };
 
 
-using StatusType = char;
+using StatusType = unsigned char;
 
-enum class KeyboardStatus : StatusType
+enum class KeyStatus : StatusType
 {
 	Down = 0x01,
 	Up = 0x02,
@@ -37,46 +39,19 @@ private:
 	StatusType keyboardStatus{};
 
 public:
-	void applyKeyboardStatus(KeyboardStatus key)
+	void applyKeyboardStatus(KeyStatus key)
 	{
 		keyboardStatus |= static_cast<StatusType>(key);
 	}
 
-	void disapplyKeyboardStatus(KeyboardStatus key)
+	void disapplyKeyboardStatus(KeyStatus key)
 	{
 		keyboardStatus &= ~static_cast<StatusType>(key);
 	}
 
-	bool getKeyBoardStatus(KeyboardStatus key) const
+	bool getKeyBoardStatus(KeyStatus key) const
 	{
 		return keyboardStatus & static_cast<StatusType>(key);
-	}
-};
-
-class Timer {
-private:
-	using Clock = std::chrono::steady_clock;
-	using TimePoint = std::chrono::time_point<Clock>;
-	using MilliSeconds = std::chrono::duration<float, std::milli>; // 밀리초 단위로 변경
-
-	TimePoint lastFrame;
-	float deltaTimeMS; // 밀리초 단위의 델타타임
-
-public:
-	Timer() : lastFrame(Clock::now()), deltaTimeMS(0.0f) {}
-
-	float getDeltaTimeMS() const { return deltaTimeMS; }
-	float getDeltaTimeSeconds() const { return deltaTimeMS / 1000.0f; } // 초 단위 변환
-
-	void updateDeltaTime() {
-		TimePoint currentFrame = Clock::now();
-		deltaTimeMS = std::chrono::duration_cast<MilliSeconds>(currentFrame - lastFrame).count();
-		lastFrame = currentFrame;
-	}
-
-	float PeekDeltaTime() const {
-		TimePoint currentFrame = Clock::now();
-		return std::chrono::duration_cast<MilliSeconds>(currentFrame - lastFrame).count();
 	}
 };
 
@@ -97,6 +72,8 @@ public:
 		show{show}
 	{
 		SetFillColor(color);
+		sf::FloatRect bounds = Square.getLocalBounds();
+		Square.setOrigin(bounds.width / 2, bounds.height / 2);
 	}
 
 	Player(const float x, const float y, const sf::Color color) :
@@ -104,7 +81,7 @@ public:
 	{}
 
 	Player() :
-		Player{ 25.f, 25.f, sf::Color::Red }
+		Player{ 0.f, 0.f, sf::Color::Red }
 	{}
 
 	void SetFillColor(const sf::Color color)
@@ -116,10 +93,10 @@ public:
 	{
 		// 방향을 얻어냄
 		float dirX{}, dirY{};
-		if (controller.getKeyBoardStatus(KeyboardStatus::Left)) { dirX--; }
-		if (controller.getKeyBoardStatus(KeyboardStatus::Right)) { dirX++; }
-		if (controller.getKeyBoardStatus(KeyboardStatus::Up)) { dirY--; }
-		if (controller.getKeyBoardStatus(KeyboardStatus::Down)) { dirY++; }
+		if (controller.getKeyBoardStatus(KeyStatus::Left)) { dirX--; }
+		if (controller.getKeyBoardStatus(KeyStatus::Right)) { dirX++; }
+		if (controller.getKeyBoardStatus(KeyStatus::Up)) { dirY--; }
+		if (controller.getKeyBoardStatus(KeyStatus::Down)) { dirY++; }
 
 		// 방향 정규화
 		float length = std::sqrt(dirX * dirX + dirY * dirY);
@@ -129,11 +106,18 @@ public:
 		}
 
 		// 이동거리 계산
-		float distance = delta * PLAYER_SPEED;
+		float distance = delta * PLAYER_SPEED_MPS;
 	
-		// 최종 위치 계산
+		// 최종 위치 계산, dirextx 좌표계로 변환
 		x += distance * dirX;
-		y += distance * dirY;
+		x = std::max(x, -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
+		x = std::min(x, (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
+		y += distance * dirY * -1.f;
+		y = std::max(y, -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
+		y = std::min(y, (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
+
+
+
 	}
 
 	void Draw(sf::RenderWindow& window)
@@ -141,8 +125,8 @@ public:
 		if (not show) return;
 
 		// 윈도우 위치 계산
-		float windowX = x / MAP_SIZE * WINDOW_WIDTH;
-		float windowY = y / MAP_SIZE * WINDOW_HEIGHT;
+		float windowX = x / MAP_SIZE_M * WINDOW_WIDTH + (WINDOW_WIDTH * 0.5f);
+		float windowY = -y / MAP_SIZE_M * WINDOW_HEIGHT + (WINDOW_HEIGHT * 0.5f);
 
 		// 윈도우 위치에 표시
 		Square.setPosition(windowX, windowY);
@@ -191,8 +175,9 @@ int main() {
 	socket_io.Start();
 
 
-	Timer frame_timer;
-	Timer send_timer;
+	NetworkTimer frame_timer;
+	NetworkTimer send_timer;
+
 	while (window.isOpen()) {
 
 		// --
@@ -245,17 +230,17 @@ int main() {
 			case sf::Event::KeyPressed:
 				switch (event.key.code)
 				{
-				case sf::Keyboard::W:
-					controller.applyKeyboardStatus(KeyboardStatus::Up);
+				case sf::Keyboard::W: case sf::Keyboard::Up:
+					controller.applyKeyboardStatus(KeyStatus::Up);
 					break;
-				case sf::Keyboard::S:
-					controller.applyKeyboardStatus(KeyboardStatus::Down);
+				case sf::Keyboard::S: case sf::Keyboard::Down:
+					controller.applyKeyboardStatus(KeyStatus::Down);
 					break;
-				case sf::Keyboard::D:
-					controller.applyKeyboardStatus(KeyboardStatus::Right);
+				case sf::Keyboard::D: case sf::Keyboard::Right:
+					controller.applyKeyboardStatus(KeyStatus::Right);
 					break;
-				case sf::Keyboard::A:
-					controller.applyKeyboardStatus(KeyboardStatus::Left);
+				case sf::Keyboard::A: case sf::Keyboard::Left:
+					controller.applyKeyboardStatus(KeyStatus::Left);
 					break;
 				}
 				break;
@@ -263,17 +248,17 @@ int main() {
 			case sf::Event::KeyReleased:
 				switch (event.key.code)
 				{
-				case sf::Keyboard::W:
-					controller.disapplyKeyboardStatus(KeyboardStatus::Up);
+				case sf::Keyboard::W: case sf::Keyboard::Up:
+					controller.disapplyKeyboardStatus(KeyStatus::Up);
 					break;
-				case sf::Keyboard::S:
-					controller.disapplyKeyboardStatus(KeyboardStatus::Down);
+				case sf::Keyboard::S: case sf::Keyboard::Down:
+					controller.disapplyKeyboardStatus(KeyStatus::Down);
 					break;
-				case sf::Keyboard::D:
-					controller.disapplyKeyboardStatus(KeyboardStatus::Right);
-					break;
-				case sf::Keyboard::A:
-					controller.disapplyKeyboardStatus(KeyboardStatus::Left);
+				case sf::Keyboard::D: case sf::Keyboard::Right:
+					controller.disapplyKeyboardStatus(KeyStatus::Right);
+					break; 
+				case sf::Keyboard::A: case sf::Keyboard::Left:
+					controller.disapplyKeyboardStatus(KeyStatus::Left);
 					break;
 				}
 				break;
@@ -295,7 +280,7 @@ int main() {
 			players[my_id].Update(controller, delta);
 
 			// send
-			if (send_timer.PeekDeltaTime() > 100.f) {
+			if (send_timer.PeekDeltaTime() > 50.f) {
 				send_timer.updateDeltaTime();
 				auto pos = players[my_id].GetPosition();
 				socket_io.DoSend<packet::CSMovePlayer>(my_id, pos.x, pos.y);

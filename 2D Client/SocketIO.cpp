@@ -1,9 +1,7 @@
 #include "pch.h"
 #include "SocketIO.h"
 
-// temp
 extern std::queue<std::array<char, BUFFER_SIZE>> packetQueue;
-
 
 void SocketIO::Init()
 {

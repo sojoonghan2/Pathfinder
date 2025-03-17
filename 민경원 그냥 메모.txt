@@ -1,0 +1,3 @@
+- Exploration에 Point 조명을 넣을 때 구 오브젝트가 존재하지 않으면 렌더링 오류 발생
+
+- TitleScene이 없으면 렌더링 오류 발생

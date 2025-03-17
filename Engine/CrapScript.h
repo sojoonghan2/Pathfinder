@@ -5,9 +5,8 @@ class CrapScript : public MonoBehaviour
 {
 public:
     CrapScript();
-	virtual void Update() override;
+	virtual void LateUpdate() override;
 
-private:
     void MoveRandomly();
     void CheckBoundary();
 

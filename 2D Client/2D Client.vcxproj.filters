@@ -14,6 +14,9 @@
     <Filter Include="Common">
       <UniqueIdentifier>{65ef0b8e-071d-49d9-a874-f11fbaac2c37}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Tool">
+      <UniqueIdentifier>{c1801502-f605-44d5-b008-b10df6d1fb9d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -25,6 +28,9 @@
     </ClCompile>
     <ClCompile Include="..\Common\util.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkTimer.cpp">
+      <Filter>Tool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +48,9 @@
     </ClInclude>
     <ClInclude Include="define.h">
       <Filter>pch</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkTimer.h">
+      <Filter>Tool</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,8 +1,15 @@
 #pragma once
 
-#define PACKET_START namespace packet {
-#define PACKET_END }
+#define NETWORK_START	namespace network {
+#define NETWORK_END		}
 
+#define PACKET_START	namespace packet {
+#define PACKET_END		}
+
+constexpr int PORT_NUMBER = 4000;
+constexpr int BUFFER_SIZE = 200;
+
+constexpr const char* SERVER_IP = "127.0.0.1";
 
 PACKET_START
 enum class Type : unsigned char

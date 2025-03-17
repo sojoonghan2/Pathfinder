@@ -13,6 +13,8 @@
 #include <iostream>
 #include <random>
 
-#include "define.h"
 #include "../Common/protocol.h"
 #include "../Common/util.h"
+
+
+#include "define.h"

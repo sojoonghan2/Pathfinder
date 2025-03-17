@@ -137,6 +137,7 @@ void FBXLoader::LoadMesh(FbxMesh* mesh)
 
 			GetNormal(mesh, &meshInfo, controlPointIndex, vertexCounter);
 			GetTangent(mesh, &meshInfo, controlPointIndex, vertexCounter);
+			// UV 데이터를 가져오는 부분
 			GetUV(mesh, &meshInfo, controlPointIndex, mesh->GetTextureUVIndex(i, j));
 
 			vertexCounter++;

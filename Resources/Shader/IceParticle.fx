@@ -6,12 +6,12 @@
 
 struct Particle
 {
-    float3  worldPos;
-    float   curTime;
-    float3  worldDir;
-    float   lifeTime;
-    int     alive;
-    float3  padding;
+    float3  worldPos;   // 12
+    float   curTime;    // 4
+    float3  worldDir;   // 12
+    float   lifeTime;   // 4
+    int     alive;      // 4
+    float3 padding;     // 12
 };
 
 // 그래픽스 셰이더
