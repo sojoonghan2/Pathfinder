@@ -104,7 +104,6 @@ ExplorationScene::ExplorationScene()
 		obj->AddComponent(make_shared<Transform>());
 		obj->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
