@@ -124,40 +124,26 @@ float4 PS_Main(GS_OUT input) : SV_Target
 {
     float ratio = g_data[input.id].curTime / g_data[input.id].lifeTime;
     
-    // 진행도에 따른 색상 변화
-    float3 baseColor = float3(0.6f, 0.6f, 0.6f); // 기본 회색
-    float3 startColor = float3(0.8f, 0.7f, 0.5f); // 황토색
-    float3 endColor = float3(0.3f, 0.3f, 0.3f); // 어두운 회색
+    // 색상 변화
+    float3 startColor = float3(1.0f, 0.9f, 0.6f);
+    float3 endColor = float3(0.5f, 0.3f, 0.1f);
+    float3 color = lerp(startColor, endColor, ratio);
     
-    float3 color;
-    if (ratio < 0.3f)
-    {
-        // 초기: 밝은 색에서 기본색으로
-        color = lerp(startColor, baseColor, ratio / 0.3f);
-    }
-    else
-    {
-        // 후기: 기본색에서 어두운 색으로
-        color = lerp(baseColor, endColor, (ratio - 0.3f) / 0.7f);
-    }
-    
-    // 균열 패턴 생성
-    float2 center = float2(0.5f, 0.5f);
-    float dist = distance(input.uv, center);
-    
-    // 불규칙한 균열 패턴
-    float noise = Rand(float2(input.id, ratio)) * 0.2f;
-    float crackPattern = saturate(1.0f - dist * (2.0f + noise));
-    crackPattern = pow(crackPattern, 1.5f);
-    
+    // 텍스처 적용
     float4 texColor = g_textures.Sample(g_sam_0, input.uv);
     
-    // 알파값 수정
-    float fadeFactor = smoothstep(0.5f, 1.0f, ratio); // 50%부터 점진적 페이드아웃
-    float alpha = crackPattern * (1.0f - pow(fadeFactor, 2.0f)); // 천천히 감소
+    // Glow 효과
+    float glow = sin(10.0f) * 0.5f + 0.5f;
+    color += glow * float3(1.2f, 1.0f, 0.6f);
     
-    // 최종 색상
-    return float4(color * texColor.rgb, alpha * texColor.a);
+    // 알파값 계산 수정
+    float fadeIn = smoothstep(0.0f, 0.2f, ratio);
+    float fadeOut = 1.0f - smoothstep(0.8f, 1.0f, ratio);
+    
+    // 전혀 투명 하고 있지 않음
+    float alpha = fadeIn * fadeOut * texColor.a;
+    
+    return float4(color * texColor.rgb, alpha);
 }
 
 struct ComputeShared
@@ -170,57 +156,36 @@ RWStructuredBuffer<Particle> g_particle : register(u0);
 RWStructuredBuffer<ComputeShared> g_shared : register(u1);
 
 [numthreads(1024, 1, 1)]
-void CS_Main(int3 threadIndex : SV_DispatchThreadID)
+void CS_Main(uint3 threadIndex : SV_DispatchThreadID)
 {
-    if (threadIndex.x >= g_int_0)
+    int id = threadIndex.x;
+    if (id >= g_int_0)
         return;
 
-    float minX = -100.0f, maxX = 100.0f;
-    float minZ = -100.0f, maxZ = 100.0f;
-    int maxCount = g_int_0;
-    int addCount = g_int_1;
-    float deltaTime = g_vec2_1.x;
-    float accTime = g_vec2_1.y;
-    float minLifeTime = g_vec4_0.x;
-    float maxLifeTime = g_vec4_0.y;
-    float minSpeed = g_vec4_0.z;
-    float maxSpeed = g_vec4_0.w;
-
-    g_shared[0].addCount = addCount;
-    GroupMemoryBarrierWithGroupSync();
-
-    if (g_particle[threadIndex.x].alive == 0 && g_shared[0].addCount > 0)
+    // 새로운 입자 추가
+    if (g_particle[id].alive == 0)
     {
-        while (true)
-        {
-            int remaining = g_shared[0].addCount;
-            if (remaining <= 0)
-                break;
-            int expected = remaining;
-            int desired = remaining - 1;
-            int originalValue;
-            InterlockedCompareExchange(g_shared[0].addCount, expected, desired, originalValue);
-            if (originalValue == expected)
-            {
-                g_particle[threadIndex.x].alive = 1;
-                break;
-            }
-        }
+        g_particle[id].alive = 1;
+            
+        // 초기 위치 설정 (상자 위에서 생성)
+        g_particle[id].worldPos = float3(0.0f, 0.0f, 0.0f);
 
-        if (g_particle[threadIndex.x].alive == 1)
-        {
-            // 사각형 패턴으로 초기 위치 설정
-            float size = 100.0f; // 사각형의 한 변 길이
-            g_particle[threadIndex.x].worldPos = float3(
-                0.0f, 0.0f, 0.0f
-            );
+            // 위로 퍼지는 속도 설정
+        float angle = Rand(float2(id, g_float_0)) * 3.141592 * 2.0f;
+        float speed = g_float_1 * 2.0f + Rand(float2(id, g_float_1));
 
-            // 상승 방향 설정
-            g_particle[threadIndex.x].worldDir = float3(0.0f, 1.0f, 0.0f);
-            g_particle[threadIndex.x].lifeTime = minLifeTime;
-            g_particle[threadIndex.x].curTime = 0.0f;
-        }
+        g_particle[id].curTime = 0.0f;
+        g_particle[id].lifeTime = g_float_1 + Rand(float2(id, g_float_2)) * 2.0f;
+    }
+
+    // 기존 입자 업데이트
+    if (g_particle[id].alive == 1)
+    {
+        g_particle[id].curTime += g_vec2_1.x;
+        
+        // 수명이 다하면 제거
+        if (g_particle[id].curTime >= g_particle[id].lifeTime)
+            g_particle[id].alive = 0;
     }
 }
-
 #endif
