@@ -76,8 +76,8 @@ void LoadingScript::LateUpdate()
         }
 
         // 로딩이 완료되었으므로 다음 씬으로 전환
-        cout << "Switching to RuinsScene..." << endl;
-        GET_SINGLE(SceneManager)->LoadScene(L"RuinsScene");
+        cout << "Switching to TitleScene..." << endl;
+        GET_SINGLE(SceneManager)->LoadScene(L"TitleScene");
     }
 }
 
