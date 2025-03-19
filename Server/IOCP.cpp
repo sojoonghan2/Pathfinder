@@ -90,12 +90,12 @@ bool IOCP::Start()
 	// 비동기 IO 작업 완료 확인 스레드 생성
 	// worker_thread 따로 멤버변수로 뺴기
 
-	int thread_nubmer = std::thread::hardware_concurrency();
-	for (int i = 0; i < 1; ++i) {
+	int thread_number = std::thread::hardware_concurrency();
+	for (int i = 0; i < thread_number; ++i) {
 		workers.emplace_back([this]() { Worker(); });
 	}
 	workers.emplace_back([this]() { TimerWorker(); });
-	std::println("Created {} Threads", thread_nubmer);
+	std::println("Created {} Threads", thread_number);
 
 	return true;
 }
@@ -152,7 +152,6 @@ void IOCP::Worker()
 		{
 			int client_id = sessionCnt++;
 			clientInfoHash.insert(std::make_pair(client_id, ClientInfo{}));
-			clientInfoHash[client_id].ioState = IOState::CONNECT;
 			clientInfoHash[client_id].currentDataSize = 0;
 			clientInfoHash[client_id].clientSocket = acceptSocket;
 			clientInfoHash[client_id].overEx.clientSocket = acceptSocket;
@@ -197,9 +196,6 @@ void IOCP::Worker()
 		*/
 		case IOOperation::RECV:
 		{
-			// 패킷 재조립 (임시) 나중에 바꿀
-			while (clientInfoHash.end() != clientInfoHash.find(key)) {}
-
 			int remain_data = io_size + clientInfoHash[key].currentDataSize;
 			char* p = curr_over_ex->dataBuffer;
 
@@ -264,14 +260,21 @@ void IOCP::TimerWorker()
 			}
 
 			// 내 위치를 가져와서 패킷을 만듦
+			if (client_info.ioState != IOState::INGAME) {
+				continue;
+			}
+
 			auto pos = GET_SINGLE(Game)->GetPlayerPosition(client_info.clientIdInfo.playerId);
 			packet::SCMovePlayer packet{ id, pos.x, pos.y };
 
 			// 내 방에 있는 플레이어에게 패킷을 보냄
 			auto other_players = GET_SINGLE(Game)->GetRoomClients(client_info.clientIdInfo.roomId);
 			for (auto other : other_players) {
+				if (other == -1) { continue; }
 				if (clientInfoHash[other].ioState != IOState::INGAME ||
-					other == id) { continue; }
+					other == id) {
+					continue;
+				}
 				DoSend(clientInfoHash[other], &packet);
 			}
 
@@ -355,7 +358,7 @@ bool IOCP::ProcessPacket(int key, char* p)
 	case packet::Type::CS_MOVE_PLAYER:
 	{
 		packet::CSMovePlayer* packet = reinterpret_cast<packet::CSMovePlayer*>(p);
-		if (clientInfoHash[packet->clientId].ioState == IOState::INGAME) {
+		if (clientInfoHash[packet->clientId].ioState != IOState::INGAME) {
 			break;
 		}
 
