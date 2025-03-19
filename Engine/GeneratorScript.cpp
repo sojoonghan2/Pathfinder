@@ -4,6 +4,7 @@
 #include "Animator.h"
 #include "GameObject.h"
 #include "IceParticleSystem.h"
+#include "Timer.h"
 
 GeneratorScript::GeneratorScript() : _isPlaying(false), _init(false)
 {
@@ -32,13 +33,13 @@ void GeneratorScript::LateUpdate()
     
     if (_isPlaying)
     {
-        _deadTime += 1.f;
+        _deadTime += DELTA_TIME;
     }
 
-    // 애니메이션이 끝났으면 렌더링 종료(인데 아직은 함수 호출이 안됨)
-    if (_deadTime > 420.f)
+    // 애니메이션이 끝났으면 렌더링 종료
+    if (_deadTime > 7.f)
     {
-        GetGameObject()->SetRenderOff();
+        //GetGameObject()->SetRenderOff();
         _isPlaying = false;
     }
 }
