@@ -1,3 +1,4 @@
+#pragma once
 #define UTIL_START	namespace util {
 #define UTIL_END	}
 
