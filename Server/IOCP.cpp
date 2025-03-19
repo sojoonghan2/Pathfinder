@@ -246,7 +246,11 @@ void IOCP::TimerWorker()
 	using namespace std::chrono_literals;
 	while (true) {
 		// 다음 루프 시간
-		auto next_time = std::chrono::high_resolution_clock::now() + 50ms;
+		auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(
+			std::chrono::duration<float, std::milli>(MOVE_PACKET_TIME_MS)
+		);
+
+		auto next_time = std::chrono::high_resolution_clock::now() + diff;
 
 
 		// 50ms마다 실행

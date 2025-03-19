@@ -273,7 +273,7 @@ int main() {
 			players[my_id].Update(controller, delta);
 
 			// send
-			if (send_timer.PeekDeltaTime() > 50.f) {
+			if (send_timer.PeekDeltaTime() > MOVE_PACKET_TIME_MS) {
 				send_timer.updateDeltaTime();
 				auto pos = players[my_id].GetPosition();
 				socket_io.DoSend<packet::CSMovePlayer>(my_id, pos.x, pos.y);

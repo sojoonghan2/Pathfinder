@@ -8,6 +8,10 @@ constexpr int BUFFER_SIZE = 200;
 
 constexpr const char* SERVER_IP = "127.0.0.1";
 
+constexpr float MOVE_PACKET_TIME_MS = 75.f; // 초당 13.3회
+constexpr float MAX_NETWORK_DELAY_MS = 200.f; // 최대 네트워크 딜레이
+
+
 PACKET_START
 enum class Type : unsigned char
 {

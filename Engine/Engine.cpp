@@ -54,7 +54,6 @@ void Engine::Update()
 	GET_SINGLE(SocketIO)->Update();
 #endif
 
-	
 	GET_SINGLE(SceneManager)->Update();
 	GET_SINGLE(InstancingManager)->ClearBuffer();
 

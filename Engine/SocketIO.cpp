@@ -70,7 +70,7 @@ void SocketIO::Update()
 			players[myId].x = max(players[myId].x, -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 		}
 
-		if (sendTimer.PeekDeltaTime() > 50.f) {
+		if (sendTimer.PeekDeltaTime() > MOVE_PACKET_TIME_MS) {
 			sendTimer.updateDeltaTime();
 			DoSend<packet::CSMovePlayer>(myId, players[myId].x, players[myId].y);
 		}
