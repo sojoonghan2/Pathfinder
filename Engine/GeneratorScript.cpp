@@ -13,7 +13,7 @@ void GeneratorScript::LateUpdate()
 {
     if (!_init)
     {
-        GetAnimator()->Stop();
+        if(GetAnimator()) GetAnimator()->Stop();
         _init = true;
     }
 
@@ -22,15 +22,21 @@ void GeneratorScript::LateUpdate()
     {
         if (!_isPlaying)
         {
-            GetAnimator()->Play(0);
+            if(GetAnimator()) GetAnimator()->Play(0);
             _isPlaying = true;
+            _deadTime = 0.f;
         }
         auto particle_system = GetGameObject()->GetParticleSystem();
         if (particle_system) particle_system->ParticleStart();
     }
+    
+    if (_isPlaying)
+    {
+        _deadTime += 1.f;
+    }
 
     // 애니메이션이 끝났으면 렌더링 종료(인데 아직은 함수 호출이 안됨)
-    if (_isPlaying && GetAnimator()->IsAnimationFinished())
+    if (_deadTime > 420.f)
     {
         GetGameObject()->SetRenderOff();
         _isPlaying = false;
