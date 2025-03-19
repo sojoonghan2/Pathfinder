@@ -11,6 +11,9 @@ public:
 	bool Start();
 
 
+	void SetClientIdInfo(int client_id, int player_id, int room_id);
+	IOState GetClientIOState(int client_id);
+
 public:
 	~IOCP();
 
@@ -22,7 +25,8 @@ private:
 	void DoSend(ClientInfo& client_info, void* packet);
 	bool ProcessPacket(int key, char* p);
 	void DoBroadcast(void* packet);
-	void DoBroadcast(int key, void* packet);
+	void DoBroadcast(int kcey, void* packet);
+	void Disconnect(int client_id);
 
 private:
 	HANDLE		IOCPHandle{ INVALID_HANDLE_VALUE };

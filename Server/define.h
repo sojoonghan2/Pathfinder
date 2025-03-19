@@ -1,7 +1,40 @@
 #pragma once
 
+
 constexpr int ROOM_COUNT = 300;
 constexpr int PLAYER_COUNT = 1000;
+
+struct Vec2f
+{
+	float x{};
+	float y{};
+
+	Vec2f() = default;
+	Vec2f(const float x, const float y) :
+		x{ x },
+		y{ y }
+	{}
+};
+
+// temp
+struct Room
+{
+	std::array<int, 3> clientIdList{};
+};
+
+struct ClientIdInfo
+{
+	int playerId{ -1 };
+	int roomId{ -1 };
+};
+
+struct Player
+{
+	Vec2f pos{};
+	int clientId{ -1 };
+	float& x = pos.x;
+	float& y = pos.y;
+};
 
 enum class IOOperation
 {
@@ -11,26 +44,14 @@ enum class IOOperation
 	SEND
 };
 
-// temp
-struct Room
+enum class IOState
 {
-	std::array<int, 3> playerIdList{};
+	NONE,
+	CONNECT,
+	INGAME,
+	DISCONNECT
 };
 
-struct ClientIdInfo
-{
-	int playerid{ -1 };
-	int roomid{ -1 };
-};
-
-struct Player
-{
-	Vec2f pos{};
-	int clientId{ -1 };
-	float& x = pos.x;
-	float& y = pos.y;
-
-};
 
 struct OverlappedEx
 {
@@ -66,6 +87,7 @@ struct ClientInfo
 	SOCKET			clientSocket{ INVALID_SOCKET };	
 	int				currentDataSize{};					// 패킷 재조립을 위한 남은 데이터 수 
 	ClientIdInfo	clientIdInfo{};
+	IOState			ioState{ IOState::CONNECT };
 
 	ClientInfo()
 	{

@@ -1,12 +1,13 @@
 #include "pch.h"
 #include "Game.h"
+#include "IOCP.h"
 
 std::random_device rd;
 std::default_random_engine dre{ rd() };
 std::uniform_real_distribution<float> timeDist{ 2.f, 4.f };
 std::uniform_real_distribution<float> posDist{ -24.f, 24.f };
 
-bool Game::RegisterClient(int id)
+void Game::RegisterClient(int id)
 {
 	// 클라이언트에 매치메이킹 패킷이 도착하였을 경우
 	// 클라이언트 아이디를 우선순위 큐에 넣고 사이즈 검사
@@ -56,33 +57,38 @@ bool Game::RegisterClient(int id)
 	if (match) {
 		int roomId = -1;
 		std::array<int, 3> player_ids{};
-		while (roomQueue.try_pop(roomId)) {
+		while (not roomQueue.try_pop(roomId)) {
 			std::this_thread::yield();
 		}
 		for (int i = 0; i < 3; ++i) {
-			while (playerQueue.try_pop(player_ids[i])) {
+			while (not playerQueue.try_pop(player_ids[i])) {
 				std::this_thread::yield();
 			}
-			roomList[roomId].playerIdList[i] = player_ids[i];
-			idInfoTable.insert(std::make_pair(
-				client_ids[i], ClientIdInfo{ player_ids[i], roomId }));
-			playerList[i].x = posDist(dre);
-			playerList[i].y = posDist(dre);
-			playerList[i].clientId = client_ids[i];
+			roomList[roomId].clientIdList[i] = client_ids[i];
+			GET_SINGLE(IOCP)->SetClientIdInfo(client_ids[i], player_ids[i], roomId);
+			playerList[player_ids[i]].x = posDist(dre);
+			playerList[player_ids[i]].y = posDist(dre);
+			playerList[player_ids[i]].clientId = client_ids[i];
 		}
 
 	}
 
 }
 
-void Game::SetPosition(const int id, Vec2f pos)
+void Game::SetPlayerPosition(const int player_id, Vec2f pos)
 {
-	playerList[idInfoTable[id].playerid].pos = pos;
+	playerList[player_id].pos = pos;
 }
 
-std::array<int, 3> Game::GetRoomPlayers(const int id)
+Vec2f Game::GetPlayerPosition(const int player_id) const
 {
-	return roomList[idInfoTable[id].roomid].playerIdList;
+
+	return playerList[player_id].pos;
+}
+
+std::array<int, 3> Game::GetRoomClients(const int room_id)
+{
+	return roomList[room_id].clientIdList;
 }
 
 void Game::Init()

@@ -91,7 +91,7 @@ bool IOCP::Start()
 	// worker_thread 따로 멤버변수로 뺴기
 
 	int thread_nubmer = std::thread::hardware_concurrency();
-	for (int i = 0; i < thread_nubmer; ++i) {
+	for (int i = 0; i < 1; ++i) {
 		workers.emplace_back([this]() { Worker(); });
 	}
 	workers.emplace_back([this]() { TimerWorker(); });
@@ -100,25 +100,40 @@ bool IOCP::Start()
 	return true;
 }
 
+void IOCP::SetClientIdInfo(int client_id, int player_id, int room_id)
+{
+	clientInfoHash[client_id].clientIdInfo.playerId = player_id;
+	clientInfoHash[client_id].clientIdInfo.roomId = room_id;
+	clientInfoHash[client_id].ioState = IOState::INGAME;
+}
+
+IOState IOCP::GetClientIOState(int client_id)
+{
+	return clientInfoHash[client_id].ioState;
+}
+
 void IOCP::Worker()
 {
 	while (true) {
 		DWORD io_size;
-		ULONG_PTR key;
+		ULONG_PTR ULkey;
 		WSAOVERLAPPED* over = nullptr;
 
 		auto ret = GetQueuedCompletionStatus(
 			IOCPHandle,
 			&io_size,
-			&key,
+			&ULkey,
 			&over,
 			INFINITE);
 
 		OverlappedEx* curr_over_ex = reinterpret_cast<OverlappedEx*>(over);
 		
+		int key = static_cast<int>(ULkey);
+
 		if (FALSE == ret) {
 			// TODO: ERROR
 			closesocket(clientInfoHash[key].clientSocket);
+			clientInfoHash[key].ioState = IOState::DISCONNECT;
 			// Send 일경우 보낸 curr_ex는 제거
 			if (curr_over_ex->operation == IOOperation::SEND) {
 				delete curr_over_ex;
@@ -135,15 +150,15 @@ void IOCP::Worker()
 			*/
 		case IOOperation::ACCEPT:
 		{
-			
-			
-			// 세션 컨테이너에 소켓 정보 저장
 			int client_id = sessionCnt++;
-			std::println("New Client {} Accepted.", client_id);
-
+			clientInfoHash.insert(std::make_pair(client_id, ClientInfo{}));
+			clientInfoHash[client_id].ioState = IOState::CONNECT;
 			clientInfoHash[client_id].currentDataSize = 0;
 			clientInfoHash[client_id].clientSocket = acceptSocket;
 			clientInfoHash[client_id].overEx.clientSocket = acceptSocket;
+			
+			std::println("New Client {} Accepted.", client_id);
+
 
 			// IOCP 객체에 받아들인 클라이언트의 소켓을 연결
 			auto ret = CreateIoCompletionPort(
@@ -182,7 +197,8 @@ void IOCP::Worker()
 		*/
 		case IOOperation::RECV:
 		{
-			// 패킷 재조립 (임시) 나중에 바꿀 예정
+			// 패킷 재조립 (임시) 나중에 바꿀
+			while (clientInfoHash.end() != clientInfoHash.find(key)) {}
 
 			int remain_data = io_size + clientInfoHash[key].currentDataSize;
 			char* p = curr_over_ex->dataBuffer;
@@ -194,7 +210,8 @@ void IOCP::Worker()
 					if (false == ret) {
 						// Todo
 						closesocket(clientInfoHash[key].clientSocket);
-						ZeroMemory(&clientInfoHash[key], sizeof(ClientInfo));
+						clientInfoHash[key].ioState = IOState::DISCONNECT;
+						
 						break;
 					}
 					p = p + packet_size;
@@ -230,17 +247,44 @@ void IOCP::Worker()
 
 void IOCP::TimerWorker()
 {
-	util::Timer timer;
+	using namespace std::chrono_literals;
 	while (true) {
-		if (timer.PeekDeltaTime() > 50.f) {
-			timer.updateDeltaTime();
-			for (int i = 0; i < sessionCnt; ++i) {
-				// Todo: getPosition
-				packet::SCMovePlayer packet{ i, players[i].x, players[i].y };
-				DoBroadcast(i, &packet);
+		// 다음 루프 시간
+		auto next_time = std::chrono::high_resolution_clock::now() + 50ms;
+
+
+		// 50ms마다 실행
+		std::vector<int> id_delete{};
+		for (auto& [id, client_info] : clientInfoHash) {
+
+			// 인게임 체크해서 게임중이 아니면 지우기.
+			if (client_info.ioState == IOState::DISCONNECT) {
+				id_delete.push_back(id);
+				continue;
 			}
+
+			// 내 위치를 가져와서 패킷을 만듦
+			auto pos = GET_SINGLE(Game)->GetPlayerPosition(client_info.clientIdInfo.playerId);
+			packet::SCMovePlayer packet{ id, pos.x, pos.y };
+
+			// 내 방에 있는 플레이어에게 패킷을 보냄
+			auto other_players = GET_SINGLE(Game)->GetRoomClients(client_info.clientIdInfo.roomId);
+			for (auto other : other_players) {
+				if (clientInfoHash[other].ioState != IOState::INGAME ||
+					other == id) { continue; }
+				DoSend(clientInfoHash[other], &packet);
+			}
+
 		}
-		std::this_thread::yield();
+
+		// 더이상 사용되지 않는 id는 제거
+		for (auto id : id_delete) {
+			clientInfoHash.unsafe_erase(id);
+		}
+	
+
+		// 50ms가 넘으면 즉시실행. 아니면 대기
+		std::this_thread::sleep_until(next_time);
 	}
 }
 
@@ -268,10 +312,10 @@ void IOCP::DoRecv(ClientInfo& session) const
 }
 
 
-void IOCP::DoSend(ClientInfo& session, void* packet)
+void IOCP::DoSend(ClientInfo& client_info, void* packet)
 {
 	OverlappedEx* send_over_ex = new OverlappedEx{ reinterpret_cast<unsigned char*>(packet) };
-	WSASend(session.clientSocket, &send_over_ex->wsabuf, 1, 0, 0, &send_over_ex->over, 0);
+	WSASend(client_info.clientSocket, &send_over_ex->wsabuf, 1, 0, 0, &send_over_ex->over, 0);
 }
 
 bool IOCP::ProcessPacket(int key, char* p)
@@ -283,20 +327,40 @@ bool IOCP::ProcessPacket(int key, char* p)
 	{
 
 		std::println("CS_LOGIN Client {}", key);
-
 		packet::SCLogin sc_login{ key };
 		DoSend(clientInfoHash[key], &sc_login);
 
-		// 이 부분을 맵 당 broadcast로 변경해야함
-		packet::SCMovePlayer sc_move_player{ key % 3, players[key].x, players[key].y };
-		DoBroadcast(&sc_move_player);
+		// 매치메이킹 등록 및 방 생성 함수
+		GET_SINGLE(Game)->RegisterClient(key);
+		
+		// 매치매이킹이 아직 안되었으면 빠져나가기
+		if (clientInfoHash[key].ioState != IOState::INGAME) {
+			break;
+		}
+
+		// 매칭이 완료되면 본인 위치를 본인 클라이언트에 전달
+		auto client_ids = GET_SINGLE(Game)->GetRoomClients(
+			clientInfoHash[key].clientIdInfo.roomId);
+
+		for (auto id : client_ids) {
+			auto pos = GET_SINGLE(Game)->GetPlayerPosition(
+				clientInfoHash[id].clientIdInfo.playerId);
+			packet::SCMovePlayer sc_move_player{
+				id, pos.x, pos.y };
+			DoSend(clientInfoHash[id], &sc_move_player);
+		}
 	}
 	break;
 
 	case packet::Type::CS_MOVE_PLAYER:
 	{
 		packet::CSMovePlayer* packet = reinterpret_cast<packet::CSMovePlayer*>(p);
-		GET_SINGLE(Game)->SetPosition( packet->playerId,
+		if (clientInfoHash[packet->clientId].ioState == IOState::INGAME) {
+			break;
+		}
+
+		GET_SINGLE(Game)->SetPlayerPosition(
+			packet->clientId,
 			Vec2f{ packet->x, packet->y });
 	}
 	break;
@@ -326,6 +390,11 @@ void IOCP::DoBroadcast(int key, void* packet)
 		if (key == i) continue;
 		DoSend(clientInfoHash[i], packet);
 	}
+}
+
+void IOCP::Disconnect(int client_id)
+{
+	
 }
 
 

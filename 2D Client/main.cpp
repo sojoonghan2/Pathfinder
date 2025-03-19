@@ -180,19 +180,19 @@ int main() {
 			case packet::Type::SC_LOGIN:
 			{
 				packet::SCLogin packet = reinterpret_cast<packet::SCLogin&>(buffer);
-				players[packet.playerId].SetFillColor(sf::Color::Red);
-				players[packet.playerId].SetShow(true);
-				my_id = packet.playerId;
+				players[packet.clientId].SetFillColor(sf::Color::Red);
+				players[packet.clientId].SetShow(true);
+				my_id = packet.clientId;
 			}
 			break;
 			case packet::Type::SC_MOVE_PLAYER:
 			{
 				packet::SCMovePlayer packet = reinterpret_cast<packet::SCMovePlayer&>(buffer);
-				if (not players.contains(packet.playerId)) {
-					players[packet.playerId].SetFillColor(sf::Color::Black);
-					players[packet.playerId].SetShow(true);
+				if (not players.contains(packet.clientId)) {
+					players[packet.clientId].SetFillColor(sf::Color::Black);
+					players[packet.clientId].SetShow(true);
 				}
-				players[packet.playerId].SetPosition(packet.x, packet.y);
+				players[packet.clientId].SetPosition(packet.x, packet.y);
 			}
 			break;
 			default:

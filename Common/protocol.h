@@ -39,10 +39,10 @@ struct CSLogin : Header
 //	int playerId: 클라이언트의 플레이어 아이디
 struct SCLogin : Header
 {
-	int playerId{ -1 };
+	int clientId{ -1 };
 
-	SCLogin(int playerId) :
-		playerId{playerId}
+	SCLogin(int client_id) :
+		clientId{client_id}
 	{
 		size = sizeof(SCLogin);
 		type = Type::SC_LOGIN;
@@ -55,12 +55,12 @@ struct SCLogin : Header
 //	float y
 struct SCMovePlayer : Header
 {
-	int playerId{ -1 };
+	int clientId{ -1 };
 	float x{ 0.f };
 	float y{ 0.f };
 
-	SCMovePlayer(const int playerId, const float x, const float y) :
-		playerId{playerId},
+	SCMovePlayer(const int client_id, const float x, const float y) :
+		clientId{client_id},
 		x{x},
 		y{y}
 	{
@@ -75,12 +75,12 @@ struct SCMovePlayer : Header
 //	float y
 struct CSMovePlayer : Header
 {
-	int playerId{ -1 };
+	int clientId{ -1 };
 	float x{ 0.f };
 	float y{ 0.f };
 
-	CSMovePlayer(const int playerId, const float x, const float y) :
-		playerId{ playerId },
+	CSMovePlayer(const int client_id, const float x, const float y) :
+		clientId{ client_id },
 		x{ x },
 		y{ y }
 	{

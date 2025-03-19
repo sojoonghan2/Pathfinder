@@ -150,21 +150,21 @@ void SocketIO::ProcessPacket()
 		case packet::Type::SC_LOGIN:
 		{
 			packet::SCLogin packet = reinterpret_cast<packet::SCLogin&>(buffer);
-			std::println("SC_LOGIN, id : {}", packet.playerId);
-			myId = packet.playerId;
+			std::println("SC_LOGIN, id : {}", packet.clientId);
+			myId = packet.clientId;
 		}
 		break;
 		case packet::Type::SC_MOVE_PLAYER:
 		{
 			packet::SCMovePlayer packet = reinterpret_cast<packet::SCMovePlayer&>(buffer);
-			if (idList.end() == std::find(idList.begin(), idList.end(), packet.playerId) &&
-				packet.playerId != myId) {
-				idList.push_back(packet.playerId);
-				std::println("{} put success.", packet.playerId);
+			if (idList.end() == std::find(idList.begin(), idList.end(), packet.clientId) &&
+				packet.clientId != myId) {
+				idList.push_back(packet.clientId);
+				std::println("{} put success.", packet.clientId);
 			}
-			GET_SINGLE(MessageManager)->InsertMessage(packet.playerId, packet.x, packet.y);
-			players[packet.playerId].x = packet.x;
-			players[packet.playerId].y = packet.y;
+			GET_SINGLE(MessageManager)->InsertMessage(packet.clientId, packet.x, packet.y);
+			players[packet.clientId].x = packet.x;
+			players[packet.clientId].y = packet.y;
 		}
 		break;
 		default:

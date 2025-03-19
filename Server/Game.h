@@ -10,9 +10,10 @@ private:
 
 
 public:
-	bool RegisterClient(int id);
-	void SetPosition(const int id, Vec2f pos);
-	std::array<int, 3> GetRoomPlayers(const int id);
+	void RegisterClient(int id);
+	void SetPlayerPosition(const int player_id, Vec2f pos);
+	Vec2f GetPlayerPosition(const int player_id) const;
+	std::array<int, 3> GetRoomClients(const int room_id);
 	void Init();
 
 private:

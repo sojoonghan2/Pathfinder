@@ -5,20 +5,18 @@
 int main()
 {
 	
-	IOCP iocp;
-	
-	auto ret = iocp.Init();
+
+	GET_SINGLE(Game)->Init();
+	auto ret = GET_SINGLE(IOCP)->Init();
 	if (false == ret) {
 		return -1;
 	}
 
-	GET_SINGLE(Game)->Init();
-
-	iocp.Start();
+	GET_SINGLE(IOCP)->Start();
 
 	// game loop
 	while (true) {
-
+		std::this_thread::yield();
 	}
 	
 }
