@@ -19,7 +19,7 @@ Animator::~Animator()
 
 void Animator::FinalUpdate()
 {
-    
+    if (!_isPlaying) return;
     _updateTime += DELTA_TIME;
 
     const AnimClipInfo& animClip = _animClips->at(_clipIndex);
@@ -77,7 +77,6 @@ void Animator::FinalUpdate()
         _boneFinalMatrix->Init(sizeof(Matrix), finalTransforms.size());
     }
     _boneFinalMatrix->Update(finalTransforms.data(), finalTransforms.size() * sizeof(Matrix));
-
 }
 
 void Animator::SetAnimClip(const vector<AnimClipInfo>* animClips)
@@ -88,7 +87,6 @@ void Animator::SetAnimClip(const vector<AnimClipInfo>* animClips)
     }
     _animClips = animClips;
 }
-
 
 void Animator::PushData()
 {
@@ -127,4 +125,19 @@ void Animator::Play(uint32 idx)
 
     _clipIndex = idx;
     _updateTime = 0.f;
+    _isPlaying = true;
+}
+
+void Animator::Stop()
+{
+    _isPlaying = false;
+}
+
+bool Animator::IsAnimationFinished()
+{
+    if (!_animClips || _clipIndex >= _animClips->size())
+        return false;
+
+    const AnimClipInfo& animClip = _animClips->at(_clipIndex);
+    return _updateTime >= animClip.duration;
 }

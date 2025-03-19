@@ -8,6 +8,7 @@
 #include "SceneManager.h"
 #include "MessageManager.h"
 #include "SocketIO.h"
+#include "Animator.h"
 
 TestPointLightScript::TestPointLightScript()
 {
@@ -33,28 +34,37 @@ void TestPointLightScript::LateUpdate()
 	}
 
 #endif // NETWORK_ENABLE
-
+	_isMove = false;
 	KeyboardInput();
 	MouseInput();
+	Animation();
 }
 
 void TestPointLightScript::KeyboardInput()
 {
 	// 여기서 받아서 위치 계산 후 
-
 	Vec3 pos = GetTransform()->GetLocalPosition();
 
 	if (INPUT->GetButton(KEY_TYPE::UP))
+	{
 		pos += Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
-
+		_isMove = true;
+	}
 	if (INPUT->GetButton(KEY_TYPE::DOWN))
+	{
 		pos -= Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
-
+		_isMove = true;
+	}
 	if (INPUT->GetButton(KEY_TYPE::LEFT))
+	{
 		pos += Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
-
+		_isMove = true;
+	}
 	if (INPUT->GetButton(KEY_TYPE::RIGHT))
+	{
 		pos -= Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
+		_isMove = true;
+	}
 
 	if (INPUT->GetButton(KEY_TYPE::PAGEUP))
 		pos += Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
@@ -84,6 +94,20 @@ void TestPointLightScript::MouseInput()
 {
 	
 }
+
+void TestPointLightScript::Animation()
+{
+	static uint32 currentAnimIndex = 0;
+
+	uint32 nextAnimIndex = _isMove ? 1 : 0;
+
+	if (currentAnimIndex != nextAnimIndex)
+	{
+		GetAnimator()->Play(nextAnimIndex);
+		currentAnimIndex = nextAnimIndex;
+	}
+}
+
 
 void TestPointLightScript::SetPosition(float x, float z)
 {

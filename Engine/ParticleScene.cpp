@@ -191,7 +191,7 @@ ParticleScene::ParticleScene()
 // 플레이어
 #pragma region Player
     {
-        shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Monster\\Monster.fbx");
+        shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
         vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
         gameObjects[0]->SetName(L"OBJ");
@@ -202,7 +202,6 @@ ParticleScene::ParticleScene()
         gameObjects[0]->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
         gameObjects[0]->AddComponent(make_shared<TestPointLightScript>());
 
-        // 5. Scene에 추가
         activeScene->AddGameObject(gameObjects[0]);
 
         shared_ptr<GameObject> grenade = make_shared<GameObject>();

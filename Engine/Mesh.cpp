@@ -1,4 +1,5 @@
-ï»¿#include <d3d12.h>
+
+#include <d3d12.h>
 
 #include "pch.h"
 #include "Mesh.h"
@@ -9,7 +10,7 @@
 #include "BINLoader.h"
 #include "StructuredBuffer.h"
 
-////////////////////////////////////////////////////////////////////////// VRS ï¿½Û¾ï¿½ ï¿½ï¿½ //////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////// VRS ÀÛ¾÷ Áß //////////////////////////////////////////////////////////////////////////
 ComPtr<ID3D12Resource> _shadingRateImage;
 
 void Mesh::CreateVRSImage(UINT width, UINT height)
@@ -19,7 +20,7 @@ void Mesh::CreateVRSImage(UINT width, UINT height)
 
 	D3D12_RESOURCE_DESC vrsDesc = {};
 	vrsDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	vrsDesc.Width = width / 16;   // VRS ï¿½ï¿½ï¿½ï¿½ 16x16 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	vrsDesc.Width = width / 16;   // VRS ¸ÊÀº 16x16 ºí·Ï ´ÜÀ§
 	vrsDesc.Height = height / 16;
 	vrsDesc.DepthOrArraySize = 1;
 	vrsDesc.MipLevels = 1;
@@ -40,7 +41,7 @@ void Mesh::CreateVRSImage(UINT width, UINT height)
 
 	if (FAILED(hr))
 	{
-		printf("VRS ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½!\n");
+		printf("VRS ¸Ê »ı¼º ½ÇÆĞ!\n");
 	}
 }
 
@@ -65,7 +66,7 @@ void Mesh::CreateVRSUploadBuffer(UINT width, UINT height)
 
 	if (FAILED(hr))
 	{
-		printf("VRS ï¿½ï¿½ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½!\n");
+		printf("VRS ¾÷·Îµå ¹öÆÛ »ı¼º ½ÇÆĞ!\n");
 	}
 }
 
@@ -79,19 +80,19 @@ void Mesh::UploadVRSData()
 
 	UINT8* vrsData = new UINT8[width * height];
 
-	// ï¿½ï¿½ï¿½ï¿½: È­ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 2x2 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+	// ¿¹Á¦: È­¸éÀÇ ¿À¸¥ÂÊ Àı¹İÀº 2x2 ºí·Ï »ç¿ë
 	for (UINT y = 0; y < height; y++)
 	{
 		for (UINT x = 0; x < width; x++)
 		{
 			if (x < width / 2)
-				vrsData[y * width + x] = D3D12_SHADING_RATE_1X1;  // ï¿½âº» ï¿½ï¿½ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½Æ®
+				vrsData[y * width + x] = D3D12_SHADING_RATE_1X1;  // ±âº» ¼ÎÀÌµù ·¹ÀÌÆ®
 			else
-				vrsData[y * width + x] = D3D12_SHADING_RATE_2X2;  // 2x2 ï¿½ï¿½ï¿½
+				vrsData[y * width + x] = D3D12_SHADING_RATE_2X2;  // 2x2 ºí·Ï
 		}
 	}
 
-	// ï¿½ï¿½ï¿½Îµï¿½ ï¿½ï¿½ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	// ¾÷·Îµå ¹öÆÛ¿¡ µ¥ÀÌÅÍ º¹»ç
 	void* mappedMemory;
 	_vrsUploadBuffer->Map(0, nullptr, &mappedMemory);
 	memcpy(mappedMemory, vrsData, width * height * sizeof(UINT8));
@@ -99,7 +100,7 @@ void Mesh::UploadVRSData()
 
 	delete[] vrsData;
 
-	// VRS ï¿½ï¿½ï¿½ï¿½ GPUï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	// VRS ¸ÊÀ» GPU¿¡ º¹»ç
 	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 		_shadingRateImage.Get(),
 		D3D12_RESOURCE_STATE_COMMON,
@@ -142,7 +143,7 @@ void Mesh::Create(const vector<Vertex>& vertexBuffer, const vector<uint32>& inde
 
 void Mesh::Render(uint32 instanceCount, uint32 idx)
 {
-	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	// Á¤Á¡ ¹× ÀÎµ¦½º ¹öÆÛ ¼³Á¤
 	GRAPHICS_CMD_LIST->IASetVertexBuffers(0, 1, &_vertexBufferView); // Slot: (0~15)
 	GRAPHICS_CMD_LIST->IASetIndexBuffer(&_vecIndexInfo[idx].bufferView);
 
@@ -151,7 +152,7 @@ void Mesh::Render(uint32 instanceCount, uint32 idx)
 	/////////////////////////////// VRS /////////////////////////////////////
 	if (_supportsVRS && _shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2 && _shadingRateImage)
 	{
-		// RSSetShadingRateImageï¿½ï¿½ ID3D12GraphicsCommandList5ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¹Ç·ï¿½, QueryInterfaceï¿½ï¿½ È¹ï¿½ï¿½
+		// RSSetShadingRateImage´Â ID3D12GraphicsCommandList5¿¡¼­¸¸ Á¦°øµÇ¹Ç·Î, QueryInterface·Î È¹µæ
 		ComPtr<ID3D12GraphicsCommandList5> commandList5;
 		GRAPHICS_CMD_LIST->QueryInterface(IID_PPV_ARGS(&commandList5));
 
@@ -161,10 +162,10 @@ void Mesh::Render(uint32 instanceCount, uint32 idx)
 		}
 	}
 
-	// Ã¹ ï¿½ï¿½Â° ï¿½ï¿½Î¿ï¿½ È£ï¿½ï¿½ (VRS ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+	// Ã¹ ¹øÂ° µå·Î¿ì È£Ãâ (VRS Àû¿ëµÈ »óÅÂ)
 	GRAPHICS_CMD_LIST->DrawIndexedInstanced(_vecIndexInfo[idx].count, instanceCount, 0, 0, 0);
 
-	// VRS ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+	// VRS ¼³Á¤ ÇØÁ¦ (¼ÎÀÌµù ·¹ÀÌÆ® ÀÌ¹ÌÁö ÇØÁ¦)
 	if (_supportsVRS && _shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2 && _shadingRateImage)
 	{
 		ComPtr<ID3D12GraphicsCommandList5> commandList5;
@@ -177,7 +178,7 @@ void Mesh::Render(uint32 instanceCount, uint32 idx)
 	}
 	/////////////////////////////// VRS /////////////////////////////////////
 
-	// ï¿½ï¿½ ï¿½ï¿½Â° ï¿½ï¿½Î¿ï¿½ È£ï¿½ï¿½ (VRS ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+	// µÎ ¹øÂ° µå·Î¿ì È£Ãâ (VRS ÇØÁ¦µÈ »óÅÂ)
 	GRAPHICS_CMD_LIST->DrawIndexedInstanced(_vecIndexInfo[idx].count, instanceCount, 0, 0, 0);
 }
 
@@ -201,7 +202,7 @@ shared_ptr<Mesh> Mesh::CreateFromFBX(const FbxMeshInfo* meshInfo, FBXLoader& loa
 	{
 		if (buffer.empty())
 		{
-			// FBX ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì»ï¿½ï¿½Ï´ï¿½. IndexBufferï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½Ó½ï¿½ Ã³ï¿½ï¿½
+			// FBX ?Œì¼???´ìƒ?˜ë‹¤. IndexBufferê°€ ?†ìœ¼ë©??ëŸ¬ ?˜ë‹ˆê¹??„ì‹œ ì²˜ë¦¬
 			vector<uint32> defaultBuffer{ 0 };
 			mesh->CreateIndexBuffer(defaultBuffer);
 		}
@@ -264,8 +265,8 @@ void Mesh::CreateVertexBuffer(const vector<Vertex>& buffer)
 
 	// Initialize the vertex buffer view.
 	_vertexBufferView.BufferLocation = _vertexBuffer->GetGPUVirtualAddress();
-	_vertexBufferView.StrideInBytes = sizeof(Vertex); // ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ Å©ï¿½ï¿½
-	_vertexBufferView.SizeInBytes = bufferSize; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å©ï¿½ï¿½	
+	_vertexBufferView.StrideInBytes = sizeof(Vertex); // ?•ì  1ê°??¬ê¸°
+	_vertexBufferView.SizeInBytes = bufferSize; // ë²„í¼???¬ê¸°	
 }
 
 void Mesh::CreateIndexBuffer(const vector<uint32>& buffer)
@@ -338,7 +339,7 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 			for (int32 f = 0; f < size; f++)
 			{
 				FbxKeyFrameInfo& kf = vec[f];
-				// FBXï¿½ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã¤ï¿½ï¿½ï¿½Ø´ï¿½
+				// FBX?ì„œ ?Œì‹±???•ë³´?¤ë¡œ ì±„ì›Œì¤€??
 				KeyFrameInfo& kfInfo = info.keyFrames[b][f];
 				kfInfo.time = kf.time;
 				kfInfo.frame = static_cast<int32>(size);
@@ -374,13 +375,13 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 #pragma region SkinData
 	if (IsAnimMesh())
 	{
-		// BoneOffet ï¿½ï¿½ï¿½
+		// BoneOffet ?‰ë ¬
 		const int32 boneCount = static_cast<int32>(_bones.size());
 		vector<Matrix> offsetVec(boneCount);
 		for (size_t b = 0; b < boneCount; b++)
 			offsetVec[b] = _bones[b].matOffset;
 
-		// OffsetMatrix StructuredBuffer ï¿½ï¿½ï¿½ï¿½
+		// OffsetMatrix StructuredBuffer ?¸íŒ…
 		_offsetBuffer = make_shared<StructuredBuffer>();
 		_offsetBuffer->Init(sizeof(Matrix), static_cast<uint32>(offsetVec.size()), offsetVec.data());
 
@@ -389,7 +390,7 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 		{
 			AnimClipInfo& animClip = _animClips[i];
 
-			// ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+			// ? ë‹ˆë©”ì´???„ë ˆ???•ë³´
 			vector<AnimFrameParams> frameParams;
 			frameParams.resize(_bones.size() * animClip.frameCount);
 
@@ -409,7 +410,7 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 				}
 			}
 
-			// StructuredBuffer ï¿½ï¿½ï¿½ï¿½
+			// StructuredBuffer ?¸íŒ…
 			_frameBuffer.push_back(make_shared<StructuredBuffer>());
 			_frameBuffer.back()->Init(sizeof(AnimFrameParams), static_cast<uint32>(frameParams.size()), frameParams.data());
 		}

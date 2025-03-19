@@ -81,21 +81,20 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-	// 플레이어
+// 플레이어
 #pragma region Player
 	{
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Monster\\Monster.fbx");
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
 		gameObjects[0]->SetName(L"OBJ");
 		gameObjects[0]->SetCheckFrustum(false);
 		gameObjects[0]->AddComponent(make_shared<TestDragon>());
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.7f, 3.4f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
 		gameObjects[0]->AddComponent(make_shared<TestPointLightScript>());
 
-		// 5. Scene에 추가
 		activeScene->AddGameObject(gameObjects[0]);
 	}
 #pragma endregion
@@ -123,9 +122,9 @@ RuinsScene::RuinsScene()
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\Ruins.jpg");
-			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsFloor", L"..\\Resources\\Texture\\TerrainCube\\RuinsFloor.jpg");
-			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\RuinsTop.jpg");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\New_ruins.jpg");
+			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsFloor", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
+			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\New_ruins.jpg");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
@@ -204,7 +203,7 @@ RuinsScene::RuinsScene()
 		water->AddComponent(make_shared<Transform>());
 		water->AddComponent(make_shared<WaterScript>());
 		water->GetTransform()->SetLocalScale(Vec3(10000.f, 1.f, 10000.f));
-		water->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 50.f));
+		water->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 50.f));
 		water->SetStatic(true);
 
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -233,7 +232,7 @@ RuinsScene::RuinsScene()
 		vector<Vec3> positions;
 		float minDistance = 300.0f;
 
-		for (int i = 0; i < 20; ++i)
+		for (int i = 0; i < 10; ++i)
 		{
 			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
 			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
@@ -302,6 +301,30 @@ RuinsScene::RuinsScene()
 		activeScene->AddGameObject(occupation);
 	}
 #pragma endregion
+#pragma region Stone
+	for (int i = -1; i < 2; ++i) {
+		for (int j = -1; j < 2; ++j) {
+			if (i == 0 || j == 0) {
+				continue;
+			}
+			{
+				shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\ruins\\Ruin_B.fbx");
+
+				vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+				gameObjects[0]->SetName(L"Stone" + std::to_wstring(i + j + 2));
+				gameObjects[0]->SetCheckFrustum(false);
+				gameObjects[0]->AddComponent(make_shared<Transform>());
+				gameObjects[0]->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+				gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f + i * 4000, 40.f, 0.0f + j * 4000));
+				gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(0.f, PI*(i+j), 0.f));
+				activeScene->AddGameObject(gameObjects[0]);
+
+			}
+		}
+	}
+#pragma endregion
+
 }
 
 RuinsScene::~RuinsScene() {}

@@ -199,7 +199,10 @@
     <ClInclude Include="FireParticleSystem.h" />
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GeneratorScript.h" />
     <ClInclude Include="GlitterParticleSystem.h" />
+    <ClInclude Include="LoadingScene.h" />
+    <ClInclude Include="LoadingScript.h" />
     <ClInclude Include="LuckyScript.h" />
     <ClInclude Include="IceParticleSystem.h" />
     <ClInclude Include="Input.h" />
@@ -282,7 +285,10 @@
     <ClCompile Include="FireParticleSystem.cpp" />
     <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GeneratorScript.cpp" />
     <ClCompile Include="GlitterParticleSystem.cpp" />
+    <ClCompile Include="LoadingScene.cpp" />
+    <ClCompile Include="LoadingScript.cpp" />
     <ClCompile Include="LuckyScript.cpp" />
     <ClCompile Include="IceParticleSystem.cpp" />
     <ClCompile Include="Input.cpp" />

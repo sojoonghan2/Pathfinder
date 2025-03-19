@@ -103,21 +103,20 @@ BossScene::BossScene()
 	}
 #pragma endregion
 
-	// 플레이어
+// 플레이어
 #pragma region Player
 	{
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Monster\\Monster.fbx");
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
 		gameObjects[0]->SetName(L"OBJ");
 		gameObjects[0]->SetCheckFrustum(false);
 		gameObjects[0]->AddComponent(make_shared<TestDragon>());
-		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.7f, 3.4f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, -500.0f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 		gameObjects[0]->AddComponent(make_shared<TestPointLightScript>());
 
-		// 5. Scene에 추가
 		activeScene->AddGameObject(gameObjects[0]);
 	}
 #pragma endregion
@@ -190,7 +189,7 @@ BossScene::BossScene()
 #pragma endregion
 
 // 보스
-#pragma region Generator
+#pragma region Boss
 	{
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Boss\\Boss.fbx");
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
@@ -198,7 +197,7 @@ BossScene::BossScene()
 		gameObjects[0]->SetName(L"Boss");
 		gameObjects[0]->SetCheckFrustum(true);
 		gameObjects[0]->AddComponent(make_shared<TestDragon>());
-		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, 2000.0f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, 500.0f, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(1.3f, 0.0f, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(1000.f, 1000.f, 1000.f));
 		activeScene->AddGameObject(gameObjects[0]);

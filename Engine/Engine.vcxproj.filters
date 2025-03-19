@@ -294,6 +294,15 @@
     <ClCompile Include="TestOtherPlayerScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratorScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadingScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadingScript.cpp">
+      <Filter>Script\SceneScript</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -544,6 +553,15 @@
     </ClInclude>
     <ClInclude Include="TestOtherPlayerScript.h">
       <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratorScript.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadingScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadingScript.h">
+      <Filter>Script\SceneScript</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

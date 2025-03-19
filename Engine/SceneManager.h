@@ -18,6 +18,7 @@ public:
 	void Render();
 	void LoadScene(wstring sceneName);
 	void ChangeScene(wstring sceneName);
+	void RegisterScene(const wstring& name, shared_ptr<Scene> scene);
 
 	void SetLayerName(uint8 index, const wstring& name);
 	const wstring& IndexToLayerName(uint8 index) { return _layerNames[index]; }
