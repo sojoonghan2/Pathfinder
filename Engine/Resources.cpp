@@ -472,7 +472,7 @@ void Resources::CreateDefaultShader()
 		Add<Shader>(L"Occupation", shader);
 	}
 
-	// Occupation (Forward)
+	// Billboard
 	{
 		ShaderInfo info =
 		{

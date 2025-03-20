@@ -248,7 +248,7 @@ RuinsScene::RuinsScene()
 
 		// 좌표 컴포넌트 추가
 		dustParticle->AddComponent(make_shared<Transform>());
-		dustParticle->GetTransform()->SetLocalPosition(Vec3(0, 2000.f, 0.f));
+		dustParticle->GetTransform()->SetLocalPosition(Vec3(0, 1000.f, 0.f));
 		dustParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		// 파티클 시스템 컴포넌트 추가
