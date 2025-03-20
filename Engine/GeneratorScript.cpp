@@ -39,7 +39,7 @@ void GeneratorScript::LateUpdate()
     // 애니메이션이 끝났으면 렌더링 종료
     if (_deadTime > 7.f)
     {
-        //GetGameObject()->SetRenderOff();
+        GetGameObject()->SetRenderOff();
         _isPlaying = false;
     }
 }

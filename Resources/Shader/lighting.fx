@@ -127,6 +127,77 @@ PS_OUT PS_PointLight(VS_OUT input)
     return output;
 }
 
+VS_OUT VS_SpotLight(VS_IN input)
+{
+    VS_OUT output = (VS_OUT) 0;
+
+    // SpotLight는 화면 전체를 덮는 Quad 메시를 사용
+    output.pos = float4(input.pos * 2.f, 1.f);
+    output.uv = input.uv;
+
+    return output;
+}
+
+PS_OUT PS_SpotLight(VS_OUT input)
+{
+    PS_OUT output = (PS_OUT) 0;
+
+    // 현재 픽셀의 뷰 공간 위치 가져오기
+    float3 viewPos = g_textures.Sample(g_sam_0, input.uv).xyz;
+    if (viewPos.z <= 0.f)
+        clip(-1); // 깊이 값이 0 이하라면 픽셀 무시
+
+    // 현재 픽셀의 법선 벡터 가져오기
+    float3 viewNormal = normalize(g_textures1.Sample(g_sam_0, input.uv).xyz);
+
+    // SpotLight 정보 가져오기
+    int lightIndex = g_int_0;
+    LightInfo light = g_light[lightIndex];
+
+    // SpotLight의 뷰 공간 좌표 및 방향 계산
+    float3 viewLightPos = mul(float4(light.position.xyz, 1.f), g_matView).xyz;
+    float3 viewLightDir = normalize(mul(float4(light.direction.xyz, 0.f), g_matView).xyz);
+
+    // 픽셀에서 SpotLight까지의 방향 벡터
+    float3 toLight = normalize(viewLightPos - viewPos);
+    float distance = length(viewPos - viewLightPos);
+
+    // SpotLight의 범위를 초과하면 조명 영향 없음
+    if (distance > light.range)
+        clip(-1);
+
+    // SpotLight의 조명 각도 제한 적용
+    float spotEffect = dot(-toLight, viewLightDir);
+    float cosInner = cos(radians(light.angle * 0.5f)); // 내부 각도
+    float cosOuter = cos(radians(light.angle)); // 외부 각도
+
+    // 조명 감쇠 (부드러운 경계)
+    float attenuation = smoothstep(cosOuter, cosInner, spotEffect);
+    if (attenuation <= 0)
+        clip(-1); // 조명 각도를 벗어나면 픽셀 무시
+
+    // 거리 기반 감쇠 (Inverse Square Law)
+    float distanceAttenuation = 1.0f / (1.0f + 0.1f * distance + 0.02f * distance * distance);
+    attenuation *= distanceAttenuation;
+
+    // 람버트 조명 모델 적용
+    float diffuseFactor = max(dot(viewNormal, toLight), 0.f);
+    float4 diffuse = light.color.diffuse * diffuseFactor * attenuation;
+
+    // 스펙큘러 조명 (Blinn-Phong 모델)
+    float3 viewCamPos = float3(0, 0, 0); // 뷰 공간에서 카메라는 원점
+    float3 viewReflect = reflect(-toLight, viewNormal);
+    float3 viewToCam = normalize(viewCamPos - viewPos);
+    float specularFactor = pow(max(dot(viewReflect, viewToCam), 0.f), 32.0f);
+    float4 specular = light.color.specular * specularFactor * attenuation;
+
+    // 최종 출력값 설정
+    output.diffuse = diffuse + light.color.ambient;
+    output.specular = specular;
+
+    return output;
+}
+
 // [Final]
 // g_textures[0] : Diffuse Color Target
 // g_textures[1] : Diffuse Light Target

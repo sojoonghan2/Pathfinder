@@ -169,30 +169,96 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// 전역 조명
-#pragma region Directional Light
+// 천장에서 빛이 새어나오는 유적지 조명
+#pragma region Spot Light
 	{
-		// 1. light 오브젝트 생성 
+		shared_ptr<GameObject> obj = make_shared<GameObject>();
+		obj->SetName(L"OBJ");
+		obj->SetCheckFrustum(true);
+		obj->SetStatic(false);
+
+		obj->AddComponent(make_shared<Transform>());
+		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+			meshRenderer->SetMesh(sphereMesh);
+		}
+		{
+			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"GameObject");
+			meshRenderer->SetMaterial(material->Clone());
+		}
+		obj->AddComponent(meshRenderer);
+		obj->SetRenderOff();
+		activeScene->AddGameObject(obj);
+
+		// 1. Light 오브젝트 생성 
 		shared_ptr<GameObject> light = make_shared<GameObject>();
-		light->SetName(L"Directional_Light");
+		light->SetName(L"Ancient_Ruin_Light");
 		light->AddComponent(make_shared<Transform>());
-		light->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+		light->GetTransform()->SetLocalPosition(Vec3(0.f, 10000.f, 0.f));
 
-		// 2-1. light 컴포넌트 추가 및 속성 설정
+		// 2-1. Light 컴포넌트 추가 및 속성 설정
 		light->AddComponent(make_shared<Light>());
-		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
+		light->GetLight()->SetLightType(LIGHT_TYPE::SPOT_LIGHT);
 
-		// 2-2. DIRECTIONAL_LIGHT의 경우 조명 방향 설정
-		light->GetLight()->SetLightDirection(Vec3(0.f, 0.f, 0.f));
+		// 2-2. 스팟 라이트 방향 설정
+		light->GetLight()->SetLightDirection(Vec3(0.f, -1.f, 0.f));
 
-		// 3. 조명 색상 및 강도 설정
-		light->GetLight()->SetDiffuse(Vec3(0.8f, 0.8f, 0.8f));
-		light->GetLight()->SetAmbient(Vec3(0.8f, 0.8f, 0.8f));
-		light->GetLight()->SetSpecular(Vec3(0.05f, 0.05f, 0.05f));
+		// 2-3. 스팟 라이트 원뿔 각도 설정
+		light->GetLight()->SetLightAngle(10.f);
+
+		// 2-4. 빛의 도달 범위 증가
+		light->GetLight()->SetLightRange(11000.f);
+
+		// 3. 조명 색상 및 강도 조정 (따뜻한 황금빛)
+		light->GetLight()->SetDiffuse(Vec3(1.0f, 0.85f, 0.6f));
+		light->GetLight()->SetAmbient(Vec3(0.25f, 0.2f, 0.25f));
+		light->GetLight()->SetSpecular(Vec3(0.9f, 0.8f, 0.6f));
 
 		// 4. Scene에 추가
 		activeScene->AddGameObject(light);
+
+		// 5. 환경광 추가 (더 따뜻한 분위기 연출)
+		shared_ptr<GameObject> ambientLight = make_shared<GameObject>();
+		ambientLight->SetName(L"Ancient_Ambient_Light");
+		ambientLight->AddComponent(make_shared<Transform>());
+		ambientLight->AddComponent(make_shared<Light>());
+		ambientLight->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
+		ambientLight->GetLight()->SetDiffuse(Vec3(0.15f, 0.12f, 0.18f));
+		ambientLight->GetLight()->SetAmbient(Vec3(0.15f, 0.12f, 0.18f));
+		ambientLight->GetLight()->SetSpecular(Vec3(0.0f, 0.0f, 0.0f));
+		activeScene->AddGameObject(ambientLight);
 	}
+#pragma endregion
+
+// 빛기둥
+#pragma region LightPillar
+	shared_ptr<GameObject> lightPillar = make_shared<GameObject>();
+	lightPillar->SetName(L"LightPillar");
+	lightPillar->AddComponent(make_shared<Transform>());
+	lightPillar->GetTransform()->SetLocalScale(Vec3(2000.f, 1.f, 10000.f));
+	lightPillar->GetTransform()->SetLocalRotation(Vec3(1.5708f, 0.f, 0.f));
+	lightPillar->GetTransform()->SetLocalPosition(Vec3(0.f, 3000, 0.f));
+	lightPillar->SetStatic(false);
+
+	shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+	{
+		shared_ptr<Mesh> occupationMesh = GET_SINGLE(Resources)->LoadPlanMesh();
+		meshRenderer->SetMesh(occupationMesh);
+	}
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Occupation");
+		shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"LightPillarTexture", L"..\\Resources\\Texture\\LightPillar.png");
+
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		material->SetTexture(0, texture);
+		meshRenderer->SetMaterial(material);
+	}
+
+	lightPillar->AddComponent(meshRenderer);
+	activeScene->AddGameObject(lightPillar);
 #pragma endregion
 
 // 물
@@ -301,6 +367,8 @@ RuinsScene::RuinsScene()
 		activeScene->AddGameObject(occupation);
 	}
 #pragma endregion
+
+// 지형
 #pragma region Stone
 	for (int i = -1; i < 2; ++i) {
 		for (int j = -1; j < 2; ++j) {

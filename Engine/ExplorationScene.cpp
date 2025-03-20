@@ -129,7 +129,7 @@ ExplorationScene::ExplorationScene()
 		light->GetLight()->SetLightType(LIGHT_TYPE::POINT_LIGHT);
 
 		// 2-2. 점광원 특수 설정
-		light->GetLight()->SetLightRange(1000.f);
+		light->GetLight()->SetLightRange(10500.f);
 
 		// 3. 조명 색상 및 강도 설정 - 모든 값을 낮춤
 		light->GetLight()->SetDiffuse(Vec3(0.7f, 0.7f, 0.7f));
