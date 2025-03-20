@@ -25,6 +25,10 @@
 
 #include "SphereCollider.h"
 
+#include "DustParticleSystem.h"
+#include "GlitterParticleSystem.h"
+#include "TestParticleScript.h"
+
 RuinsScene::RuinsScene()
 {
 // 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
@@ -229,6 +233,31 @@ RuinsScene::RuinsScene()
 		ambientLight->GetLight()->SetAmbient(Vec3(0.15f, 0.12f, 0.18f));
 		ambientLight->GetLight()->SetSpecular(Vec3(0.0f, 0.0f, 0.0f));
 		activeScene->AddGameObject(ambientLight);
+	}
+#pragma endregion
+
+// 먼지 파티클
+#pragma region DustParticle
+	{
+		// 파티클 오브젝트 생성
+		shared_ptr<GameObject> dustParticle = make_shared<GameObject>();
+		wstring dustParticleName = L"DustParticle";
+		dustParticle->SetName(dustParticleName);
+		dustParticle->SetCheckFrustum(true);
+		dustParticle->SetStatic(false);
+
+		// 좌표 컴포넌트 추가
+		dustParticle->AddComponent(make_shared<Transform>());
+		dustParticle->GetTransform()->SetLocalPosition(Vec3(0, 2000.f, 0.f));
+		dustParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+
+		// 파티클 시스템 컴포넌트 추가
+		shared_ptr<DustParticleSystem> dustParticleSystem = make_shared<DustParticleSystem>();
+		dustParticle->AddComponent(dustParticleSystem);
+		dustParticle->AddComponent(make_shared<TestParticleScript>());
+
+
+		activeScene->AddGameObject(dustParticle);
 	}
 #pragma endregion
 

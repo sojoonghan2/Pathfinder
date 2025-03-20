@@ -306,6 +306,9 @@
     <ClCompile Include="LoadingScript.cpp">
       <Filter>Script\SceneScript</Filter>
     </ClCompile>
+    <ClCompile Include="DustParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -569,6 +572,9 @@
     <ClInclude Include="LoadingScript.h">
       <Filter>Script\SceneScript</Filter>
     </ClInclude>
+    <ClInclude Include="DustParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -640,6 +646,12 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\UI.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\DustParticle.fx">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\Billboard.fx">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
