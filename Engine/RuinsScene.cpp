@@ -229,9 +229,9 @@ RuinsScene::RuinsScene()
 		ambientLight->AddComponent(make_shared<Transform>());
 		ambientLight->AddComponent(make_shared<Light>());
 		ambientLight->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
-		ambientLight->GetLight()->SetDiffuse(Vec3(0.15f, 0.12f, 0.18f));
-		ambientLight->GetLight()->SetAmbient(Vec3(0.15f, 0.12f, 0.18f));
-		ambientLight->GetLight()->SetSpecular(Vec3(0.0f, 0.0f, 0.0f));
+		ambientLight->GetLight()->SetDiffuse(Vec3(0.4f, 0.4f, 0.4f));
+		ambientLight->GetLight()->SetAmbient(Vec3(0.4f, 0.2f, 0.25f));
+		ambientLight->GetLight()->SetSpecular(Vec3(0.1f, 0.1f, 0.1f));
 		activeScene->AddGameObject(ambientLight);
 	}
 #pragma endregion

@@ -10,7 +10,7 @@
 
 TestCameraScript::TestCameraScript()
 {
-    _offsetPosition = Vec3(0.f, 500.f, -300.f);
+    _offsetPosition = Vec3(0.f, 300.f, -300.f);
 }
 
 TestCameraScript::~TestCameraScript()
@@ -86,9 +86,9 @@ void TestCameraScript::KeyboardInput()
     float maxY = 9500.f;
 
     // X, Y, Z ÁÂÇ¥¸¦ ¸Ê ¹üÀ§·Î Á¦ÇÑ
-    pos.x = max(mapMinX, min(pos.x, mapMaxX));
-    pos.y = max(minY, min(pos.y, maxY));
-    pos.z = max(mapMinZ, min(pos.z, mapMaxZ));
+    //pos.x = max(mapMinX, min(pos.x, mapMaxX));
+    //pos.y = max(minY, min(pos.y, maxY));
+    //pos.z = max(mapMinZ, min(pos.z, mapMaxZ));
 
     // µð¹ö±ë¿ë ÁÂÇ¥ Ãâ·Â
     if (INPUT->GetButtonDown(KEY_TYPE::T))
