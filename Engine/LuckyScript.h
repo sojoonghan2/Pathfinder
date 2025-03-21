@@ -14,4 +14,6 @@ public:
 
 private:
     shared_ptr<GameObject>  _treasureChest;
+
+    bool                    _getChest = false;
 };

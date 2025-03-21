@@ -16,7 +16,7 @@ void BossScript::LateUpdate() {
     {
         if (INPUT->GetButton(KEY_TYPE::ADD)) {
             ApplyModuleAbillities();
-            GET_SINGLE(SceneManager)->LoadScene(L"ParticleScene");
+            GET_SINGLE(SceneManager)->LoadScene(L"TitleScene");
         }
     }
 }

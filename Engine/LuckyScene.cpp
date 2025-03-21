@@ -158,7 +158,7 @@ LuckyScene::LuckyScene()
 		gameObjects[0]->SetName(L"OBJ");
 		gameObjects[0]->SetCheckFrustum(false);
 		gameObjects[0]->AddComponent(make_shared<TestDragon>());
-		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, -500.0f));
 		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
 		gameObjects[0]->AddComponent(make_shared<TestPointLightScript>());
@@ -206,15 +206,14 @@ LuckyScene::LuckyScene()
 			// 이름 설정
 			gameObject->SetName(L"TreasureChest" + std::to_wstring(index + 1));
 
-			gameObject->SetCheckFrustum(true);
+			gameObject->SetCheckFrustum(false);
 
-			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 50.f, 0.f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 6000.f, 0.f));
 			shared_ptr<GlitterParticleSystem> glitterParticleSystem = make_shared<GlitterParticleSystem>();
-			gameObject->AddComponent(make_shared<TestParticleScript>());
 			gameObject->AddComponent(glitterParticleSystem);
 
-			gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
-			gameObject->GetTransform()->SetLocalRotation(Vec3(0.0f, 1.5708f, 1.5708f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 0.0f, 0.0f));
 			if (index != 1) gameObject->SetRenderOff();
 			activeScene->AddGameObject(gameObject);
 			index++;

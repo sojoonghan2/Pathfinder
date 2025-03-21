@@ -94,8 +94,8 @@ void Light::SetLightType(LIGHT_TYPE type)
 		_lightMaterial = GET_SINGLE(Resources)->Get<Material>(L"PointLight");
 		break;
 	case LIGHT_TYPE::SPOT_LIGHT:
-		_volumeMesh = GET_SINGLE(Resources)->Get<Mesh>(L"Sphere");
-		_lightMaterial = GET_SINGLE(Resources)->Get<Material>(L"PointLight");
+		_volumeMesh = GET_SINGLE(Resources)->Get<Mesh>(L"Rectangle");
+		_lightMaterial = GET_SINGLE(Resources)->Get<Material>(L"SpotLight");
 		break;
 	}
 }

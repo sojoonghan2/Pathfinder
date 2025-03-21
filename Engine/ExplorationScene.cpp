@@ -96,6 +96,7 @@ ExplorationScene::ExplorationScene()
 
 		activeScene->AddGameObject(gameObjects[0]);
 
+		// 얘가 없으면 조명 버그남
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
 		obj->SetName(L"OBJ");
 		obj->SetCheckFrustum(true);
@@ -104,7 +105,6 @@ ExplorationScene::ExplorationScene()
 		obj->AddComponent(make_shared<Transform>());
 		obj->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(0, 0.f, 0.f));
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
@@ -129,12 +129,12 @@ ExplorationScene::ExplorationScene()
 		light->GetLight()->SetLightType(LIGHT_TYPE::POINT_LIGHT);
 
 		// 2-2. 점광원 특수 설정
-		light->GetLight()->SetLightRange(1000.f);
+		light->GetLight()->SetLightRange(10500.f);
 
-		// 3. 조명 색상 및 강도 설정
-		light->GetLight()->SetDiffuse(Vec3(1.0f, 1.0f, 1.0f));
-		light->GetLight()->SetAmbient(Vec3(1.2f, 1.2f, 1.2f));
-		light->GetLight()->SetSpecular(Vec3(2.5f, 2.5f, 2.5f));
+		// 3. 조명 색상 및 강도 설정 - 모든 값을 낮춤
+		light->GetLight()->SetDiffuse(Vec3(0.7f, 0.7f, 0.7f));
+		light->GetLight()->SetAmbient(Vec3(0.5f, 0.5f, 0.5f));
+		light->GetLight()->SetSpecular(Vec3(1.0f, 1.0f, 1.0f));
 
 		// 4. Scene에 추가
 		activeScene->AddGameObject(light);
@@ -216,37 +216,28 @@ ExplorationScene::ExplorationScene()
 // 5. 그림자
 // *********************************************
 #pragma region UI_Test
-	for (int32 i = 0; i < 6; i++)
+	shared_ptr<GameObject> obj = make_shared<GameObject>();
+	obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+	obj->AddComponent(make_shared<Transform>());
+	obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+	obj->GetTransform()->SetLocalPosition(Vec3(-350.f + (120), 250.f, 500.f));
+	shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 	{
-		shared_ptr<GameObject> obj = make_shared<GameObject>();
-		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
-		obj->AddComponent(make_shared<Transform>());
-		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(-350.f + (i * 120), 250.f, 500.f));
-		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-		{
-			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-			meshRenderer->SetMesh(mesh);
-		}
-		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
-
-			shared_ptr<Texture> texture;
-			if (i < 3)
-				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->GetRTTexture(i);
-			else if (i < 5)
-				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->GetRTTexture(i - 3);
-			else
-				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->GetRTTexture(0);
-
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, texture);
-			meshRenderer->SetMaterial(material);
-		}
-		obj->AddComponent(meshRenderer);
-		activeScene->AddGameObject(obj);
+		shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+		meshRenderer->SetMesh(mesh);
 	}
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
+
+		shared_ptr<Texture> texture;
+		texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->GetRTTexture(2);
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		material->SetTexture(0, texture);
+		meshRenderer->SetMaterial(material);
+	}
+	obj->AddComponent(meshRenderer);
+	activeScene->AddGameObject(obj);
 #pragma endregion
 
 // 전역 조명(삭제 예정)

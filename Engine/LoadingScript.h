@@ -10,7 +10,7 @@ public:
     virtual void LateUpdate() override;
 
     void StartLoadingThread();
-    void SceneLoad(std::mutex& m);
+    void SceneLoad();
 
 private:
     std::thread*    loadThread;

@@ -42,39 +42,48 @@ float4 PS_Main(VS_OUT input) : SV_TARGET
 {
     float3 normal = normalize(input.viewNormal);
     float3 viewDir = normalize(input.viewDir);
-    float3 baseColor = float3(0.0f, 0.1f, 0.2f);
+    float3 baseColor = float3(0.3f, 0.3f, 1.f);
 
     float time = g_float_0;
-    float2 scrollSpeed = float2(0.07, 0.05);
+    float2 scrollSpeed = float2(0.01, 0.007);
 
     // 스크롤링된 텍스처 좌표
     float2 scrolledTexCoord = input.texCoord + scrollSpeed * time;
 
     // 파동 효과 추가
-    float wave = sin(input.texCoord.x * 5.0 + g_float_0) * 0.03;
+    float wave = sin(input.texCoord.x * 8.0 + time * 2.0) * 0.001;
     scrolledTexCoord += wave;
 
-    // 물 텍스처 샘플링 (textures[0])
-    float3 waterTextureSample = g_textures.Sample(g_sam_0, input.texCoord).rgb;
+    // 물 텍스처 샘플링
+    float3 waterTextureSample = g_textures.Sample(g_sam_0, scrolledTexCoord).rgb * 1.2;
 
     // 노멀 맵 샘플링
-    float3 normalMapSample = g_textures1.Sample(g_sam_0, scrolledTexCoord).rgb;
+    float3 normalMapSample = g_textures1.Sample(g_sam_0, scrolledTexCoord * 2.0).rgb;
     normalMapSample = normalMapSample * 2.0 - 1.0;
 
-    // Fresnel Factor 계산
-    float fresnelFactor = pow(1.0 - saturate(dot(viewDir, normal)), 2.0);
+    // Fresnel Factor
+    float fresnelFactor = pow(1.0 - saturate(dot(viewDir, normal)), 4.0);
 
     // 굴절 텍스처 샘플링
-    float3 refractionColor = g_textures2.Sample(g_sam_0, input.texCoord).rgb;
+    float2 refractionTexCoord = input.texCoord + normalMapSample.xy * 0.05;
+    float3 refractionColor = g_textures2.Sample(g_sam_0, refractionTexCoord).rgb;
 
-    // 굴절 강조 및 텍스처 결합
+    // 반사 효과 추가
+    float3 reflectionColor = g_textures3.Sample(g_sam_0, reflect(-viewDir, normal).xy * 0.5 + 0.5).rgb;
+    reflectionColor *= fresnelFactor;
+
+    // Specular 하이라이트 추가
+    float3 lightDir = normalize(float3(0.2, 1.0, -0.3));
+    float3 halfVector = normalize(lightDir + viewDir);
+    float specular = pow(saturate(dot(normal, halfVector)), 32.0) * 0.5;
+
+    // 최종 컬러 결합
     float3 combinedColor = lerp(refractionColor, normalMapSample, 0.5);
     combinedColor = lerp(combinedColor, waterTextureSample, 0.5);
+    combinedColor = lerp(combinedColor, reflectionColor, fresnelFactor);
+    combinedColor += specular;
 
-    // 최종 컬러 계산
-    float3 finalColor = lerp(combinedColor, baseColor, fresnelFactor);
-
-    return float4(finalColor, 0.5f);
+    return float4(combinedColor, 0.9f);
 }
 
 #endif
