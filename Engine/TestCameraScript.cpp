@@ -91,32 +91,30 @@ void TestCameraScript::MouseInput()
             // 타겟이 존재하는지 확인
             if (_target != nullptr)
             {
-                // 현재 오브젝트와 타겟 사이의 상대적인 위치 계산
-                Vec3 targetPos = _target->GetTransform()->GetWorldPosition();
-                Vec3 currentPos = GetTransform()->GetWorldPosition();
-                Vec3 offset = currentPos - targetPos;
-                float distance = offset.Length();
+                // 현재 카메라의 회전 각도 (혹은 누적 각도)를 저장하는 정적 변수
+                static float totalYawAngle = 0.0f;
 
-                // 레볼루션 각도 업데이트
-                Vec3 revolution = GetTransform()->GetLocalRevolution();
-                revolution.y += mouseDelta.x * 0.005f;
+                // 마우스 이동에 따라 각도 업데이트
+                totalYawAngle += mouseDelta.x * 0.005f;
 
-                // 레볼루션 적용을 위한 새 위치 계산
-                float angle = revolution.y;
-                Vec3 newPos;
-                newPos.x = targetPos.x + distance * sin(angle);
-                newPos.z = targetPos.z + distance * cos(angle);
-                newPos.y = currentPos.y; // y축은 유지
+                // 타겟의 위치 가져오기
+                Vec3 targetPos = _target->GetTransform()->GetLocalPosition();
 
-                // 새 위치로 이동
-                GetTransform()->SetLocalPosition(newPos);
+                // 오프셋의 길이(거리) 계산
+                float distance = _offsetPosition.Length();
 
-                // 타겟을 바라보도록 회전
-                Vec3 dirToTarget = targetPos - newPos;
+                // 새로운 오프셋 계산 (Y값은 그대로 유지)
+                Vec3 newOffset;
+                newOffset.x = sin(totalYawAngle) * distance;
+                newOffset.z = -cos(totalYawAngle) * distance;
+                newOffset.y = _offsetPosition.y; // Y 오프셋은 유지
+
+                // 카메라 위치 설정
+                GetTransform()->SetLocalPosition(targetPos + newOffset);
+
+                // 타겟을 바라보도록 설정 (필요한 경우)
+                Vec3 dirToTarget = targetPos - (targetPos + newOffset);
                 GetTransform()->LookAt(dirToTarget);
-
-                // 레볼루션 값 저장 (다음 계산에 사용)
-                GetTransform()->SetLocalRevolution(revolution);
             }
         }
         return;
