@@ -11,5 +11,7 @@ public:
 private:
 	bool _isPlaying = false;
 	bool _init = false;
+
+	float _deadTime;
 };
 

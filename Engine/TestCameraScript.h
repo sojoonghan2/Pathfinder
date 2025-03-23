@@ -26,7 +26,10 @@ private:
 	Vec3					_offsetPosition;
 	float					_rotationY;
 
-	float					_tempxRotation = 0.5;
-	float					_tempyRotation = 0.0;
+	float					_tempxRotation = 0.0f;
+	float					_tempyRotation = 0.0f;
+
+	float					_yaw = 0.f;
+	float					_pitch = 0.f;
 };
 

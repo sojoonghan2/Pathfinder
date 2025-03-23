@@ -10,7 +10,7 @@
 
 TestCameraScript::TestCameraScript()
 {
-    _offsetPosition = Vec3(0.f, 500.f, -300.f);
+    _offsetPosition = Vec3(0.f, 500.f, -600.f);
 }
 
 TestCameraScript::~TestCameraScript()
@@ -40,41 +40,17 @@ void TestCameraScript::KeyboardInput()
     if (!_playerCamera)
     {
         // 이동 처리
-        if (INPUT->GetButton(KEY_TYPE::W)) 
+        if (INPUT->GetButton(KEY_TYPE::UP)) 
             pos += Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
 
-        if (INPUT->GetButton(KEY_TYPE::S))
+        if (INPUT->GetButton(KEY_TYPE::DOWN))
             pos -= Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
 
-        if (INPUT->GetButton(KEY_TYPE::A))
+        if (INPUT->GetButton(KEY_TYPE::LEFT))
             pos -= Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
 
-        if (INPUT->GetButton(KEY_TYPE::D))
+        if (INPUT->GetButton(KEY_TYPE::RIGHT))
             pos += Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
-    }
-    // 플레이어 카메라 회전 조정용 코드(제거 예정)
-    else
-    {
-        // 이동 처리
-        if (INPUT->GetButton(KEY_TYPE::W)) {
-            _tempxRotation += 0.1;
-            std::cout << "xRotation: " << _tempxRotation << "\n";
-        }
-
-        if (INPUT->GetButton(KEY_TYPE::S)) {
-            _tempxRotation -= 0.1;
-            std::cout << "xRotation: " << _tempxRotation << "\n";
-        }
-
-        if (INPUT->GetButton(KEY_TYPE::A)) {
-            _tempyRotation += 0.1;
-            std::cout << "yRotation: " << _tempyRotation << "\n";
-        }
-
-        if (INPUT->GetButton(KEY_TYPE::D)) {
-            _tempyRotation -= 0.1;
-            std::cout << "yRotation: " << _tempyRotation << "\n";
-        }
     }
 
     // 맵 크기 제한
@@ -86,9 +62,9 @@ void TestCameraScript::KeyboardInput()
     float maxY = 9500.f;
 
     // X, Y, Z 좌표를 맵 범위로 제한
-    pos.x = max(mapMinX, min(pos.x, mapMaxX));
-    pos.y = max(minY, min(pos.y, maxY));
-    pos.z = max(mapMinZ, min(pos.z, mapMaxZ));
+    //pos.x = max(mapMinX, min(pos.x, mapMaxX));
+    //pos.y = max(minY, min(pos.y, maxY));
+    //pos.z = max(mapMinZ, min(pos.z, mapMaxZ));
 
     // 디버깅용 좌표 출력
     if (INPUT->GetButtonDown(KEY_TYPE::T))
@@ -105,16 +81,15 @@ void TestCameraScript::KeyboardInput()
 
 void TestCameraScript::MouseInput()
 {
-    // 플레이어 카메라 모드일 때는 마우스 입력에 의한 회전을 처리하지 않음
+    // 플레이어 카메라 모드
     if (_playerCamera)
     {
-        // 플레이어 카메라 모드에서는 초기 회전값 유지
         Vec3 initialRotation = Vec3(_tempxRotation, _tempyRotation, 0.f);
         GetTransform()->SetLocalRotation(initialRotation);
         return;
     }
 
-    // 개발자 카메라 모드에서만 마우스 회전 처리
+    // 개발자 카메라 모드
     if (INPUT->GetButton(KEY_TYPE::LBUTTON))
     {
         POINT mouseDelta = INPUT->GetMouseDelta();
