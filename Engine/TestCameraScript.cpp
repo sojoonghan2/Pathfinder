@@ -84,6 +84,7 @@ void TestCameraScript::MouseInput()
     // 플레이어 카메라 모드
     if (_playerCamera)
     {
+        // 플레이어 기준 공전(현재 0, 0, 0 기준 공전)
         if (INPUT->GetButton(KEY_TYPE::LBUTTON))
         {
             POINT mouseDelta = INPUT->GetMouseDelta();
@@ -91,30 +92,10 @@ void TestCameraScript::MouseInput()
             // 타겟이 존재하는지 확인
             if (_target != nullptr)
             {
-                // 현재 카메라의 회전 각도 (혹은 누적 각도)를 저장하는 정적 변수
-                static float totalYawAngle = 0.0f;
-
-                // 마우스 이동에 따라 각도 업데이트
-                totalYawAngle += mouseDelta.x * 0.005f;
-
-                // 타겟의 위치 가져오기
-                Vec3 targetPos = _target->GetTransform()->GetLocalPosition();
-
-                // 오프셋의 길이(거리) 계산
-                float distance = _offsetPosition.Length();
-
-                // 새로운 오프셋 계산 (Y값은 그대로 유지)
-                Vec3 newOffset;
-                newOffset.x = sin(totalYawAngle) * distance;
-                newOffset.z = -cos(totalYawAngle) * distance;
-                newOffset.y = _offsetPosition.y; // Y 오프셋은 유지
-
-                // 카메라 위치 설정
-                GetTransform()->SetLocalPosition(targetPos + newOffset);
-
-                // 타겟을 바라보도록 설정 (필요한 경우)
-                Vec3 dirToTarget = targetPos - (targetPos + newOffset);
-                GetTransform()->LookAt(dirToTarget);
+                POINT mouseDelta = INPUT->GetMouseDelta();
+                Vec3 rotation = GetTransform()->GetLocalRevolution();
+                rotation.y += mouseDelta.x * 0.005f;
+                GetTransform()->SetLocalRevolution(rotation);
             }
         }
         return;
