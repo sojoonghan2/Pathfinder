@@ -14,6 +14,7 @@ public:
     // Parent 기준
     const Vec3& GetLocalPosition() { return _localPosition; }
     const Vec3& GetLocalRotation() { return _localRotation; }
+    const Vec3& GetLocalRevolution() { return _localRevolution; }
     const Vec3& GetLocalScale() { return _localScale; }
 
     float GetBoundingSphereRadius() { return max(max(_localScale.x, _localScale.y), _localScale.z); }
@@ -29,6 +30,7 @@ public:
 
     void SetLocalPosition(const Vec3& position) { _localPosition = position; }
     void SetLocalRotation(const Vec3& rotation) { _localRotation = rotation; }
+    void SetLocalRevolution(const Vec3& rotation) { _localRevolution = rotation; }
     void SetLocalScale(const Vec3& scale) { _localScale = scale; }
 
     void LookAt(const Vec3& dir);
@@ -67,6 +69,7 @@ private:
     // Parent 기준
     Vec3 _localPosition = {};
     Vec3 _localRotation = {};
+    Vec3 _localRevolution = {};
     Vec3 _localScale = { 1.f, 1.f, 1.f };
     Quaternion _quaternion;
 

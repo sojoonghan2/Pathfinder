@@ -84,8 +84,41 @@ void TestCameraScript::MouseInput()
     // 플레이어 카메라 모드
     if (_playerCamera)
     {
-        Vec3 initialRotation = Vec3(_tempxRotation, _tempyRotation, 0.f);
-        GetTransform()->SetLocalRotation(initialRotation);
+        if (INPUT->GetButton(KEY_TYPE::LBUTTON))
+        {
+            POINT mouseDelta = INPUT->GetMouseDelta();
+
+            // 타겟이 존재하는지 확인
+            if (_target != nullptr)
+            {
+                // 현재 오브젝트와 타겟 사이의 상대적인 위치 계산
+                Vec3 targetPos = _target->GetTransform()->GetWorldPosition();
+                Vec3 currentPos = GetTransform()->GetWorldPosition();
+                Vec3 offset = currentPos - targetPos;
+                float distance = offset.Length();
+
+                // 레볼루션 각도 업데이트
+                Vec3 revolution = GetTransform()->GetLocalRevolution();
+                revolution.y += mouseDelta.x * 0.005f;
+
+                // 레볼루션 적용을 위한 새 위치 계산
+                float angle = revolution.y;
+                Vec3 newPos;
+                newPos.x = targetPos.x + distance * sin(angle);
+                newPos.z = targetPos.z + distance * cos(angle);
+                newPos.y = currentPos.y; // y축은 유지
+
+                // 새 위치로 이동
+                GetTransform()->SetLocalPosition(newPos);
+
+                // 타겟을 바라보도록 회전
+                Vec3 dirToTarget = targetPos - newPos;
+                GetTransform()->LookAt(dirToTarget);
+
+                // 레볼루션 값 저장 (다음 계산에 사용)
+                GetTransform()->SetLocalRevolution(revolution);
+            }
+        }
         return;
     }
 
@@ -97,12 +130,6 @@ void TestCameraScript::MouseInput()
         rotation.y += mouseDelta.x * 0.005f;
         rotation.x += mouseDelta.y * 0.005f;
         GetTransform()->SetLocalRotation(rotation);
-    }
-
-    if (INPUT->GetButtonDown(KEY_TYPE::RBUTTON))
-    {
-        const POINT& pos2 = INPUT->GetMousePos();
-        GET_SINGLE(SceneManager)->Pick(pos2.x, pos2.y);
     }
 }
 

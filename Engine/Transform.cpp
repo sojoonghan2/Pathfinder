@@ -19,9 +19,12 @@ void Transform::FinalUpdate()
 	Matrix matRotation = Matrix::CreateRotationX(_localRotation.x);
 	matRotation *= Matrix::CreateRotationY(_localRotation.y);
 	matRotation *= Matrix::CreateRotationZ(_localRotation.z);
+	Matrix matRevolution = Matrix::CreateRotationX(_localRevolution.x);
+	matRevolution *= Matrix::CreateRotationY(_localRevolution.y);
+	matRevolution *= Matrix::CreateRotationZ(_localRevolution.z);
 	Matrix matTranslation = Matrix::CreateTranslation(_localPosition);
 
-	_matLocal = matScale * matRotation * matTranslation;
+	_matLocal = matScale * matRotation * matTranslation * matRevolution;
 	_matWorld = _matLocal;
 
 	shared_ptr<Transform> parent = GetParent().lock();
