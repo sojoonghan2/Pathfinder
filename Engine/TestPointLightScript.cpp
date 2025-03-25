@@ -68,7 +68,7 @@ void TestPointLightScript::KeyboardInput()
         pos += moveDir * _speed * DELTA_TIME;
         _isMove = true;
 
-        // 이동 방향을 바라보도록 회전 (언리얼 스타일)
+        // 이동 방향을 바라보도록 회전
         float yaw = atan2f(moveDir.x, moveDir.z);
         yaw += XM_PI;
         GetTransform()->SetLocalRotation(Vec3(-XM_PIDIV2, yaw, 0.f));
