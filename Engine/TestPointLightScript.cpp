@@ -68,10 +68,16 @@ void TestPointLightScript::KeyboardInput()
         pos += moveDir * _speed * DELTA_TIME;
         _isMove = true;
 
-        // 이동 방향을 바라보도록 회전
-        float yaw = atan2f(moveDir.x, moveDir.z);
-        yaw += XM_PI;
-        GetTransform()->SetLocalRotation(Vec3(-XM_PIDIV2, yaw, 0.f));
+        // 목표 회전 계산
+        float targetYaw = atan2f(moveDir.x, moveDir.z) + XM_PI;
+        Vec3 currentRot = GetTransform()->GetLocalRotation();
+        Vec3 targetRot = Vec3(-XM_PIDIV2, targetYaw, 0.f);
+
+        // Y축 회전값 보간 (x 회전은 그대로 유지해도 됨)
+        float lerpSpeed = 10.0f; // 회전 속도 계수 (클수록 빠름)
+        currentRot.y = currentRot.y + (targetRot.y - currentRot.y) * lerpSpeed * DELTA_TIME;
+
+        GetTransform()->SetLocalRotation(currentRot);
     }
     else
     {
