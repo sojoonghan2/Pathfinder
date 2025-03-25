@@ -262,35 +262,6 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// ºû±âµÕ
-#pragma region LightPillar
-	shared_ptr<GameObject> lightPillar = make_shared<GameObject>();
-	lightPillar->SetName(L"LightPillar");
-	lightPillar->AddComponent(make_shared<Transform>());
-	lightPillar->GetTransform()->SetLocalScale(Vec3(2000.f, 1.f, 10000.f));
-	lightPillar->GetTransform()->SetLocalRotation(Vec3(1.5708f, 0.f, 0.f));
-	lightPillar->GetTransform()->SetLocalPosition(Vec3(0.f, 3000, 0.f));
-	lightPillar->SetStatic(false);
-
-	shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-	{
-		shared_ptr<Mesh> occupationMesh = GET_SINGLE(Resources)->LoadPlanMesh();
-		meshRenderer->SetMesh(occupationMesh);
-	}
-	{
-		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Occupation");
-		shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"LightPillarTexture", L"..\\Resources\\Texture\\LightPillar.png");
-
-		shared_ptr<Material> material = make_shared<Material>();
-		material->SetShader(shader);
-		material->SetTexture(0, texture);
-		meshRenderer->SetMaterial(material);
-	}
-
-	lightPillar->AddComponent(meshRenderer);
-	//activeScene->AddGameObject(lightPillar);
-#pragma endregion
-
 // ºû±âµÕ ÆÄÆ¼Å¬
 #pragma region LightPillarParticle
 	{
@@ -303,7 +274,7 @@ RuinsScene::RuinsScene()
 
 		// ÁÂÇ¥ ÄÄÆ÷³ÍÆ® Ãß°¡
 		lightPillarParticle->AddComponent(make_shared<Transform>());
-		lightPillarParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 3000.f, 0.f));
+		lightPillarParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 2000.f, 0.f));
 		lightPillarParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		// ÆÄÆ¼Å¬ ½Ã½ºÅÛ ÄÄÆ÷³ÍÆ® Ãß°¡

@@ -170,7 +170,7 @@ void CS_Main(uint3 threadIndex : SV_DispatchThreadID)
         // 초기 위치 설정 (상자 위에서 생성)
         g_particle[id].worldPos = float3(0.0f, 0.0f, 0.0f);
 
-            // 위로 퍼지는 속도 설정
+        // 위로 퍼지는 속도 설정
         float angle = Rand(float2(id, g_float_0)) * 3.141592 * 2.0f;
         float speed = g_float_1 * 2.0f + Rand(float2(id, g_float_1));
 

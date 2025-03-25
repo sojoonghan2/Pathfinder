@@ -1,5 +1,5 @@
 #ifndef _LIGHTPILLARPARTICLE_FX_
-#define _GLITTERPARTICLE_FX_
+#define _LIGHTPILLARPARTICLE_FX_
 
 #include "params.fx"
 #include "utils.fx"
@@ -79,10 +79,13 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     
     // View Space에서 회전 적용
     float4 positions[4];
-    positions[0] = vtx.viewPos + float4(-scale, scale, 0.f, 0.f);
-    positions[1] = vtx.viewPos + float4(scale, scale, 0.f, 0.f);
-    positions[2] = vtx.viewPos + float4(scale, -scale, 0.f, 0.f);
-    positions[3] = vtx.viewPos + float4(-scale, -scale, 0.f, 0.f);
+    float halfWidth = scale * 1.0f;
+    float halfHeight = scale * 4.0f;
+
+    positions[0] = vtx.viewPos + float4(-halfWidth, halfHeight, 0.f, 0.f);
+    positions[1] = vtx.viewPos + float4(halfWidth, halfHeight, 0.f, 0.f);
+    positions[2] = vtx.viewPos + float4(halfWidth, -halfHeight, 0.f, 0.f);
+    positions[3] = vtx.viewPos + float4(-halfWidth, -halfHeight, 0.f, 0.f);
 
     // 회전 적용
     for (int i = 0; i < 4; i++)
@@ -122,19 +125,36 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 
 float4 PS_Main(GS_OUT input) : SV_Target
 {
-    return g_textures.Sample(g_sam_0, input.uv);
+    float2 uv = input.uv;
+    
+    float4 color = g_textures.Sample(g_sam_0, uv);
+
+    // 상하 투명도: 위는 진하고 아래는 점점 투명해짐
+    float verticalFade = 1.0f - uv.y;
+
+    // 중심 흐릿함: 원형 falloff (0,0)~(1,1) 중앙 기준
+    float2 center = float2(0.5f, 0.5f);
+    float dist = distance(uv, center);
+    float radialFade = saturate(1.0f - dist * 1.5f); // 퍼지는 정도 조절
+
+    // 최종 알파 계산 (더 부드러운 가장자리)
+    float fade = verticalFade * radialFade;
+    color.a *= fade;
+
+    return color;
 }
 
 struct ComputeShared
 {
     int addCount;
-    float3 padding;
+    int hasSpawned;
+    float2 padding;
 };
 
 RWStructuredBuffer<Particle> g_particle : register(u0);
 RWStructuredBuffer<ComputeShared> g_shared : register(u1);
 
-[numthreads(2, 1, 1)]
+[numthreads(3, 1, 1)]
 void CS_Main(uint3 threadIndex : SV_DispatchThreadID)
 {
     int id = threadIndex.x;
@@ -146,10 +166,18 @@ void CS_Main(uint3 threadIndex : SV_DispatchThreadID)
     {
         g_particle[id].alive = 1;
             
-        // 초기 위치 설정 (상자 위에서 생성)
-        g_particle[id].worldPos = float3(0.0f, 0.0f, 0.0f);
+        // 초기 위치 설정
+        g_particle[id].worldPos = float3(0.0f, 1000.0f, 0.0f);
+        
+        g_particle[id].curTime = 0.0f;
+        g_particle[id].lifeTime = g_float_1 + Rand(float2(id, g_float_2)) * 2.0f;
         
     }
-    
+    // 기존 입자 업데이트
+    if (g_particle[id].alive == 1)
+    {
+        g_particle[id].curTime += g_vec2_1.x;
+        
+    }
 }
 #endif
