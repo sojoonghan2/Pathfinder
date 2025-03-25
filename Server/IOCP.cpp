@@ -95,7 +95,7 @@ bool IOCP::Start()
 		workers.emplace_back([this]() { Worker(); });
 	}
 	workers.emplace_back([this]() { TimerWorker(); });
-	std::println("Created {} Threads", thread_number);
+	std::cout << "Created " << thread_number << " Threads\n";
 
 	return true;
 }
@@ -155,8 +155,6 @@ void IOCP::Worker()
 			clientInfoHash[client_id].currentDataSize = 0;
 			clientInfoHash[client_id].clientSocket = acceptSocket;
 			clientInfoHash[client_id].overEx.clientSocket = acceptSocket;
-			
-			std::println("New Client {} Accepted.", client_id);
 
 
 			// IOCP 객체에 받아들인 클라이언트의 소켓을 연결
@@ -237,8 +235,6 @@ void IOCP::Worker()
 		}
 		}
 	}
-
-	std::println("Worker Ended.");
 }
 
 void IOCP::TimerWorker()
@@ -332,8 +328,6 @@ bool IOCP::ProcessPacket(int key, char* p)
 	{
 	case packet::Type::CS_LOGIN:
 	{
-
-		std::println("CS_LOGIN Client {}", key);
 		packet::SCLogin sc_login{ key };
 		DoSend(clientInfoHash[key], &sc_login);
 

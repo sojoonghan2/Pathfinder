@@ -1,7 +1,5 @@
 #pragma once
 
-
-
 struct Vec2f
 {
 	float x{};
@@ -12,18 +10,6 @@ struct Vec2f
 		x{ x },
 		y{ y }
 	{}
-};
-
-// temp
-struct Room
-{
-	std::array<int, 3> clientIdList{};
-};
-
-struct ClientIdInfo
-{
-	int playerId{ -1 };
-	int roomId{ -1 };
 };
 
 struct Player
@@ -61,7 +47,7 @@ struct OverlappedEx
 
 	// recv 전용 생성자. 
 	OverlappedEx() :
-		operation		{ IOOperation::RECV }
+		operation{ IOOperation::RECV }
 	{
 		wsabuf.len = BUFFER_SIZE;
 		wsabuf.buf = dataBuffer;
@@ -82,27 +68,12 @@ struct OverlappedEx
 struct ClientInfo
 {
 	OverlappedEx	overEx;							// RECV에 사용할 Overlapped 변수
-	SOCKET			clientSocket{ INVALID_SOCKET };	
-	int				currentDataSize{};					// 패킷 재조립을 위한 남은 데이터 수 
-	ClientIdInfo	clientIdInfo{};
-	IOState			ioState{ IOState::CONNECT };
+	SOCKET			clientSocket{ INVALID_SOCKET };
+	int				currentDataSize{};
+	IOState			ioState{ IOState::DISCONNECT };
 
 	ClientInfo()
 	{
 		ZeroMemory(&overEx, sizeof(overEx));
 	}
 };
-
-
-// 싱글턴
-#define DECLARE_SINGLE(type)		\
-private:							\
-	type() {}						\
-public:								\
-	static type* GetInstance()		\
-	{								\
-		static type instance;		\
-		return &instance;			\
-	}								\
-
-#define GET_SINGLE(type)	type::GetInstance()

@@ -17,8 +17,8 @@ public:
 	void Init();
 
 private:
-	std::array<Player, PLAYER_COUNT> playerList{};
-	std::array<Room, ROOM_COUNT>	roomList{};
+	std::array<Player, MAX_PLAYER> playerList{};
+	std::array<Room, MAX_ROOM>	roomList{};
 
 	// 현재 사용 가능한 playerid의 큐
 	concurrency::concurrent_queue<int> playerQueue;

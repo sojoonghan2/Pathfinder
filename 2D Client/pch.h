@@ -20,4 +20,3 @@
 #include "define.h"
 #include "../Common/protocol.h"
 #include "../Common/util.h"
-#include "../Common/CommonDefine.h"

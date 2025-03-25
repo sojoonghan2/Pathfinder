@@ -1,16 +1,28 @@
 #pragma once
 
+// 상수 정의
+
+// 단위 m
+constexpr float MAP_SIZE_M{ 50.f };
+constexpr float PLAYER_SIZE_M{ 0.5f };
+
+// 플레이어 이동속도, 단위 m/s
+constexpr float PLAYER_SPEED_MPS{ 5.f };
+
+
+constexpr int PORT_NUMBER{ 4000 };
+constexpr int BUFFER_SIZE{ 200 };
+
+constexpr const char* SERVER_IP{ "127.0.0.1" };
+
+constexpr float MOVE_PACKET_TIME_MS{ 75.f }; // 초당 13.3회
+constexpr float MAX_NETWORK_DELAY_MS{ 200.f }; // 최대 네트워크 딜레이
+
+constexpr int MAX_PLAYER{ 3000 };
+constexpr int MAX_ROOM{ 1000 };
+
 #define PACKET_START	namespace packet {
 #define PACKET_END		}
-
-constexpr int PORT_NUMBER = 4000;
-constexpr int BUFFER_SIZE = 200;
-
-constexpr const char* SERVER_IP = "127.0.0.1";
-
-constexpr float MOVE_PACKET_TIME_MS = 75.f; // 초당 13.3회
-constexpr float MAX_NETWORK_DELAY_MS = 200.f; // 최대 네트워크 딜레이
-
 
 PACKET_START
 enum class Type : unsigned char

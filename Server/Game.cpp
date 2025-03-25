@@ -93,11 +93,11 @@ std::array<int, 3> Game::GetRoomClients(const int room_id)
 
 void Game::Init()
 {
-	for (int i = 0; i < PLAYER_COUNT; ++i) {
+	for (int i = 0; i < MAX_PLAYER; ++i) {
 		playerQueue.push(i);
 	}
 
-	for (int i = 0; i < ROOM_COUNT; ++i) {
+	for (int i = 0; i < MAX_ROOM; ++i) {
 		roomQueue.push(i);
 	}
 }

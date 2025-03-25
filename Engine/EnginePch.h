@@ -38,10 +38,6 @@ using namespace std;
 
 #include <filesystem>
 namespace fs = std::filesystem;
-#include "../Common/protocol.h"
-#include "../Common/util.h"
-#include "../Common/CommonDefine.h"
-
 #include "d3dx12.h"
 #include "SimpleMath.h"
 #include "SimpleMath.inl"
