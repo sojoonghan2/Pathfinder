@@ -1,17 +1,19 @@
-#ifndef _ICEPARTICLE_FX_
-#define _ICEPARTICLE_FX_
+#ifndef _DUSTPARTICLE_FX_
+#define _DUSTPARTICLE_FX_
 
 #include "params.fx"
 #include "utils.fx"
 
+#define PI 3.141592
+
 struct Particle
 {
-    float3  worldPos;   // 12
-    float   curTime;    // 4
-    float3  worldDir;   // 12
-    float   lifeTime;   // 4
-    int     alive;      // 4
-    float3 padding;     // 12
+    float3  worldPos;
+    float   curTime;
+    float3  worldDir;
+    float   lifeTime;
+    int     alive;
+    float3  padding;
 };
 
 // 그래픽스 셰이더
@@ -66,15 +68,15 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 {
     GS_OUT output[4] =
     {
-        (GS_OUT)0.f, (GS_OUT)0.f, (GS_OUT)0.f, (GS_OUT)0.f
+        (GS_OUT) 0.f, (GS_OUT) 0.f, (GS_OUT) 0.f, (GS_OUT) 0.f
     };
 
     VS_OUT vtx = input[0];
-    uint id = (uint)vtx.id;
+    uint id = (uint) vtx.id;
     if (0 == g_data[id].alive)
         return;
 
-    // 파티클 수명에 따른 진행률 계산
+    // 파티클 수명 진행률 비율 계산
     float ratio = g_data[id].curTime / g_data[id].lifeTime;
     float scale = ((g_float_1 - g_float_0) * ratio + g_float_0) / 2.f;
 
@@ -102,6 +104,7 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     output[2].id = id;
     output[3].id = id;
 
+    // 삼각형 스트립 추가
     outputStream.Append(output[0]);
     outputStream.Append(output[1]);
     outputStream.Append(output[2]);
@@ -113,37 +116,26 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     outputStream.RestartStrip();
 }
 
-// PS_Main 수정 - 생명주기에 따른 색상 변화 추가
 float4 PS_Main(GS_OUT input) : SV_Target
 {
-    uint id = input.id;
-    float ratio = g_data[id].curTime / g_data[id].lifeTime;
+    float ratio = g_data[input.id].curTime / g_data[input.id].lifeTime;
     
-    float4 color = g_textures.Sample(g_sam_0, input.uv);
+    float3 color = float3(0.8f, 0.8f, 0.8f);
     
-    // 생명 주기에 따른 색상 전환
-    if (ratio < 0.4f)
-    {
-        // 초기 단계: 밝은 불 색상 (노랑/주황)
-        color *= float4(1.0f, 0.7f + 0.3f * (1 - ratio / 0.4f), 0.2f, 1.0f);
-    }
-    else if (ratio < 0.7f)
-    {
-        // 중간 단계: 불에서 연기로 전환
-        float transitionRatio = (ratio - 0.4f) / 0.3f;
-        float3 fireColor = float3(1.0f, 0.7f, 0.2f);
-        float3 smokeColor = float3(0.3f, 0.3f, 0.3f);
-        color.rgb *= lerp(fireColor, smokeColor, transitionRatio);
-    }
-    else
-    {
-        // 마지막 단계: 연기 색상으로 점점 투명해짐
-        float fadeRatio = (ratio - 0.7f) / 0.3f;
-        color *= float4(0.3f, 0.3f, 0.3f, 0.8f - fadeRatio);
-    }
+    float2 center = float2(0.5f, 0.5f);
+    float dist = distance(input.uv, center);
     
-    return color;
+    float noise = Rand(float2(input.id, ratio)) * 0.2f;
+    float crackPattern = saturate(1.0f - dist * (2.0f + noise));
+    crackPattern = pow(crackPattern, 1.5f);
+
+    float4 texColor = g_textures.Sample(g_sam_0, input.uv);
+    
+    float alpha = crackPattern * texColor.a;
+    
+    return float4(color * texColor.rgb, alpha);
 }
+
 
 struct ComputeShared
 {
@@ -170,24 +162,21 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 
     int maxCount = g_int_0;
     int addCount = g_int_1;
-    int frameNumber = g_int_2;
-    int particleType = g_int_3;
     float deltaTime = g_vec2_1.x;
     float accTime = g_vec2_1.y;
     float minLifeTime = g_vec4_0.x;
     float maxLifeTime = g_vec4_0.y;
     float minSpeed = g_vec4_0.z;
     float maxSpeed = g_vec4_0.w;
-    
+
     // 활성화 가능한 파티클 수 관리
     g_shared[0].addCount = addCount;
-    // 스레드 동기화
     GroupMemoryBarrierWithGroupSync();
 
     // 비활성 파티클 활성화
     if (g_particle[threadIndex.x].alive == 0 && g_shared[0].addCount > 0)
     {
-        // 활성화 가능한 파티클 수 감소
+        // 활성화 가능한 파티클 수 감소 (원자적 연산)
         while (true)
         {
             int remaining = g_shared[0].addCount;
@@ -197,11 +186,8 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             int expected = remaining;
             int desired = remaining - 1;
             int originalValue;
-            
-            // 원자적으로(더 이상 쪼갤 수 없는 정도)로 addCount 값 감소
+
             InterlockedCompareExchange(g_shared[0].addCount, expected, desired, originalValue);
-            
-            // 성공적으로 값을 감소시킨 스레드는 해당 파티클을 활성화(alive = 1)
             if (originalValue == expected)
             {
                 g_particle[threadIndex.x].alive = 1;
@@ -209,62 +195,56 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             }
         }
 
-        // 얼음 파티클 연산
         if (g_particle[threadIndex.x].alive == 1)
         {
-            float x = ((float) threadIndex.x / (float) maxCount) + accTime;
+            // 랜덤 시드 생성
+            float seed = ((float) threadIndex.x / (float) maxCount) + accTime;
 
-            float r1 = Rand(float2(x, accTime));
-            float r2 = Rand(float2(x * accTime, accTime));
-            float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
+            // 랜덤 값 생성
+            float r1 = Rand(float2(seed, accTime)); // 0~1 사이의 랜덤 값
+            float r2 = Rand(float2(seed * accTime, accTime));
+            float r3 = Rand(float2(seed * 1.5f, accTime * 0.5f));
 
-            // 난수 생성
-            float3 noise =
-            {
-                2 * r1 - 1,
-                2 * r2 - 1,
-                2 * r3 - 1
-            };
+            // 초기 위치 설정 (원의 내부에서 생성)
+            float spawnRadius = 1000.0f; // 먼지가 생성될 범위 반경
+            float angle = r1 * 2.0f * PI; // 0~2π 랜덤 각도
+            float distance = sqrt(r2) * spawnRadius; // 거리 값의 제곱근을 사용하여 균등 분포 유지
 
-            // 불은 주로 위쪽으로 올라가므로 Y방향에 가중치를 둠
-            float3 dir = normalize(float3(noise.x * 0.5f, 1.0f + noise.y * 0.3f, noise.z * 0.5f));
-    
-            // 파티클 초기 위치는 작은 반경 내에서 랜덤하게 생성
-            g_particle[threadIndex.x].worldDir = dir;
-            g_particle[threadIndex.x].worldPos = float3((noise.x - 0.5f) * 10.0f, (noise.y - 0.5f) * 2.0f, (noise.z - 0.5f) * 10.0f);
-            g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * r1) + minLifeTime;
-            g_particle[threadIndex.x].curTime = 0.f;
+            g_particle[threadIndex.x].worldPos = float3(
+                distance * cos(angle), // X 좌표 (원의 내부)
+                500.0f, // Y 좌표 (천장 높이)
+                distance * sin(angle) // Z 좌표 (원의 내부)
+    );
+
+            // 파티클이 아래로 떨어지도록 방향 설정
+            g_particle[threadIndex.x].worldDir = float3(0.0f, -1.0f, 0.0f);
+
+            // 파티클 수명 설정
+            g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * r3) + minLifeTime;
+            g_particle[threadIndex.x].curTime = 0.0f; // 경과 시간 초기화
         }
-        
+
     }
-    // 기존 파티클 업데이트
+    // 기존 활성 파티클 업데이트
     else
     {
-        g_particle[threadIndex.x].curTime += deltaTime;
-        if (g_particle[threadIndex.x].lifeTime < g_particle[threadIndex.x].curTime)
+        if (g_particle[threadIndex.x].alive == 1)
         {
-            g_particle[threadIndex.x].alive = 0;
-            return;
+            // 경과 시간 증가
+            g_particle[threadIndex.x].curTime += deltaTime;
+            
+            // 수명이 다 되면 비활성화
+            if (g_particle[threadIndex.x].curTime >= g_particle[threadIndex.x].lifeTime)
+            {
+                g_particle[threadIndex.x].alive = 0;
+            }
+            else
+            {
+                // 파티클 이동 (아래 방향으로 지속적으로 떨어짐)
+                float speed = (minSpeed + maxSpeed) * 0.5;
+                g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
+            }
         }
-
-        float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
-        float speed = (maxSpeed - minSpeed) * ratio + minSpeed;
-    
-        // 파티클 상승 속도는 생명주기에 따라 변함
-        // 초기에는 빠르게 올라가다가 나중에는 더 느리게 퍼지는 효과
-        float3 currentDir = g_particle[threadIndex.x].worldDir;
-        if (ratio > 0.4f)
-        {
-            // 연기 단계에서는 더 랜덤한 움직임과 느린 상승
-            float turbulence = sin(ratio * 10.0f + g_particle[threadIndex.x].worldPos.x) * 0.2f;
-            currentDir = normalize(float3(
-            currentDir.x + turbulence,
-            currentDir.y * (1.0f - ratio * 0.7f), // Y 방향 속도 감소
-            currentDir.z + turbulence
-        ));
-        }
-    
-        g_particle[threadIndex.x].worldPos += currentDir * speed * deltaTime;
     }
 }
 

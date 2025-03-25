@@ -223,7 +223,16 @@ FactoryScene::FactoryScene()
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(2000.0f, -200.0f, 2000.0f));
 		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.6f, 0.0f, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(1.f, 1.f, 1.f));
-		gameObjects[0]->AddComponent(make_shared<IceParticleSystem>());
+
+		shared_ptr<GameObject> particleObj = make_shared<GameObject>();
+		particleObj->SetName(L"IceParticleSystem");
+		particleObj->AddComponent(make_shared<Transform>());
+		particleObj->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+		particleObj->GetTransform()->SetLocalPosition(Vec3(0.0f, 0.0f, 500.0f));
+		particleObj->AddComponent(make_shared<IceParticleSystem>());
+		particleObj->AddComponent(make_shared<GeneratorScript>());
+		activeScene->AddGameObject(particleObj);
+
 		activeScene->AddGameObject(gameObjects[0]);
 	}
 #pragma endregion

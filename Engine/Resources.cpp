@@ -472,6 +472,30 @@ void Resources::CreateDefaultShader()
 		Add<Shader>(L"Occupation", shader);
 	}
 
+	// Billboard
+	{
+		ShaderInfo info =
+		{
+			SHADER_TYPE::FORWARD,
+			RASTERIZER_TYPE::CULL_NONE,
+			DEPTH_STENCIL_TYPE::NO_DEPTH_TEST_NO_WRITE,
+			BLEND_TYPE::ALPHA_BLEND
+		};
+
+		ShaderArg arg =
+		{
+			"VS_Tex",
+			"",
+			"",
+			"",
+			"PS_Tex"
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\Billboard.fx", info, arg);
+		Add<Shader>(L"Billboard", shader);
+	}
+
 	// UI (Forward)
 	{
 		ShaderInfo info =
@@ -542,6 +566,30 @@ void Resources::CreateDefaultShader()
 		shared_ptr<Shader> shader = make_shared<Shader>();
 		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\lighting.fx", info, arg);
 		Add<Shader>(L"PointLight", shader);
+	}
+
+	// SpotLight
+	{
+		ShaderInfo info =
+		{
+			SHADER_TYPE::LIGHTING,
+			RASTERIZER_TYPE::CULL_NONE,
+			DEPTH_STENCIL_TYPE::NO_DEPTH_TEST_NO_WRITE,
+			BLEND_TYPE::ONE_TO_ONE_BLEND
+		};
+
+		ShaderArg arg =
+		{
+			"VS_SpotLight",
+			"",
+			"",
+			"",
+			"PS_SpotLight"
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\lighting.fx", info, arg);
+		Add<Shader>(L"SpotLight", shader);
 	}
 
 	// Final
@@ -778,6 +826,40 @@ void Resources::CreateDefaultShader()
 		Add<Shader>(L"GlitterComputeParticle", computeShader);
 	}
 
+	// DustParticle
+	{
+		ShaderInfo info =
+		{
+			// 파티클
+			SHADER_TYPE::PARTICLE,
+			// 뒷면 제거
+			RASTERIZER_TYPE::CULL_BACK,
+			// 뎁스 버퍼에 기록 X
+			DEPTH_STENCIL_TYPE::LESS_NO_WRITE,
+			// 알파 블렌딩
+			BLEND_TYPE::ALPHA_BLEND,
+			// 기본 도형: 점
+			D3D_PRIMITIVE_TOPOLOGY_POINTLIST
+		};
+
+		ShaderArg arg =
+		{
+			"VS_Main",
+			"",
+			"",
+			"GS_Main",
+			"PS_Main"
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\DustParticle.fx", info, arg);
+		Add<Shader>(L"DustParticle", shader);
+
+		shared_ptr<Shader> computeShader = make_shared<Shader>();
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\DustParticle.fx", "CS_Main", "cs_5_0");
+		Add<Shader>(L"DustComputeParticle", computeShader);
+	}
+
 	// TestPBRParticle
 	{
 		ShaderInfo info =
@@ -932,6 +1014,20 @@ void Resources::CreateDefaultMaterial()
 		Add<Material>(L"PointLight", material);
 	}
 
+	// SpotLight
+	{
+		const WindowInfo& window = GEngine->GetWindow();
+		Vec2 resolution = { static_cast<float>(window.width), static_cast<float>(window.height) };
+
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"SpotLight");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		material->SetTexture(0, GET_SINGLE(Resources)->Get<Texture>(L"PositionTarget"));
+		material->SetTexture(1, GET_SINGLE(Resources)->Get<Texture>(L"NormalTarget"));
+		material->SetVec2(0, resolution);
+		Add<Material>(L"SpotLight", material);
+	}
+
 	// Final
 	{
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Final");
@@ -1027,6 +1123,19 @@ void Resources::CreateDefaultMaterial()
 		shared_ptr<Material> computeMaterial = make_shared<Material>();
 		computeMaterial->SetShader(computShader);
 		Add<Material>(L"GlitterComputeParticle", computeMaterial);
+	}
+
+	// DustParticle
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"DustParticle");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		Add<Material>(L"DustParticle", material);
+
+		shared_ptr<Shader> computShader = GET_SINGLE(Resources)->Get<Shader>(L"DustComputeParticle");
+		shared_ptr<Material> computeMaterial = make_shared<Material>();
+		computeMaterial->SetShader(computShader);
+		Add<Material>(L"DustComputeParticle", computeMaterial);
 	}
 
 	// TestPBRParticle

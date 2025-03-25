@@ -45,32 +45,66 @@ void TestPointLightScript::KeyboardInput()
 	// 여기서 받아서 위치 계산 후 
 	Vec3 pos = GetTransform()->GetLocalPosition();
 
-	if (INPUT->GetButton(KEY_TYPE::UP))
+	if (INPUT->GetButton(KEY_TYPE::W))
 	{
+		// 지금 가는 방향과 다른 방향이면 초기화(모델 회전)
+		if (_way != PLAYERWAY_TYPE::FRONT)
+		{
+			GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+
+			GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.f));
+		}
+
+		_way = PLAYERWAY_TYPE::FRONT;
+
 		pos += Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
 		_isMove = true;
 	}
-	if (INPUT->GetButton(KEY_TYPE::DOWN))
+	if (INPUT->GetButton(KEY_TYPE::S))
 	{
-		pos -= Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
-		_isMove = true;
-	}
-	if (INPUT->GetButton(KEY_TYPE::LEFT))
-	{
-		pos += Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
-		_isMove = true;
-	}
-	if (INPUT->GetButton(KEY_TYPE::RIGHT))
-	{
-		pos -= Normalization(GetTransform()->GetRight()) * _speed * DELTA_TIME;
-		_isMove = true;
-	}
+		// 지금 가는 방향과 다른 방향이면 초기화(모델 회전)
+		if (_way != PLAYERWAY_TYPE::BACK)
+		{
+			GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
 
-	if (INPUT->GetButton(KEY_TYPE::PAGEUP))
-		pos += Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
+			GetTransform()->SetLocalRotation(Vec3(-1.5708f, 0.0f, 0.f));
+		}
 
-	if (INPUT->GetButton(KEY_TYPE::PAGEDOWN))
-		pos -= Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
+		_way = PLAYERWAY_TYPE::BACK;
+
+		pos += Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
+		_isMove = true;
+	}
+	if (INPUT->GetButton(KEY_TYPE::A))
+	{
+		// 지금 가는 방향과 다른 방향이면 초기화(모델 회전)
+		if (_way != PLAYERWAY_TYPE::LEFT)
+		{
+			GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+
+			GetTransform()->SetLocalRotation(Vec3(-1.5708f, 1.5708f, 0.f));
+		}
+
+		_way = PLAYERWAY_TYPE::LEFT;
+
+		pos += Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
+		_isMove = true;
+	}
+	if (INPUT->GetButton(KEY_TYPE::D))
+	{
+		// 지금 가는 방향과 다른 방향이면 초기화(모델 회전)
+		if (_way != PLAYERWAY_TYPE::RIGHT)
+		{
+			GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+
+			GetTransform()->SetLocalRotation(Vec3(-1.5708f, -1.5708f, 0.f));
+		}
+
+		_way = PLAYERWAY_TYPE::RIGHT;
+
+		pos += Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
+		_isMove = true;
+	}
 
 	if (INPUT->GetButtonDown(KEY_TYPE::T)) PRINTPOSITION;
 
@@ -107,7 +141,6 @@ void TestPointLightScript::Animation()
 		currentAnimIndex = nextAnimIndex;
 	}
 }
-
 
 void TestPointLightScript::SetPosition(float x, float z)
 {
