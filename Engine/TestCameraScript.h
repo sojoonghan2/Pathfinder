@@ -27,6 +27,7 @@ private:
 
 	// 타겟과의 거리
 	Vec3					_offsetPosition;
+	Vec3					_cameraRotation;
 
 	Vec3					_revolution;
 	float					_tempxRotation = 0.0f;

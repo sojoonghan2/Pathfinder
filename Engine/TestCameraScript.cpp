@@ -25,7 +25,7 @@ void TestCameraScript::LateUpdate() {
 
         Vec3 targetPos = _target->GetTransform()->GetLocalPosition();
 
-        // 회전된 오프셋 계산
+        // 공전 오프셋 계산
         Vec3 rotatedOffset;
         rotatedOffset.x = sinf(_revolution.y) * _offsetPosition.z;
         rotatedOffset.z = cosf(_revolution.y) * _offsetPosition.z;
@@ -33,6 +33,16 @@ void TestCameraScript::LateUpdate() {
 
         Vec3 camPos = targetPos + rotatedOffset;
         GetTransform()->SetLocalPosition(camPos);
+
+        // 카메라 회전 설정 (자전 + 타겟 방향 고려)
+        Vec3 lookDirection = Normalization(targetPos - camPos);
+
+        // 자체 회전 각도 적용
+        Vec3 finalRotation = _cameraRotation;
+        finalRotation.x += acosf(lookDirection.y); // 고개 각도 계산
+        finalRotation.y = atan2f(lookDirection.x, lookDirection.z); // 방위각 계산
+
+        GetTransform()->SetLocalRotation(finalRotation);
     }
 }
 
@@ -63,7 +73,13 @@ void TestCameraScript::MouseInput() {
     if (_playerCamera) {
         if (INPUT->GetButton(KEY_TYPE::LBUTTON)) {
             POINT delta = INPUT->GetMouseDelta();
+
+            // 공전 각도 조정
             _revolution.y += delta.x * 0.005f;
+
+            // 카메라 자체 회전 조정
+            _cameraRotation.y += delta.x * 0.005f;  // 좌우 회전
+            _cameraRotation.x += delta.y * 0.005f;  // 상하 회전
         }
     }
     else {
@@ -77,6 +93,7 @@ void TestCameraScript::MouseInput() {
     }
 }
 
-void TestCameraScript::ToggleCamera() {
+void TestCameraScript::ToggleCamera()
+{
     _playerCamera = !_playerCamera;
 }
