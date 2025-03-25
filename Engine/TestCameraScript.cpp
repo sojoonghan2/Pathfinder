@@ -39,8 +39,9 @@ void TestCameraScript::LateUpdate() {
 
         // 자체 회전 각도 적용
         Vec3 finalRotation = _cameraRotation;
-        finalRotation.x += acosf(lookDirection.y); // 고개 각도 계산
-        finalRotation.y = atan2f(lookDirection.x, lookDirection.z); // 방위각 계산
+        GetTransform()->SetLocalPosition(camPos);
+        GetTransform()->LookAt(targetPos);
+        finalRotation.y = atan2f(lookDirection.x, lookDirection.z);
 
         GetTransform()->SetLocalRotation(finalRotation);
     }
@@ -79,7 +80,7 @@ void TestCameraScript::MouseInput() {
 
             // 카메라 자체 회전 조정
             _cameraRotation.y += delta.x * 0.005f;  // 좌우 회전
-            _cameraRotation.x += delta.y * 0.005f;  // 상하 회전
+            //_cameraRotation.x += delta.y * 0.005f;  // 상하 회전
         }
     }
     else {
