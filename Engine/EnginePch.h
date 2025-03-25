@@ -115,13 +115,13 @@ using Matrix	= DirectX::SimpleMath::Matrix;
 // Scene ÀüÈ¯
 //#define ALLLOAD
 //#define TITLELOAD
-//#define RUINSLOAD
+#define RUINSLOAD
 //#define FACTORYLOAD
 //#define EXPLORATIONLOAD
 //#define CRASHLOAD
 //#define LUCKYLOAD
 //#define BOSSLOAD
-#define PARTICLELOAD
+//#define PARTICLELOAD
 //#define TESTLOAD
 
 

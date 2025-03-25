@@ -309,6 +309,9 @@
     <ClCompile Include="DustParticleSystem.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
+    <ClCompile Include="LightPillarParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -575,6 +578,9 @@
     <ClInclude Include="DustParticleSystem.h">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClInclude>
+    <ClInclude Include="LightPillarParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -653,6 +659,9 @@
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\Billboard.fx">
       <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\LightPillarParticle.fx">
+      <Filter>Shader\Particle</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

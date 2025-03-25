@@ -28,6 +28,7 @@
 #include "DustParticleSystem.h"
 #include "GlitterParticleSystem.h"
 #include "TestParticleScript.h"
+#include "LightPillarParticleSystem.h"
 
 RuinsScene::RuinsScene()
 {
@@ -287,7 +288,31 @@ RuinsScene::RuinsScene()
 	}
 
 	lightPillar->AddComponent(meshRenderer);
-	activeScene->AddGameObject(lightPillar);
+	//activeScene->AddGameObject(lightPillar);
+#pragma endregion
+
+// 빛기둥 파티클
+#pragma region LightPillarParticle
+	{
+		// 파티클 오브젝트 생성
+		shared_ptr<GameObject> lightPillarParticle = make_shared<GameObject>();
+		wstring lightPillarParticleName = L"lightPillarParticle";
+		lightPillarParticle->SetName(lightPillarParticleName);
+		lightPillarParticle->SetCheckFrustum(true);
+		lightPillarParticle->SetStatic(false);
+
+		// 좌표 컴포넌트 추가
+		lightPillarParticle->AddComponent(make_shared<Transform>());
+		lightPillarParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 3000.f, 0.f));
+		lightPillarParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+
+		// 파티클 시스템 컴포넌트 추가
+		shared_ptr<LightPillarParticleSystem> lightPillarParticleSystem = make_shared<LightPillarParticleSystem>();
+		lightPillarParticle->AddComponent(make_shared<TestParticleScript>());
+		lightPillarParticle->AddComponent(lightPillarParticleSystem);
+
+		activeScene->AddGameObject(lightPillarParticle);
+	}
 #pragma endregion
 
 // 물
