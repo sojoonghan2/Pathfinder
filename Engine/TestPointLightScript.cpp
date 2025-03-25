@@ -6,6 +6,7 @@
 #include "Input.h"
 #include "Timer.h"
 #include "SceneManager.h"
+#include "Scene.h"
 #include "MessageManager.h"
 #include "SocketIO.h"
 #include "Animator.h"
@@ -42,87 +43,57 @@ void TestPointLightScript::LateUpdate()
 
 void TestPointLightScript::KeyboardInput()
 {
-	// 여기서 받아서 위치 계산 후 
-	Vec3 pos = GetTransform()->GetLocalPosition();
+    Vec3 pos = GetTransform()->GetLocalPosition();
 
-	if (INPUT->GetButton(KEY_TYPE::W))
-	{
-		// 지금 가는 방향과 다른 방향이면 초기화(모델 회전)
-		if (_way != PLAYERWAY_TYPE::FRONT)
-		{
-			GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+    // 카메라 방향 기준 벡터 획득
+    shared_ptr<GameObject> cameraObj = GET_SINGLE(SceneManager)->GetActiveScene()->GetMainCamera()->GetGameObject();
+    Vec3 camForward = cameraObj->GetTransform()->GetLook();
+    Vec3 camRight = cameraObj->GetTransform()->GetRight();
+    camForward.y = 0;
+    camRight.y = 0;
+    camForward.Normalize();
+    camRight.Normalize();
 
-			GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.f));
-		}
+    Vec3 moveDir = Vec3(0.f);
 
-		_way = PLAYERWAY_TYPE::FRONT;
+    // 입력 기반 이동 방향 누적
+    if (INPUT->GetButton(KEY_TYPE::W)) moveDir += camForward;
+    if (INPUT->GetButton(KEY_TYPE::S)) moveDir -= camForward;
+    if (INPUT->GetButton(KEY_TYPE::A)) moveDir -= camRight;
+    if (INPUT->GetButton(KEY_TYPE::D)) moveDir += camRight;
 
-		pos += Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
-		_isMove = true;
-	}
-	if (INPUT->GetButton(KEY_TYPE::S))
-	{
-		// 지금 가는 방향과 다른 방향이면 초기화(모델 회전)
-		if (_way != PLAYERWAY_TYPE::BACK)
-		{
-			GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+    if (moveDir.LengthSquared() > 0.01f)
+    {
+        moveDir.Normalize();
+        pos += moveDir * _speed * DELTA_TIME;
+        _isMove = true;
 
-			GetTransform()->SetLocalRotation(Vec3(-1.5708f, 0.0f, 0.f));
-		}
+        // 이동 방향을 바라보도록 회전 (언리얼 스타일)
+        float yaw = atan2f(moveDir.x, moveDir.z);
+        yaw += XM_PI;
+        GetTransform()->SetLocalRotation(Vec3(-XM_PIDIV2, yaw, 0.f));
+    }
+    else
+    {
+        _isMove = false;
+    }
 
-		_way = PLAYERWAY_TYPE::BACK;
+    // 맵 크기 제한
+    float mapMinX = -4950.f;
+    float mapMaxX = 4950.f;
+    float mapMinZ = -4950.f;
+    float mapMaxZ = 4950.f;
+    float minY = 0.f;
+    float maxY = 9500.f;
 
-		pos += Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
-		_isMove = true;
-	}
-	if (INPUT->GetButton(KEY_TYPE::A))
-	{
-		// 지금 가는 방향과 다른 방향이면 초기화(모델 회전)
-		if (_way != PLAYERWAY_TYPE::LEFT)
-		{
-			GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+    // X, Y, Z 좌표를 맵 범위로 제한
+    pos.x = max(mapMinX, min(pos.x, mapMaxX));
+    pos.y = max(minY, min(pos.y, maxY));
+    pos.z = max(mapMinZ, min(pos.z, mapMaxZ));
 
-			GetTransform()->SetLocalRotation(Vec3(-1.5708f, 1.5708f, 0.f));
-		}
-
-		_way = PLAYERWAY_TYPE::LEFT;
-
-		pos += Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
-		_isMove = true;
-	}
-	if (INPUT->GetButton(KEY_TYPE::D))
-	{
-		// 지금 가는 방향과 다른 방향이면 초기화(모델 회전)
-		if (_way != PLAYERWAY_TYPE::RIGHT)
-		{
-			GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
-
-			GetTransform()->SetLocalRotation(Vec3(-1.5708f, -1.5708f, 0.f));
-		}
-
-		_way = PLAYERWAY_TYPE::RIGHT;
-
-		pos += Normalization(GetTransform()->GetUp()) * _speed * DELTA_TIME;
-		_isMove = true;
-	}
-
-	if (INPUT->GetButtonDown(KEY_TYPE::T)) PRINTPOSITION;
-
-	// 맵 크기 제한
-	float mapMinX = -4950.f;
-	float mapMaxX = 4950.f;
-	float mapMinZ = -4950.f;
-	float mapMaxZ = 4950.f;
-	float minY = 0.f;
-	float maxY = 9500.f;
-
-	// X, Y, Z 좌표를 맵 범위로 제한
-	pos.x = max(mapMinX, min(pos.x, mapMaxX));
-	pos.y = max(minY, min(pos.y, maxY));
-	pos.z = max(mapMinZ, min(pos.z, mapMaxZ));
-
-	GetTransform()->SetLocalPosition(pos);
+    GetTransform()->SetLocalPosition(pos);
 }
+
 
 void TestPointLightScript::MouseInput()
 {

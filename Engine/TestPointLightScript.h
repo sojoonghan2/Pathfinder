@@ -1,14 +1,6 @@
 #pragma once
 #include "MonoBehaviour.h"
 
-enum class PLAYERWAY_TYPE : uint8
-{
-	FRONT,
-	BACK,
-	LEFT,
-	RIGHT
-};
-
 class TestPointLightScript : public MonoBehaviour
 {
 public:
@@ -27,7 +19,5 @@ public:
 private:
 	float			_speed = 1000.f;
 	bool			_isMove = false;
-
-	PLAYERWAY_TYPE	_way;
 };
 

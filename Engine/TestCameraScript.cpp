@@ -10,7 +10,6 @@
 
 TestCameraScript::TestCameraScript()
 {
-    _offsetPosition = Vec3(0.f, 500.f, -600.f);
 }
 
 TestCameraScript::~TestCameraScript()
@@ -24,12 +23,25 @@ void TestCameraScript::LateUpdate()
 
     if (_playerCamera)
     {
-        // 타겟이 될 플레이어 오브젝트를 찾음
         _target = GET_SINGLE(SceneManager)->FindObjectByName(L"OBJ");
 
-        // 타겟의 월드 position을 가져와서 offset을 더함
+        if (_target == nullptr)
+            return;
+
+        // 타겟 위치
         Vec3 targetPos = _target->GetTransform()->GetLocalPosition();
-        GetTransform()->SetLocalPosition(targetPos + _offsetPosition);
+
+        // Y축 회전에 따른 카메라 오프셋 계산
+        Vec3 offset;
+        offset.x = sinf(_revolution.y) * _offsetPosition.z;
+        offset.z = cosf(_revolution.y) * _offsetPosition.z + 600.f;
+        offset.y = _offsetPosition.y + 500.f;
+
+        Vec3 camPos = targetPos + offset;
+        GetTransform()->SetLocalPosition(camPos);
+
+        // 카메라는 항상 타겟을 바라보도록 회전
+        GetTransform()->LookAt(targetPos);
     }
 }
 
@@ -61,14 +73,6 @@ void TestCameraScript::KeyboardInput()
     float minY = 500.f;
     float maxY = 9500.f;
 
-    // X, Y, Z 좌표를 맵 범위로 제한
-    //pos.x = max(mapMinX, min(pos.x, mapMaxX));
-    //pos.y = max(minY, min(pos.y, maxY));
-    //pos.z = max(mapMinZ, min(pos.z, mapMaxZ));
-
-    // 디버깅용 좌표 출력
-    if (INPUT->GetButtonDown(KEY_TYPE::T))
-        PRINTPOSITION;
 
     if (INPUT->GetButtonDown(KEY_TYPE::TAB))
     {
@@ -84,31 +88,23 @@ void TestCameraScript::MouseInput()
     // 플레이어 카메라 모드
     if (_playerCamera)
     {
-        // 플레이어 기준 공전(현재 0, 0, 0 기준 공전)
+        if (INPUT->GetButton(KEY_TYPE::LBUTTON))
+        {
+            POINT delta = INPUT->GetMouseDelta();
+            _revolution.y += delta.x * 0.005f;
+        }
+    }
+    // 개발자 카메라 모드
+    else
+    {
         if (INPUT->GetButton(KEY_TYPE::LBUTTON))
         {
             POINT mouseDelta = INPUT->GetMouseDelta();
-
-            // 타겟이 존재하는지 확인
-            if (_target != nullptr)
-            {
-                POINT mouseDelta = INPUT->GetMouseDelta();
-                Vec3 rotation = GetTransform()->GetLocalRevolution();
-                rotation.y += mouseDelta.x * 0.005f;
-                GetTransform()->SetLocalRevolution(rotation);
-            }
+            Vec3 rotation = GetTransform()->GetLocalRotation();
+            rotation.y += mouseDelta.x * 0.005f;
+            rotation.x += mouseDelta.y * 0.005f;
+            GetTransform()->SetLocalRotation(rotation);
         }
-        return;
-    }
-
-    // 개발자 카메라 모드
-    if (INPUT->GetButton(KEY_TYPE::LBUTTON))
-    {
-        POINT mouseDelta = INPUT->GetMouseDelta();
-        Vec3 rotation = GetTransform()->GetLocalRotation();
-        rotation.y += mouseDelta.x * 0.005f;
-        rotation.x += mouseDelta.y * 0.005f;
-        GetTransform()->SetLocalRotation(rotation);
     }
 }
 
