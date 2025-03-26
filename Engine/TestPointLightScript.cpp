@@ -86,6 +86,11 @@ void TestPointLightScript::KeyboardInput()
         float lerpSpeed = 10.0f;
         currentRot.y += deltaYaw * lerpSpeed * DELTA_TIME;
 
+        // 누적 회전값 정규화
+        currentRot.y = fmod(currentRot.y, XM_2PI);
+        if (currentRot.y < 0.f)
+            currentRot.y += XM_2PI;
+
         GetTransform()->SetLocalRotation(currentRot);
     }
     else
@@ -108,7 +113,6 @@ void TestPointLightScript::KeyboardInput()
 
     GetTransform()->SetLocalPosition(pos);
 }
-
 
 void TestPointLightScript::MouseInput()
 {

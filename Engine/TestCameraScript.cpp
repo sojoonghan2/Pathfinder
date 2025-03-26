@@ -107,7 +107,6 @@ void TestCameraScript::MouseInput() {
             cursorPos.x >= windowRect.right - margin)
         {
             SetCursorPos(_centerScreenPos.x, _centerScreenPos.y);
-            //INPUT->ResetMousePosition(_centerScreenPos);
         }
     }
     else
