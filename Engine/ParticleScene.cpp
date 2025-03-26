@@ -244,6 +244,24 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
+// ÁöÇü
+#pragma region Temp
+    shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Temp\\Temp.fbx");
+
+    vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+    for (auto gameObject : gameObjects)
+    {
+        gameObject->SetName(L"Temppp");
+        gameObject->SetCheckFrustum(false);
+        gameObject->AddComponent(make_shared<Transform>());
+        gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+        gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, 300.0f, 0.0f));
+        gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 0.0f, 0.0f));
+        activeScene->AddGameObject(gameObject);
+    }
+#pragma endregion
+
 #pragma region OtherPlayer
     {
         std::array<shared_ptr<GameObject>, 2> obj{};
@@ -411,7 +429,7 @@ void ParticleScene::LoadMyParticle()
         gliggerParticle->AddComponent(make_shared<TestParticleScript>());
         gliggerParticle->AddComponent(gliggerParticleSystem);
 
-        activeScene->AddGameObject(gliggerParticle);
+        //activeScene->AddGameObject(gliggerParticle);
     }
 #pragma endregion
 }
