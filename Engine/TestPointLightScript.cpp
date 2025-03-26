@@ -73,9 +73,18 @@ void TestPointLightScript::KeyboardInput()
         Vec3 currentRot = GetTransform()->GetLocalRotation();
         Vec3 targetRot = Vec3(-XM_PIDIV2, targetYaw, 0.f);
 
-        // Y축 회전값 보간 (x 회전은 그대로 유지해도 됨)
-        float lerpSpeed = 10.0f; // 회전 속도 계수 (클수록 빠름)
-        currentRot.y = currentRot.y + (targetRot.y - currentRot.y) * lerpSpeed * DELTA_TIME;
+        // 정규화
+        float deltaYaw = targetRot.y - currentRot.y;
+
+        // 보정
+        if (deltaYaw > XM_PI)
+            deltaYaw -= XM_2PI;
+        else if (deltaYaw < -XM_PI)
+            deltaYaw += XM_2PI;
+
+        // 보간 적용
+        float lerpSpeed = 10.0f;
+        currentRot.y += deltaYaw * lerpSpeed * DELTA_TIME;
 
         GetTransform()->SetLocalRotation(currentRot);
     }
