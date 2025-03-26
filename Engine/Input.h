@@ -82,5 +82,7 @@ private:
 	POINT _mousePos = {};      // 현재 마우스 위치
 	POINT _prevMousePos = {};  // 이전 프레임의 마우스 위치
 	POINT _mouseDelta = {};    // 마우스 이동량 (델타)
+
+	POINT _currentMousePos;
 };
 

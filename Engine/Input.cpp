@@ -48,13 +48,13 @@ void Input::Update()
 		}
 	}
 
+	::GetCursorPos(&_mousePos);
+	::ScreenToClient(GEngine->GetWindow().hwnd, &_mousePos);
+
 	// 마우스 이동량 계산 (현재 위치 - 이전 위치)
 	_mouseDelta.x = _mousePos.x - _prevMousePos.x;
 	_mouseDelta.y = _mousePos.y - _prevMousePos.y;
 
 	// 이전 마우스 위치 업데이트
 	_prevMousePos = _mousePos;
-
-	::GetCursorPos(&_mousePos);
-	::ScreenToClient(GEngine->GetWindow().hwnd, &_mousePos);
 }

@@ -16,11 +16,14 @@ public:
 	void ToggleCamera();
 
 private:
+	// 마우스 중앙 고정용 위치
+	POINT					_centerScreenPos;
+
 	// 카메라 이동 속도
 	float					_speed = 10000.f;
 
 	// 카메라 모드
-	bool					_playerCamera = false;
+	bool					_playerCamera = true;
 
 	// 카메라가 따라가는 타겟 오브젝트
 	shared_ptr<GameObject>	_target;
