@@ -10,20 +10,32 @@ enum class KEY_TYPE
 	PAGEUP = VK_PRIOR,
 	PAGEDOWN = VK_NEXT,
 
-	W = 'W',
 	A = 'A',
-	S = 'S',
-	D = 'D',
-
-	Q = 'Q',
-	E = 'E',
-	Z = 'Z',
+	B = 'B',
 	C = 'C',
-
+	D = 'D',
+	E = 'E',
+	F = 'F',
+	G = 'G',
+	H = 'H',
+	I = 'I',
+	J = 'J',
+	K = 'K',
+	L = 'L',
+	M = 'M',
+	N = 'N',
+	O = 'O',
+	P = 'P',
+	Q = 'Q',
+	R = 'R',
+	S = 'S',
 	T = 'T',
 	U = 'U',
-	I = 'I',
+	V = 'V',
+	W = 'W',
+	X = 'X',
 	Y = 'Y',
+	Z = 'Z',
 
 	ADD = VK_ADD,
 	SUBTRACT = VK_SUBTRACT,
@@ -36,6 +48,8 @@ enum class KEY_TYPE
 
 	LBUTTON = VK_LBUTTON,
 	RBUTTON = VK_RBUTTON,
+
+	SPACE = VK_SPACE,
 };
 
 enum class KEY_STATE

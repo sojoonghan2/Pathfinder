@@ -43,6 +43,33 @@ void PlayerScript::LateUpdate()
 
 void PlayerScript::KeyboardInput()
 {
+    Move();
+    Dash();
+}
+
+void PlayerScript::MouseInput()
+{
+	
+}
+
+void PlayerScript::Animation()
+{
+	static uint32 currentAnimIndex = 0;
+
+	uint32 nextAnimIndex = _isMove ? 1 : 0;
+
+	if (currentAnimIndex != nextAnimIndex)
+	{
+		GetAnimator()->Play(nextAnimIndex);
+		currentAnimIndex = nextAnimIndex;
+	}
+}
+
+void PlayerScript::Move()
+{
+    if (_isDashing)
+        return;
+
     Vec3 pos = GetTransform()->GetLocalPosition();
 
     // 카메라 방향 기준 벡터 획득
@@ -114,22 +141,51 @@ void PlayerScript::KeyboardInput()
     GetTransform()->SetLocalPosition(pos);
 }
 
-void PlayerScript::MouseInput()
+void PlayerScript::Dash()
 {
-	
+    // 쿨타임 타이머 갱신
+    if (_dashCooldownTimer > 0.f)
+        _dashCooldownTimer -= DELTA_TIME;
+
+    // 대쉬 중일 때 처리
+    if (_isDashing)
+    {
+        Vec3 pos = GetTransform()->GetLocalPosition();
+        pos += _dashDirection * _dashSpeed * DELTA_TIME;
+        GetTransform()->SetLocalPosition(pos);
+
+        _dashTimer -= DELTA_TIME;
+        if (_dashTimer <= 0.f)
+        {
+            _isDashing = false;
+            _dashCooldownTimer = _dashCooldown;
+        }
+
+        return; // 이동 막기
+    }
+
+    // 대쉬 시작 조건
+    if (_dashCooldownTimer <= 0.f && INPUT->GetButtonDown(KEY_TYPE::SPACE))
+    {
+        // 현재 방향
+        shared_ptr<GameObject> cameraObj = GET_SINGLE(SceneManager)->GetActiveScene()->GetMainCamera()->GetGameObject();
+        Vec3 camForward = cameraObj->GetTransform()->GetLook();
+        camForward.y = 0.f;
+        camForward.Normalize();
+
+        _dashDirection = camForward;
+        _isDashing = true;
+        _dashTimer = _dashDuration;
+    }
 }
 
-void PlayerScript::Animation()
+void PlayerScript::ThrowGrenade()
 {
-	static uint32 currentAnimIndex = 0;
-
-	uint32 nextAnimIndex = _isMove ? 1 : 0;
-
-	if (currentAnimIndex != nextAnimIndex)
-	{
-		GetAnimator()->Play(nextAnimIndex);
-		currentAnimIndex = nextAnimIndex;
-	}
+    if(INPUT->GetButtonDown(KEY_TYPE::E))
+    {
+        _isGrenage = true;
+        _isGrenage = false;
+    }
 }
 
 void PlayerScript::SetPosition(float x, float z)

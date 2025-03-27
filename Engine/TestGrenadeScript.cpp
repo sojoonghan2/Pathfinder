@@ -29,7 +29,7 @@ void TestGrenadeScript::LateUpdate()
 
 void TestGrenadeScript::KeyboardInput()
 {
-    if (INPUT->GetButton(KEY_TYPE::Y))
+    if (INPUT->GetButton(KEY_TYPE::E))
     {
         // 위치 초기화
         GetTransform()->RestoreParent();

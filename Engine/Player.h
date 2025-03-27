@@ -10,7 +10,7 @@ public:
     virtual void FinalUpdate() override;
 
     void LoadPlayerSkill();
-    void Init();
+    void LoadGrenade();
 
 public:
     bool        _isInit = false;

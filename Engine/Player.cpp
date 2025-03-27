@@ -32,6 +32,11 @@ void Player::FinalUpdate()
 
 void Player::LoadPlayerSkill()
 {
+    LoadGrenade();
+}
+
+void Player::LoadGrenade()
+{
     shared_ptr<GameObject> grenade = make_shared<GameObject>();
     grenade->SetName(L"Grenade");
     grenade->SetCheckFrustum(true);
