@@ -33,9 +33,10 @@ void TestGrenadeScript::KeyboardInput()
     {
         // 위치 초기화
         GetTransform()->RestoreParent();
-        auto parentPos = GetTransform()->GetParent().lock()->GetTransform()->GetLocalPosition();
-        Vec3 pos = parentPos;
-        GetTransform()->SetLocalPosition(pos);
+        auto parent = GetTransform()->GetParent().lock();
+        auto parentTransform = parent->GetTransform();
+        Vec3 parentPos = parentTransform->GetLocalPosition();
+        GetTransform()->SetLocalPosition(parentPos);
 
         // 속도 초기화
         _velocity = Vec3(0, 0, 0);
@@ -56,10 +57,16 @@ void TestGrenadeScript::KeyboardInput()
         // 투사각을 라디안으로 변환
         float radian = ToRadian(_angle);
 
-        // 초기 속도 계산
-        _velocity.x = 0.0f;
+        // 부모의 전방 벡터 (Look 방향) 가져오기
+        Vec3 forward = parentTransform->GetLook();
+
+        // Y축 방향으로 각도 적용한 초기 속도 계산
+        Vec3 direction = -forward;
+        direction.y = 0.0f;
+        direction.Normalize();
+
+        _velocity = direction * (cos(radian) * _power);
         _velocity.y = sin(radian) * _power;
-        _velocity.z = cos(radian) * _power;
 
         // 중력 가속도 설정
         _gravity = -9.81f * 200.0f;
