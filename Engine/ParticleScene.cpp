@@ -360,29 +360,7 @@ void ParticleScene::LoadMyParticle()
     }
 #pragma endregion
 
-// 레이저 파티클
-#pragma region RazerParticle
-    {
-        // 파티클 오브젝트 생성
-        shared_ptr<GameObject> razerParticle = make_shared<GameObject>();
-        wstring razerParticleName = L"RazerParticle";
-        razerParticle->SetName(razerParticleName);
-        razerParticle->SetCheckFrustum(true);
-        razerParticle->SetStatic(false);
 
-        // 좌표 컴포넌트 추가
-        razerParticle->AddComponent(make_shared<Transform>());
-        razerParticle->GetTransform()->SetLocalPosition(Vec3(-400.f, 100.f, -300.f));
-        razerParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
-
-        // 파티클 시스템 컴포넌트 추가
-        shared_ptr<RazerParticleSystem> razerParticleSystem = make_shared<RazerParticleSystem>();
-        razerParticle->AddComponent(make_shared<TestParticleScript>());
-        razerParticle->AddComponent(razerParticleSystem);
-
-        activeScene->AddGameObject(razerParticle);
-    }
-#pragma endregion
 
 // 오버 드라이브 파티클
 #pragma region OverDriveParticle

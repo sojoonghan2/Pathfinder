@@ -11,6 +11,7 @@ public:
 
     void LoadPlayerSkill();
     void LoadGrenade();
+    void LoadRazer();
 
 public:
     bool        _isInit = false;

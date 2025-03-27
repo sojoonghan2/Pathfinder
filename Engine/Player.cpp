@@ -8,8 +8,10 @@
 #include "Mesh.h"
 #include "MeshRenderer.h"
 #include "FireParticleSystem.h"
+#include "RazerParticleSystem.h"
 #include "SceneManager.h"
 #include "Scene.h"
+#include "TestParticleScript.h"
 
 Player::Player() : Component(COMPONENT_TYPE::PLAYER)
 {
@@ -33,6 +35,7 @@ void Player::FinalUpdate()
 void Player::LoadPlayerSkill()
 {
     LoadGrenade();
+    LoadRazer();
 }
 
 void Player::LoadGrenade()
@@ -70,4 +73,31 @@ void Player::LoadGrenade()
     grenade->AddComponent(grenadeParticleSystem);
 
     GET_SINGLE(SceneManager)->GetActiveScene()->AddGameObject(grenade);
+}
+
+void Player::LoadRazer()
+{
+#pragma region RazerParticle
+    {
+        // 파티클 오브젝트 생성
+        shared_ptr<GameObject> razerParticle = make_shared<GameObject>();
+        wstring razerParticleName = L"RazerParticle";
+        razerParticle->SetName(razerParticleName);
+        razerParticle->SetCheckFrustum(true);
+        razerParticle->SetStatic(false);
+
+        // 좌표 컴포넌트 추가
+        razerParticle->AddComponent(make_shared<Transform>());
+        razerParticle->GetTransform()->SetParent(GetGameObject()->GetTransform());
+        razerParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+        razerParticle->GetTransform()->SetLocalPosition(Vec3(0.0f, 100.0f, 110.0f));
+        razerParticle->AddComponent(make_shared<TestParticleScript>());
+
+        // 파티클 시스템 컴포넌트 추가
+        shared_ptr<RazerParticleSystem> razerParticleSystem = make_shared<RazerParticleSystem>();
+        razerParticle->AddComponent(razerParticleSystem);
+
+        GET_SINGLE(SceneManager)->GetActiveScene()->AddGameObject(razerParticle);
+    }
+#pragma endregion
 }
