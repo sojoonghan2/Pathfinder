@@ -51,7 +51,7 @@ enum class IOState
 };
 
 
-struct OverlappedEx
+struct alignas(64) OverlappedEx
 {
 	WSAOVERLAPPED	over;					// overlapped IO 구조체
 	SOCKET			clientSocket{ INVALID_SOCKET }; // 클라이언트 소켓

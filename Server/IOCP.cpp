@@ -46,7 +46,7 @@ bool IOCP::Init()
 	IOCPHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
 
 	// 생성한 IOCP 핸들을 listen socket에 연결
-	CreateIoCompletionPort(reinterpret_cast<HANDLE>(listenSocket), IOCPHandle, 9999, 0);
+	CreateIoCompletionPort(reinterpret_cast<HANDLE>(listenSocket), IOCPHandle, 99999, 0);
 
 	std::println("IOCP Init Successed.");
 
@@ -71,6 +71,7 @@ bool IOCP::Start()
 
 	int addr_size = sizeof(SOCKADDR_IN);
 	DWORD bytes_received{};
+
 
 	// listen_socket에 accept_socket 비동기 Accept 등록
 	AcceptEx(
@@ -127,7 +128,6 @@ void IOCP::Worker()
 			INFINITE);
 
 		OverlappedEx* curr_over_ex = reinterpret_cast<OverlappedEx*>(over);
-		
 		int key = static_cast<int>(ULkey);
 
 		if (FALSE == ret) {
@@ -194,6 +194,7 @@ void IOCP::Worker()
 		*/
 		case IOOperation::RECV:
 		{
+			while (clientInfoHash.end() == clientInfoHash.find(key)) { std::this_thread::yield(); }
 			int remain_data = io_size + clientInfoHash[key].currentDataSize;
 			char* p = curr_over_ex->dataBuffer;
 
@@ -241,13 +242,6 @@ void IOCP::TimerWorker()
 {
 	using namespace std::chrono_literals;
 	while (true) {
-		// 다음 루프 시간
-		auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(
-			std::chrono::duration<float, std::milli>(MOVE_PACKET_TIME_MS)
-		);
-
-		auto next_time = std::chrono::high_resolution_clock::now() + diff;
-
 
 		// 50ms마다 실행
 		std::vector<int> id_delete{};
@@ -259,35 +253,33 @@ void IOCP::TimerWorker()
 				continue;
 			}
 
-			// 내 위치를 가져와서 패킷을 만듦
-			if (client_info.ioState != IOState::INGAME) {
-				continue;
-			}
+			//// 내 위치를 가져와서 패킷을 만듦
+			//if (client_info.ioState != IOState::INGAME) {
+			//	continue;
+			//}
 
-			auto pos = GET_SINGLE(Game)->GetPlayerPosition(client_info.clientIdInfo.playerId);
-			packet::SCMovePlayer packet{ id, pos.x, pos.y };
+			//auto pos = GET_SINGLE(Game)->GetPlayerPosition(client_info.clientIdInfo.playerId);
+			//packet::SCMovePlayer packet{ id, pos.x, pos.y };
 
-			// 내 방에 있는 플레이어에게 패킷을 보냄
-			auto other_players = GET_SINGLE(Game)->GetRoomClients(client_info.clientIdInfo.roomId);
-			for (auto other : other_players) {
-				if (other == -1) { continue; }
-				if (clientInfoHash[other].ioState != IOState::INGAME ||
-					other == id) {
-					continue;
-				}
-				DoSend(clientInfoHash[other], &packet);
-			}
+			//// 내 방에 있는 플레이어에게 패킷을 보냄
+			//auto other_players = GET_SINGLE(Game)->GetRoomClients(client_info.clientIdInfo.roomId);
+			//for (auto other : other_players) {
+			//	if (other == -1) { continue; }
+			//	if (clientInfoHash[other].ioState != IOState::INGAME ||
+			//		other == id) {
+			//		continue;
+			//	}
+			//	DoSend(clientInfoHash[other], &packet);
+			//}
 
 		}
+
+		std::this_thread::yield();
 
 		// 더이상 사용되지 않는 id는 제거
 		for (auto id : id_delete) {
 			clientInfoHash.unsafe_erase(id);
 		}
-	
-
-		// 50ms가 넘으면 즉시실행. 아니면 대기
-		std::this_thread::sleep_until(next_time);
 	}
 }
 
@@ -363,6 +355,20 @@ bool IOCP::ProcessPacket(int key, char* p)
 		GET_SINGLE(Game)->SetPlayerPosition(
 			packet->clientId,
 			Vec2f{ packet->x, packet->y });
+
+		auto pos = GET_SINGLE(Game)->GetPlayerPosition(clientInfoHash[packet->clientId].clientIdInfo.playerId);
+		packet::SCMovePlayer send_packet{ packet->clientId, pos.x, pos.y };
+
+		// 내 방에 있는 플레이어에게 패킷을 보냄
+		auto other_players = GET_SINGLE(Game)->GetRoomClients(clientInfoHash[packet->clientId].clientIdInfo.roomId);
+		for (auto other : other_players) {
+			if (other == -1) { continue; }
+			if (clientInfoHash[other].ioState != IOState::INGAME ||
+				other == packet->clientId) {
+				continue;
+			}
+			DoSend(clientInfoHash[other], &send_packet);
+		}
 	}
 	break;
 
