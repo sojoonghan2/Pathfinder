@@ -127,7 +127,7 @@ void TestPointLightScript::Animation()
 
 	if (currentAnimIndex != nextAnimIndex)
 	{
-		GetAnimator()->Play(nextAnimIndex);
+		//GetAnimator()->Play(nextAnimIndex);
 		currentAnimIndex = nextAnimIndex;
 	}
 }

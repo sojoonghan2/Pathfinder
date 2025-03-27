@@ -202,7 +202,6 @@ shared_ptr<Mesh> Mesh::CreateFromFBX(const FbxMeshInfo* meshInfo, FBXLoader& loa
 	{
 		if (buffer.empty())
 		{
-			// FBX ?Œì¼???´ìƒ?˜ë‹¤. IndexBufferê°€ ?†ìœ¼ë©??ëŸ¬ ?˜ë‹ˆê¹??„ì‹œ ì²˜ë¦¬
 			vector<uint32> defaultBuffer{ 0 };
 			mesh->CreateIndexBuffer(defaultBuffer);
 		}
@@ -242,13 +241,22 @@ shared_ptr<Mesh> Mesh::CreateFromBIN(const BINInfo* meshInfo, shared_ptr<BINLoad
 
 void Mesh::CreateVertexBuffer(const vector<Vertex>& buffer)
 {
+	// 1. ¹öÆÛ ºñ¾î ÀÖÀ½ ¹æ¾î
+	if (buffer.empty())
+	{
+		wcout << L"[error] CreateVertexBuffer: Input vertexBuffer Empty" << endl;
+		return;
+	}
+
+	// 2. ¹öÆÛ Å©±â °è»ê
 	_vertexCount = static_cast<uint32>(buffer.size());
 	uint32 bufferSize = _vertexCount * sizeof(Vertex);
 
+	// 3. GPU ÀÚ¿ø »ı¼º
 	D3D12_HEAP_PROPERTIES heapProperty = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
 
-	DEVICE->CreateCommittedResource(
+	HRESULT hr = DEVICE->CreateCommittedResource(
 		&heapProperty,
 		D3D12_HEAP_FLAG_NONE,
 		&desc,
@@ -256,17 +264,30 @@ void Mesh::CreateVertexBuffer(const vector<Vertex>& buffer)
 		nullptr,
 		IID_PPV_ARGS(&_vertexBuffer));
 
-	// Copy the triangle data to the vertex buffer.
-	void* vertexDataBuffer = nullptr;
-	CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource on the CPU.
-	_vertexBuffer->Map(0, &readRange, &vertexDataBuffer);
-	::memcpy(vertexDataBuffer, &buffer[0], bufferSize);
-	_vertexBuffer->Unmap(0, nullptr);
+	if (FAILED(hr) || _vertexBuffer == nullptr)
+	{
+		wcout << L"[error] VertexBuffer create fail. bufferSize: " << bufferSize << L" bytes" << endl;
+		return;
+	}
 
-	// Initialize the vertex buffer view.
+	// 4. µ¥ÀÌÅÍ º¹»ç
+	void* vertexDataBuffer = nullptr;
+	CD3DX12_RANGE readRange(0, 0);
+	if (SUCCEEDED(_vertexBuffer->Map(0, &readRange, &vertexDataBuffer)) && vertexDataBuffer)
+	{
+		::memcpy(vertexDataBuffer, &buffer[0], bufferSize);
+		_vertexBuffer->Unmap(0, nullptr);
+	}
+	else
+	{
+		wcout << L"[error] VertexBuffer Map fail" << endl;
+		return;
+	}
+
+	// 5. View ÃÊ±âÈ­
 	_vertexBufferView.BufferLocation = _vertexBuffer->GetGPUVirtualAddress();
-	_vertexBufferView.StrideInBytes = sizeof(Vertex); // ?•ì  1ê°??¬ê¸°
-	_vertexBufferView.SizeInBytes = bufferSize; // ë²„í¼???¬ê¸°	
+	_vertexBufferView.StrideInBytes = sizeof(Vertex);
+	_vertexBufferView.SizeInBytes = bufferSize;
 }
 
 void Mesh::CreateIndexBuffer(const vector<uint32>& buffer)
@@ -278,7 +299,7 @@ void Mesh::CreateIndexBuffer(const vector<uint32>& buffer)
 	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
 
 	ComPtr<ID3D12Resource> indexBuffer;
-	DEVICE->CreateCommittedResource(
+	HRESULT hr = DEVICE->CreateCommittedResource(
 		&heapProperty,
 		D3D12_HEAP_FLAG_NONE,
 		&desc,

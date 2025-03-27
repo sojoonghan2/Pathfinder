@@ -194,15 +194,17 @@ ParticleScene::ParticleScene()
         shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
         vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
-        gameObjects[0]->SetName(L"OBJ");
-        gameObjects[0]->SetCheckFrustum(false);
-        gameObjects[0]->AddComponent(make_shared<TestDragon>());
-        gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-        gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
-        gameObjects[0]->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
-        gameObjects[0]->AddComponent(make_shared<TestPointLightScript>());
+        for (auto gameObject : gameObjects)
+        {
+            gameObject->SetName(L"OBJ");
+            gameObject->SetCheckFrustum(false);
+            gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
+            gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 3.1416f, 0.0f));
+            gameObject->GetTransform()->SetLocalScale(Vec3(300.f, 300.f, 300.f));
+            gameObject->AddComponent(make_shared<TestPointLightScript>());
 
-        activeScene->AddGameObject(gameObjects[0]);
+            activeScene->AddGameObject(gameObject);
+        }
 
         shared_ptr<GameObject> grenade = make_shared<GameObject>();
         grenade->SetName(L"Grenade");
@@ -246,6 +248,7 @@ ParticleScene::ParticleScene()
 
 // ÁöÇü
 #pragma region Temp
+    /*
     shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Temp\\Temp.fbx");
 
     vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
@@ -260,6 +263,7 @@ ParticleScene::ParticleScene()
         gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 0.0f, 0.0f));
         activeScene->AddGameObject(gameObject);
     }
+    */
 #pragma endregion
 
 #pragma region OtherPlayer
