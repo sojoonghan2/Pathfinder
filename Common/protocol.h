@@ -32,6 +32,8 @@ enum class Type : unsigned char
 	SC_LOGIN,
 	SC_MOVE_PLAYER,
 	CS_MOVE_PLAYER,
+	CS_CHECK_DELAY,
+	SC_CHECK_DELAY
 };
 
 #pragma pack(push, 1)
@@ -86,22 +88,39 @@ struct SCMovePlayer : Header
 };
 
 // Param:
-//	int playerId
 //	float x
 //	float y
 struct CSMovePlayer : Header
 {
-	int clientId{ -1 };
 	float x{ 0.f };
 	float y{ 0.f };
 
-	CSMovePlayer(const int client_id, const float x, const float y) :
-		clientId{ client_id },
+	CSMovePlayer(const float x, const float y) :
 		x{ x },
 		y{ y }
 	{
 		size = sizeof(CSMovePlayer);
 		type = Type::CS_MOVE_PLAYER;
+	}
+};
+
+// No Param
+struct CSCheckDelayPacket : Header
+{
+	CSCheckDelayPacket()
+	{
+		size = sizeof(CSCheckDelayPacket);
+		type = Type::CS_CHECK_DELAY;
+	}
+};
+
+// No Param
+struct SCCheckDelayPacket : Header
+{
+	SCCheckDelayPacket()
+	{
+		size = sizeof(CSCheckDelayPacket);
+		type = Type::CS_CHECK_DELAY;
 	}
 };
 

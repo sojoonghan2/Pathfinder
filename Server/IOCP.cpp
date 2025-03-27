@@ -348,23 +348,23 @@ bool IOCP::ProcessPacket(int key, char* p)
 	case packet::Type::CS_MOVE_PLAYER:
 	{
 		packet::CSMovePlayer* packet = reinterpret_cast<packet::CSMovePlayer*>(p);
-		if (clientInfoHash[packet->clientId].ioState != IOState::INGAME) {
+		if (clientInfoHash[key].ioState != IOState::INGAME) {
 			break;
 		}
 
 		GET_SINGLE(Game)->SetPlayerPosition(
-			packet->clientId,
+			key,
 			Vec2f{ packet->x, packet->y });
 
-		auto pos = GET_SINGLE(Game)->GetPlayerPosition(clientInfoHash[packet->clientId].clientIdInfo.playerId);
-		packet::SCMovePlayer send_packet{ packet->clientId, pos.x, pos.y };
+		auto pos = GET_SINGLE(Game)->GetPlayerPosition(clientInfoHash[key].clientIdInfo.playerId);
+		packet::SCMovePlayer send_packet{ key, pos.x, pos.y };
 
 		// 내 방에 있는 플레이어에게 패킷을 보냄
-		auto other_players = GET_SINGLE(Game)->GetRoomClients(clientInfoHash[packet->clientId].clientIdInfo.roomId);
+		auto other_players = GET_SINGLE(Game)->GetRoomClients(clientInfoHash[key].clientIdInfo.roomId);
 		for (auto other : other_players) {
 			if (other == -1) { continue; }
 			if (clientInfoHash[other].ioState != IOState::INGAME ||
-				other == packet->clientId) {
+				other == key) {
 				continue;
 			}
 			DoSend(clientInfoHash[other], &send_packet);
@@ -372,6 +372,15 @@ bool IOCP::ProcessPacket(int key, char* p)
 	}
 	break;
 
+	case packet::Type::CS_CHECK_DELAY:
+	{
+
+		packet::SCCheckDelayPacket send_packet{};
+		DoSend(clientInfoHash[key], &send_packet);
+
+
+	}
+	break;
 
 	default:
 	{

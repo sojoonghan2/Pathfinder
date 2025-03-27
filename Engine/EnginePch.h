@@ -7,6 +7,8 @@
 #pragma comment(lib, "WS2_32.lib")
 #pragma comment(lib, "MSWSock.lib")
 
+#include "../Common/protocol.h"
+#include "../Common/util.h"
 
 // std::byte 사용하지 않음
 #define _HAS_STD_BYTE 0

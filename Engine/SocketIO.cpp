@@ -72,7 +72,7 @@ void SocketIO::Update()
 
 		if (sendTimer.PeekDeltaTime() > MOVE_PACKET_TIME_MS) {
 			sendTimer.updateDeltaTime();
-			DoSend<packet::CSMovePlayer>(myId, players[myId].x, players[myId].y);
+			DoSend<packet::CSMovePlayer>(players[myId].x, players[myId].y);
 		}
 	}
 }
