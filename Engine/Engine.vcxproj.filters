@@ -243,7 +243,7 @@
     <ClCompile Include="TestParticleScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
-    <ClCompile Include="TestPointLightScript.cpp">
+    <ClCompile Include="PlayerScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
     <ClCompile Include="WaterScript.cpp">
@@ -515,7 +515,7 @@
     <ClInclude Include="TestParticleScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
-    <ClInclude Include="TestPointLightScript.h">
+    <ClInclude Include="PlayerScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
     <ClInclude Include="WaterScript.h">

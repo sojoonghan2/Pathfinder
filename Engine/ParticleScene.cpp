@@ -26,7 +26,7 @@
 #include "TestPBRParticleSystem.h"
 
 #include "TestDragon.h"
-#include "TestPointLightScript.h"
+#include "PlayerScript.h"
 #include "WaterScript.h"
 #include "TestParticleScript.h"
 #include "ModuleScript.h"
@@ -200,9 +200,9 @@ ParticleScene::ParticleScene()
             gameObject->SetName(L"OBJ");
             gameObject->SetCheckFrustum(false);
             gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-            gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 3.1416f, 0.0f));
-            gameObject->GetTransform()->SetLocalScale(Vec3(300.f, 300.f, 300.f));
-            gameObject->AddComponent(make_shared<TestPointLightScript>());
+            gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+            gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
+            gameObject->AddComponent(make_shared<PlayerScript>());
             gameObject->AddComponent(make_shared<Player>());
 
             activeScene->AddGameObject(gameObject);

@@ -11,7 +11,7 @@
 #include "Light.h"
 
 #include "TestCameraScript.h"
-#include "TestPointLightScript.h"
+#include "PlayerScript.h"
 #include "Resources.h"
 #include "ParticleSystem.h"
 #include "SphereCollider.h"

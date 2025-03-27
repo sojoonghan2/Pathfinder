@@ -61,7 +61,7 @@ void TestGrenadeScript::KeyboardInput()
         Vec3 forward = parentTransform->GetLook();
 
         // Y축 방향으로 각도 적용한 초기 속도 계산
-        Vec3 direction = -forward;
+        Vec3 direction = forward;
         direction.y = 0.0f;
         direction.Normalize();
 
