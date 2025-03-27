@@ -95,6 +95,9 @@ void Player::LoadRazer()
 
         // 파티클 시스템 컴포넌트 추가
         shared_ptr<RazerParticleSystem> razerParticleSystem = make_shared<RazerParticleSystem>();
+        Vec3 look = GetGameObject()->GetTransform()->GetLook();
+        look.Normalize();
+        razerParticleSystem->SetEmitDirection(look);
         razerParticle->AddComponent(razerParticleSystem);
 
         GET_SINGLE(SceneManager)->GetActiveScene()->AddGameObject(razerParticle);
