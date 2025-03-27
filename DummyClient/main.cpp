@@ -128,9 +128,9 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	glRasterPos2f(0.0f, 0.00f);
 
 	// todo: 여기서 동접 수, 딜레이를 측정
-	glPrint("STRESS TEST [%d]", 1);	// Print GL Text To The Screen
+	glPrint("STRESS TEST [%d]", iocp.GetPlayerCount());	// Print GL Text To The Screen
 	glRasterPos2f(0.0f, 0.05f);
-	glPrint("Delay : %dms", 1);
+	glPrint("Delay : %dms", iocp.GetDelayTime());
 
 
 	glColor3f(1, 1, 1);

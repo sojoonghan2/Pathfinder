@@ -16,6 +16,7 @@ bool IOCP::Init()
 
 	// listen socket 소켓 만들기
 	listenSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
+	
 	if (INVALID_SOCKET == listenSocket) {
 		util::DisplayError();
 		return false;
@@ -63,6 +64,8 @@ bool IOCP::Start()
 		NULL,
 		0,
 		WSA_FLAG_OVERLAPPED);
+	int flag = 1;
+	setsockopt(acceptSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
 
 	// accpet를 위한 OverlappedEx 생성
 	OverlappedEx accept_over_ex;
@@ -169,6 +172,8 @@ void IOCP::Worker()
 
 			// accept를 위한 새로운 소켓 생성
 			acceptSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+			int flag = 1;
+			setsockopt(acceptSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
 
 			// Accept로 overlapped 설정 
 			ZeroMemory(&curr_over_ex->over, sizeof(curr_over_ex->over));

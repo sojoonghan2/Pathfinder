@@ -14,11 +14,14 @@ bool IOCP::Init()
 	// IOCP 핸들 생성
 	IOCPHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, NULL, 0);
 
-	for (int i = 0; i < 6; ++i) {
+	int thread_number = std::thread::hardware_concurrency();
+	for (int i = 0; i < thread_number / 2; ++i) {
 		workers.emplace_back([this]() { Worker(); });
 	}
 
+	workers.emplace_back([this]() { TimerWorker(); });
 	workers.emplace_back([this]() { LoginWorker(); });
+
 
 	std::cout << "IOCP INIT success.\n";
 	return true;
@@ -108,7 +111,32 @@ void IOCP::Worker()
 
 void IOCP::TimerWorker()
 {
-	
+	std::chrono::duration<float> time_float{ MOVE_PACKET_TIME_MS };
+	auto time_milli{ std::chrono::duration_cast<std::chrono::milliseconds>(time_float) };
+	while (true) {
+		maxDelay = 0.f;
+		auto next_time = std::chrono::high_resolution_clock::now() + time_milli;
+		for (int i = 0; i < currentClient; ++i) {
+			packet::CSMovePlayer move_packet{0.f, 0.f};
+			DoSend(players[i], &move_packet);
+			packet::CSCheckDelayPacket delay_packet;
+			DoSend(players[i], &delay_packet);
+
+		}
+		std::this_thread::sleep_until(next_time);
+	}
+
+}
+
+int IOCP::GetDelayTime() const
+{
+	float val = maxDelay.load();
+	return static_cast<int>(val);
+}
+
+int IOCP::GetPlayerCount() const
+{
+	return currentClient.load();
 }
 
 void IOCP::DoRecv(ClientInfo& session) const
@@ -157,6 +185,21 @@ bool IOCP::ProcessPacket(int key, char* p)
 
 	}
 	break;
+
+	case packet::Type::CS_CHECK_DELAY:
+	{
+		auto tp = std::chrono::high_resolution_clock::now();
+		auto delay = std::chrono::duration_cast
+			<std::chrono::milliseconds>(
+				delays[key] - tp).count();
+		
+		while (maxDelay < delay) {
+			float val = maxDelay;
+			if (maxDelay.compare_exchange_strong(val, delay)) { break; }
+		}
+
+	}
+	break;
 	default:
 	{
 		std::println("packet Error. disconnect Client {}", key);
@@ -176,6 +219,8 @@ void IOCP::LoginWorker()
 {	
 	for (int i = 0; i < 200; ++i) {
 		players[i].clientSocket = WSASocketW(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
+		int flag = 1;
+		setsockopt(players[i].clientSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
 		SOCKADDR_IN server_addr;
 		ZeroMemory(&server_addr, sizeof(SOCKADDR_IN));
 		server_addr.sin_family = AF_INET;
@@ -194,6 +239,7 @@ void IOCP::LoginWorker()
 
 		packet::CSLogin login_packet;
 		DoSend(players[i], &login_packet);
+		currentClient = i;
 	}
 }
 
