@@ -227,6 +227,7 @@
     <ClInclude Include="ParticleScene.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="RectangleCollider.h" />
     <ClInclude Include="RazerParticleSystem.h" />
     <ClInclude Include="RenderTargetGroup.h" />
@@ -321,6 +322,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="RectangleCollider.cpp" />
     <ClCompile Include="RazerParticleSystem.cpp" />
     <ClCompile Include="RenderTargetGroup.cpp" />

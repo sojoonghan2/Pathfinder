@@ -39,6 +39,7 @@
 #include "RectangleCollider.h"
 
 #include "GameModule.h"
+#include "Player.h"
 
 #define PARTICLEDEBUG	FALSE
 
@@ -202,47 +203,41 @@ ParticleScene::ParticleScene()
             gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 3.1416f, 0.0f));
             gameObject->GetTransform()->SetLocalScale(Vec3(300.f, 300.f, 300.f));
             gameObject->AddComponent(make_shared<TestPointLightScript>());
+            gameObject->AddComponent(make_shared<Player>());
 
             activeScene->AddGameObject(gameObject);
         }
+    }
+#pragma endregion
 
-        shared_ptr<GameObject> grenade = make_shared<GameObject>();
-        grenade->SetName(L"Grenade");
-        grenade->SetCheckFrustum(true);
-        grenade->SetStatic(false);
-
-        grenade->AddComponent(make_shared<Transform>());
-        grenade->GetTransform()->SetLocalScale(Vec3(30.f, 30.f, 30.f));
-        grenade->GetTransform()->SetParent(gameObjects[0]->GetTransform());
-        grenade->GetTransform()->GetTransform()->RemoveParent();
-        grenade->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
-        grenade->AddComponent(make_shared<TestGrenadeScript>());
-
-        grenade->AddComponent(make_shared<SphereCollider>());
-        dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetRadius(0.5f);
-        dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
-
+// ¸ðµâ
+#pragma region Module
+    for (int i{}; i < 3; ++i)
+    {
+        shared_ptr<GameModule> obj = make_shared<GameModule>();
+        obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+        obj->AddComponent(make_shared<Transform>());
+        obj->AddComponent(make_shared<ModuleScript>());
+        obj->GetTransform()->SetLocalScale(Vec3(300.f, 500.f, 100.f));
+        obj->GetTransform()->SetLocalPosition(Vec3(-400.f + (i * 400), -800.f, 1.f));
         shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
         {
-            shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
-            meshRenderer->SetMesh(sphereMesh);
+            shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+            meshRenderer->SetMesh(mesh);
         }
         {
-            shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
-            shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Grenade", L"..\\Resources\\Texture\\Grenade.jpg");
+            shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
+
+            shared_ptr<Texture> texture;
+            texture = obj->GetTexture();
 
             shared_ptr<Material> material = make_shared<Material>();
             material->SetShader(shader);
             material->SetTexture(0, texture);
             meshRenderer->SetMaterial(material);
         }
-        grenade->AddComponent(meshRenderer);
-
-        shared_ptr<FireParticleSystem> grenadeParticleSystem = make_shared<FireParticleSystem>();
-        grenadeParticleSystem->SetParticleScale(100.f, 80.f);
-        grenade->AddComponent(grenadeParticleSystem);
-
-        activeScene->AddGameObject(grenade);
+        obj->AddComponent(meshRenderer);
+        activeScene->AddGameObject(obj);
     }
 #pragma endregion
 
