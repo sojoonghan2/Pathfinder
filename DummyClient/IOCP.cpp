@@ -113,11 +113,18 @@ void IOCP::TimerWorker()
 {
 	auto duration{ std::chrono::duration<float, std::milli>(MOVE_PACKET_TIME_MS) };
 	while (true) {
-		auto next_time = std::chrono::steady_clock::now() + duration;
+		auto next_time = std::chrono::high_resolution_clock::now() + duration;
+		
+		if (delayTime > maxDelayTime) {
+			maxDelayTime = delayTime;
+		}
+		currentDelayTime = delayTime;
+		delayTime = -1.f;
 		for (int i = 0; i < currentClient; ++i) {
 			packet::CSMovePlayer move_packet{0.f, 0.f};
 			DoSend(players[i], &move_packet);
 			packet::CSCheckDelayPacket delay_packet;
+			delays[i] = std::chrono::high_resolution_clock::now();
 			DoSend(players[i], &delay_packet);
 
 		}
@@ -128,8 +135,7 @@ void IOCP::TimerWorker()
 
 int IOCP::GetDelayTime() const
 {
-	float val = maxDelay.load();
-	return static_cast<int>(val);
+	return static_cast<int>(currentDelayTime);
 }
 
 int IOCP::GetPlayerCount() const
@@ -187,15 +193,14 @@ bool IOCP::ProcessPacket(int key, char* p)
 	case packet::Type::SC_CHECK_DELAY:
 	{
 		auto tp = std::chrono::high_resolution_clock::now();
-		auto delay = std::chrono::duration_cast
-			<std::chrono::milliseconds>(
-				delays[key] - tp).count();
+		auto delay = std::chrono::duration
+			<float, std::milli>(tp - delays[key]).count();
 		
 
-		float val = maxDelay;
+		float val = delayTime;
 		while (val < delay) {
-			if (maxDelay.compare_exchange_strong(val, delay)) { break; }
-			val = maxDelay;
+			if (delayTime.compare_exchange_strong(val, delay)) { break; }
+			val = delayTime;
 		}
 
 	}
@@ -218,6 +223,10 @@ void IOCP::Disconnect(const int client_id)
 void IOCP::LoginWorker()
 {	
 	for (int i = 0; i < MAX_PLAYER; ++i) {
+		if (maxDelayTime > 100.f) {
+			break;
+		}
+		
 		players[i].clientSocket = WSASocketW(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 		int flag = 1;
 		setsockopt(players[i].clientSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));

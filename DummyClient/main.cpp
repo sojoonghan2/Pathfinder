@@ -114,6 +114,7 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	return TRUE;										// Initialization Went OK
 }
 
+int maxDelayTime{-1};
 int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 {
 	int size = 0;
@@ -130,7 +131,14 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	// todo: 여기서 동접 수, 딜레이를 측정
 	glPrint("STRESS TEST [%d]", iocp.GetPlayerCount());	// Print GL Text To The Screen
 	glRasterPos2f(0.0f, 0.05f);
+
+	int val = iocp.GetDelayTime();
+	if (val > maxDelayTime) {
+		maxDelayTime = val;
+	}
 	glPrint("Delay : %dms", iocp.GetDelayTime());
+	glRasterPos2f(0.0f, 0.1f);
+	glPrint("Max Delay : %dms", maxDelayTime);
 
 
 	glColor3f(1, 1, 1);

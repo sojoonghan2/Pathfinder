@@ -18,8 +18,8 @@ constexpr const char* SERVER_IP{ "127.0.0.1" };
 constexpr float MOVE_PACKET_TIME_MS{ 75.f }; // 초당 13.3회
 constexpr float MAX_NETWORK_DELAY_MS{ 200.f }; // 최대 네트워크 딜레이
 
-constexpr int MAX_PLAYER{ 3000 };
-constexpr int MAX_ROOM{ 1000 };
+constexpr int MAX_PLAYER{ 30000 };
+constexpr int MAX_ROOM{ 10100 };
 
 #define PACKET_START	namespace packet {
 #define PACKET_END		}
@@ -28,12 +28,12 @@ PACKET_START
 enum class Type : unsigned char
 {
 	NONE,
-	CS_LOGIN,
 	SC_LOGIN,
+	CS_LOGIN,
 	SC_MOVE_PLAYER,
 	CS_MOVE_PLAYER,
-	CS_CHECK_DELAY,
-	SC_CHECK_DELAY
+	SC_CHECK_DELAY,
+	CS_CHECK_DELAY
 };
 
 #pragma pack(push, 1)
@@ -43,15 +43,7 @@ struct Header
 	Type			type{ Type::NONE };
 };
 
-// No Param
-struct CSLogin : Header
-{
-	CSLogin()
-	{
-		size = sizeof(CSLogin);
-		type = Type::CS_LOGIN;
-	}
-};
+
 
 // Param
 //	int playerId: 클라이언트의 플레이어 아이디
@@ -60,10 +52,20 @@ struct SCLogin : Header
 	int clientId{ -1 };
 
 	SCLogin(int client_id) :
-		clientId{client_id}
+		clientId{ client_id }
 	{
 		size = sizeof(SCLogin);
 		type = Type::SC_LOGIN;
+	}
+};
+
+// No Param
+struct CSLogin : Header
+{
+	CSLogin()
+	{
+		size = sizeof(CSLogin);
+		type = Type::CS_LOGIN;
 	}
 };
 
@@ -105,6 +107,16 @@ struct CSMovePlayer : Header
 };
 
 // No Param
+struct SCCheckDelayPacket : Header
+{
+	SCCheckDelayPacket()
+	{
+		size = sizeof(SCCheckDelayPacket);
+		type = Type::SC_CHECK_DELAY;
+	}
+};
+
+// No Param
 struct CSCheckDelayPacket : Header
 {
 	CSCheckDelayPacket()
@@ -114,15 +126,6 @@ struct CSCheckDelayPacket : Header
 	}
 };
 
-// No Param
-struct SCCheckDelayPacket : Header
-{
-	SCCheckDelayPacket()
-	{
-		size = sizeof(CSCheckDelayPacket);
-		type = Type::CS_CHECK_DELAY;
-	}
-};
 
 #pragma pack(pop)
 PACKET_END
