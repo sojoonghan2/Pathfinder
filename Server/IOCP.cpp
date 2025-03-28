@@ -248,7 +248,6 @@ void IOCP::TimerWorker()
 	using namespace std::chrono_literals;
 	while (true) {
 
-		// 50ms마다 실행
 		std::vector<int> id_delete{};
 		for (auto& [id, client_info] : clientInfoHash) {
 
@@ -279,7 +278,7 @@ void IOCP::TimerWorker()
 
 		}
 
-		std::this_thread::yield();
+		std::this_thread::sleep_for(1s);
 
 		// 더이상 사용되지 않는 id는 제거
 		for (auto id : id_delete) {
