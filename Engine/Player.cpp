@@ -27,7 +27,7 @@ void Player::FinalUpdate()
 {
     if (!_isInit)
     {
-        LoadPlayerSkill();
+        //LoadPlayerSkill();
         _isInit = true;
     }
 }

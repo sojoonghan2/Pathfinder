@@ -29,6 +29,7 @@
 #include "GlitterParticleSystem.h"
 #include "TestParticleScript.h"
 #include "LightPillarParticleSystem.h"
+#include "Player.h"
 
 RuinsScene::RuinsScene()
 {
@@ -92,15 +93,18 @@ RuinsScene::RuinsScene()
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
-		gameObjects[0]->SetName(L"OBJ");
-		gameObjects[0]->SetCheckFrustum(false);
-		gameObjects[0]->AddComponent(make_shared<TestDragon>());
-		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
-		gameObjects[0]->AddComponent(make_shared<PlayerScript>());
+		for (auto gameObject : gameObjects)
+		{
+			gameObject->SetName(L"OBJ");
+			gameObject->SetCheckFrustum(false);
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
+			gameObject->AddComponent(make_shared<PlayerScript>());
+			gameObject->AddComponent(make_shared<Player>());
 
-		activeScene->AddGameObject(gameObjects[0]);
+			activeScene->AddGameObject(gameObject);
+		}
 	}
 #pragma endregion
 
