@@ -111,11 +111,9 @@ void IOCP::Worker()
 
 void IOCP::TimerWorker()
 {
-	std::chrono::duration<float> time_float{ MOVE_PACKET_TIME_MS };
-	auto time_milli{ std::chrono::duration_cast<std::chrono::milliseconds>(time_float) };
+	auto duration{ std::chrono::duration<float, std::milli>(MOVE_PACKET_TIME_MS) };
 	while (true) {
-		maxDelay = 0.f;
-		auto next_time = std::chrono::high_resolution_clock::now() + time_milli;
+		auto next_time = std::chrono::steady_clock::now() + duration;
 		for (int i = 0; i < currentClient; ++i) {
 			packet::CSMovePlayer move_packet{0.f, 0.f};
 			DoSend(players[i], &move_packet);
@@ -174,28 +172,30 @@ bool IOCP::ProcessPacket(int key, char* p)
 	packet::Header* header = reinterpret_cast<packet::Header*>(p);
 	switch (header->type)
 	{
-	case packet::Type::CS_LOGIN:
+	case packet::Type::SC_LOGIN:
 	{
 		players[key].ioState = IOState::INGAME;	
 	}
 	break;
 
-	case packet::Type::CS_MOVE_PLAYER:
+	case packet::Type::SC_MOVE_PLAYER:
 	{
 
 	}
 	break;
 
-	case packet::Type::CS_CHECK_DELAY:
+	case packet::Type::SC_CHECK_DELAY:
 	{
 		auto tp = std::chrono::high_resolution_clock::now();
 		auto delay = std::chrono::duration_cast
 			<std::chrono::milliseconds>(
 				delays[key] - tp).count();
 		
-		while (maxDelay < delay) {
-			float val = maxDelay;
+
+		float val = maxDelay;
+		while (val < delay) {
 			if (maxDelay.compare_exchange_strong(val, delay)) { break; }
+			val = maxDelay;
 		}
 
 	}
@@ -217,7 +217,7 @@ void IOCP::Disconnect(const int client_id)
 
 void IOCP::LoginWorker()
 {	
-	for (int i = 0; i < 200; ++i) {
+	for (int i = 0; i < MAX_PLAYER; ++i) {
 		players[i].clientSocket = WSASocketW(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 		int flag = 1;
 		setsockopt(players[i].clientSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
@@ -236,10 +236,12 @@ void IOCP::LoginWorker()
 
 		DWORD recv_flag = 0;
 		CreateIoCompletionPort(reinterpret_cast<HANDLE>(players[i].clientSocket), IOCPHandle, i, 0);
-
+		DoRecv(players[i]);
 		packet::CSLogin login_packet;
 		DoSend(players[i], &login_packet);
 		currentClient = i;
+		using namespace std::chrono_literals;
+		std::this_thread::sleep_for(5ms);
 	}
 }
 
