@@ -25,4 +25,10 @@ private:
     float _power = 2000.0f;
 
     float _timeSinceLanded;
+
+    bool _pendingThrow = false;
+    float _throwDelay = 0.0f;
+
+    // 부모 트랜스폼 캐시
+    shared_ptr<Transform> _parentTransform;
 };

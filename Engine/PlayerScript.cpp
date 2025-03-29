@@ -36,7 +36,7 @@ void PlayerScript::LateUpdate()
 	_isMove = false;
 	KeyboardInput();
 	MouseInput();
-	ThrowGrenade(); // 수류탄 처리
+	ThrowGrenade();
 	Animation();
 }
 
