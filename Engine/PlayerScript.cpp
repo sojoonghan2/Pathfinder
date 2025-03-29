@@ -167,19 +167,22 @@ void PlayerScript::Dash()
 
 	if (_dashCooldownTimer <= 0.f && INPUT->GetButtonDown(KEY_TYPE::SPACE))
 	{
-		shared_ptr<GameObject> cameraObj = GET_SINGLE(SceneManager)->GetActiveScene()->GetMainCamera()->GetGameObject();
-		Vec3 camForward = cameraObj->GetTransform()->GetLook();
-		camForward.y = 0.f;
-		camForward.Normalize();
+		// 플레이어가 바라보는 방향으로 대쉬
+		Vec3 lookDir = GetTransform()->GetLook();
+		lookDir.y = 0.f;
+		lookDir.Normalize();
 
-		_dashDirection = camForward;
+		_dashDirection = lookDir;
 		_isDashing = true;
 		_dashTimer = _dashDuration;
 	}
 }
-
 void PlayerScript::ThrowGrenade()
 {
+	// 쿨타임 갱신
+	if (_grenadeCooldownTimer > 0.f)
+		_grenadeCooldownTimer -= DELTA_TIME;
+
 	if (_isGrenage)
 	{
 		_grenadeTimer -= DELTA_TIME;
@@ -188,16 +191,20 @@ void PlayerScript::ThrowGrenade()
 		{
 			_isGrenage = false;
 			_grenadeTimer = 0.f;
+
+			// 쿨타임 시작
+			_grenadeCooldownTimer = _grenadeCooldown;
 		}
 		return;
 	}
 
-	if (INPUT->GetButtonDown(KEY_TYPE::E))
+	if (_grenadeCooldownTimer <= 0.f && INPUT->GetButtonDown(KEY_TYPE::E))
 	{
 		_isGrenage = true;
 		_grenadeTimer = 3.0f;
 	}
 }
+
 
 void PlayerScript::SetPosition(float x, float z)
 {

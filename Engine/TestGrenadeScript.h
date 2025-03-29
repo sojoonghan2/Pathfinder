@@ -31,4 +31,7 @@ private:
 
     // 부모 트랜스폼 캐시
     shared_ptr<Transform> _parentTransform;
+    float _grenadeCooldown = 10.f;
+    float _grenadeCooldownTimer = 0.0f;
+
 };
