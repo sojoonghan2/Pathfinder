@@ -33,5 +33,7 @@ private:
 
 	Vec3			_dashDirection = Vec3::Zero;
 	float			_dashSpeed = 10000.f;
+
+	float			_grenadeTimer = 0.f;
 };
 
