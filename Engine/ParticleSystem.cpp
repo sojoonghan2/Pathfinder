@@ -52,8 +52,8 @@ void ParticleSystem::FinalUpdate()
 	_computeMaterial->SetInt(1, add);
 	_computeMaterial->SetVec2(1, Vec2(DELTA_TIME, _accTime));
 	_computeMaterial->SetVec4(0, Vec4(_minLifeTime, _maxLifeTime, _minSpeed, _maxSpeed));
+	_computeMaterial->SetVec4(1, _direction);
 	_computeMaterial->Dispatch(1, 1, 1);
-
 }
 
 void ParticleSystem::Render()

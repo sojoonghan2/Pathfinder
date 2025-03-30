@@ -34,6 +34,7 @@
 #include "TestGrenadeScript.h"
 #include "RuinsScript.h"
 #include "TestOtherPlayerScript.h"
+#include "RazerParticleScript.h"
 
 #include "SphereCollider.h"
 #include "RectangleCollider.h"
@@ -192,6 +193,7 @@ ParticleScene::ParticleScene()
 // 플레이어
 #pragma region Player
     {
+        // 플레이어
         shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
         vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
@@ -207,6 +209,7 @@ ParticleScene::ParticleScene()
             activeScene->AddGameObject(gameObject);
         }
 
+        // 수류탄
         shared_ptr<GameObject> grenade = make_shared<GameObject>();
         grenade->SetName(L"Grenade");
         grenade->SetCheckFrustum(true);
@@ -241,25 +244,26 @@ ParticleScene::ParticleScene()
 
         activeScene->AddGameObject(grenade);
 
-        // 파티클 오브젝트 생성
+        // 레이저 파티클
         shared_ptr<GameObject> razerParticle = make_shared<GameObject>();
         wstring razerParticleName = L"RazerParticle";
         razerParticle->SetName(razerParticleName);
         razerParticle->SetCheckFrustum(true);
         razerParticle->SetStatic(false);
 
-        // 좌표 컴포넌트 추가
         razerParticle->AddComponent(make_shared<Transform>());
         razerParticle->GetTransform()->SetParent(gameObjects[0]->GetTransform());
         razerParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
         razerParticle->GetTransform()->SetLocalPosition(Vec3(0.0f, 100.0f, 110.0f));
-        razerParticle->AddComponent(make_shared<TestParticleScript>());
+        razerParticle->AddComponent(make_shared<RazerParticleScript>());
 
-        // 파티클 시스템 컴포넌트 추가
         shared_ptr<RazerParticleSystem> razerParticleSystem = make_shared<RazerParticleSystem>();
         Vec3 look = gameObjects[0]->GetTransform()->GetLook();
         look.Normalize();
-        razerParticleSystem->SetEmitDirection(look);
+        
+        // 파티클의 방향이 첫 씬 만들때가 아니고 매 프레임마다 보내야 되는데
+        Vec4 dir{ look.x, look.y, look.z, 0.0f };
+        razerParticleSystem->SetEmitDirection(dir);
         razerParticle->AddComponent(razerParticleSystem);
 
         activeScene->AddGameObject(razerParticle);

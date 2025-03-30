@@ -315,6 +315,9 @@
     <ClCompile Include="Player.cpp">
       <Filter>Object\Component</Filter>
     </ClCompile>
+    <ClCompile Include="RazerParticleScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -586,6 +589,9 @@
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Object\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="RazerParticleScript.h">
+      <Filter>Script\ObjectScript</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

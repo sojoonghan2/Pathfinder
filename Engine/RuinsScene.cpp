@@ -141,25 +141,23 @@ RuinsScene::RuinsScene()
 
 		activeScene->AddGameObject(grenade);
 
-		// 파티클 오브젝트 생성
 		shared_ptr<GameObject> razerParticle = make_shared<GameObject>();
 		wstring razerParticleName = L"RazerParticle";
 		razerParticle->SetName(razerParticleName);
 		razerParticle->SetCheckFrustum(true);
 		razerParticle->SetStatic(false);
 
-		// 좌표 컴포넌트 추가
 		razerParticle->AddComponent(make_shared<Transform>());
 		razerParticle->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 		razerParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 		razerParticle->GetTransform()->SetLocalPosition(Vec3(0.0f, 100.0f, 110.0f));
 		razerParticle->AddComponent(make_shared<TestParticleScript>());
 
-		// 파티클 시스템 컴포넌트 추가
 		shared_ptr<RazerParticleSystem> razerParticleSystem = make_shared<RazerParticleSystem>();
 		Vec3 look = gameObjects[0]->GetTransform()->GetLook();
 		look.Normalize();
-		razerParticleSystem->SetEmitDirection(look);
+		Vec4 dir{ look.x, look.y, look.z, 0.0f };
+		razerParticleSystem->SetEmitDirection(dir);
 		razerParticle->AddComponent(razerParticleSystem);
 
 		activeScene->AddGameObject(razerParticle);
