@@ -197,6 +197,9 @@ ParticleScene::ParticleScene()
         shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
         vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
+        auto playerScript = make_shared<PlayerScript>();
+
+
         for (auto gameObject : gameObjects)
         {
             gameObject->SetName(L"OBJ");
@@ -204,8 +207,8 @@ ParticleScene::ParticleScene()
             gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
             gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
             gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
-            gameObject->AddComponent(make_shared<PlayerScript>());
-
+            gameObject->AddComponent(playerScript);
+            gameObject->AddComponent(make_shared<TestDragon>());
             activeScene->AddGameObject(gameObject);
         }
 
@@ -255,7 +258,7 @@ ParticleScene::ParticleScene()
         razerParticle->GetTransform()->SetParent(gameObjects[0]->GetTransform());
         razerParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
         razerParticle->GetTransform()->SetLocalPosition(Vec3(0.0f, 100.0f, 110.0f));
-        razerParticle->AddComponent(make_shared<RazerParticleScript>());
+        razerParticle->AddComponent(make_shared<RazerParticleScript>(playerScript));
 
         shared_ptr<RazerParticleSystem> razerParticleSystem = make_shared<RazerParticleSystem>();
         Vec3 look = gameObjects[0]->GetTransform()->GetLook();

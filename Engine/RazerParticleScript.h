@@ -1,17 +1,20 @@
 #pragma once
 #include "MonoBehaviour.h"
+#include "PlayerScript.h"
 
 class RazerParticleScript : public MonoBehaviour
 {
 public:
-	RazerParticleScript();
-	virtual ~RazerParticleScript();
+    RazerParticleScript(shared_ptr<PlayerScript> playerScript);
+    virtual ~RazerParticleScript();
 
-	virtual void LateUpdate() override;
+    virtual void LateUpdate() override;
 
-	void KeyboardInput();
-	void MouseInput();
 
 private:
-};
+    float                       _delayTimer;
+    float                       _cooldownTimer;
+    float                       _cooldownDuration = 10.f;
 
+    shared_ptr<PlayerScript>    _playerScript;
+};

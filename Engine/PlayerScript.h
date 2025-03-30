@@ -16,13 +16,23 @@ public:
 	void Move();
 	void Dash();
 	void ThrowGrenade();
+	void ShootRazer();
 
 	void SetPosition(float x, float z);
+
+	float GetRazerCooldown() { return _razerCooldown; }
+	float GetRazerCooldownTimer() { return _razerCooldownTimer; }
+
+	bool GetIsMove() { return _isMove; }
+	bool GetIsDashing() { return _isDashing; }
+	bool GetIsGrenade() { return _isGrenade; }
+	bool GetIsRazer() { return _isRazer; }
 
 private:
 	bool			_isMove = false;
 	bool			_isDashing = false;
-	bool			_isGrenage = false;
+	bool			_isGrenade = false;
+	bool			_isRazer = false;
 
 	float			_speed = 1000.f;
 	float			_dashDuration = 0.1f;
@@ -35,8 +45,12 @@ private:
 	float			_dashSpeed = 10000.f;
 
 	float			_grenadeTimer = 0.f;
-	float			_grenadeCooldown = 10.0f; // 아직 수류탄 스크립트의 쿨다운 시간과 공유하지 않음, 공유하도록 해야함
+	float			_grenadeCooldown = 10.0f;
 	float			_grenadeCooldownTimer = 0.0f;
+
+	float			_razerAniDurationTimer = 0.f;
+	float			_razerCooldown = 10.0f;
+	float			_razerCooldownTimer = 0.0f;
 
 };
 

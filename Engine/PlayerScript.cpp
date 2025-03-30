@@ -37,6 +37,7 @@ void PlayerScript::LateUpdate()
 	KeyboardInput();
 	MouseInput();
 	ThrowGrenade();
+	ShootRazer();
 	Animation();
 }
 
@@ -55,17 +56,24 @@ void PlayerScript::Animation()
 {
 	static uint32 currentAnimIndex = 0;
 	uint32 nextAnimIndex = 0;
-
-	if (_isGrenage) {
+	if (_isRazer)
+	{
+		nextAnimIndex = 7;
+	}
+	else if (_isGrenade)
+	{
 		nextAnimIndex = 3;
 	}
-	else if (_isDashing) {
+	else if (_isDashing)
+	{
 		nextAnimIndex = 2;
 	}
-	else if (_isMove) {
+	else if (_isMove)
+	{
 		nextAnimIndex = 1;
 	}
-	else {
+	else
+	{
 		nextAnimIndex = 0;
 	}
 
@@ -78,8 +86,7 @@ void PlayerScript::Animation()
 
 void PlayerScript::Move()
 {
-	if (_isDashing || _isGrenage)
-		return;
+	if (_isDashing || _isGrenade || _isRazer) return;
 
 	Vec3 pos = GetTransform()->GetLocalPosition();
 
@@ -144,8 +151,7 @@ void PlayerScript::Move()
 
 void PlayerScript::Dash()
 {
-	if (_isGrenage)
-		return;
+	if (_isGrenade || _isRazer) return;
 
 	if (_dashCooldownTimer > 0.f)
 		_dashCooldownTimer -= DELTA_TIME;
@@ -179,17 +185,19 @@ void PlayerScript::Dash()
 }
 void PlayerScript::ThrowGrenade()
 {
+	if (_isDashing || _isRazer) return;
+
 	// ÄðÅ¸ÀÓ °»½Å
 	if (_grenadeCooldownTimer > 0.f)
 		_grenadeCooldownTimer -= DELTA_TIME;
 
-	if (_isGrenage)
+	if (_isGrenade)
 	{
 		_grenadeTimer -= DELTA_TIME;
 
 		if (_grenadeTimer <= 0.f)
 		{
-			_isGrenage = false;
+			_isGrenade = false;
 			_grenadeTimer = 0.f;
 
 			// ÄðÅ¸ÀÓ ½ÃÀÛ
@@ -200,11 +208,40 @@ void PlayerScript::ThrowGrenade()
 
 	if (_grenadeCooldownTimer <= 0.f && INPUT->GetButtonDown(KEY_TYPE::E))
 	{
-		_isGrenage = true;
+		_isGrenade = true;
 		_grenadeTimer = 3.0f;
 	}
 }
 
+void PlayerScript::ShootRazer()
+{
+	if (_isDashing || _isGrenade) return;
+
+	// ÄðÅ¸ÀÓ °»½Å
+	if (_razerCooldownTimer > 0.f)
+		_razerCooldownTimer -= DELTA_TIME;
+
+	if (_isRazer)
+	{
+		_razerAniDurationTimer -= DELTA_TIME;
+
+		if (_razerAniDurationTimer <= 0.f)
+		{
+			_isRazer = false;
+			_razerAniDurationTimer = 0.f;
+
+			// ÄðÅ¸ÀÓ ½ÃÀÛ
+			_razerCooldownTimer = _razerCooldown;
+		}
+		return;
+	}
+
+	if (_razerCooldownTimer <= 0.f && INPUT->GetButtonDown(KEY_TYPE::R))
+	{
+		_isRazer = true;
+		_razerAniDurationTimer = 7.5f;
+	}
+}
 
 void PlayerScript::SetPosition(float x, float z)
 {
