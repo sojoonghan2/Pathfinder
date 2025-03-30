@@ -223,7 +223,7 @@ ParticleScene::ParticleScene()
         grenade->GetTransform()->SetParent(gameObjects[0]->GetTransform());
         grenade->GetTransform()->GetTransform()->RemoveParent();
         grenade->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
-        grenade->AddComponent(make_shared<TestGrenadeScript>());
+        grenade->AddComponent(make_shared<TestGrenadeScript>(playerScript));
 
         shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
         {

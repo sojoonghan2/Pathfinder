@@ -22,6 +22,7 @@
 #include "OccupationScript.h"
 #include "RuinsScript.h"
 #include "CrapScript.h"
+#include "RazerParticleScript.h"
 
 #include "SphereCollider.h"
 
@@ -89,11 +90,15 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// 플레이어
+	// 플레이어
 #pragma region Player
 	{
+		// 플레이어
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		auto playerScript = make_shared<PlayerScript>();
+
 
 		for (auto gameObject : gameObjects)
 		{
@@ -102,11 +107,12 @@ RuinsScene::RuinsScene()
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
-			gameObject->AddComponent(make_shared<PlayerScript>());
-
+			gameObject->AddComponent(playerScript);
+			gameObject->AddComponent(make_shared<TestDragon>());
 			activeScene->AddGameObject(gameObject);
 		}
 
+		// 수류탄
 		shared_ptr<GameObject> grenade = make_shared<GameObject>();
 		grenade->SetName(L"Grenade");
 		grenade->SetCheckFrustum(true);
@@ -117,7 +123,7 @@ RuinsScene::RuinsScene()
 		grenade->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 		grenade->GetTransform()->GetTransform()->RemoveParent();
 		grenade->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
-		grenade->AddComponent(make_shared<TestGrenadeScript>());
+		grenade->AddComponent(make_shared<TestGrenadeScript>(playerScript));
 
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
@@ -141,6 +147,7 @@ RuinsScene::RuinsScene()
 
 		activeScene->AddGameObject(grenade);
 
+		// 레이저 파티클
 		shared_ptr<GameObject> razerParticle = make_shared<GameObject>();
 		wstring razerParticleName = L"RazerParticle";
 		razerParticle->SetName(razerParticleName);
@@ -151,11 +158,13 @@ RuinsScene::RuinsScene()
 		razerParticle->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 		razerParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 		razerParticle->GetTransform()->SetLocalPosition(Vec3(0.0f, 100.0f, 110.0f));
-		razerParticle->AddComponent(make_shared<TestParticleScript>());
+		razerParticle->AddComponent(make_shared<RazerParticleScript>(playerScript));
 
 		shared_ptr<RazerParticleSystem> razerParticleSystem = make_shared<RazerParticleSystem>();
 		Vec3 look = gameObjects[0]->GetTransform()->GetLook();
 		look.Normalize();
+
+		// 파티클의 방향이 첫 씬 만들때가 아니고 매 프레임마다 보내야 되는데
 		Vec4 dir{ look.x, look.y, look.z, 0.0f };
 		razerParticleSystem->SetEmitDirection(dir);
 		razerParticle->AddComponent(razerParticleSystem);

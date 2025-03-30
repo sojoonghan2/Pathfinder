@@ -1,10 +1,11 @@
 #pragma once
 #include "MonoBehaviour.h"
+#include "PlayerScript.h"
 
 class TestGrenadeScript : public MonoBehaviour
 {
 public:
-    TestGrenadeScript();
+    TestGrenadeScript(shared_ptr<PlayerScript> playerScript);
     virtual ~TestGrenadeScript();
 
     virtual void LateUpdate() override;
@@ -34,4 +35,5 @@ private:
     float _grenadeCooldown = 10.f;
     float _grenadeCooldownTimer = 0.0f;
 
+    shared_ptr<PlayerScript>    _playerScript;
 };

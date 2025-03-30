@@ -8,8 +8,9 @@
 #include "ParticleSystem.h"
 #include "Transform.h"
 
-TestGrenadeScript::TestGrenadeScript()
-    : _throwDelay(0.0f), _pendingThrow(false), _parentTransform(nullptr),
+TestGrenadeScript::TestGrenadeScript(shared_ptr<PlayerScript> playerScript)
+    : _playerScript(playerScript),
+    _throwDelay(0.0f), _pendingThrow(false), _parentTransform(nullptr),
     _grenadeCooldown(10.0f), _grenadeCooldownTimer(0.0f)
 {
 }
