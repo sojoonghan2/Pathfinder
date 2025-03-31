@@ -45,12 +45,11 @@ void PlayerScript::KeyboardInput()
 {
 	Move();
 	Dash();
-	Shoot();
 }
 
 void PlayerScript::MouseInput()
 {
-
+	Shoot();
 }
 
 void PlayerScript::Animation()
@@ -61,14 +60,6 @@ void PlayerScript::Animation()
 	{
 		nextAnimIndex = 7;
 	}
-	else if (_isShoot && _isMove)
-	{
-		nextAnimIndex = 5;
-	}
-	else if (_isShoot && !_isMove)
-	{
-		nextAnimIndex = 4;
-	}
 	else if (_isGrenade)
 	{
 		nextAnimIndex = 3;
@@ -76,6 +67,14 @@ void PlayerScript::Animation()
 	else if (_isDashing)
 	{
 		nextAnimIndex = 2;
+	}
+	else if (_isShoot && _isMove)
+	{
+		nextAnimIndex = 5;
+	}
+	else if (_isShoot && !_isMove)
+	{
+		nextAnimIndex = 4;
 	}
 	else if (_isMove)
 	{
@@ -208,7 +207,7 @@ void PlayerScript::Shoot()
 		return;
 	}
 
-	if (_shootAniDurationTimer <= 0.f && INPUT->GetButtonDown(KEY_TYPE::Q))
+	if (INPUT->GetButton(KEY_TYPE::LBUTTON))
 	{
 		_isShoot = true;
 		_shootAniDurationTimer = 1.0f;

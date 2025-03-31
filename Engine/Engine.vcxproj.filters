@@ -234,7 +234,7 @@
     <ClCompile Include="ModuleScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
-    <ClCompile Include="TestCameraScript.cpp">
+    <ClCompile Include="CameraScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
     <ClCompile Include="TestDragon.cpp">
@@ -509,7 +509,7 @@
     <ClInclude Include="ModuleScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
-    <ClInclude Include="TestCameraScript.h">
+    <ClInclude Include="CameraScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
     <ClInclude Include="TestDragon.h">

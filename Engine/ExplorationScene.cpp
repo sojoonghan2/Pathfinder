@@ -12,7 +12,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "ParticleSystem.h"
-#include "TestCameraScript.h"
+#include "CameraScript.h"
 #include "Resources.h"
 #include "MeshData.h"
 
@@ -54,7 +54,7 @@ ExplorationScene::ExplorationScene()
 		camera->SetName(L"Main_Camera");
 		camera->AddComponent(make_shared<Transform>());
 		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=3000, FOV=45도
-		camera->AddComponent(make_shared<TestCameraScript>());
+		camera->AddComponent(make_shared<CameraScript>());
 		camera->AddComponent(make_shared<ExplorationScript>());
 		camera->GetCamera()->SetFar(100000.f);
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));

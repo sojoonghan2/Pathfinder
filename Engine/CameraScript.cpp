@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "TestCameraScript.h"
+#include "CameraScript.h"
 #include "Transform.h"
 #include "Camera.h"
 #include "GameObject.h"
@@ -9,7 +9,7 @@
 #include "Scene.h"
 #include "Engine.h"
 
-TestCameraScript::TestCameraScript() {
+CameraScript::CameraScript() {
     _offsetPosition = Vec3(0.f, 500.f, -600.f);
 
     // 창 중앙 위치 계산
@@ -20,10 +20,10 @@ TestCameraScript::TestCameraScript() {
     ClientToScreen(GEngine->GetWindow().hwnd, &_centerScreenPos);
 }
 
-TestCameraScript::~TestCameraScript() {
+CameraScript::~CameraScript() {
 }
 
-void TestCameraScript::LateUpdate() {
+void CameraScript::LateUpdate() {
     KeyboardInput();
     MouseInput();
 
@@ -55,7 +55,7 @@ void TestCameraScript::LateUpdate() {
     }
 }
 
-void TestCameraScript::KeyboardInput() {
+void CameraScript::KeyboardInput() {
     Vec3 pos = GetTransform()->GetLocalPosition();
 
     if (!_playerCamera) {
@@ -78,7 +78,7 @@ void TestCameraScript::KeyboardInput() {
     GetTransform()->SetLocalPosition(pos);
 }
 
-void TestCameraScript::MouseInput() {
+void CameraScript::MouseInput() {
     if (_playerCamera)
     {
         while (ShowCursor(FALSE) >= 0);
@@ -122,7 +122,7 @@ void TestCameraScript::MouseInput() {
     }
 }
 
-void TestCameraScript::ToggleCamera()
+void CameraScript::ToggleCamera()
 {
     _playerCamera = !_playerCamera;
 }

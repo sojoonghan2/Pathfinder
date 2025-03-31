@@ -246,7 +246,7 @@
     <ClInclude Include="StructuredBuffer.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="TableDescriptorHeap.h" />
-    <ClInclude Include="TestCameraScript.h" />
+    <ClInclude Include="CameraScript.h" />
     <ClInclude Include="TestDragon.h" />
     <ClInclude Include="TestGrenadeScript.h" />
     <ClInclude Include="TestHuman.h" />
@@ -342,7 +342,7 @@
     <ClCompile Include="StructuredBuffer.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="TableDescriptorHeap.cpp" />
-    <ClCompile Include="TestCameraScript.cpp" />
+    <ClCompile Include="CameraScript.cpp" />
     <ClCompile Include="TestDragon.cpp" />
     <ClCompile Include="TestGrenadeScript.cpp" />
     <ClCompile Include="TestHuman.cpp" />

@@ -1,11 +1,11 @@
 #pragma once
 #include "MonoBehaviour.h"
 
-class TestCameraScript : public MonoBehaviour
+class CameraScript : public MonoBehaviour
 {
 public:
-	TestCameraScript();
-	virtual ~TestCameraScript();
+	CameraScript();
+	virtual ~CameraScript();
 
 	virtual void LateUpdate() override;
 
