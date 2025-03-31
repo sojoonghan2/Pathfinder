@@ -90,7 +90,7 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-	// 플레이어
+// 플레이어
 #pragma region Player
 	{
 		// 플레이어

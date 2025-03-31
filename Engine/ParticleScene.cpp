@@ -304,6 +304,35 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
+// 점령 중 UI
+#pragma region UI
+    {
+        shared_ptr<GameObject> obj = make_shared<GameObject>();
+        obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+        obj->AddComponent(make_shared<Transform>());
+        obj->SetName(L"OccupationUI");
+        obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+        obj->GetTransform()->SetLocalPosition(Vec3(WINDOWHEIGHT / 2, WINDOWWIDTH / 2, 0.f));
+        shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+        {
+            shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+            meshRenderer->SetMesh(mesh);
+        }
+        {
+            shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+
+            shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Crosshair", L"..\\Resources\\Texture\\Crosshair.png");
+
+            shared_ptr<Material> material = make_shared<Material>();
+            material->SetShader(shader);
+            material->SetTexture(0, texture);
+            meshRenderer->SetMaterial(material);
+        }
+        obj->AddComponent(meshRenderer);
+        activeScene->AddGameObject(obj);
+    }
+#pragma endregion
+
 // 지형
 #pragma region Temp
     /*
