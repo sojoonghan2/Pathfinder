@@ -15,6 +15,7 @@ public:
 
 	void Move();
 	void Dash();
+	void Shoot();
 	void ThrowGrenade();
 	void ShootRazer();
 
@@ -33,6 +34,7 @@ private:
 	bool			_isDashing = false;
 	bool			_isGrenade = false;
 	bool			_isRazer = false;
+	bool			_isShoot = false;
 
 	float			_speed = 1000.f;
 	float			_dashDuration = 0.1f;
@@ -44,7 +46,7 @@ private:
 	Vec3			_dashDirection = Vec3::Zero;
 	float			_dashSpeed = 10000.f;
 
-	float			_grenadeTimer = 0.f;
+	float			_grenadeAniDurationTimer = 0.f;
 	float			_grenadeCooldown = 10.0f;
 	float			_grenadeCooldownTimer = 0.0f;
 
@@ -52,5 +54,6 @@ private:
 	float			_razerCooldown = 10.0f;
 	float			_razerCooldownTimer = 0.0f;
 
+	float			_shootAniDurationTimer = 0.f;
 };
 

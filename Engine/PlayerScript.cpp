@@ -45,11 +45,12 @@ void PlayerScript::KeyboardInput()
 {
 	Move();
 	Dash();
+	Shoot();
 }
 
 void PlayerScript::MouseInput()
 {
-	// 추후 구현 가능
+
 }
 
 void PlayerScript::Animation()
@@ -59,6 +60,14 @@ void PlayerScript::Animation()
 	if (_isRazer)
 	{
 		nextAnimIndex = 7;
+	}
+	else if (_isShoot && _isMove)
+	{
+		nextAnimIndex = 5;
+	}
+	else if (_isShoot && !_isMove)
+	{
+		nextAnimIndex = 4;
 	}
 	else if (_isGrenade)
 	{
@@ -183,6 +192,28 @@ void PlayerScript::Dash()
 		_dashTimer = _dashDuration;
 	}
 }
+void PlayerScript::Shoot()
+{
+	if (_isGrenade || _isRazer || _isDashing) return;
+
+	if (_isShoot)
+	{
+		_shootAniDurationTimer -= DELTA_TIME;
+
+		if (_shootAniDurationTimer <= 0.f)
+		{
+			_isShoot = false;
+			_shootAniDurationTimer = 0.f;
+		}
+		return;
+	}
+
+	if (_shootAniDurationTimer <= 0.f && INPUT->GetButtonDown(KEY_TYPE::Q))
+	{
+		_isShoot = true;
+		_shootAniDurationTimer = 1.0f;
+	}
+}
 void PlayerScript::ThrowGrenade()
 {
 	if (_isDashing || _isRazer) return;
@@ -193,12 +224,12 @@ void PlayerScript::ThrowGrenade()
 
 	if (_isGrenade)
 	{
-		_grenadeTimer -= DELTA_TIME;
+		_grenadeAniDurationTimer -= DELTA_TIME;
 
-		if (_grenadeTimer <= 0.f)
+		if (_grenadeAniDurationTimer <= 0.f)
 		{
 			_isGrenade = false;
-			_grenadeTimer = 0.f;
+			_grenadeAniDurationTimer = 0.f;
 
 			// 쿨타임 시작
 			_grenadeCooldownTimer = _grenadeCooldown;
@@ -209,7 +240,7 @@ void PlayerScript::ThrowGrenade()
 	if (_grenadeCooldownTimer <= 0.f && INPUT->GetButtonDown(KEY_TYPE::E))
 	{
 		_isGrenade = true;
-		_grenadeTimer = 3.0f;
+		_grenadeAniDurationTimer = 3.0f;
 	}
 }
 
