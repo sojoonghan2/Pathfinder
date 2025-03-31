@@ -41,6 +41,8 @@ void TestGrenadeScript::KeyboardInput()
     if (INPUT->GetButtonDown(KEY_TYPE::E) &&
         !_pendingThrow && !_isThrown && _grenadeCooldownTimer <= 0.f)
     {
+        if (!(_playerScript->GetIsGrenade())) return;
+
         GetGameObject()->SetRenderOff();
 
         // 대기 상태 진입

@@ -39,6 +39,8 @@ void RazerParticleScript::LateUpdate()
         // 지연 끝났을 때 파티클 실행
         if (_delayTimer <= 0.f)
         {
+            if (!(_playerScript->GetIsRazer())) return;
+
             auto particle_system = GetGameObject()->GetParticleSystem();
             if (particle_system)
                 particle_system->ParticleStart();
