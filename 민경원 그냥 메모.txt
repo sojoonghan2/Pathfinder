@@ -1,3 +1,5 @@
-- Exploration에 Point 조명을 넣을 때 구 오브젝트가 존재하지 않으면 렌더링 오류 발생
+- Exploration에 Point 조명을 넣을 때 구 오브젝트가 존재하지 않으면 렌더링 오류남
 
-- TitleScene이 없으면 렌더링 오류 발생
+- TitleScene이 없으면 렌더링 오류남
+
+- FBX는 디퓨즈, 노멀, 스페큘러 텍스쳐가 없으면 텍스쳐 오류남

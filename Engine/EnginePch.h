@@ -197,8 +197,8 @@ struct Vertex
 {
 	Vertex() {}
 
-	Vertex(Vec3 p, Vec2 u, Vec3 n, Vec3 t)
-		: pos(p), uv(u), normal(n), tangent(t)
+	Vertex(Vec3 p, Vec2 u, Vec3 n, Vec3 t, Vec4 w = Vec4(0, 0, 0, 0), Vec4 i = Vec4(0, 0, 0, 0))
+		: pos(p), uv(u), normal(n), tangent(t), weights(w), indices(i)
 	{
 	}
 

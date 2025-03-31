@@ -164,6 +164,9 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     float accTime = g_vec2_1.y;
     float minLifeTime = g_vec4_0.x;
     float maxLifeTime = g_vec4_0.y;
+    float dirX = g_vec4_1.x;
+    float dirY = g_vec4_1.y;
+    float dirZ = g_vec4_1.z;
     float minSpeed = g_vec4_0.z;
     float maxSpeed = g_vec4_0.w;
 
@@ -203,7 +206,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             );
 
             // 직선 방향 유지
-            g_particle[threadIndex.x].worldDir = normalize(float3(0.0f, 0.0f, 1.0f));
+            g_particle[threadIndex.x].worldDir = normalize(float3(dirX, dirY, dirZ));
             
             // 수명 및 시간 설정
             g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * Rand(float2(x * accTime, accTime))) + minLifeTime;

@@ -1,10 +1,11 @@
 #pragma once
 #include "MonoBehaviour.h"
+#include "PlayerScript.h"
 
 class TestGrenadeScript : public MonoBehaviour
 {
 public:
-    TestGrenadeScript();
+    TestGrenadeScript(shared_ptr<PlayerScript> playerScript);
     virtual ~TestGrenadeScript();
 
     virtual void LateUpdate() override;
@@ -25,4 +26,14 @@ private:
     float _power = 2000.0f;
 
     float _timeSinceLanded;
+
+    bool _pendingThrow = false;
+    float _throwDelay = 0.0f;
+
+    // 부모 트랜스폼 캐시
+    shared_ptr<Transform> _parentTransform;
+    float _grenadeCooldown = 10.f;
+    float _grenadeCooldownTimer = 0.0f;
+
+    shared_ptr<PlayerScript>    _playerScript;
 };

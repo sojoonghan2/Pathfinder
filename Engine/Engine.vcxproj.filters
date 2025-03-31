@@ -234,7 +234,7 @@
     <ClCompile Include="ModuleScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
-    <ClCompile Include="TestCameraScript.cpp">
+    <ClCompile Include="CameraScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
     <ClCompile Include="TestDragon.cpp">
@@ -243,7 +243,7 @@
     <ClCompile Include="TestParticleScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
-    <ClCompile Include="TestPointLightScript.cpp">
+    <ClCompile Include="PlayerScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
     <ClCompile Include="WaterScript.cpp">
@@ -305,6 +305,15 @@
     </ClCompile>
     <ClCompile Include="DustParticleSystem.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="LightPillarParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Object\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="RazerParticleScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -497,7 +506,7 @@
     <ClInclude Include="ModuleScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
-    <ClInclude Include="TestCameraScript.h">
+    <ClInclude Include="CameraScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
     <ClInclude Include="TestDragon.h">
@@ -506,7 +515,7 @@
     <ClInclude Include="TestParticleScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
-    <ClInclude Include="TestPointLightScript.h">
+    <ClInclude Include="PlayerScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
     <ClInclude Include="WaterScript.h">
@@ -568,6 +577,15 @@
     </ClInclude>
     <ClInclude Include="DustParticleSystem.h">
       <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="LightPillarParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Object\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="RazerParticleScript.h">
+      <Filter>Script\ObjectScript</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -647,6 +665,9 @@
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\Billboard.fx">
       <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\LightPillarParticle.fx">
+      <Filter>Shader\Particle</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

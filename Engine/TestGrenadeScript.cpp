@@ -8,18 +8,27 @@
 #include "ParticleSystem.h"
 #include "Transform.h"
 
-TestGrenadeScript::TestGrenadeScript() {}
+TestGrenadeScript::TestGrenadeScript(shared_ptr<PlayerScript> playerScript)
+    : _playerScript(playerScript),
+    _throwDelay(0.0f), _pendingThrow(false), _parentTransform(nullptr),
+    _grenadeCooldown(10.0f), _grenadeCooldownTimer(0.0f)
+{
+}
 
-TestGrenadeScript::~TestGrenadeScript() {}
+TestGrenadeScript::~TestGrenadeScript()
+{
+}
 
 void TestGrenadeScript::LateUpdate()
 {
+    // 쿨타임 갱신
+    if (_grenadeCooldownTimer > 0.f)
+        _grenadeCooldownTimer -= DELTA_TIME;
+
     KeyboardInput();
     MouseInput();
-
-    // 한 프레임 대기
     ThrowGrenade();
-    
+
     if (_resetThrow)
     {
         _isThrown = true;
@@ -29,91 +38,100 @@ void TestGrenadeScript::LateUpdate()
 
 void TestGrenadeScript::KeyboardInput()
 {
-    if (INPUT->GetButton(KEY_TYPE::Y))
+    if (INPUT->GetButtonDown(KEY_TYPE::E) &&
+        !_pendingThrow && !_isThrown && _grenadeCooldownTimer <= 0.f)
     {
-        // 위치 초기화
+        if (!(_playerScript->GetIsGrenade())) return;
+
+        GetGameObject()->SetRenderOff();
+
+        // 대기 상태 진입
+        _pendingThrow = true;
+        _throwDelay = 0.0f;
+
+        // 부모 정보 저장 및 위치 초기화
         GetTransform()->RestoreParent();
-        auto parentPos = GetTransform()->GetParent().lock()->GetTransform()->GetLocalPosition();
-        Vec3 pos = parentPos;
-        GetTransform()->SetLocalPosition(pos);
+        auto parent = GetTransform()->GetParent().lock();
+        _parentTransform = parent->GetTransform();
 
-        // 속도 초기화
+        Vec3 parentPos = _parentTransform->GetLocalPosition();
+        parentPos.y += 300.f;
+        GetTransform()->SetLocalPosition(parentPos);
+
+        // 초기화
         _velocity = Vec3(0, 0, 0);
-
-        // 부모로부터 독립
         GetTransform()->RemoveParent();
 
-        // 렌더링 활성화
-        GetGameObject()->SetRenderOn();
-
-        // 땅에 닿았을 때 시간 초기화
-        _timeSinceLanded = -1.0f;
-
-        // 파티클 초기화
+        // 파티클 중지
         auto particle_system = GetGameObject()->GetParticleSystem();
-        if (particle_system) particle_system->ParticleStop();
+        if (particle_system)
+            particle_system->ParticleStop();
 
-        // 투사각을 라디안으로 변환
-        float radian = ToRadian(_angle);
-
-        // 초기 속도 계산
-        _velocity.x = 0.0f;
-        _velocity.y = sin(radian) * _power;
-        _velocity.z = cos(radian) * _power;
-
-        // 중력 가속도 설정
-        _gravity = -9.81f * 200.0f;
-
-        // 한 프레임 대기 후 적용
-        _resetThrow = true;
+        _timeSinceLanded = -1.0f;
     }
 }
 
 void TestGrenadeScript::MouseInput()
 {
-
 }
 
 void TestGrenadeScript::ThrowGrenade()
 {
+    if (_pendingThrow)
+    {
+        _throwDelay += DELTA_TIME;
+
+        if (_throwDelay >= 1.8f)
+        {
+            _pendingThrow = false;
+            _throwDelay = 0.0f;
+
+            if (!_parentTransform)
+                return;
+
+            float radian = ToRadian(_angle);
+            Vec3 forward = _parentTransform->GetLook();
+            forward.y = 0.0f;
+            forward.Normalize();
+
+            _velocity = forward * (cos(radian) * _power);
+            _velocity.y = sin(radian) * _power;
+
+            _gravity = -9.81f * 200.0f;
+            _resetThrow = true;
+        }
+    }
+
     if (_isThrown)
     {
-        // 현재 위치 가져오기
+        GetGameObject()->SetRenderOn();
+
         Vec3 pos = GetTransform()->GetLocalPosition();
-
-        // 중력 적용 (y축 방향)
         _velocity.y += _gravity * DELTA_TIME;
-
-        // 속도를 기반으로 위치 업데이트
         pos += _velocity * DELTA_TIME;
-
-        // 위치 적용
         GetTransform()->SetLocalPosition(pos);
 
-        // 바닥에 닿았는지 체크
         if (pos.y <= 0.0f)
         {
             pos.y = 0.0f;
             _isThrown = false;
+
+            // 파티클 재생
             auto particle_system = GetGameObject()->GetParticleSystem();
             if (particle_system)
-            {
                 particle_system->ParticleStart();
-            }
 
-            // 바닥에 닿은 시간 기록
-            if (_timeSinceLanded < 0.0f)
-            {
-                _timeSinceLanded = 0.0f;
-            }
+            _timeSinceLanded = 0.0f;
+
+            // 쿨타임 시작
+            _grenadeCooldownTimer = _grenadeCooldown;
         }
     }
-    // 바닥에 닿아있으면 시간 누적
+
     if (_timeSinceLanded >= 0.0f)
     {
         _timeSinceLanded += DELTA_TIME;
 
-        // 5초 경과 시 렌더링 비활성화
         if (_timeSinceLanded >= 5.0f)
         {
             GetGameObject()->SetRenderOff();

@@ -11,7 +11,7 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "Light.h"
-#include "TestCameraScript.h"
+#include "CameraScript.h"
 #include "Resources.h"
 #include "MeshData.h"
 
@@ -26,7 +26,7 @@
 #include "TestPBRParticleSystem.h"
 
 #include "TestDragon.h"
-#include "TestPointLightScript.h"
+#include "PlayerScript.h"
 #include "WaterScript.h"
 #include "TestParticleScript.h"
 #include "ModuleScript.h"
@@ -34,11 +34,13 @@
 #include "TestGrenadeScript.h"
 #include "RuinsScript.h"
 #include "TestOtherPlayerScript.h"
+#include "RazerParticleScript.h"
 
 #include "SphereCollider.h"
 #include "RectangleCollider.h"
 
 #include "GameModule.h"
+#include "Player.h"
 
 #define PARTICLEDEBUG	FALSE
 
@@ -72,7 +74,7 @@ ParticleScene::ParticleScene()
         camera->SetName(L"Main_Camera");
         camera->AddComponent(make_shared<Transform>());
         camera->AddComponent(make_shared<Camera>()); // Near=1, Far=3000, FOV=45도
-        camera->AddComponent(make_shared<TestCameraScript>());
+        camera->AddComponent(make_shared<CameraScript>());
         camera->GetCamera()->SetFar(100000.f);
         camera->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, 0.f));
         uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
@@ -191,19 +193,26 @@ ParticleScene::ParticleScene()
 // 플레이어
 #pragma region Player
     {
+        // 플레이어
         shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
         vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
-        gameObjects[0]->SetName(L"OBJ");
-        gameObjects[0]->SetCheckFrustum(false);
-        gameObjects[0]->AddComponent(make_shared<TestDragon>());
-        gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-        gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
-        gameObjects[0]->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
-        gameObjects[0]->AddComponent(make_shared<TestPointLightScript>());
+        auto playerScript = make_shared<PlayerScript>();
 
-        activeScene->AddGameObject(gameObjects[0]);
 
+        for (auto gameObject : gameObjects)
+        {
+            gameObject->SetName(L"OBJ");
+            gameObject->SetCheckFrustum(false);
+            gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
+            gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+            gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
+            gameObject->AddComponent(playerScript);
+            gameObject->AddComponent(make_shared<TestDragon>());
+            activeScene->AddGameObject(gameObject);
+        }
+
+        // 수류탄
         shared_ptr<GameObject> grenade = make_shared<GameObject>();
         grenade->SetName(L"Grenade");
         grenade->SetCheckFrustum(true);
@@ -214,11 +223,7 @@ ParticleScene::ParticleScene()
         grenade->GetTransform()->SetParent(gameObjects[0]->GetTransform());
         grenade->GetTransform()->GetTransform()->RemoveParent();
         grenade->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
-        grenade->AddComponent(make_shared<TestGrenadeScript>());
-
-        grenade->AddComponent(make_shared<SphereCollider>());
-        dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetRadius(0.5f);
-        dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+        grenade->AddComponent(make_shared<TestGrenadeScript>(playerScript));
 
         shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
         {
@@ -241,7 +246,111 @@ ParticleScene::ParticleScene()
         grenade->AddComponent(grenadeParticleSystem);
 
         activeScene->AddGameObject(grenade);
+
+        // 레이저 파티클
+        shared_ptr<GameObject> razerParticle = make_shared<GameObject>();
+        wstring razerParticleName = L"RazerParticle";
+        razerParticle->SetName(razerParticleName);
+        razerParticle->SetCheckFrustum(true);
+        razerParticle->SetStatic(false);
+
+        razerParticle->AddComponent(make_shared<Transform>());
+        razerParticle->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+        razerParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+        razerParticle->GetTransform()->SetLocalPosition(Vec3(0.0f, 100.0f, 110.0f));
+        razerParticle->AddComponent(make_shared<RazerParticleScript>(playerScript));
+
+        shared_ptr<RazerParticleSystem> razerParticleSystem = make_shared<RazerParticleSystem>();
+        Vec3 look = gameObjects[0]->GetTransform()->GetLook();
+        look.Normalize();
+        
+        // 파티클의 방향이 첫 씬 만들때가 아니고 매 프레임마다 보내야 되는데
+        Vec4 dir{ look.x, look.y, look.z, 0.0f };
+        razerParticleSystem->SetEmitDirection(dir);
+        razerParticle->AddComponent(razerParticleSystem);
+
+        activeScene->AddGameObject(razerParticle);
     }
+#pragma endregion
+
+// 모듈
+#pragma region Module
+    for (int i{}; i < 3; ++i)
+    {
+        shared_ptr<GameModule> obj = make_shared<GameModule>();
+        obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+        obj->AddComponent(make_shared<Transform>());
+        obj->AddComponent(make_shared<ModuleScript>());
+        obj->GetTransform()->SetLocalScale(Vec3(300.f, 500.f, 100.f));
+        obj->GetTransform()->SetLocalPosition(Vec3(-400.f + (i * 400), -800.f, 1.f));
+        shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+        {
+            shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+            meshRenderer->SetMesh(mesh);
+        }
+        {
+            shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
+
+            shared_ptr<Texture> texture;
+            texture = obj->GetTexture();
+
+            shared_ptr<Material> material = make_shared<Material>();
+            material->SetShader(shader);
+            material->SetTexture(0, texture);
+            meshRenderer->SetMaterial(material);
+        }
+        obj->AddComponent(meshRenderer);
+        activeScene->AddGameObject(obj);
+    }
+#pragma endregion
+
+// 점령 중 UI
+#pragma region UI
+    {
+        shared_ptr<GameObject> obj = make_shared<GameObject>();
+        obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+        obj->AddComponent(make_shared<Transform>());
+        obj->SetName(L"OccupationUI");
+        obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+        obj->GetTransform()->SetLocalPosition(Vec3(WINDOWHEIGHT / 2, WINDOWWIDTH / 2, 0.f));
+        shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+        {
+            shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+            meshRenderer->SetMesh(mesh);
+        }
+        {
+            shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+
+            shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Crosshair", L"..\\Resources\\Texture\\Crosshair.png");
+
+            shared_ptr<Material> material = make_shared<Material>();
+            material->SetShader(shader);
+            material->SetTexture(0, texture);
+            meshRenderer->SetMaterial(material);
+        }
+        obj->AddComponent(meshRenderer);
+        activeScene->AddGameObject(obj);
+    }
+#pragma endregion
+
+// 지형
+#pragma region Temp
+    /*
+    shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Temp\\Temp.fbx");
+
+    vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+    for (auto gameObject : gameObjects)
+    {
+        gameObject->SetName(L"Temppp");
+        gameObject->SetCheckFrustum(false);
+        gameObject->AddComponent(make_shared<Transform>());
+        gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+        gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, 300.0f, 0.0f));
+        gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 0.0f, 0.0f));
+        activeScene->AddGameObject(gameObject);
+    }
+    */
 #pragma endregion
 
 #pragma region OtherPlayer
@@ -343,29 +452,7 @@ void ParticleScene::LoadMyParticle()
     }
 #pragma endregion
 
-// 레이저 파티클
-#pragma region RazerParticle
-    {
-        // 파티클 오브젝트 생성
-        shared_ptr<GameObject> razerParticle = make_shared<GameObject>();
-        wstring razerParticleName = L"RazerParticle";
-        razerParticle->SetName(razerParticleName);
-        razerParticle->SetCheckFrustum(true);
-        razerParticle->SetStatic(false);
 
-        // 좌표 컴포넌트 추가
-        razerParticle->AddComponent(make_shared<Transform>());
-        razerParticle->GetTransform()->SetLocalPosition(Vec3(-400.f, 100.f, -300.f));
-        razerParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
-
-        // 파티클 시스템 컴포넌트 추가
-        shared_ptr<RazerParticleSystem> razerParticleSystem = make_shared<RazerParticleSystem>();
-        razerParticle->AddComponent(make_shared<TestParticleScript>());
-        razerParticle->AddComponent(razerParticleSystem);
-
-        activeScene->AddGameObject(razerParticle);
-    }
-#pragma endregion
 
 // 오버 드라이브 파티클
 #pragma region OverDriveParticle
@@ -411,7 +498,7 @@ void ParticleScene::LoadMyParticle()
         gliggerParticle->AddComponent(make_shared<TestParticleScript>());
         gliggerParticle->AddComponent(gliggerParticleSystem);
 
-        activeScene->AddGameObject(gliggerParticle);
+        //activeScene->AddGameObject(gliggerParticle);
     }
 #pragma endregion
 }
@@ -430,7 +517,7 @@ void ParticleScene::LoadDebugParticle()
 
         // 좌표 컴포넌트 추가
         testPBRParticle->AddComponent(make_shared<Transform>());
-        testPBRParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 1000.f, 400.f));
+        testPBRParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, 400.f));
         testPBRParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
         // 파티클 시스템 컴포넌트 추가

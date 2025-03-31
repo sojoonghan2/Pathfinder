@@ -59,12 +59,17 @@ public:
 	void SetMaterial(shared_ptr<Material> material, shared_ptr<Material> computeMaterial);
 	// 한 번에 생성되는 파티클 양
 	void SetOnceParticleNum(int num) { _onceParticleNum = num; }
+	// 방향
+	void SetEmitDirection(const Vec4& direction) { _direction = direction; }
+
 	
 	void ParticleStart();
 	void ParticleStop();
 	void ParticleToggle();
 
 	bool IsActive() { return _isActive; }
+
+	shared_ptr<Material> GetComputeMaterial() { return _computeMaterial; }
 
 public:
 	virtual void Load(const wstring& path) override { }
@@ -108,4 +113,7 @@ private:
 
 	// 한 번에 생성되는 파티클의 양
 	int					_onceParticleNum = 1;
+
+	// 방향
+	Vec4				_direction = Vec4(0, 0, 0, 0);
 };
