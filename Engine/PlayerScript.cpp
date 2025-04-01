@@ -178,22 +178,23 @@ void PlayerScript::Shoot()
 {
 	if (_isGrenade || _isRazer || _isDashing) return;
 
-	if (_isShoot)
+	// 마우스를 누르고 있으면 isShoot 유지
+	if (INPUT->GetButton(KEY_TYPE::LBUTTON))
 	{
-		_shootAniDurationTimer -= DELTA_TIME;
-
-		if (_shootAniDurationTimer <= 0.f)
+		if (!_isShoot)
 		{
-			_isShoot = false;
-			_shootAniDurationTimer = 0.f;
+			_isShoot = true;
+			_shootAniDurationTimer = 1.0f;
 		}
-		return;
+		else
+		{
+			_shootAniDurationTimer = 1.0f; // 계속 갱신해서 유지
+		}
 	}
-
-	if (INPUT->GetButtonDown(KEY_TYPE::LBUTTON))
+	else
 	{
-		_isShoot = true;
-		_shootAniDurationTimer = 1.0f;
+		_isShoot = false;
+		_shootAniDurationTimer = 0.f;
 	}
 }
 
