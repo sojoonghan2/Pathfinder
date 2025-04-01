@@ -104,7 +104,9 @@ void CameraScript::MouseInput() {
         ClientToScreen(GEngine->GetWindow().hwnd, reinterpret_cast<LPPOINT>(&windowRect.right));
 
         if (cursorPos.x <= windowRect.left + margin ||
-            cursorPos.x >= windowRect.right - margin)
+            cursorPos.x >= windowRect.right - margin ||
+            cursorPos.y <= windowRect.top + margin ||
+            cursorPos.y >= windowRect.bottom - margin)
         {
             SetCursorPos(_centerScreenPos.x, _centerScreenPos.y);
         }
