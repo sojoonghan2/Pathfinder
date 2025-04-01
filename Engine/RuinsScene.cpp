@@ -234,7 +234,7 @@ RuinsScene::RuinsScene()
 		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 		obj->AddComponent(make_shared<Transform>());
 		obj->SetName(L"CrosshairUI");
-		obj->GetTransform()->SetLocalScale(Vec3(500.f, 500.f, 500.f));
+		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 		obj->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 1.f));
 		shared_ptr<MeshRenderer> CrosshairmeshRenderer = make_shared<MeshRenderer>();
 		{
@@ -508,7 +508,7 @@ RuinsScene::RuinsScene()
 			gameObjects[0]->SetCheckFrustum(true);
 			gameObjects[0]->AddComponent(make_shared<CrapScript>());
 			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
-			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(700.f, 700.f, 700.f));
 			activeScene->AddGameObject(gameObjects[0]);
 		}
 	}
