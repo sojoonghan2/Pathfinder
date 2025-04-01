@@ -318,6 +318,9 @@
     <ClCompile Include="RazerParticleScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
+    <ClCompile Include="BulletScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -591,6 +594,9 @@
       <Filter>Object\Component</Filter>
     </ClInclude>
     <ClInclude Include="RazerParticleScript.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
   </ItemGroup>

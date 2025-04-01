@@ -35,6 +35,7 @@
 #include "RuinsScript.h"
 #include "TestOtherPlayerScript.h"
 #include "RazerParticleScript.h"
+#include "BulletScript.h"
 
 #include "SphereCollider.h"
 #include "RectangleCollider.h"
@@ -212,6 +213,40 @@ ParticleScene::ParticleScene()
             activeScene->AddGameObject(gameObject);
         }
 
+        // 총알
+        for (int i{}; i < 50; ++i)
+        {
+            shared_ptr<GameObject> bullet = make_shared<GameObject>();
+            bullet->SetName(L"Bullet" + std::to_wstring(i + 1));
+            bullet->SetCheckFrustum(true);
+            bullet->SetStatic(false);
+
+            bullet->AddComponent(make_shared<Transform>());
+            bullet->GetTransform()->SetLocalScale(Vec3(30.f, 30.f, 30.f));
+            bullet->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+            bullet->GetTransform()->GetTransform()->RemoveParent();
+            bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
+            bullet->AddComponent(make_shared<BulletScript>(playerScript));
+
+            shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+            {
+                shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+                meshRenderer->SetMesh(sphereMesh);
+            }
+            {
+                shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
+                shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bullet", L"..\\Resources\\Texture\\Bullet.png");
+
+                shared_ptr<Material> material = make_shared<Material>();
+                material->SetShader(shader);
+                material->SetTexture(0, texture);
+                meshRenderer->SetMaterial(material);
+            }
+            bullet->AddComponent(meshRenderer);
+
+            activeScene->AddGameObject(bullet);
+        }
+
         // 수류탄
         shared_ptr<GameObject> grenade = make_shared<GameObject>();
         grenade->SetName(L"Grenade");
@@ -264,7 +299,6 @@ ParticleScene::ParticleScene()
         Vec3 look = gameObjects[0]->GetTransform()->GetLook();
         look.Normalize();
         
-        // 파티클의 방향이 첫 씬 만들때가 아니고 매 프레임마다 보내야 되는데
         Vec4 dir{ look.x, look.y, look.z, 0.0f };
         razerParticleSystem->SetEmitDirection(dir);
         razerParticle->AddComponent(razerParticleSystem);
