@@ -247,6 +247,30 @@ ParticleScene::ParticleScene()
             activeScene->AddGameObject(bullet);
         }
 
+        // ÃÑ¾Ë
+        /*
+        for (int i{}; i < 50; ++i)
+        {
+            shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Bullet\\Bullet.fbx");
+            vector<shared_ptr<GameObject>> bullets = meshData->Instantiate();
+
+            for (auto bullet : bullets)
+            {
+                bullet->SetName(L"Bullet" + std::to_wstring(i + 1));
+                bullet->SetCheckFrustum(true);
+                bullet->SetStatic(false);
+
+                bullet->AddComponent(make_shared<Transform>());
+                bullet->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+                bullet->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+                bullet->GetTransform()->GetTransform()->RemoveParent();
+                bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
+                bullet->AddComponent(make_shared<BulletScript>(playerScript));
+                activeScene->AddGameObject(bullet);
+            }
+        }
+        */
+
         // ¼ö·ùÅº
         shared_ptr<GameObject> grenade = make_shared<GameObject>();
         grenade->SetName(L"Grenade");
