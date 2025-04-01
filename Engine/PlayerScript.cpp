@@ -188,7 +188,7 @@ void PlayerScript::Shoot()
 		}
 		else
 		{
-			_shootAniDurationTimer = 1.0f; // 계속 갱신해서 유지
+			_shootAniDurationTimer = 1.0f;
 		}
 	}
 	else
@@ -267,7 +267,14 @@ void PlayerScript::RotateToCameraOnShoot()
 {
 	if (INPUT->GetButton(KEY_TYPE::RBUTTON))
 	{
+		auto crosshair = GET_SINGLE(SceneManager)->FindObjectByName(L"CrosshairUI");
+		crosshair->SetRenderOn();
 		RotateToCameraLook();
+	}
+	if (INPUT->GetButtonUp(KEY_TYPE::RBUTTON))
+	{
+		auto crosshair = GET_SINGLE(SceneManager)->FindObjectByName(L"CrosshairUI");
+		crosshair->SetRenderOff();
 	}
 }
 

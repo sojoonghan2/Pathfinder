@@ -16,6 +16,8 @@ DustParticleSystem::DustParticleSystem() : BaseParticleSystem()
 
     SetParticleTexture(0, dust);
     SetParticleTexture(1, dust2);
+
+    ParticleStart();
 }
 
 

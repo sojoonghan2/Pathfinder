@@ -23,6 +23,7 @@
 #include "RuinsScript.h"
 #include "CrapScript.h"
 #include "RazerParticleScript.h"
+#include "BulletScript.h"
 
 #include "SphereCollider.h"
 
@@ -112,6 +113,64 @@ RuinsScene::RuinsScene()
 			activeScene->AddGameObject(gameObject);
 		}
 
+		// 총알
+		for (int i{}; i < 50; ++i)
+		{
+			shared_ptr<GameObject> bullet = make_shared<GameObject>();
+			bullet->SetName(L"Bullet" + std::to_wstring(i + 1));
+			bullet->SetCheckFrustum(true);
+			bullet->SetStatic(false);
+
+			bullet->AddComponent(make_shared<Transform>());
+			bullet->GetTransform()->SetLocalScale(Vec3(30.f, 30.f, 30.f));
+			bullet->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+			bullet->GetTransform()->GetTransform()->RemoveParent();
+			bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
+			bullet->AddComponent(make_shared<BulletScript>(playerScript));
+
+			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+				meshRenderer->SetMesh(sphereMesh);
+			}
+			{
+				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
+				shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bullet", L"..\\Resources\\Texture\\Bullet.png");
+
+				shared_ptr<Material> material = make_shared<Material>();
+				material->SetShader(shader);
+				material->SetTexture(0, texture);
+				meshRenderer->SetMaterial(material);
+			}
+			bullet->AddComponent(meshRenderer);
+
+			activeScene->AddGameObject(bullet);
+		}
+
+		// 총알
+		/*
+		for (int i{}; i < 50; ++i)
+		{
+			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Bullet\\Bullet.fbx");
+			vector<shared_ptr<GameObject>> bullets = meshData->Instantiate();
+
+			for (auto bullet : bullets)
+			{
+				bullet->SetName(L"Bullet" + std::to_wstring(i + 1));
+				bullet->SetCheckFrustum(true);
+				bullet->SetStatic(false);
+
+				bullet->AddComponent(make_shared<Transform>());
+				bullet->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+				bullet->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+				bullet->GetTransform()->GetTransform()->RemoveParent();
+				bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
+				bullet->AddComponent(make_shared<BulletScript>(playerScript));
+				activeScene->AddGameObject(bullet);
+			}
+		}
+		*/
+
 		// 수류탄
 		shared_ptr<GameObject> grenade = make_shared<GameObject>();
 		grenade->SetName(L"Grenade");
@@ -164,12 +223,37 @@ RuinsScene::RuinsScene()
 		Vec3 look = gameObjects[0]->GetTransform()->GetLook();
 		look.Normalize();
 
-		// 파티클의 방향이 첫 씬 만들때가 아니고 매 프레임마다 보내야 되는데
 		Vec4 dir{ look.x, look.y, look.z, 0.0f };
 		razerParticleSystem->SetEmitDirection(dir);
 		razerParticle->AddComponent(razerParticleSystem);
 
 		activeScene->AddGameObject(razerParticle);
+
+		// 조준점
+		shared_ptr<GameObject> obj = make_shared<GameObject>();
+		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		obj->AddComponent(make_shared<Transform>());
+		obj->SetName(L"CrosshairUI");
+		obj->GetTransform()->SetLocalScale(Vec3(500.f, 500.f, 500.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 1.f));
+		shared_ptr<MeshRenderer> CrosshairmeshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			CrosshairmeshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Crosshair", L"..\\Resources\\Texture\\Crosshair.png");
+
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			CrosshairmeshRenderer->SetMaterial(material);
+		}
+		obj->AddComponent(CrosshairmeshRenderer);
+		obj->SetRenderOff();
+		activeScene->AddGameObject(obj);
 	}
 #pragma endregion
 
