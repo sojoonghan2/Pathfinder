@@ -9,14 +9,20 @@
 #include "Scene.h"
 #include "Engine.h"
 
-CameraScript::CameraScript() {
-    _offsetPosition = Vec3(0.f, 500.f, -600.f);
+// 선형 보간 함수
+Vec3 Lerp(const Vec3& a, const Vec3& b, float t)
+{
+    return a + (b - a) * t;
+}
 
-    // 창 중앙 위치 계산
+CameraScript::CameraScript() {
+    _defaultOffset = Vec3(0.f, 500.f, -600.f);
+    _zoomOffset = Vec3(200.f, 600.f, -300.f);
+    _currentOffset = _defaultOffset;
+
     _centerScreenPos.x = GEngine->GetWindow().width / 2;
     _centerScreenPos.y = GEngine->GetWindow().height / 2;
 
-    // 화면 기준 좌표로 변환
     ClientToScreen(GEngine->GetWindow().hwnd, &_centerScreenPos);
 }
 
@@ -33,24 +39,24 @@ void CameraScript::LateUpdate() {
 
         Vec3 targetPos = _target->GetTransform()->GetLocalPosition();
 
-        // 공전 오프셋 계산
+        // 오른쪽 마우스 버튼 상태에 따라 오프셋 보간
+        Vec3 targetOffset = INPUT->GetButton(KEY_TYPE::RBUTTON) ? _zoomOffset : _defaultOffset;
+        _currentOffset = Lerp(_currentOffset, targetOffset, 5.f * DELTA_TIME); // 빠르게 따라가도록 보간
+
+        // 공전 위치 계산
         Vec3 rotatedOffset;
-        rotatedOffset.x = sinf(_revolution.y) * _offsetPosition.z;
-        rotatedOffset.z = cosf(_revolution.y) * _offsetPosition.z;
-        rotatedOffset.y = _offsetPosition.y;
+        rotatedOffset.x = sinf(_revolution.y) * _currentOffset.z + _currentOffset.x * cosf(_revolution.y);
+        rotatedOffset.z = cosf(_revolution.y) * _currentOffset.z - _currentOffset.x * sinf(_revolution.y);
+        rotatedOffset.y = _currentOffset.y;
 
         Vec3 camPos = targetPos + rotatedOffset;
         GetTransform()->SetLocalPosition(camPos);
 
-        // 카메라 회전 설정 (자전 + 타겟 방향 고려)
+        // 회전 계산
         Vec3 lookDirection = Normalization(targetPos - camPos);
-
-        // 자체 회전 각도 적용
         Vec3 finalRotation = _cameraRotation;
-        GetTransform()->SetLocalPosition(camPos);
         GetTransform()->LookAt(targetPos);
         finalRotation.y = atan2f(lookDirection.x, lookDirection.z);
-
         GetTransform()->SetLocalRotation(finalRotation);
     }
 }
@@ -59,7 +65,6 @@ void CameraScript::KeyboardInput() {
     Vec3 pos = GetTransform()->GetLocalPosition();
 
     if (!_playerCamera) {
-        // 이동 처리
         if (INPUT->GetButton(KEY_TYPE::UP))
             pos += Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
         if (INPUT->GetButton(KEY_TYPE::DOWN))
@@ -84,20 +89,18 @@ void CameraScript::MouseInput() {
         while (ShowCursor(FALSE) >= 0);
         POINT delta = INPUT->GetMouseDelta();
 
-        // 최대 회전 속도 제한
         const float maxDelta = 20.0f;
         float dx = std::clamp(static_cast<float>(delta.x), -maxDelta, maxDelta);
         float dy = std::clamp(static_cast<float>(delta.y), -maxDelta, maxDelta);
 
         _revolution.y += dx * 0.005f;
         _cameraRotation.y += dx * 0.005f;
-        // _cameraRotation.x += dy * 0.005f;
 
         // 커서가 화면 경계를 넘었는지 검사
         POINT cursorPos;
         GetCursorPos(&cursorPos);
 
-        int margin = 2; // 여유 마진
+        int margin = 2;
         RECT windowRect;
         GetClientRect(GEngine->GetWindow().hwnd, &windowRect);
         ClientToScreen(GEngine->GetWindow().hwnd, reinterpret_cast<LPPOINT>(&windowRect.left));

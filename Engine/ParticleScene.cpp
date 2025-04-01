@@ -334,7 +334,7 @@ ParticleScene::ParticleScene()
         obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
         obj->AddComponent(make_shared<Transform>());
         obj->SetName(L"CrosshairUI");
-        obj->GetTransform()->SetLocalScale(Vec3(500.f, 500.f, 500.f));
+        obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
         obj->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 1.f));
         shared_ptr<MeshRenderer> CrosshairmeshRenderer = make_shared<MeshRenderer>();
         {
