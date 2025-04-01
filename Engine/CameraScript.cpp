@@ -17,7 +17,7 @@ Vec3 Lerp(const Vec3& a, const Vec3& b, float t)
 
 CameraScript::CameraScript() {
     _defaultOffset = Vec3(0.f, 500.f, -600.f);
-    _zoomOffset = Vec3(200.f, 600.f, -300.f);
+    _zoomOffset = Vec3(0.f, 600.f, -250.f);
     _currentOffset = _defaultOffset;
 
     _centerScreenPos.x = GEngine->GetWindow().width / 2;
