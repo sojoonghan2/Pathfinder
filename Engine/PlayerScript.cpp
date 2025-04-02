@@ -145,7 +145,15 @@ void PlayerScript::Dash()
 	if (_isGrenade || _isRazer) return;
 
 	if (_dashCooldownTimer > 0.f)
+	{
 		_dashCooldownTimer -= DELTA_TIME;
+
+		// 쿨타임이 막 끝났을 때 UI 아이콘 켜기
+		if (_dashCooldownTimer <= 0.f)
+		{
+			GET_SINGLE(SceneManager)->FindObjectByName(L"DashUI")->SetRenderOn();
+		}
+	}
 
 	if (_isDashing)
 	{
@@ -171,6 +179,7 @@ void PlayerScript::Dash()
 		_dashDirection = lookDir;
 		_isDashing = true;
 		_dashTimer = _dashDuration;
+		GET_SINGLE(SceneManager)->FindObjectByName(L"DashUI")->SetRenderOff();
 	}
 }
 
@@ -203,7 +212,15 @@ void PlayerScript::ThrowGrenade()
 	if (_isDashing || _isRazer) return;
 
 	if (_grenadeCooldownTimer > 0.f)
+	{
 		_grenadeCooldownTimer -= DELTA_TIME;
+
+		// 쿨타임이 막 끝났을 때 UI 켜기
+		if (_grenadeCooldownTimer <= 0.f)
+		{
+			GET_SINGLE(SceneManager)->FindObjectByName(L"GrenadeUI")->SetRenderOn();
+		}
+	}
 
 	if (_isGrenade)
 	{
@@ -223,6 +240,7 @@ void PlayerScript::ThrowGrenade()
 		RotateToCameraLook();
 		_isGrenade = true;
 		_grenadeAniDurationTimer = 3.0f;
+		GET_SINGLE(SceneManager)->FindObjectByName(L"GrenadeUI")->SetRenderOff();
 	}
 }
 
@@ -231,7 +249,15 @@ void PlayerScript::ShootRazer()
 	if (_isDashing || _isGrenade) return;
 
 	if (_razerCooldownTimer > 0.f)
+	{
 		_razerCooldownTimer -= DELTA_TIME;
+
+		// 쿨타임이 막 끝났을 때 UI 켜기
+		if (_razerCooldownTimer <= 0.f)
+		{
+			GET_SINGLE(SceneManager)->FindObjectByName(L"RazerUI")->SetRenderOn();
+		}
+	}
 
 	if (_isRazer)
 	{
@@ -251,6 +277,7 @@ void PlayerScript::ShootRazer()
 		RotateToCameraLook();
 		_isRazer = true;
 		_razerAniDurationTimer = 7.5f;
+		GET_SINGLE(SceneManager)->FindObjectByName(L"RazerUI")->SetRenderOff();
 	}
 }
 

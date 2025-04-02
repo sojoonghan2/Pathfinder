@@ -354,6 +354,30 @@ ParticleScene::ParticleScene()
         obj->AddComponent(CrosshairmeshRenderer);
         obj->SetRenderOff();
         activeScene->AddGameObject(obj);
+
+        // 체력 UI
+        shared_ptr<GameObject> hpUI = make_shared<GameObject>();
+        hpUI->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+        hpUI->AddComponent(make_shared<Transform>());
+        hpUI->SetName(L"HPUI");
+        hpUI->GetTransform()->SetLocalScale(Vec3(200.f, 100.f, 100.f));
+        hpUI->GetTransform()->SetLocalPosition(Vec3(-450.f, -300.f, 1.f));
+        shared_ptr<MeshRenderer> hpUImeshRenderer = make_shared<MeshRenderer>();
+        {
+            shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+            hpUImeshRenderer->SetMesh(mesh);
+        }
+        {
+            shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+            shared_ptr<Texture> texture{};
+            texture = GET_SINGLE(Resources)->Load<Texture>(L"HPUI", L"..\\Resources\\Texture\\HPUI.png");
+            shared_ptr<Material> material = make_shared<Material>();
+            material->SetShader(shader);
+            material->SetTexture(0, texture);
+            hpUImeshRenderer->SetMaterial(material);
+        }
+        hpUI->AddComponent(hpUImeshRenderer);
+        activeScene->AddGameObject(hpUI);
     }
 #pragma endregion
 
@@ -384,6 +408,39 @@ ParticleScene::ParticleScene()
             meshRenderer->SetMaterial(material);
         }
         obj->AddComponent(meshRenderer);
+        activeScene->AddGameObject(obj);
+    }
+#pragma endregion
+
+// 스킬 아이콘
+#pragma region Icon
+    for (int i{}; i < 3; ++i)
+    {
+        shared_ptr<GameObject> obj = make_shared<GameObject>();
+        obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+        obj->AddComponent(make_shared<Transform>());
+        if (i == 0) obj->SetName(L"DashUI");
+        else if (i == 1) obj->SetName(L"GrenadeUI");
+        else if (i == 2) obj->SetName(L"RazerUI");
+        obj->GetTransform()->SetLocalScale(Vec3(80.f, 80.f, 80.f));
+        obj->GetTransform()->SetLocalPosition(Vec3(350.f + i * 90, -300.f, 1.f));
+        shared_ptr<MeshRenderer> CrosshairmeshRenderer = make_shared<MeshRenderer>();
+        {
+            shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+            CrosshairmeshRenderer->SetMesh(mesh);
+        }
+        {
+            shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+            shared_ptr<Texture> texture{};
+            if (i == 0) texture = GET_SINGLE(Resources)->Load<Texture>(L"DashUI", L"..\\Resources\\Texture\\Skill\\Dash.png");
+            else if (i == 1) texture = GET_SINGLE(Resources)->Load<Texture>(L"GrenadeUI", L"..\\Resources\\Texture\\Skill\\Grenade.png");
+            else if (i == 2) texture = GET_SINGLE(Resources)->Load<Texture>(L"RazerUI", L"..\\Resources\\Texture\\Skill\\Razer.png");
+            shared_ptr<Material> material = make_shared<Material>();
+            material->SetShader(shader);
+            material->SetTexture(0, texture);
+            CrosshairmeshRenderer->SetMaterial(material);
+        }
+        obj->AddComponent(CrosshairmeshRenderer);
         activeScene->AddGameObject(obj);
     }
 #pragma endregion
