@@ -8,5 +8,5 @@
 void WaterScript::LateUpdate()
 {
 	if (GetMeshRenderer())
-		GetMeshRenderer()->GetMaterial()->SetFloat(0, GET_SINGLE(Timer)->GetTotalTime() * 3.f);
+		GetMeshRenderer()->GetMaterial()->SetFloat(0, GET_SINGLE(Timer)->GetTotalTime());
 }
