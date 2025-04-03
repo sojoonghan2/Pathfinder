@@ -80,6 +80,58 @@ shared_ptr<Mesh> Resources::LoadPlanMesh()
 	return planeMesh;
 }
 
+shared_ptr<Mesh> Resources::LoadWaterMesh()
+{
+	const int resolution = 100;
+	const float width = 2.0f;
+	const float height = 2.0f;
+
+	std::vector<Vertex> vertices;
+	std::vector<uint32> indices;
+
+	for (int z = 0; z <= resolution; ++z)
+	{
+		for (int x = 0; x <= resolution; ++x)
+		{
+			float u = static_cast<float>(x) / resolution;
+			float v = static_cast<float>(z) / resolution;
+			float px = -width / 2.0f + u * width;
+			float pz = -height / 2.0f + v * height;
+
+			Vertex vertex;
+			vertex.pos = Vec3(px, 0.0f, pz);
+			vertex.uv = Vec2(u, v);
+			vertex.normal = Vec3(0, 1, 0);
+			vertex.tangent = Vec3(1, 0, 0);
+			vertices.push_back(vertex);
+		}
+	}
+
+	for (int z = 0; z < resolution; ++z)
+	{
+		for (int x = 0; x < resolution; ++x)
+		{
+			int i0 = z * (resolution + 1) + x;
+			int i1 = i0 + 1;
+			int i2 = i0 + (resolution + 1);
+			int i3 = i2 + 1;
+
+			// 두 삼각형으로 구성
+			indices.push_back(i0);
+			indices.push_back(i2);
+			indices.push_back(i1);
+
+			indices.push_back(i1);
+			indices.push_back(i2);
+			indices.push_back(i3);
+		}
+	}
+
+	shared_ptr<Mesh> planeMesh = make_shared<Mesh>();
+	planeMesh->Create(vertices, indices);
+	return planeMesh;
+}
+
 shared_ptr<Mesh> Resources::LoadCubeMesh()
 {
 	shared_ptr<Mesh> findMesh = Get<Mesh>(L"Cube");

@@ -26,6 +26,17 @@ VS_OUT VS_Main(VS_IN input)
 {
     VS_OUT output;
 
+    float time = g_float_0;
+    // 진동수(한 화면에 파도가 몇 번 출렁이나)
+    float frequency = 10.0f;
+    // 속도(파도의 빠르기)
+    float speed = 1.0f;
+    // 진폭(파도의 높이)
+    float amplitude = 30.0f;
+    
+    input.pos.y += sin(input.pos.x * frequency + time * speed) * amplitude;
+    input.pos.y += cos(input.pos.z * frequency + time * speed) * amplitude;
+
     float4 worldPos = mul(float4(input.pos, 1.0), g_matWorld);
     float4 viewPos = mul(worldPos, g_matView);
     output.pos = mul(viewPos, g_matProjection);
@@ -67,10 +78,7 @@ float4 PS_Main(VS_OUT input) : SV_TARGET
     // 굴절 텍스처 샘플링
     float2 refractionTexCoord = input.texCoord + normalMapSample.xy * 0.05;
     float3 refractionColor = g_textures2.Sample(g_sam_0, refractionTexCoord).rgb;
-
-    // 반사 효과 추가
-    float3 reflectionColor = g_textures3.Sample(g_sam_0, reflect(-viewDir, normal).xy * 0.5 + 0.5).rgb;
-    reflectionColor *= fresnelFactor;
+    
 
     // Specular 하이라이트 추가
     float3 lightDir = normalize(float3(0.2, 1.0, -0.3));
@@ -80,10 +88,30 @@ float4 PS_Main(VS_OUT input) : SV_TARGET
     // 최종 컬러 결합
     float3 combinedColor = lerp(refractionColor, normalMapSample, 0.5);
     combinedColor = lerp(combinedColor, waterTextureSample, 0.5);
-    combinedColor = lerp(combinedColor, reflectionColor, fresnelFactor);
+    combinedColor = lerp(combinedColor, 0.5, fresnelFactor);
     combinedColor += specular;
+    
+    // *** 렌즈 플레어 ***
+    float2 screenUV = input.pos.xy / input.pos.w; // NDC
+    screenUV = screenUV * 0.5f + 0.5f; // [0, 1] 정규화
 
-    return float4(combinedColor, 0.9f);
+    float2 lightScreenPos = float2(0.5f, 0.2f); // 광원 위치 (UI로 넘겨도 됨)
+    float2 flareDir = screenUV - lightScreenPos;
+
+    float3 flareColor = float3(0, 0, 0);
+
+    [unroll]
+    for (int i = 1; i <= 3; ++i)
+    {
+        float2 flareUV = lightScreenPos + flareDir * (float) i * 0.3f;
+        float3 flareSample = g_textures1.Sample(g_sam_0, flareUV).rgb;
+        flareColor += flareSample * (1.0f / i);
+    }
+
+    combinedColor += flareColor * 0.3f;
+    // ******************
+
+    return float4(combinedColor, 0.75f);
 }
 
 #endif

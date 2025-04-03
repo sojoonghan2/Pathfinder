@@ -255,9 +255,6 @@
     <ClCompile Include="RectangleCollider.cpp">
       <Filter>Object\Component\Collider</Filter>
     </ClCompile>
-    <ClCompile Include="TestGrenadeScript.cpp">
-      <Filter>Script</Filter>
-    </ClCompile>
     <ClCompile Include="BossScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
@@ -319,6 +316,9 @@
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
     <ClCompile Include="BulletScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="TestGrenadeScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
   </ItemGroup>
@@ -533,9 +533,6 @@
     <ClInclude Include="RectangleCollider.h">
       <Filter>Object\Component\Collider</Filter>
     </ClInclude>
-    <ClInclude Include="TestGrenadeScript.h">
-      <Filter>Script</Filter>
-    </ClInclude>
     <ClInclude Include="BossScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
@@ -597,6 +594,9 @@
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
     <ClInclude Include="BulletScript.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="TestGrenadeScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
   </ItemGroup>

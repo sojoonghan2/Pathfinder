@@ -452,7 +452,7 @@ RuinsScene::RuinsScene()
 
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
-			shared_ptr<Mesh> waterMesh = GET_SINGLE(Resources)->LoadPlanMesh();
+			shared_ptr<Mesh> waterMesh = GET_SINGLE(Resources)->LoadWaterMesh();
 			meshRenderer->SetMesh(waterMesh);
 		}
 		{
@@ -466,6 +466,7 @@ RuinsScene::RuinsScene()
 #pragma endregion
 
 // 로봇
+	/*
 #pragma region SELFDESTRUCTIONROBOT
 	{
 		std::random_device rd;
@@ -513,6 +514,7 @@ RuinsScene::RuinsScene()
 		}
 	}
 #pragma endregion
+	*/
 
 // 점령 구역
 #pragma region Occupation
