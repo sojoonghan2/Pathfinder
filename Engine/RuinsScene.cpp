@@ -546,6 +546,25 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
+#pragma region Temple
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Temple\\Temple.fbx");
+
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		for (auto gameObject : gameObjects)
+		{
+			gameObject->SetName(L"Temple");
+			gameObject->SetCheckFrustum(false);
+			gameObject->AddComponent(make_shared<Transform>());
+			gameObject->GetTransform()->SetLocalScale(Vec3(50.f, 50.f, 50.f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 3500.0f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 1.5708f, 0.0f));
+			activeScene->AddGameObject(gameObject);
+		}
+	}
+#pragma endregion
+
 // ÁöÇü
 #pragma region Stone
 	for (int i = -1; i < 2; ++i) {
