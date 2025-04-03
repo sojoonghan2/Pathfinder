@@ -4,8 +4,8 @@
 RazerParticleSystem::RazerParticleSystem() : BaseParticleSystem()
 {
 	SetParticleInterval(0.005f, 0.0f);
-	SetParticleLifeTime(0.5f, 1.0f);
-	SetParticleSpeed(2000.0f, 2500.0f);
+	SetParticleLifeTime(1.0f, 1.0f);
+	SetParticleSpeed(7000.0f, 7000.0f);
 	SetParticleScale(200.0f, 200.0f);
 	SetDuration(3.0f);
 	SetOnceParticleNum(10);

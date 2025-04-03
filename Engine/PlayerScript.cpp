@@ -31,11 +31,12 @@ void PlayerScript::LateUpdate()
 			queue.pop();
 		}
 	}
-#endif // NETWORK_ENABLE
+#endif
 
 	_isMove = false;
 	KeyboardInput();
 	MouseInput();
+	RotateToCameraOnShoot();
 	ThrowGrenade();
 	ShootRazer();
 	Animation();
@@ -56,34 +57,21 @@ void PlayerScript::Animation()
 {
 	static uint32 currentAnimIndex = 0;
 	uint32 nextAnimIndex = 0;
+
 	if (_isRazer)
-	{
 		nextAnimIndex = 7;
-	}
 	else if (_isGrenade)
-	{
 		nextAnimIndex = 3;
-	}
 	else if (_isDashing)
-	{
 		nextAnimIndex = 2;
-	}
 	else if (_isShoot && _isMove)
-	{
 		nextAnimIndex = 5;
-	}
 	else if (_isShoot && !_isMove)
-	{
 		nextAnimIndex = 4;
-	}
 	else if (_isMove)
-	{
 		nextAnimIndex = 1;
-	}
 	else
-	{
 		nextAnimIndex = 0;
-	}
 
 	if (currentAnimIndex != nextAnimIndex)
 	{
@@ -124,10 +112,8 @@ void PlayerScript::Move()
 		Vec3 targetRot = Vec3(-XM_PIDIV2, targetYaw, 0.f);
 
 		float deltaYaw = targetRot.y - currentRot.y;
-		if (deltaYaw > XM_PI)
-			deltaYaw -= XM_2PI;
-		else if (deltaYaw < -XM_PI)
-			deltaYaw += XM_2PI;
+		if (deltaYaw > XM_PI) deltaYaw -= XM_2PI;
+		else if (deltaYaw < -XM_PI) deltaYaw += XM_2PI;
 
 		float lerpSpeed = 10.0f;
 		currentRot.y += deltaYaw * lerpSpeed * DELTA_TIME;
@@ -143,12 +129,9 @@ void PlayerScript::Move()
 		_isMove = false;
 	}
 
-	float mapMinX = -4950.f;
-	float mapMaxX = 4950.f;
-	float mapMinZ = -4950.f;
-	float mapMaxZ = 4950.f;
-	float minY = 0.f;
-	float maxY = 9500.f;
+	float mapMinX = -4950.f, mapMaxX = 4950.f;
+	float mapMinZ = -4950.f, mapMaxZ = 4950.f;
+	float minY = 0.f, maxY = 9500.f;
 
 	pos.x = max(mapMinX, min(pos.x, mapMaxX));
 	pos.y = max(minY, min(pos.y, maxY));
@@ -162,7 +145,15 @@ void PlayerScript::Dash()
 	if (_isGrenade || _isRazer) return;
 
 	if (_dashCooldownTimer > 0.f)
+	{
 		_dashCooldownTimer -= DELTA_TIME;
+
+		// 쿨타임이 막 끝났을 때 UI 아이콘 켜기
+		if (_dashCooldownTimer <= 0.f)
+		{
+			GET_SINGLE(SceneManager)->FindObjectByName(L"DashUI")->SetRenderOn();
+		}
+	}
 
 	if (_isDashing)
 	{
@@ -181,7 +172,6 @@ void PlayerScript::Dash()
 
 	if (_dashCooldownTimer <= 0.f && INPUT->GetButtonDown(KEY_TYPE::SPACE))
 	{
-		// 플레이어가 바라보는 방향으로 대쉬
 		Vec3 lookDir = GetTransform()->GetLook();
 		lookDir.y = 0.f;
 		lookDir.Normalize();
@@ -189,37 +179,48 @@ void PlayerScript::Dash()
 		_dashDirection = lookDir;
 		_isDashing = true;
 		_dashTimer = _dashDuration;
+		GET_SINGLE(SceneManager)->FindObjectByName(L"DashUI")->SetRenderOff();
 	}
 }
+
 void PlayerScript::Shoot()
 {
 	if (_isGrenade || _isRazer || _isDashing) return;
 
-	if (_isShoot)
-	{
-		_shootAniDurationTimer -= DELTA_TIME;
-
-		if (_shootAniDurationTimer <= 0.f)
-		{
-			_isShoot = false;
-			_shootAniDurationTimer = 0.f;
-		}
-		return;
-	}
-
+	// 마우스를 누르고 있으면 isShoot 유지
 	if (INPUT->GetButton(KEY_TYPE::LBUTTON))
 	{
-		_isShoot = true;
-		_shootAniDurationTimer = 1.0f;
+		if (!_isShoot)
+		{
+			_isShoot = true;
+			_shootAniDurationTimer = 1.0f;
+		}
+		else
+		{
+			_shootAniDurationTimer = 1.0f;
+		}
+	}
+	else
+	{
+		_isShoot = false;
+		_shootAniDurationTimer = 0.f;
 	}
 }
+
 void PlayerScript::ThrowGrenade()
 {
 	if (_isDashing || _isRazer) return;
 
-	// 쿨타임 갱신
 	if (_grenadeCooldownTimer > 0.f)
+	{
 		_grenadeCooldownTimer -= DELTA_TIME;
+
+		// 쿨타임이 막 끝났을 때 UI 켜기
+		if (_grenadeCooldownTimer <= 0.f)
+		{
+			GET_SINGLE(SceneManager)->FindObjectByName(L"GrenadeUI")->SetRenderOn();
+		}
+	}
 
 	if (_isGrenade)
 	{
@@ -229,8 +230,6 @@ void PlayerScript::ThrowGrenade()
 		{
 			_isGrenade = false;
 			_grenadeAniDurationTimer = 0.f;
-
-			// 쿨타임 시작
 			_grenadeCooldownTimer = _grenadeCooldown;
 		}
 		return;
@@ -238,8 +237,10 @@ void PlayerScript::ThrowGrenade()
 
 	if (_grenadeCooldownTimer <= 0.f && INPUT->GetButtonDown(KEY_TYPE::E))
 	{
+		RotateToCameraLook();
 		_isGrenade = true;
 		_grenadeAniDurationTimer = 3.0f;
+		GET_SINGLE(SceneManager)->FindObjectByName(L"GrenadeUI")->SetRenderOff();
 	}
 }
 
@@ -247,9 +248,16 @@ void PlayerScript::ShootRazer()
 {
 	if (_isDashing || _isGrenade) return;
 
-	// 쿨타임 갱신
 	if (_razerCooldownTimer > 0.f)
+	{
 		_razerCooldownTimer -= DELTA_TIME;
+
+		// 쿨타임이 막 끝났을 때 UI 켜기
+		if (_razerCooldownTimer <= 0.f)
+		{
+			GET_SINGLE(SceneManager)->FindObjectByName(L"RazerUI")->SetRenderOn();
+		}
+	}
 
 	if (_isRazer)
 	{
@@ -259,8 +267,6 @@ void PlayerScript::ShootRazer()
 		{
 			_isRazer = false;
 			_razerAniDurationTimer = 0.f;
-
-			// 쿨타임 시작
 			_razerCooldownTimer = _razerCooldown;
 		}
 		return;
@@ -268,8 +274,10 @@ void PlayerScript::ShootRazer()
 
 	if (_razerCooldownTimer <= 0.f && INPUT->GetButtonDown(KEY_TYPE::R))
 	{
+		RotateToCameraLook();
 		_isRazer = true;
 		_razerAniDurationTimer = 7.5f;
+		GET_SINGLE(SceneManager)->FindObjectByName(L"RazerUI")->SetRenderOff();
 	}
 }
 
@@ -280,4 +288,34 @@ void PlayerScript::SetPosition(float x, float z)
 	pos.z = z * 200.f;
 
 	GetTransform()->SetLocalPosition(pos);
+}
+
+void PlayerScript::RotateToCameraOnShoot()
+{
+	if (INPUT->GetButton(KEY_TYPE::RBUTTON))
+	{
+		auto crosshair = GET_SINGLE(SceneManager)->FindObjectByName(L"CrosshairUI");
+		crosshair->SetRenderOn();
+		RotateToCameraLook();
+	}
+	if (INPUT->GetButtonUp(KEY_TYPE::RBUTTON))
+	{
+		auto crosshair = GET_SINGLE(SceneManager)->FindObjectByName(L"CrosshairUI");
+		crosshair->SetRenderOff();
+	}
+}
+
+void PlayerScript::RotateToCameraLook()
+{
+	shared_ptr<GameObject> cameraObj = GET_SINGLE(SceneManager)->GetActiveScene()->GetMainCamera()->GetGameObject();
+	Vec3 camLook = cameraObj->GetTransform()->GetLook();
+	camLook.y = 0.f;
+	camLook.Normalize();
+
+	if (camLook.LengthSquared() > 0.0001f)
+	{
+		float targetYaw = atan2f(camLook.x, camLook.z) + XM_PI;
+		Vec3 targetRot = Vec3(-XM_PIDIV2, targetYaw, 0.f);
+		GetTransform()->SetLocalRotation(targetRot);
+	}
 }

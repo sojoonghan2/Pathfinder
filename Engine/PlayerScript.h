@@ -19,6 +19,9 @@ public:
 	void ThrowGrenade();
 	void ShootRazer();
 
+	void RotateToCameraOnShoot();
+	void RotateToCameraLook();
+
 	void SetPosition(float x, float z);
 
 	float GetRazerCooldown() { return _razerCooldown; }

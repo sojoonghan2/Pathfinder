@@ -35,6 +35,7 @@
 #include "RuinsScript.h"
 #include "TestOtherPlayerScript.h"
 #include "RazerParticleScript.h"
+#include "BulletScript.h"
 
 #include "SphereCollider.h"
 #include "RectangleCollider.h"
@@ -212,6 +213,64 @@ ParticleScene::ParticleScene()
             activeScene->AddGameObject(gameObject);
         }
 
+        // 총알
+        for (int i{}; i < 50; ++i)
+        {
+            shared_ptr<GameObject> bullet = make_shared<GameObject>();
+            bullet->SetName(L"Bullet" + std::to_wstring(i + 1));
+            bullet->SetCheckFrustum(true);
+            bullet->SetStatic(false);
+
+            bullet->AddComponent(make_shared<Transform>());
+            bullet->GetTransform()->SetLocalScale(Vec3(30.f, 30.f, 30.f));
+            bullet->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+            bullet->GetTransform()->GetTransform()->RemoveParent();
+            bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
+            bullet->AddComponent(make_shared<BulletScript>(playerScript));
+
+            shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+            {
+                shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+                meshRenderer->SetMesh(sphereMesh);
+            }
+            {
+                shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
+                shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bullet", L"..\\Resources\\Texture\\Bullet.png");
+
+                shared_ptr<Material> material = make_shared<Material>();
+                material->SetShader(shader);
+                material->SetTexture(0, texture);
+                meshRenderer->SetMaterial(material);
+            }
+            bullet->AddComponent(meshRenderer);
+
+            activeScene->AddGameObject(bullet);
+        }
+
+        // 총알
+        /*
+        for (int i{}; i < 50; ++i)
+        {
+            shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Bullet\\Bullet.fbx");
+            vector<shared_ptr<GameObject>> bullets = meshData->Instantiate();
+
+            for (auto bullet : bullets)
+            {
+                bullet->SetName(L"Bullet" + std::to_wstring(i + 1));
+                bullet->SetCheckFrustum(true);
+                bullet->SetStatic(false);
+
+                bullet->AddComponent(make_shared<Transform>());
+                bullet->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+                bullet->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+                bullet->GetTransform()->GetTransform()->RemoveParent();
+                bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
+                bullet->AddComponent(make_shared<BulletScript>(playerScript));
+                activeScene->AddGameObject(bullet);
+            }
+        }
+        */
+
         // 수류탄
         shared_ptr<GameObject> grenade = make_shared<GameObject>();
         grenade->SetName(L"Grenade");
@@ -264,12 +323,61 @@ ParticleScene::ParticleScene()
         Vec3 look = gameObjects[0]->GetTransform()->GetLook();
         look.Normalize();
         
-        // 파티클의 방향이 첫 씬 만들때가 아니고 매 프레임마다 보내야 되는데
         Vec4 dir{ look.x, look.y, look.z, 0.0f };
         razerParticleSystem->SetEmitDirection(dir);
         razerParticle->AddComponent(razerParticleSystem);
 
         activeScene->AddGameObject(razerParticle);
+
+        // 조준점
+        shared_ptr<GameObject> obj = make_shared<GameObject>();
+        obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+        obj->AddComponent(make_shared<Transform>());
+        obj->SetName(L"CrosshairUI");
+        obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+        obj->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 1.f));
+        shared_ptr<MeshRenderer> CrosshairmeshRenderer = make_shared<MeshRenderer>();
+        {
+            shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+            CrosshairmeshRenderer->SetMesh(mesh);
+        }
+        {
+            shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+
+            shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Crosshair", L"..\\Resources\\Texture\\Crosshair.png");
+
+            shared_ptr<Material> material = make_shared<Material>();
+            material->SetShader(shader);
+            material->SetTexture(0, texture);
+            CrosshairmeshRenderer->SetMaterial(material);
+        }
+        obj->AddComponent(CrosshairmeshRenderer);
+        obj->SetRenderOff();
+        activeScene->AddGameObject(obj);
+
+        // 체력 UI
+        shared_ptr<GameObject> hpUI = make_shared<GameObject>();
+        hpUI->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+        hpUI->AddComponent(make_shared<Transform>());
+        hpUI->SetName(L"HPUI");
+        hpUI->GetTransform()->SetLocalScale(Vec3(200.f, 100.f, 100.f));
+        hpUI->GetTransform()->SetLocalPosition(Vec3(-450.f, -300.f, 1.f));
+        shared_ptr<MeshRenderer> hpUImeshRenderer = make_shared<MeshRenderer>();
+        {
+            shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+            hpUImeshRenderer->SetMesh(mesh);
+        }
+        {
+            shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+            shared_ptr<Texture> texture{};
+            texture = GET_SINGLE(Resources)->Load<Texture>(L"HPUI", L"..\\Resources\\Texture\\HPUI.png");
+            shared_ptr<Material> material = make_shared<Material>();
+            material->SetShader(shader);
+            material->SetTexture(0, texture);
+            hpUImeshRenderer->SetMaterial(material);
+        }
+        hpUI->AddComponent(hpUImeshRenderer);
+        activeScene->AddGameObject(hpUI);
     }
 #pragma endregion
 
@@ -304,53 +412,57 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
-// 점령 중 UI
-#pragma region UI
+// 스킬 아이콘
+#pragma region Icon
+    for (int i{}; i < 3; ++i)
     {
         shared_ptr<GameObject> obj = make_shared<GameObject>();
         obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
         obj->AddComponent(make_shared<Transform>());
-        obj->SetName(L"OccupationUI");
-        obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-        obj->GetTransform()->SetLocalPosition(Vec3(WINDOWHEIGHT / 2, WINDOWWIDTH / 2, 0.f));
-        shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+        if (i == 0) obj->SetName(L"DashUI");
+        else if (i == 1) obj->SetName(L"GrenadeUI");
+        else if (i == 2) obj->SetName(L"RazerUI");
+        obj->GetTransform()->SetLocalScale(Vec3(80.f, 80.f, 80.f));
+        obj->GetTransform()->SetLocalPosition(Vec3(350.f + i * 90, -300.f, 1.f));
+        shared_ptr<MeshRenderer> CrosshairmeshRenderer = make_shared<MeshRenderer>();
         {
             shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-            meshRenderer->SetMesh(mesh);
+            CrosshairmeshRenderer->SetMesh(mesh);
         }
         {
             shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
-
-            shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Crosshair", L"..\\Resources\\Texture\\Crosshair.png");
-
+            shared_ptr<Texture> texture{};
+            if (i == 0) texture = GET_SINGLE(Resources)->Load<Texture>(L"DashUI", L"..\\Resources\\Texture\\Skill\\Dash.png");
+            else if (i == 1) texture = GET_SINGLE(Resources)->Load<Texture>(L"GrenadeUI", L"..\\Resources\\Texture\\Skill\\Grenade.png");
+            else if (i == 2) texture = GET_SINGLE(Resources)->Load<Texture>(L"RazerUI", L"..\\Resources\\Texture\\Skill\\Razer.png");
             shared_ptr<Material> material = make_shared<Material>();
             material->SetShader(shader);
             material->SetTexture(0, texture);
-            meshRenderer->SetMaterial(material);
+            CrosshairmeshRenderer->SetMaterial(material);
         }
-        obj->AddComponent(meshRenderer);
+        obj->AddComponent(CrosshairmeshRenderer);
         activeScene->AddGameObject(obj);
     }
 #pragma endregion
 
 // 지형
 #pragma region Temp
-    /*
-    shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Temp\\Temp.fbx");
-
-    vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
-
-    for (auto gameObject : gameObjects)
     {
-        gameObject->SetName(L"Temppp");
-        gameObject->SetCheckFrustum(false);
-        gameObject->AddComponent(make_shared<Transform>());
-        gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
-        gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, 300.0f, 0.0f));
-        gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 0.0f, 0.0f));
-        activeScene->AddGameObject(gameObject);
+        shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Temp\\Temp.fbx");
+
+        vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+        for (auto gameObject : gameObjects)
+        {
+            gameObject->SetName(L"Temppp");
+            gameObject->SetCheckFrustum(false);
+            gameObject->AddComponent(make_shared<Transform>());
+            gameObject->GetTransform()->SetLocalScale(Vec3(50.f, 50.f, 50.f));
+            gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -400.0f, 0.0f));
+            gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 0.0f, 0.0f));
+            activeScene->AddGameObject(gameObject);
+        }
     }
-    */
 #pragma endregion
 
 #pragma region OtherPlayer
@@ -517,7 +629,7 @@ void ParticleScene::LoadDebugParticle()
 
         // 좌표 컴포넌트 추가
         testPBRParticle->AddComponent(make_shared<Transform>());
-        testPBRParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, 400.f));
+        testPBRParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 1000.f, 4000.f));
         testPBRParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
         // 파티클 시스템 컴포넌트 추가

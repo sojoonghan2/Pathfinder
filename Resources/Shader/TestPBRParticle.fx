@@ -145,7 +145,7 @@ RWStructuredBuffer<ComputeShared> g_shared : register(u1);
 
 groupshared int isGenerated;
 
-[numthreads(1024, 1, 1)]
+[numthreads(1, 1, 1)]
 void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 {
     if (threadIndex.x >= g_int_0)
@@ -211,16 +211,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     }
     else
     {
-        g_particle[threadIndex.x].curTime += deltaTime;
-        if (g_particle[threadIndex.x].lifeTime < g_particle[threadIndex.x].curTime)
-        {
-            g_particle[threadIndex.x].alive = 0;
-            return;
-        }
-
-        float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
-        float speed = (maxSpeed - minSpeed) * ratio + minSpeed;
-        g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
+        
     }
 }
 
