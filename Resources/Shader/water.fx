@@ -32,7 +32,7 @@ VS_OUT VS_Main(VS_IN input)
     // 속도(파도의 빠르기)
     float speed = 1.0f;
     // 진폭(파도의 높이)
-    float amplitude = 30.0f;
+    float amplitude = 50.0f;
     
     input.pos.y += sin(input.pos.x * frequency + time * speed) * amplitude;
     input.pos.y += cos(input.pos.z * frequency + time * speed) * amplitude;
