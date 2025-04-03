@@ -49,6 +49,9 @@
     <Filter Include="Network\Common">
       <UniqueIdentifier>{5d949c5a-61e8-4edd-b218-5dde9aee1d50}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network\util">
+      <UniqueIdentifier>{173b7caa-495e-4245-81fa-977da523f6b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -314,6 +317,9 @@
     </ClCompile>
     <ClCompile Include="RazerParticleScript.cpp">
       <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkTimer.cpp">
+      <Filter>Network\util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -586,6 +592,9 @@
     </ClInclude>
     <ClInclude Include="RazerParticleScript.h">
       <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkTimer.h">
+      <Filter>Network\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

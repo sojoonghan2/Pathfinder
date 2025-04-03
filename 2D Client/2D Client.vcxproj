@@ -143,6 +143,7 @@
     <ClCompile Include="..\Common\util.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SocketIO.cpp" />
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\CommonDefine.h" />
@@ -151,6 +152,7 @@
     <ClInclude Include="define.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SocketIO.h" />
+    <ClInclude Include="Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

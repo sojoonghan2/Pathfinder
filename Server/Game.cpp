@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Game.h"
 #include "IOCP.h"
+#include "Timer.h"
 
 std::random_device rd;
 std::default_random_engine dre{ rd() };
@@ -27,7 +28,7 @@ void Game::RegisterClient(int id)
 	std::array<int, 3> client_ids{};
 	bool loop{ false };
 	bool match{ false };
-	util::Timer pop_timer;
+	Timer pop_timer;
 	int count{ 1 };
 	do {
 		loop = false;

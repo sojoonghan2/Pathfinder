@@ -14,7 +14,7 @@
     <Filter Include="Common">
       <UniqueIdentifier>{65ef0b8e-071d-49d9-a874-f11fbaac2c37}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tool">
+    <Filter Include="utils">
       <UniqueIdentifier>{c1801502-f605-44d5-b008-b10df6d1fb9d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -28,6 +28,9 @@
     </ClCompile>
     <ClCompile Include="..\Common\util.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -48,6 +51,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\CommonDefine.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
