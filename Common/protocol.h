@@ -2,14 +2,26 @@
 
 // 상수 정의
 
-// 단위 m
+// MAP 
 constexpr float MAP_SIZE_M{ 50.f };
-constexpr float PLAYER_SIZE_M{ 0.5f };
 
-// 플레이어 이동속도, 단위 m/s
+
+// PLAYER
+constexpr float PLAYER_SIZE_M{ 0.5f };
 constexpr float PLAYER_SPEED_MPS{ 5.f };
 
+constexpr float SKILL_DASH_SPEED_MPS{ 50.f };
+constexpr float SKILL_DASH_COOLDOWN_S{ 1.f };
+constexpr float SKILL_GRENADE_COOLDOWN_S{ 10.f };
+constexpr float SKILL_RAZER_COOLDOWN_S{ 10.f };
 
+
+
+
+
+
+
+// NETWORK
 constexpr int PORT_NUMBER{ 4000 };
 constexpr int BUFFER_SIZE{ 200 };
 

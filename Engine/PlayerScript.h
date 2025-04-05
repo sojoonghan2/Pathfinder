@@ -1,5 +1,6 @@
 #pragma once
 #include "MonoBehaviour.h"
+#include "NetworkTimer.h"
 
 class PlayerScript : public MonoBehaviour
 {
@@ -39,24 +40,26 @@ private:
 	bool			_isRazer = false;
 	bool			_isShoot = false;
 
-	float			_speed = 1000.f;
+	float			_speed = PLAYER_SPEED_MPS * METER_TO_CLIENT;
 	float			_dashDuration = 0.1f;
 	float			_dashTimer = 0.f;
 
-	float			_dashCooldown = 1.0f;
+	float			_dashCooldown = SKILL_DASH_COOLDOWN_S;
 	float			_dashCooldownTimer = 0.f;
 
 	Vec3			_dashDirection = Vec3::Zero;
-	float			_dashSpeed = 10000.f;
+	float			_dashSpeed = SKILL_DASH_SPEED_MPS * METER_TO_CLIENT;
 
 	float			_grenadeAniDurationTimer = 0.f;
-	float			_grenadeCooldown = 10.0f;
+	float			_grenadeCooldown = SKILL_GRENADE_COOLDOWN_S;
 	float			_grenadeCooldownTimer = 0.0f;
 
 	float			_razerAniDurationTimer = 0.f;
-	float			_razerCooldown = 10.0f;
+	float			_razerCooldown = SKILL_RAZER_COOLDOWN_S;
 	float			_razerCooldownTimer = 0.0f;
 
 	float			_shootAniDurationTimer = 0.f;
+
+	NetworkTimer	_moveTimer;
 };
 

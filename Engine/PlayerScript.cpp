@@ -31,6 +31,13 @@ void PlayerScript::LateUpdate()
 			queue.pop();
 		}
 	}
+
+	if (_moveTimer.PeekDeltaTime() > MOVE_PACKET_TIME_MS) {
+		_moveTimer.updateDeltaTime();
+		Vec3 pos = GetTransform()->GetLocalPosition();
+		GET_SINGLE(SocketIO)->DoSend<packet::CSMovePlayer>(pos.x, pos.y);
+	}
+
 #endif
 
 	_isMove = false;

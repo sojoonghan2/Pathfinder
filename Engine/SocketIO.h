@@ -30,15 +30,15 @@ public:
 	void Update();
 	int GetNextId();
 
-	// temp
+	template <class Packet, class ...Args>
+	void DoSend(Args ...args);
+
+	
 private:
 	void Worker();
 	// 반환값으로 받아온 버퍼의 길이를 가져옴
 	int	 DoRecv();
 
-
-	template <class Packet, class ...Args>
-	void DoSend(Args ...args);
 
 	void ProcessPacket();
 

@@ -200,6 +200,7 @@
     <ClInclude Include="FBXLoader.h" />
     <ClInclude Include="FireParticleSystem.h" />
     <ClInclude Include="Frustum.h" />
+    <ClInclude Include="GameData.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GeneratorScript.h" />
     <ClInclude Include="GlitterParticleSystem.h" />

@@ -602,6 +602,9 @@
     <ClInclude Include="NetworkTimer.h">
       <Filter>Network\util</Filter>
     </ClInclude>
+    <ClInclude Include="GameData.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
