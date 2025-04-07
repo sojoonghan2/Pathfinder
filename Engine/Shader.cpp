@@ -94,7 +94,6 @@ void Shader::CreateGraphicsShader(const wstring& path, ShaderInfo info, ShaderAr
 		_graphicsPipelineDesc.NumRenderTargets = 1;
 		_graphicsPipelineDesc.RTVFormats[0] = DXGI_FORMAT_R32_FLOAT;
 		break;
-
 	}
 
 	switch (info.rasterizerType)

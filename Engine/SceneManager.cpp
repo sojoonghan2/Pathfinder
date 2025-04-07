@@ -99,9 +99,8 @@ void SceneManager::Update()
 
 void SceneManager::Render()
 {
-	if (_activeScene) {
+	if (_activeScene)
 		_activeScene->Render();
-	}
 }
 
 void SceneManager::LoadScene(wstring sceneName)

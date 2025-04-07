@@ -89,14 +89,13 @@ RuinsScene::RuinsScene()
 // 플레이어
 #pragma region Player
 	{
-		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player_idle.fbx");
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
 		gameObjects[0]->SetName(L"OBJ");
 		gameObjects[0]->SetCheckFrustum(false);
 		gameObjects[0]->AddComponent(make_shared<TestDragon>());
-		gameObjects[0]->SetStatic(true);
-		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, 100.0f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
 		gameObjects[0]->AddComponent(make_shared<PlayerScript>());
@@ -112,7 +111,6 @@ RuinsScene::RuinsScene()
 		shared_ptr<GameObject> terraincube = make_shared<GameObject>();
 		terraincube->AddComponent(make_shared<Transform>());
 		terraincube->SetCheckFrustum(true);
-		terraincube->SetStatic(true);
 
 		// 2. Transform 컴포넌트 추가 및 설정
 		terraincube->AddComponent(make_shared<Transform>());
@@ -129,9 +127,9 @@ RuinsScene::RuinsScene()
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\New_ruins.jpg");
 			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsFloor", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
-			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
+			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\New_ruins.jpg");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
@@ -141,6 +139,7 @@ RuinsScene::RuinsScene()
 			meshRenderer->SetMaterial(material);
 		}
 		terraincube->AddComponent(meshRenderer);
+
 		// 4. Scene에 추가
 		activeScene->AddGameObject(terraincube);
 	}
@@ -176,7 +175,6 @@ RuinsScene::RuinsScene()
 #pragma endregion
 
 // 천장에서 빛이 새어나오는 유적지 조명
-	/*
 #pragma region Spot Light
 	{
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
@@ -204,7 +202,7 @@ RuinsScene::RuinsScene()
 		light->SetName(L"Ancient_Ruin_Light");
 		light->AddComponent(make_shared<Transform>());
 		light->GetTransform()->SetLocalPosition(Vec3(0.f, 10000.f, 0.f));
-		light->SetShadow(true);
+
 		// 2-1. Light 컴포넌트 추가 및 속성 설정
 		light->AddComponent(make_shared<Light>());
 		light->GetLight()->SetLightType(LIGHT_TYPE::SPOT_LIGHT);
@@ -226,7 +224,6 @@ RuinsScene::RuinsScene()
 		// 4. Scene에 추가
 		activeScene->AddGameObject(light);
 
-		
 		// 5. 환경광 추가 (더 따뜻한 분위기 연출)
 		shared_ptr<GameObject> ambientLight = make_shared<GameObject>();
 		ambientLight->SetName(L"Ancient_Ambient_Light");
@@ -237,11 +234,9 @@ RuinsScene::RuinsScene()
 		ambientLight->GetLight()->SetAmbient(Vec3(0.4f, 0.2f, 0.25f));
 		ambientLight->GetLight()->SetSpecular(Vec3(0.1f, 0.1f, 0.1f));
 		activeScene->AddGameObject(ambientLight);
-		
 	}
 #pragma endregion
-	*/
-	
+
 // 먼지 파티클
 #pragma region DustParticle
 	{
@@ -299,8 +294,9 @@ RuinsScene::RuinsScene()
 		water->AddComponent(make_shared<Transform>());
 		water->AddComponent(make_shared<WaterScript>());
 		water->GetTransform()->SetLocalScale(Vec3(10000.f, 1.f, 10000.f));
-		water->GetTransform()->SetLocalPosition(Vec3(0.f, -300.f, 50.f));
+		water->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 50.f));
 		water->SetStatic(true);
+
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> waterMesh = GET_SINGLE(Resources)->LoadPlanMesh();
@@ -356,8 +352,7 @@ RuinsScene::RuinsScene()
 			positions.push_back(randomPos);
 
 			gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i + 1));
-			gameObjects[0]->SetCheckFrustum(false);
-			gameObjects[0]->SetStatic(true);
+			gameObjects[0]->SetCheckFrustum(true);
 			gameObjects[0]->AddComponent(make_shared<CrapScript>());
 			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
 			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
@@ -412,39 +407,14 @@ RuinsScene::RuinsScene()
 
 				gameObjects[0]->SetName(L"Stone" + std::to_wstring(i + j + 2));
 				gameObjects[0]->SetCheckFrustum(false);
-				gameObjects[0]->SetShadow(false);
-				gameObjects[0]->SetStatic(false);
 				gameObjects[0]->AddComponent(make_shared<Transform>());
 				gameObjects[0]->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 				gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f + i * 4000, 40.f, 0.0f + j * 4000));
 				gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(0.f, PI*(i+j), 0.f));
 				activeScene->AddGameObject(gameObjects[0]);
+
 			}
 		}
-	}
-#pragma endregion
-#pragma region Directional Light
-	{
-		// 1. light 오브젝트 생성 
-		shared_ptr<GameObject> light = make_shared<GameObject>();
-		light->SetName(L"Directional_Light");
-		light->AddComponent(make_shared<Transform>());
-		light->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 0.f));
-
-		// 2-1. light 컴포넌트 추가 및 속성 설정
-		light->AddComponent(make_shared<Light>());
-		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
-		// 2-2. DIRECTIONAL_LIGHT의 경우 조명 방향 설정
-		light->GetLight()->SetLightDirection(Vec3(0.f, 1.f, 0.f));
-
-		// 3. 조명 색상 및 강도 설정
-		auto intensive = 0.4f;
-		light->GetLight()->SetDiffuse(Vec3(0.8f, 0.8f, 0.8f)*intensive);
-		light->GetLight()->SetAmbient(Vec3(0.8f, 0.8f, 0.8f)* intensive);
-		light->GetLight()->SetSpecular(Vec3(0.05f, 0.05f, 0.05f)* intensive);
-
-		// 4. Scene에 추가
-		activeScene->AddGameObject(light);
 	}
 #pragma endregion
 

@@ -94,10 +94,7 @@ private:
 private:
 	ShaderInfo _info;
 	ComPtr<ID3D12PipelineState>			_pipelineState;
-	///////////////////////
-	ComPtr<ID3D12Resource> _shadowMap;
-	ComPtr<ID3D12DescriptorHeap> _shadowDSVHeap; 
-	D3D12_CPU_DESCRIPTOR_HANDLE _shadowDSV;
+
 	// GraphicsShader
 	ComPtr<ID3DBlob>					_vsBlob;
 	ComPtr<ID3DBlob>					_hsBlob;

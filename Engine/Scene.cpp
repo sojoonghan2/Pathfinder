@@ -7,7 +7,6 @@
 #include "Light.h"
 #include "Engine.h"
 #include "Resources.h"
-#include <atomic>
 
 void Scene::Awake()
 {
@@ -65,15 +64,15 @@ void Scene::Render()
 	// °¢ ·»´õ Å¸°Ù ±×·ì ÃÊ±âÈ­
 	ClearRTV();
 
-	// ±×¸²ÀÚ ·»´õ¸µ	
-	RenderShadow();
-
+	// ±×¸²ÀÚ ·»´õ¸µ
+	RenderShadow(); 
+	
 	// µðÆÛµå ·»´õ¸µ
 	RenderDeferred();
 
 	// Á¶¸í ·»´õ¸µ
 	RenderLights();	
-	
+
 	// ÃÖÁ¾ ·»´õ¸µ
 	RenderFinal();
 
@@ -96,7 +95,6 @@ void Scene::ClearRTV()
 
 void Scene::RenderShadow()
 {
-
 	GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->OMSetRenderTargets();
 
 	for (auto& light : _lights)

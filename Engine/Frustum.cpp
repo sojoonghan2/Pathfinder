@@ -6,10 +6,10 @@
 // 프러스텀 컬링은 아직 이상한 부분이 많아 손봐야 할듯
 // ***************************************************
 
-void Frustum::FinalUpdate(Matrix matV, Matrix matP)
+void Frustum::FinalUpdate()
 {
-	Matrix matViewInv = matV.Invert();
-	Matrix matProjectionInv = matP.Invert();
+	Matrix matViewInv = Camera::S_MatView.Invert();
+	Matrix matProjectionInv = Camera::S_MatProjection.Invert();
 	Matrix matInv = matProjectionInv * matViewInv;
 
 	float scale = 10.0f;
@@ -55,29 +55,4 @@ bool Frustum::ContainsSphere(const Vec3& pos, float radius)
 		}
 	}
 	return true;
-}
-
-bool Frustum::ContainsSphereShadow(const Vec3& pos, float radius)
-{
-	for (int i = 0; i < SHADOWMAP_COUNT; ++i)
-	{
-		bool flag = true;
-		FinalUpdate(Camera::S_MatShadowView[i], Camera::S_MatShadowProjection[i]);
-		for (const Vec4& plane : _planes)
-		{
-			// n = (a, b, c)
-			Vec3 normal = Vec3(plane.x, plane.y, plane.z);
-
-			// ax + by + cz + d > radius
-			if (normal.Dot(pos) + plane.w > radius)
-			{
-				flag = false;
-				break;
-			}
-		}
-		if (flag == true)
-			return true;
-	}
-
-	return false;
 }

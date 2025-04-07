@@ -48,7 +48,7 @@ void SocketIO::Init()
 		util::DisplayQuitError();
 	}
 
-	//std::println("Connected to server successfully.");
+	std::println("Connected to server successfully.");
 
 	// 스레드 생성
 	recvThread = std::thread{ [this]() { Worker(); } };
@@ -112,7 +112,7 @@ int SocketIO::DoRecv()
 
 	// 예외처리
 	if (0 == recv_len) {
-		//std::println("Disconnected from server.");
+		std::println("Disconnected from server.");
 		return recv_len;
 	}
 	else if (SOCKET_ERROR == recv_len) {
@@ -135,7 +135,7 @@ int SocketIO::DoRecv()
 
 			// 예외처리
 			if (0 == recv_len) {
-				//std::println("Disconnected from server.");
+				std::println("Disconnected from server.");
 				return recv_len;
 			}
 			else if (SOCKET_ERROR == recv_len) {
@@ -159,7 +159,7 @@ void SocketIO::ProcessPacket()
 		case packet::Type::SC_LOGIN:
 		{
 			packet::SCLogin packet = reinterpret_cast<packet::SCLogin&>(buffer);
-			//std::println("SC_LOGIN, id : {}", packet.playerId);
+			std::println("SC_LOGIN, id : {}", packet.playerId);
 			myId = packet.playerId;
 		}
 		break;
@@ -174,7 +174,7 @@ void SocketIO::ProcessPacket()
 		break;
 		default:
 		{
-			//std::println("Packet Error.");
+			std::println("Packet Error.");
 		}
 		break;
 		}

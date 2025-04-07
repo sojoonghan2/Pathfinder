@@ -933,12 +933,12 @@ void Resources::CreateDefaultShader()
 		ShaderInfo info =
 		{
 			SHADER_TYPE::SHADOW,
-			RASTERIZER_TYPE::CULL_FRONT,
-			DEPTH_STENCIL_TYPE::LESS_EQUAL,
+			RASTERIZER_TYPE::CULL_BACK,
+			DEPTH_STENCIL_TYPE::LESS,
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\shadow.fx", info);	
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\shadow.fx", info);
 		Add<Shader>(L"Shadow", shader);
 	}
 
@@ -974,8 +974,7 @@ void Resources::CreateDefaultShader()
 		Add<Shader>(L"ComputeAnimation", shader);
 	}
 
-	// 
-	// Cube
+	// TerrainCube
 	{
 		ShaderInfo info =
 		{

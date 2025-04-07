@@ -1,5 +1,4 @@
 #pragma once
-#include "EnginePch.h"
 
 class StructuredBuffer
 {

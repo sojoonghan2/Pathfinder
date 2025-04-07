@@ -164,7 +164,6 @@ ParticleScene::ParticleScene()
 #pragma endregion
 
 // 전역 조명
-
 #pragma region Directional Light
     {
         // 1. light 오브젝트 생성 

@@ -70,16 +70,17 @@ PS_OUT PS_DirLight(VS_OUT input)
         if (0 < uv.x && uv.x < 1 && 0 < uv.y && uv.y < 1)
         {
             float shadowDepth = g_textures2.Sample(g_sam_0, uv).x;
-            if (depth > shadowDepth + 0.00001f)
+            if (shadowDepth > 0 && depth > shadowDepth + 0.00001f)
             {
                 color.diffuse *= 0.5f;
-                color.specular = (float4) 2.f;
+                color.specular = (float4) 0.f;
             }
         }
     }
-    
+
     output.diffuse = color.diffuse + color.ambient;
     output.specular = color.specular;
+
     return output;
 }
 

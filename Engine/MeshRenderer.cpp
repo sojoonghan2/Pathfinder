@@ -6,7 +6,6 @@
 #include "InstancingBuffer.h"
 #include "Resources.h"
 #include "Animator.h"
-#include "Camera.h"
 
 MeshRenderer::MeshRenderer() : Component(COMPONENT_TYPE::MESH_RENDERER)
 {
@@ -73,33 +72,8 @@ void MeshRenderer::Render(shared_ptr<InstancingBuffer>& buffer)
 void MeshRenderer::RenderShadow()
 {
 	GetTransform()->PushData();
-	auto shadowMaterial = GET_SINGLE(Resources)->Get<Material>(L"Shadow");
+	GET_SINGLE(Resources)->Get<Material>(L"Shadow")->PushGraphicsData();
 	_mesh->Render();
-}
-
-void MeshRenderer::RenderShadow(shared_ptr<InstancingBuffer>& buffer)
-{
-	auto shadowMaterial = GET_SINGLE(Resources)->Get<Material>(L"Shadow");
-	shared_ptr<Texture> shadowTex = GET_SINGLE(Resources)->Get<Texture>(L"ShadowTarget");
-	buffer->PushData();
-	shadowMaterial->SetInt(0, 1);
-	if (GetAnimator())
-	{
-		GetAnimator()->PushData();
-		shadowMaterial->SetInt(1, 1);
-	}
-	else
-	{
-		shadowMaterial->SetInt(1, 0);
-	}
-	for (int i = 0; i < SHADOWMAP_COUNT; ++i)
-	{
-		Matrix matVP = Camera::S_MatShadowView[i] * Camera::S_MatShadowProjection[i];
-		shadowMaterial->SetMatrix(i, matVP);
-	}
-	shadowMaterial->SetTexture(3, shadowTex);
-	shadowMaterial->PushGraphicsData();
-	_mesh->Render(buffer);
 }
 
 uint64 MeshRenderer::GetInstanceID()
