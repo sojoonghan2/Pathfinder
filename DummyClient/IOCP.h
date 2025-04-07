@@ -23,14 +23,11 @@ private:
 
 private:
 	HANDLE		IOCPHandle{ INVALID_HANDLE_VALUE };
-	int			sessionCnt{ 0 };
 
 	std::array<ClientInfo, MAX_PLAYER> players;
 	std::array<Timepoint, MAX_PLAYER> delays;
 
-	std::atomic<float>	delayTime{ -1.f };
-	float	maxDelayTime{ -1.f };
-	float	currentDelayTime{ -1.f };
+	std::atomic<int>	delayTime{ 0 };
 	std::atomic<int>	currentClient{ 0 };
 
 	std::vector<std::thread> workers{};

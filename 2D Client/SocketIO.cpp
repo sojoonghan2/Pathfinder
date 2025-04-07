@@ -48,6 +48,7 @@ void SocketIO::Start()
 	
 	// 로그인 알림
 	DoSend<packet::CSLogin>();
+	DoSend<packet::CSMatchmaking>();
 }
 
 void SocketIO::Worker()

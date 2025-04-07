@@ -19,6 +19,8 @@ PlayerScript::~PlayerScript()
 {
 }
 
+
+
 void PlayerScript::LateUpdate()
 {
 #ifdef NETWORK_ENABLE

@@ -42,6 +42,8 @@ enum class Type : unsigned char
 	NONE,
 	SC_LOGIN,
 	CS_LOGIN,
+	SC_MATCHMAKING,
+	CS_MATCHMAKING,
 	SC_MOVE_PLAYER,
 	CS_MOVE_PLAYER,
 	SC_CHECK_DELAY,
@@ -51,38 +53,59 @@ enum class Type : unsigned char
 #pragma pack(push, 1)
 struct Header
 {
-	unsigned short	size{ sizeof(Header) };
+	unsigned char	size{ sizeof(Header) };
 	Type			type{ Type::NONE };
+
+	Header() = default;
+	Header(unsigned char size, Type type) :
+		size{ size },
+		type{ type }
+	{}
 };
 
 
 
-// Param
-//	int playerId: 클라이언트의 플레이어 아이디
+// NO Param
 struct SCLogin : Header
 {
-	int clientId{ -1 };
-
 	SCLogin(int client_id) :
-		clientId{ client_id }
-	{
-		size = sizeof(SCLogin);
-		type = Type::SC_LOGIN;
-	}
+		Header{ sizeof(SCLogin), Type::SC_LOGIN }
+	{}
 };
 
 // No Param
 struct CSLogin : Header
 {
-	CSLogin()
-	{
-		size = sizeof(CSLogin);
-		type = Type::CS_LOGIN;
-	}
+	CSLogin() :
+		Header{ sizeof(CSLogin), Type::CS_LOGIN }
+	{}
+};
+
+
+
+
+// Param
+//	int playerId: 클라이언트의 플레이어 아이디
+struct SCMatchmaking : Header
+{
+	int clientId{ -1 };
+
+	SCMatchmaking(int client_id) :
+		Header{ sizeof(SCMatchmaking), Type::SC_MATCHMAKING },
+		clientId{ client_id }
+	{}
+};
+
+// No Param
+struct CSMatchmaking : Header
+{
+	CSMatchmaking() :
+		Header{ sizeof(CSMatchmaking), Type::CS_MATCHMAKING }
+	{}
 };
 
 // Param:
-//	int playerId
+//	int clientId
 //	float x
 //	float y
 struct SCMovePlayer : Header
@@ -92,13 +115,11 @@ struct SCMovePlayer : Header
 	float y{ 0.f };
 
 	SCMovePlayer(const int client_id, const float x, const float y) :
+		Header{ sizeof(SCMovePlayer), Type::SC_MOVE_PLAYER },
 		clientId{client_id},
 		x{x},
 		y{y}
-	{
-		size = sizeof(SCMovePlayer);
-		type = Type::SC_MOVE_PLAYER;
-	}
+	{}
 };
 
 // Param:
@@ -110,32 +131,26 @@ struct CSMovePlayer : Header
 	float y{ 0.f };
 
 	CSMovePlayer(const float x, const float y) :
+		Header{ sizeof(CSMovePlayer), Type::CS_MOVE_PLAYER },
 		x{ x },
 		y{ y }
-	{
-		size = sizeof(CSMovePlayer);
-		type = Type::CS_MOVE_PLAYER;
-	}
+	{}
 };
 
 // No Param
 struct SCCheckDelayPacket : Header
 {
-	SCCheckDelayPacket()
-	{
-		size = sizeof(SCCheckDelayPacket);
-		type = Type::SC_CHECK_DELAY;
-	}
+	SCCheckDelayPacket() :
+		Header{ sizeof(SCCheckDelayPacket), Type::SC_CHECK_DELAY }
+	{}
 };
 
 // No Param
 struct CSCheckDelayPacket : Header
 {
-	CSCheckDelayPacket()
-	{
-		size = sizeof(CSCheckDelayPacket);
-		type = Type::CS_CHECK_DELAY;
-	}
+	CSCheckDelayPacket() :
+		Header{ sizeof(CSCheckDelayPacket), Type::CS_CHECK_DELAY }		
+	{}
 };
 
 

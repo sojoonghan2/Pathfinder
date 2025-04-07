@@ -114,12 +114,6 @@ void IOCP::TimerWorker()
 	auto duration{ std::chrono::duration<float, std::milli>(MOVE_PACKET_TIME_MS) };
 	while (true) {
 		auto next_time = std::chrono::high_resolution_clock::now() + duration;
-		
-		if (delayTime > maxDelayTime) {
-			maxDelayTime = delayTime;
-		}
-		currentDelayTime = delayTime;
-		delayTime = -1.f;
 		for (int i = 0; i < currentClient; ++i) {
 			packet::CSMovePlayer move_packet{0.f, 0.f};
 			DoSend(players[i], &move_packet);
@@ -135,7 +129,7 @@ void IOCP::TimerWorker()
 
 int IOCP::GetDelayTime() const
 {
-	return static_cast<int>(currentDelayTime);
+	return delayTime.load();
 }
 
 int IOCP::GetPlayerCount() const
@@ -180,9 +174,17 @@ bool IOCP::ProcessPacket(int key, char* p)
 	{
 	case packet::Type::SC_LOGIN:
 	{
-		players[key].ioState = IOState::INGAME;	
+		
 	}
 	break;
+
+	case packet::Type::SC_MATCHMAKING:
+	{
+		players[key].ioState = IOState::INGAME;
+		++currentClient;
+	}
+	break;
+
 
 	case packet::Type::SC_MOVE_PLAYER:
 	{
@@ -196,13 +198,15 @@ bool IOCP::ProcessPacket(int key, char* p)
 		auto delay = std::chrono::duration
 			<float, std::milli>(tp - delays[key]).count();
 		
-
-		float val = delayTime;
-		while (val < delay) {
-			if (delayTime.compare_exchange_strong(val, delay)) { break; }
-			val = delayTime;
+		auto delay_int = static_cast<int>(delay);
+		if (delay_int > delayTime) {
+			++delayTime;
 		}
-
+		else {
+			if (delayTime > 0) {
+				--delayTime;
+			}
+		}
 	}
 	break;
 	default:
@@ -223,7 +227,8 @@ void IOCP::Disconnect(const int client_id)
 void IOCP::LoginWorker()
 {	
 	for (int i = 0; i < MAX_PLAYER; ++i) {
-		if (maxDelayTime > 100.f) {
+		
+		if (delayTime > 90) {
 			break;
 		}
 		
@@ -248,7 +253,8 @@ void IOCP::LoginWorker()
 		DoRecv(players[i]);
 		packet::CSLogin login_packet;
 		DoSend(players[i], &login_packet);
-		currentClient = i;
+		packet::CSMatchmaking matchmaking_packet;
+		DoSend(players[i], &matchmaking_packet);
 		using namespace std::chrono_literals;
 		std::this_thread::sleep_for(1ms);
 	}

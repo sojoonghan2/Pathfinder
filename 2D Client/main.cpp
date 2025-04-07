@@ -180,7 +180,12 @@ int main() {
 			switch (header.type) {
 			case packet::Type::SC_LOGIN:
 			{
-				packet::SCLogin packet = reinterpret_cast<packet::SCLogin&>(buffer);
+			}
+			break;
+
+			case packet::Type::SC_MATCHMAKING:
+			{
+				packet::SCMatchmaking packet = reinterpret_cast<packet::SCMatchmaking&>(buffer);
 				players[packet.clientId].SetFillColor(sf::Color::Red);
 				players[packet.clientId].SetShow(true);
 				my_id = packet.clientId;

@@ -327,9 +327,15 @@ bool IOCP::ProcessPacket(int key, char* p)
 		packet::SCLogin sc_login{ key };
 		DoSend(clientInfoHash[key], &sc_login);
 
+	}
+	break;
+
+	case packet::Type::CS_MATCHMAKING:
+	{
+
 		// 매치메이킹 등록 및 방 생성 함수
 		GET_SINGLE(Game)->RegisterClient(key);
-		
+
 		// 매치매이킹이 아직 안되었으면 빠져나가기
 		if (clientInfoHash[key].ioState != IOState::INGAME) {
 			break;
@@ -342,6 +348,10 @@ bool IOCP::ProcessPacket(int key, char* p)
 		for (auto id : client_ids) {
 			auto pos = GET_SINGLE(Game)->GetPlayerPosition(
 				clientInfoHash[id].clientIdInfo.playerId);
+
+			packet::SCMatchmaking sc_matchmaking{ id };
+			DoSend(clientInfoHash[id], &sc_matchmaking);
+
 			packet::SCMovePlayer sc_move_player{
 				id, pos.x, pos.y };
 			DoSend(clientInfoHash[id], &sc_move_player);
