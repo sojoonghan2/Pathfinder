@@ -25,6 +25,7 @@ public:
 	void Render_Deferred();
 	void Render_Forward();
 	void Render_Shadow();
+	void CalculateShadowMatrix();
 
 	void SetCullingMaskLayerOnOff(uint8 layer, bool on)
 	{
@@ -47,6 +48,9 @@ public:
 
 	Matrix& GetViewMatrix() { return _matView; }
 	Matrix& GetProjectionMatrix() { return _matProjection; }
+	vector<shared_ptr<GameObject>>& GetVechadow() { return _vecShadow; }
+
+	Frustum& GetFrustum() { return _frustum; }
 
 private:
 	PROJECTION_TYPE _type = PROJECTION_TYPE::PERSPECTIVE;
@@ -74,5 +78,7 @@ public:
 	// TEMP
 	static Matrix S_MatView;
 	static Matrix S_MatProjection;
+	static Matrix S_MatShadowView[SHADOWMAP_COUNT];
+	static Matrix S_MatShadowProjection[SHADOWMAP_COUNT];
 };
 

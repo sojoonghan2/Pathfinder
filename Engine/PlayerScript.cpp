@@ -196,3 +196,29 @@ void PlayerScript::SetPosition(float x, float z)
 
 	GetTransform()->SetLocalPosition(pos);
 }
+
+
+/*
+void PlayerScript::SetAnimationState(AnimationState state)
+{
+    if (_currentState == state) {
+        return;
+    }
+
+    _currentState = state;
+    shared_ptr<Animator> animator = GetAnimator();
+
+    if (state == AnimationState::Idle)
+    {
+        cout << "애니메이션 변경" << endl;
+        Old_posistion = GetTransform()->GetLocalPosition();
+    }
+    else if (state == AnimationState::Walk)
+    {
+        cout << "애니메이션 변경" << endl;
+        animator->Play(3);
+    }
+
+}
+
+*/

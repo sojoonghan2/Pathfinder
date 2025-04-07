@@ -1,6 +1,13 @@
 #pragma once
 #include "MonoBehaviour.h"
 
+
+enum class AnimationState
+{
+	Idle,
+	Walk
+};
+
 class PlayerScript : public MonoBehaviour
 {
 public:
@@ -16,6 +23,8 @@ public:
 	void Move();
 	void Dash();
 	void ThrowGrenade();
+	void SetAnimationState(AnimationState state);
+	AnimationState _currentState = AnimationState::Idle;
 
 	void SetPosition(float x, float z);
 
@@ -30,8 +39,10 @@ private:
 
 	float			_dashCooldown = 1.0f;
 	float			_dashCooldownTimer = 0.f;
-
 	Vec3			_dashDirection = Vec3::Zero;
 	float			_dashSpeed = 10000.f;
+
+
+	Vec3			Old_posistion = Vec3::Zero;
 };
 

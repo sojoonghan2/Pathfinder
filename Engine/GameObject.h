@@ -7,6 +7,7 @@ class MeshRenderer;
 class Camera;
 class Light;
 class MonoBehaviour;
+
 class ParticleSystem;
 class BaseCollider;
 class Animator;
@@ -48,6 +49,13 @@ public:
 	void SetRenderOn() { _isRender = true; }
 	bool IsRender() { return _isRender; }
 
+	void SetShadow(bool flag) { m_shadow = flag; }
+	bool IsShadow() { return m_shadow; }
+	bool IsActive() { return m_isActive; }
+	bool m_isActive = true;
+	
+
+
 private:
 	array<shared_ptr<Component>, FIXED_COMPONENT_COUNT> _components;
 	vector<shared_ptr<MonoBehaviour>> _scripts;
@@ -55,6 +63,7 @@ private:
 	bool _checkFrustum = true;
 	uint8 _layerIndex = 0;
 	bool _static = true;
+	bool m_shadow = true;
 
 	bool _isRender = true;
 };

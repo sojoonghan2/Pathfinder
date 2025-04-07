@@ -41,11 +41,11 @@ void Light::Render()
 	if (static_cast<LIGHT_TYPE>(_lightInfo.lightType) == LIGHT_TYPE::DIRECTIONAL_LIGHT)
 	{
 		shared_ptr<Texture> shadowTex = GET_SINGLE(Resources)->Get<Texture>(L"ShadowTarget");
-		_lightMaterial->SetTexture(2, shadowTex);
+		_lightMaterial->SetTexture(4, shadowTex);
 
 		Matrix matVP = _shadowCamera->GetCamera()->GetViewMatrix() * _shadowCamera->GetCamera()->GetProjectionMatrix();
-		_lightMaterial->SetMatrix(0, matVP);
-	}
+		_lightMaterial->SetMatrix(1, matVP);
+	}	
 	else
 	{
 		float scale = 2 * _lightInfo.range;
@@ -67,7 +67,7 @@ void Light::RenderShadow()
 void Light::SetLightDirection(Vec3 direction)
 {
 	direction.Normalize();
-
+		
 	_lightInfo.direction = direction;
 
 	GetTransform()->LookAt(direction);

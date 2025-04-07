@@ -134,6 +134,7 @@ shared_ptr<Animator> GameObject::GetAnimator()
 	return static_pointer_cast<Animator>(component);
 }
 
+
 void GameObject::AddComponent(shared_ptr<Component> component)
 {
 	component->SetGameObject(shared_from_this());

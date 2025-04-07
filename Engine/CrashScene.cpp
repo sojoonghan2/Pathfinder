@@ -175,7 +175,8 @@ CrashScene::CrashScene()
 			else if (i < 5)
 				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->GetRTTexture(i - 3);
 			else
-				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->GetRTTexture(0);
+				//texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->GetRTTexture(0);
+				texture = GET_SINGLE(Resources)->Get<Texture>(L"UAVTexture");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);

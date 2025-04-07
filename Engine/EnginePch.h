@@ -115,13 +115,13 @@ using Matrix	= DirectX::SimpleMath::Matrix;
 // Scene ÀüÈ¯
 //#define ALLLOAD
 //#define TITLELOAD
-//#define RUINSLOAD
+#define RUINSLOAD
 //#define FACTORYLOAD
 //#define EXPLORATIONLOAD
 //#define CRASHLOAD
 //#define LUCKYLOAD
 //#define BOSSLOAD
-#define PARTICLELOAD
+//#define PARTICLELOAD
 //#define TESTLOAD
 
 
@@ -236,6 +236,7 @@ public:								\
 #define DELTA_TIME			GET_SINGLE(Timer)->GetDeltaTime()
 
 #define CONST_BUFFER(type)	GEngine->GetConstantBuffer(type)
+#define SHADOWMAP_COUNT 4
 
 #define PRINTPOSITION \
     std::cout << std::string(GetGameObject()->GetName().begin(), GetGameObject()->GetName().end()) << ": " << "(" << GetTransform()->GetLocalPosition().x << ", " \
