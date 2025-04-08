@@ -610,7 +610,7 @@ void ParticleScene::LoadDebugParticle()
 
         // 좌표 컴포넌트 추가
         testPBRParticle->AddComponent(make_shared<Transform>());
-        testPBRParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 1000.f, 4000.f));
+        testPBRParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, 4000.f));
         testPBRParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
         // 파티클 시스템 컴포넌트 추가
@@ -633,7 +633,7 @@ void ParticleScene::LoadDebugParticle()
 
         // 좌표 컴포넌트 추가
         portalFrameParticle->AddComponent(make_shared<Transform>());
-        portalFrameParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 1000.f, 4000.f));
+        portalFrameParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, 4000.f));
         portalFrameParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
         // 파티클 시스템 컴포넌트 추가

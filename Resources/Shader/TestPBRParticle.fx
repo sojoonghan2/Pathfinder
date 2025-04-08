@@ -85,21 +85,15 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     float sinAngle = sin(rotAngle);
     float cosAngle = cos(rotAngle);
     
-    // 파티클의 방향벡터를 기준으로 로컬 좌표계 정의
-    float3 front = normalize(vtx.worldDir);
-    float3 up = float3(0.0f, 0.0f, -1.0f);
+    // 파티클이 +Z 방향을 바라보도록 고정 좌표계 설정
+    float3 front = float3(0.0f, 0.0f, 1.0f); // +Z 방향 (바라보는 방향)
+    float3 right = float3(1.0f, 0.0f, 0.0f); // +X 방향 (오른쪽)
+    float3 up = float3(0.0f, 1.0f, 0.0f); // +Y 방향 (위쪽)
     
-    // front와 up이 평행한 경우 대체 up 벡터 사용
-    if (abs(dot(front, up)) > 0.99f)
-        up = float3(0.0f, 0.0f, 1.0f);
-        
-    float3 right = normalize(cross(up, front));
-    up = normalize(cross(front, right));
-    
-    // 월드 공간에서 쿼드 코너 계산
+    // 월드 공간에서 쿼드 코너 계산 (XY 평면에 존재)
     float4 worldCorners[4];
     
-    // 회전된 평면의 코너 계산
+    // 회전된 평면의 코너 계산 (XY 평면에서 회전)
     worldCorners[0] = vtx.worldPos + float4((-scale * cosAngle - scale * sinAngle) * right + (-scale * sinAngle + scale * cosAngle) * up, 0.0f);
     worldCorners[1] = vtx.worldPos + float4((scale * cosAngle - scale * sinAngle) * right + (scale * sinAngle + scale * cosAngle) * up, 0.0f);
     worldCorners[2] = vtx.worldPos + float4((scale * cosAngle + scale * sinAngle) * right + (scale * sinAngle - scale * cosAngle) * up, 0.0f);
@@ -117,15 +111,6 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     output[1].uv = float2(1.f, 0.f);
     output[2].uv = float2(1.f, 1.f);
     output[3].uv = float2(0.f, 1.f);
-
-    // Portal edge glow color - orange like Doctor Strange's portal
-    float4 portalColor = float4(1.0f, 0.6f, 0.0f, ratio * (1.0f - ratio) * 4.0f); // Brighter at middle of lifetime
-    
-    // Apply color to all vertices
-    output[0].color = portalColor;
-    output[1].color = portalColor;
-    output[2].color = portalColor;
-    output[3].color = portalColor;
 
     // ID
     output[0].id = id;
@@ -150,30 +135,27 @@ float4 PS_Main(GS_OUT input) : SV_Target
     // 파티클 텍스처 샘플링
     float4 particleColor = g_textures.Sample(g_sam_0, input.uv);
     
-    // Add portal edge glow effect
+    // 중심 거리 계산
     float distFromCenter = length(input.uv - float2(0.5f, 0.5f)) * 2.0f;
     float edgeGlow = 1.0f - smoothstep(0.8f, 1.0f, distFromCenter);
-    float innerPortal = step(0.85f, distFromCenter); // Inner transparent area
     
-    // Combine with input color from geometry shader
     float4 portalEdgeColor = input.color * edgeGlow;
-    
-    // Combine colors
     float4 finalColor = particleColor * portalEdgeColor;
     
-    // Control the inner transparent area of the portal
+    // 투명 처리
     if (distFromCenter < 0.85f)
     {
-        // Inner area - apply refraction effect
-        
-        // Refracted UV calculation
-        float2 refractedUV = input.uv + (particleColor.rg - 0.5f) * 0.05f;
+    // 포탈 내부 전용 UV 스케일 조정 (포탈 크기 비율에 맞게)
+        float2 localUV = input.uv - float2(0.5f, 0.5f);
+        float2 clippedUV = localUV / 0.85f + float2(0.5f, 0.5f); // 정규화
+
+    // 리프랙션 + 왜곡
+        float distortAmount = 0.05f + 0.02f * sin(g_vec2_1.y * 5.0f);
+        float2 refractedUV = clippedUV + (particleColor.rg - 0.5f) * distortAmount;
         refractedUV = saturate(refractedUV);
-        
-        // Sample background through portal
+    
         float4 backgroundColor = g_textures2.Sample(g_sam_0, refractedUV);
-        
-        // Mix with a slight tint to give portal color
+
         return lerp(backgroundColor, float4(0.0f, 0.7f, 1.0f, 0.3f), 0.2f);
     }
     else
@@ -240,29 +222,25 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 
             float r1 = Rand(float2(x, accTime));
             float r2 = Rand(float2(x * accTime, accTime));
-            float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
-
-            // Calculate position on a circle
-            float angle = 2.0f * 3.14159f * r1; // Random angle around circle
-            float radius = 5.0f; // Portal radius
             
-            // Position particles in a ring formation
-            float3 position;
-            position.x = radius * cos(angle);
-            position.y = radius * sin(angle);
-            position.z = 0.0f; // All in same plane for portal effect
+            float angle = 2.f;
+            float radius = 5.0f;
+            
+            float3 position = float3(radius * cos(angle), radius * sin(angle), 0.0f);
             
             g_particle[threadIndex.x].worldPos = position;
-            g_particle[threadIndex.x].worldDir = normalize(float3(cos(angle), sin(angle), 0.0f));
+            g_particle[threadIndex.x].worldDir = normalize(float3(cos(angle), sin(angle), 1.0f));
             g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * r2) + minLifeTime;
             g_particle[threadIndex.x].curTime = 0.f;
             
             // Set initial rotation angle based on position in circle
-            g_particle[threadIndex.x].rotationAngle = angle;
+            g_particle[threadIndex.x].rotationAngle = 0.0f;
         }
     }
     else
     {
+        // 회전
+        /*
         // Update existing particles
         g_particle[threadIndex.x].curTime += deltaTime;
         
@@ -299,6 +277,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             g_particle[threadIndex.x].worldPos.x = currentRadius * cos(angle);
             g_particle[threadIndex.x].worldPos.y = currentRadius * sin(angle);
         }
+        */
     }
 }
 
