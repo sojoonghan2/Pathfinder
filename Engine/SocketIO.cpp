@@ -46,6 +46,7 @@ void SocketIO::Init()
 
 	// 로그인 알림
 	DoSend<packet::CSLogin>();
+	DoSend<packet::CSMatchmaking>();
 }
 
 void SocketIO::Update()
@@ -126,11 +127,17 @@ void SocketIO::ProcessPacket()
 		switch (header.type) {
 		case packet::Type::SC_LOGIN:
 		{
-			packet::SCLogin packet = reinterpret_cast<packet::SCLogin&>(buffer);
-			std::println("SC_LOGIN, id : {}", packet.clientId);
+
+		}
+		break;
+		case packet::Type::SC_MATCHMAKING:
+		{
+			packet::SCMatchmaking packet = reinterpret_cast<packet::SCMatchmaking&>(buffer);
+			std::cout << "SC_MATCHMAKING, id : " << packet.clientId << std::endl;
 			myId = packet.clientId;
 		}
 		break;
+
 		case packet::Type::SC_MOVE_PLAYER:
 		{
 			packet::SCMovePlayer packet = reinterpret_cast<packet::SCMovePlayer&>(buffer);

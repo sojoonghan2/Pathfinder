@@ -14,7 +14,7 @@
 #define _HAS_STD_BYTE 0
 
 // 네트워크 기능 사용
-#define NETWORK_ENABLE
+// #define NETWORK_ENABLE
 
 // 각종 include
 #include <windows.h>
@@ -115,13 +115,13 @@ using Matrix	= DirectX::SimpleMath::Matrix;
 // Scene 전환
 //#define ALLLOAD
 //#define TITLELOAD
-//#define RUINSLOAD
+#define RUINSLOAD
 //#define FACTORYLOAD
 //#define EXPLORATIONLOAD
 //#define CRASHLOAD
 //#define LUCKYLOAD
 //#define BOSSLOAD
-#define PARTICLELOAD
+// #define PARTICLELOAD
 //#define TESTLOAD
 
 
