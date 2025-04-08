@@ -125,23 +125,22 @@ float4 PS_Main(GS_OUT input) : SV_Target
 {
     float2 uv = input.uv;
     float2 offset = uv - float2(0.5f, 0.5f);
-    float dist = length(offset);
+    float dist = length(offset); // 0: 중심, 1: 외곽
 
     float ratio = g_data[input.id].curTime / g_data[input.id].lifeTime;
 
-    // Gaussian core + edge falloff
-    float alpha = exp(-pow(dist * 6.0f, 2.0f));
-    alpha *= pow(ratio, 1.5f);
+    // alpha 조정: 꼬리 길고 진하게, 전체적으로 더 밝음
+    float alpha = exp(-pow(dist * 3.5f, 2.0f)); // 중심 영역 확대
+    alpha *= pow(ratio, 0.6f); // fade-out 더 완만하게
+    alpha *= exp(-dist * 4.5f); // 꼬리 감쇠 완화
 
-    // Tail effect: brighter when close to center
-    float trail = exp(-dist * 10.0f);
-    alpha *= trail;
+    // flicker 조정: 최소값 보장해 너무 어두워지지 않게
+    float flicker = 0.95f + 0.05f * sin(g_data[input.id].rotationAngle * 30.0f + ratio * 30.0f);
 
-    float flicker = 0.8f + 0.2f * sin(g_data[input.id].rotationAngle * 20.0f + g_vec2_1.y * 15.0f);
-
-    float3 glow = lerp(float3(1.0f, 0.8f, 0.2f), float3(1.0f, 0.4f, 0.0f), dist);
-
-    float4 color = float4(glow, 1.0f) * flicker * alpha;
+    // 더 밝은 불꽃 색상 계열 (선명한 노랑-주황-레드 계열)
+    float3 potalColor = float3(0.8f, 0.2f, 0.1f);
+    
+    float4 color = float4(potalColor, 1.0f) * flicker * alpha;
 
     if (color.a < 0.01f)
         discard;
@@ -227,10 +226,10 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
 
             float currentRadius = (ratio < 0.3f)
-                ? lerp(200.0f, 500.0f, ratio / 0.3f)
+                ? lerp(1000.0f, 500.0f, ratio / 0.3f)
                 : 500.0f;
 
-            g_particle[threadIndex.x].rotationAngle += deltaTime * 4.0f;
+            g_particle[threadIndex.x].rotationAngle -= deltaTime * 4.0f;
 
             float theta = g_particle[threadIndex.x].rotationAngle;
             g_particle[threadIndex.x].worldPos = float3(currentRadius * cos(theta), currentRadius * sin(theta), 0.0f);

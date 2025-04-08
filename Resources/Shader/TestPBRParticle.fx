@@ -145,17 +145,13 @@ float4 PS_Main(GS_OUT input) : SV_Target
     // 투명 처리
     if (distFromCenter < 0.85f)
     {
-    // 포탈 내부 전용 UV 스케일 조정 (포탈 크기 비율에 맞게)
-        float2 localUV = input.uv - float2(0.5f, 0.5f);
-        float2 clippedUV = localUV / 0.85f + float2(0.5f, 0.5f); // 정규화
-
-    // 리프랙션 + 왜곡
-        float distortAmount = 0.05f + 0.02f * sin(g_vec2_1.y * 5.0f);
-        float2 refractedUV = clippedUV + (particleColor.rg - 0.5f) * distortAmount;
+        float distortAmount = 0.05f + 0.02f * sin(g_data[input.id].curTime * 5.0f);
+        
+        float2 refractedUV = input.uv + (particleColor.rg - 0.5f) * distortAmount;
         refractedUV = saturate(refractedUV);
     
         float4 backgroundColor = g_textures2.Sample(g_sam_0, refractedUV);
-
+    
         return lerp(backgroundColor, float4(0.0f, 0.7f, 1.0f, 0.3f), 0.2f);
     }
     else

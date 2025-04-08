@@ -5,9 +5,9 @@ PortalFrameParticleSystem::PortalFrameParticleSystem()
     : BaseParticleSystem()
 {
     SetParticleInterval(0.01f, 0.0f);
-    SetParticleLifeTime(3.0f, 5.0f);
+    SetParticleLifeTime(3.0f, 3.0f);
     SetParticleSpeed(0.0f, 0.0f);
-    SetParticleScale(100.0f, 100.0f);
+    SetParticleScale(200.0f, 200.0f);
     SetDuration(10000.0f);
     SetOnceParticleNum(5);
     SetMaterial(
