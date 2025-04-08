@@ -618,7 +618,7 @@ void ParticleScene::LoadDebugParticle()
         testPBRParticle->AddComponent(make_shared<TestParticleScript>());
         testPBRParticle->AddComponent(testPBRParticleSystem);
 
-        //activeScene->AddGameObject(testPBRParticle);
+        activeScene->AddGameObject(testPBRParticle);
     }
 #pragma endregion
 

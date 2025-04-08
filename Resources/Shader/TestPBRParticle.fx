@@ -29,9 +29,11 @@ struct VS_IN
 
 struct VS_OUT
 {
-    float4 viewPos : POSITION;
+    float4 worldPos : POSITION; // 변경: viewPos에서 worldPos로 변경
     float2 uv : TEXCOORD;
     float id : ID;
+    float3 worldDir : DIRECTION; // 추가: 방향 정보 전달
+    float rotationAngle : ROTATION; // 추가: 회전 각도 전달
 };
 
 // Vertex Shader
@@ -42,9 +44,11 @@ VS_OUT VS_Main(VS_IN input)
     float3 worldPos = mul(float4(input.pos, 1.f), g_matWorld).xyz;
     worldPos += g_data[input.id].worldPos;
 
-    output.viewPos = mul(float4(worldPos, 1.f), g_matView);
+    output.worldPos = float4(worldPos, 1.f); // 변경: 월드 위치 저장
     output.uv = input.uv;
     output.id = input.id;
+    output.worldDir = g_data[input.id].worldDir; // 방향 정보 전달
+    output.rotationAngle = g_data[input.id].rotationAngle; // 회전 각도 전달
 
     return output;
 }
@@ -57,7 +61,7 @@ struct GS_OUT
     uint id : SV_InstanceID;
 };
 
-// Geometry Shader
+// Geometry Shader - 카메라 회전에 영향받지 않도록 수정
 [maxvertexcount(6)]
 void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 {
@@ -74,42 +78,39 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     float ratio = g_data[id].curTime / g_data[id].lifeTime;
     float scale = ((g_float_1 - g_float_0) * ratio + g_float_0) / 2.f;
     
-    // Get rotation angle from particle data
-    float rotAngle = g_data[id].rotationAngle;
+    // Get rotation angle
+    float rotAngle = vtx.rotationAngle;
     
     // Calculate sine and cosine for rotation
     float sinAngle = sin(rotAngle);
     float cosAngle = cos(rotAngle);
     
-    // Base corners in view space (before rotation)
-    float4 corners[4] =
-    {
-        float4(-scale, scale, 0.f, 0.f),
-        float4(scale, scale, 0.f, 0.f),
-        float4(scale, -scale, 0.f, 0.f),
-        float4(-scale, -scale, 0.f, 0.f)
-    };
+    // 파티클의 방향벡터를 기준으로 로컬 좌표계 정의
+    float3 front = normalize(vtx.worldDir);
+    float3 up = float3(0.0f, 0.0f, -1.0f);
     
-    // Rotate each corner
+    // front와 up이 평행한 경우 대체 up 벡터 사용
+    if (abs(dot(front, up)) > 0.99f)
+        up = float3(0.0f, 0.0f, 1.0f);
+        
+    float3 right = normalize(cross(up, front));
+    up = normalize(cross(front, right));
+    
+    // 월드 공간에서 쿼드 코너 계산
+    float4 worldCorners[4];
+    
+    // 회전된 평면의 코너 계산
+    worldCorners[0] = vtx.worldPos + float4((-scale * cosAngle - scale * sinAngle) * right + (-scale * sinAngle + scale * cosAngle) * up, 0.0f);
+    worldCorners[1] = vtx.worldPos + float4((scale * cosAngle - scale * sinAngle) * right + (scale * sinAngle + scale * cosAngle) * up, 0.0f);
+    worldCorners[2] = vtx.worldPos + float4((scale * cosAngle + scale * sinAngle) * right + (scale * sinAngle - scale * cosAngle) * up, 0.0f);
+    worldCorners[3] = vtx.worldPos + float4((-scale * cosAngle + scale * sinAngle) * right + (-scale * sinAngle - scale * cosAngle) * up, 0.0f);
+
+    // 뷰 및 프로젝션 변환 적용
     for (int i = 0; i < 4; i++)
     {
-        float x = corners[i].x;
-        float y = corners[i].y;
-        corners[i].x = x * cosAngle - y * sinAngle;
-        corners[i].y = x * sinAngle + y * cosAngle;
+        output[i].position = mul(worldCorners[i], g_matView);
+        output[i].position = mul(output[i].position, g_matProjection);
     }
-
-    // View Space with rotation applied
-    output[0].position = vtx.viewPos + corners[0];
-    output[1].position = vtx.viewPos + corners[1];
-    output[2].position = vtx.viewPos + corners[2];
-    output[3].position = vtx.viewPos + corners[3];
-
-    // Projection Space
-    output[0].position = mul(output[0].position, g_matProjection);
-    output[1].position = mul(output[1].position, g_matProjection);
-    output[2].position = mul(output[2].position, g_matProjection);
-    output[3].position = mul(output[3].position, g_matProjection);
 
     // UV
     output[0].uv = float2(0.f, 0.f);
