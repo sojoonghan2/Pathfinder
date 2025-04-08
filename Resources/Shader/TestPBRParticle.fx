@@ -11,7 +11,8 @@ struct Particle
     float3 worldDir;
     float lifeTime;
     int alive;
-    float3 padding;
+    float rotationAngle;
+    float2 padding;
 };
 
 // StructuredBuffer 정의
@@ -52,6 +53,7 @@ struct GS_OUT
 {
     float4 position : SV_Position;
     float2 uv : TEXCOORD;
+    float4 color : COLOR;
     uint id : SV_InstanceID;
 };
 
@@ -71,12 +73,37 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 
     float ratio = g_data[id].curTime / g_data[id].lifeTime;
     float scale = ((g_float_1 - g_float_0) * ratio + g_float_0) / 2.f;
+    
+    // Get rotation angle from particle data
+    float rotAngle = g_data[id].rotationAngle;
+    
+    // Calculate sine and cosine for rotation
+    float sinAngle = sin(rotAngle);
+    float cosAngle = cos(rotAngle);
+    
+    // Base corners in view space (before rotation)
+    float4 corners[4] =
+    {
+        float4(-scale, scale, 0.f, 0.f),
+        float4(scale, scale, 0.f, 0.f),
+        float4(scale, -scale, 0.f, 0.f),
+        float4(-scale, -scale, 0.f, 0.f)
+    };
+    
+    // Rotate each corner
+    for (int i = 0; i < 4; i++)
+    {
+        float x = corners[i].x;
+        float y = corners[i].y;
+        corners[i].x = x * cosAngle - y * sinAngle;
+        corners[i].y = x * sinAngle + y * cosAngle;
+    }
 
-    // View Space
-    output[0].position = vtx.viewPos + float4(-scale, scale, 0.f, 0.f);
-    output[1].position = vtx.viewPos + float4(scale, scale, 0.f, 0.f);
-    output[2].position = vtx.viewPos + float4(scale, -scale, 0.f, 0.f);
-    output[3].position = vtx.viewPos + float4(-scale, -scale, 0.f, 0.f);
+    // View Space with rotation applied
+    output[0].position = vtx.viewPos + corners[0];
+    output[1].position = vtx.viewPos + corners[1];
+    output[2].position = vtx.viewPos + corners[2];
+    output[3].position = vtx.viewPos + corners[3];
 
     // Projection Space
     output[0].position = mul(output[0].position, g_matProjection);
@@ -89,6 +116,15 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
     output[1].uv = float2(1.f, 0.f);
     output[2].uv = float2(1.f, 1.f);
     output[3].uv = float2(0.f, 1.f);
+
+    // Portal edge glow color - orange like Doctor Strange's portal
+    float4 portalColor = float4(1.0f, 0.6f, 0.0f, ratio * (1.0f - ratio) * 4.0f); // Brighter at middle of lifetime
+    
+    // Apply color to all vertices
+    output[0].color = portalColor;
+    output[1].color = portalColor;
+    output[2].color = portalColor;
+    output[3].color = portalColor;
 
     // ID
     output[0].id = id;
@@ -113,24 +149,37 @@ float4 PS_Main(GS_OUT input) : SV_Target
     // 파티클 텍스처 샘플링
     float4 particleColor = g_textures.Sample(g_sam_0, input.uv);
     
-    // 알파 값이 0.01f보다 작으면(컬러가 없으면) 원래 파티클 컬러 유지
-    if (particleColor.a < 0.01f)
+    // Add portal edge glow effect
+    float distFromCenter = length(input.uv - float2(0.5f, 0.5f)) * 2.0f;
+    float edgeGlow = 1.0f - smoothstep(0.8f, 1.0f, distFromCenter);
+    float innerPortal = step(0.85f, distFromCenter); // Inner transparent area
+    
+    // Combine with input color from geometry shader
+    float4 portalEdgeColor = input.color * edgeGlow;
+    
+    // Combine colors
+    float4 finalColor = particleColor * portalEdgeColor;
+    
+    // Control the inner transparent area of the portal
+    if (distFromCenter < 0.85f)
     {
-        return particleColor;
+        // Inner area - apply refraction effect
+        
+        // Refracted UV calculation
+        float2 refractedUV = input.uv + (particleColor.rg - 0.5f) * 0.05f;
+        refractedUV = saturate(refractedUV);
+        
+        // Sample background through portal
+        float4 backgroundColor = g_textures2.Sample(g_sam_0, refractedUV);
+        
+        // Mix with a slight tint to give portal color
+        return lerp(backgroundColor, float4(0.0f, 0.7f, 1.0f, 0.3f), 0.2f);
     }
-
-    // 굴절 UV 계산
-    // 0.0 ~ 1.0이라는 범위를 사용하기 위해 rg 채널을 사용
-    // 0.5를 빼서 범위를 -0.5 ~ 0.5로 수정(전방향 굴절)
-    float2 refractedUV = input.uv + (particleColor.rg - 0.5f) * 0.05f; // * 굴절 강도
-    // UV 좌표 범위 제한
-    refractedUV = saturate(refractedUV);
-
-    // 렌더 타겟의 컬러 텍스처에서 굴절된 픽셀 샘플링
-    float4 backgroundColor = g_textures2.Sample(g_sam_0, refractedUV);
-
-    // 파티클과 배경 혼합
-    return lerp(backgroundColor, particleColor, particleColor.a);
+    else
+    {
+        // Edge area - glowing effect
+        return finalColor;
+    }
 }
 
 // Compute Shader
@@ -192,26 +241,63 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             float r2 = Rand(float2(x * accTime, accTime));
             float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
 
-            // [0.5~1] -> [0~1]
-            float3 noise =
-            {
-                2 * r1 - 1,
-                2 * r2 - 1,
-                2 * r3 - 1
-            };
-
-            // [0~1] -> [-1~1]
-            float3 dir = (noise - 0.5f) * 2.f;
-
-            g_particle[threadIndex.x].worldDir = normalize(dir);
-            g_particle[threadIndex.x].worldPos = (noise.xyz - 0.5f) * 25;
-            g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * noise.x) + minLifeTime;
+            // Calculate position on a circle
+            float angle = 2.0f * 3.14159f * r1; // Random angle around circle
+            float radius = 5.0f; // Portal radius
+            
+            // Position particles in a ring formation
+            float3 position;
+            position.x = radius * cos(angle);
+            position.y = radius * sin(angle);
+            position.z = 0.0f; // All in same plane for portal effect
+            
+            g_particle[threadIndex.x].worldPos = position;
+            g_particle[threadIndex.x].worldDir = normalize(float3(cos(angle), sin(angle), 0.0f));
+            g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * r2) + minLifeTime;
             g_particle[threadIndex.x].curTime = 0.f;
+            
+            // Set initial rotation angle based on position in circle
+            g_particle[threadIndex.x].rotationAngle = angle;
         }
     }
     else
     {
+        // Update existing particles
+        g_particle[threadIndex.x].curTime += deltaTime;
         
+        if (g_particle[threadIndex.x].curTime >= g_particle[threadIndex.x].lifeTime)
+        {
+            g_particle[threadIndex.x].alive = 0;
+        }
+        else
+        {
+            // Rotate particles over time to create spinning portal effect
+            g_particle[threadIndex.x].rotationAngle += deltaTime * 2.0f;
+            
+            // Calculate current progress ratio of lifetime
+            float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
+            
+            // Portal opening animation: radius increases over time then stabilizes
+            float initialRadius = 2.0f;
+            float finalRadius = 5.0f;
+            float currentRadius;
+            
+            if (ratio < 0.3f)
+            {
+                // Opening phase
+                currentRadius = lerp(initialRadius, finalRadius, ratio / 0.3f);
+            }
+            else
+            {
+                // Stable phase
+                currentRadius = finalRadius;
+            }
+            
+            // Keep particles in ring formation with updated radius
+            float angle = g_particle[threadIndex.x].rotationAngle;
+            g_particle[threadIndex.x].worldPos.x = currentRadius * cos(angle);
+            g_particle[threadIndex.x].worldPos.y = currentRadius * sin(angle);
+        }
     }
 }
 

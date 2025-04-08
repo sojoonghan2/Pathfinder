@@ -23,6 +23,7 @@
 #include "RazerParticleSystem.h"
 #include "OverDriveParticleSystem.h"
 #include "GlitterParticleSystem.h"
+#include "PortalFrameParticleSystem.h"
 #include "TestPBRParticleSystem.h"
 
 #include "TestDragon.h"
@@ -445,26 +446,6 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
-// 지형
-#pragma region Temp
-    {
-        shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Temp\\Temp.fbx");
-
-        vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
-
-        for (auto gameObject : gameObjects)
-        {
-            gameObject->SetName(L"Temppp");
-            gameObject->SetCheckFrustum(false);
-            gameObject->AddComponent(make_shared<Transform>());
-            gameObject->GetTransform()->SetLocalScale(Vec3(50.f, 50.f, 50.f));
-            gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -400.0f, 0.0f));
-            gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 0.0f, 0.0f));
-            activeScene->AddGameObject(gameObject);
-        }
-    }
-#pragma endregion
-
 #pragma region OtherPlayer
     {
         std::array<shared_ptr<GameObject>, 2> obj{};
@@ -507,8 +488,8 @@ ParticleScene::ParticleScene()
     }
 #pragma endregion
 
-    LoadMyParticle();
     LoadDebugParticle();
+    LoadMyParticle();
 }
 
 ParticleScene::~ParticleScene() {}
@@ -637,7 +618,30 @@ void ParticleScene::LoadDebugParticle()
         testPBRParticle->AddComponent(make_shared<TestParticleScript>());
         testPBRParticle->AddComponent(testPBRParticleSystem);
 
-        activeScene->AddGameObject(testPBRParticle);
+        //activeScene->AddGameObject(testPBRParticle);
+    }
+#pragma endregion
+
+#pragma region PortalFrameParticle
+    {
+        // 파티클 오브젝트 생성
+        shared_ptr<GameObject> portalFrameParticle = make_shared<GameObject>();
+        wstring portalFrameParticleName = L"portalFrameParticle";
+        portalFrameParticle->SetName(portalFrameParticleName);
+        portalFrameParticle->SetCheckFrustum(true);
+        portalFrameParticle->SetStatic(false);
+
+        // 좌표 컴포넌트 추가
+        portalFrameParticle->AddComponent(make_shared<Transform>());
+        portalFrameParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 1000.f, 4000.f));
+        portalFrameParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+
+        // 파티클 시스템 컴포넌트 추가
+        shared_ptr<PortalFrameParticleSystem> portalFrameParticleSystem = make_shared<PortalFrameParticleSystem>();
+        portalFrameParticle->AddComponent(make_shared<TestParticleScript>());
+        portalFrameParticle->AddComponent(portalFrameParticleSystem);
+
+        activeScene->AddGameObject(portalFrameParticle);
     }
 #pragma endregion
 }

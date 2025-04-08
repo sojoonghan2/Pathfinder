@@ -321,6 +321,9 @@
     <ClCompile Include="TestGrenadeScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
+    <ClCompile Include="PortalFrameParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -599,6 +602,9 @@
     <ClInclude Include="TestGrenadeScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
+    <ClInclude Include="PortalFrameParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -679,6 +685,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\LightPillarParticle.fx">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\PortalFrameParticle.fx">
       <Filter>Shader\Particle</Filter>
     </FxCompile>
   </ItemGroup>
