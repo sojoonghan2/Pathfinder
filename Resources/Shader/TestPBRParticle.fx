@@ -132,32 +132,65 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 // Pixel Shader
 float4 PS_Main(GS_OUT input) : SV_Target
 {
-    // 파티클 텍스처 샘플링
-    float4 particleColor = g_textures.Sample(g_sam_0, input.uv);
+    uint id = input.id;
+    float waveTime = g_data[id].curTime;
     
-    // 중심 거리 계산
+    // 기존 UV에 시간에 따른 파동 효과 적용
+    float2 waveUV = input.uv;
+    
+    // 중심에서의 거리
     float distFromCenter = length(input.uv - float2(0.5f, 0.5f)) * 2.0f;
+    
+    // 동심원 파동 효과 (시간에 따라 변화)
+    float waveStrength = 0.03f * sin(distFromCenter * 10.0f - waveTime * 2.0f);
+    waveStrength *= (1.0f - distFromCenter * 0.5f);
+    
+    // 나선형 파동 효과
+    float angle = atan2(input.uv.y - 0.5f, input.uv.x - 0.5f);
+    float spiralWave = 0.02f * sin(angle * 5.0f + waveTime * 1.5f);
+    
+    // UV 좌표 왜곡
+    waveUV += float2(waveStrength * cos(angle), waveStrength * sin(angle));
+    waveUV += spiralWave * float2(cos(angle + 1.57f), sin(angle + 1.57f));
+    
+    // 왜곡된 UV로 파티클 텍스처 샘플링
+    float4 particleColor = g_textures.Sample(g_sam_0, waveUV);
+    
+    // 가장자리 발광 효과
     float edgeGlow = 1.0f - smoothstep(0.8f, 1.0f, distFromCenter);
+    float pulsingEdge = edgeGlow * (0.8f + 0.2f * sin(waveTime * 2.0f));
     
-    float4 portalEdgeColor = input.color * edgeGlow;
-    float4 finalColor = particleColor * portalEdgeColor;
+    float4 portalEdgeColor = input.color * pulsingEdge;
+    float4 finalColor = particleColor;
     
-    // 굴절
+    // 내부 굴절 효과
     if (distFromCenter < 0.85f)
     {
-        float distortAmount = 0.05f + 0.02f * sin(g_data[input.id].curTime * 5.0f);
+        // 시간에 따라 변화하는 굴절 강도
+        float distortAmount = 0.15f + 0.08f * sin(g_data[input.id].curTime * 5.0f);
         
-        float2 direction = normalize(input.uv - float2(0.5f, 0.5f));
-        float2 refractedUV = input.uv + direction * distortAmount;
+        // 추가 요동 효과
+        distortAmount += 0.03f * sin(waveTime * 0.7f + distFromCenter * 4.0f);
+        
+        float2 refractedUV = waveUV + (particleColor.rg - 0.5f) * distortAmount;
         refractedUV = saturate(refractedUV);
     
         float4 backgroundColor = g_textures2.Sample(g_sam_0, refractedUV);
+        
+        // 시간에 따른 색상 변화 추가
+        float4 portalColor = float4(
+            0.0f + 0.1f * sin(waveTime * 0.3f),
+            0.7f + 0.1f * sin(waveTime * 0.5f),
+            1.0f + 0.1f * sin(waveTime * 0.7f),
+            0.3f + 0.05f * sin(waveTime)
+        );
     
-        return lerp(backgroundColor, float4(0.0f, 0.7f, 1.0f, 0.3f), 0.2f);
+        return lerp(backgroundColor, portalColor, 0.3f + 0.1f * sin(waveTime * 0.5f));
     }
     else
     {
-        return finalColor;
+        // 가장자리 발광 효과 추가
+        return finalColor * (1.0f + 0.5f * pulsingEdge);
     }
 }
 
@@ -235,11 +268,10 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
     }
     else
     {
-        // 회전
-        /*
-        // Update existing particles
         g_particle[threadIndex.x].curTime += deltaTime;
         
+        // 회전
+        /*
         if (g_particle[threadIndex.x].curTime >= g_particle[threadIndex.x].lifeTime)
         {
             g_particle[threadIndex.x].alive = 0;
