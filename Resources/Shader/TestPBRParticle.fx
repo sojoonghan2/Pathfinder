@@ -163,30 +163,30 @@ float4 PS_Main(GS_OUT input) : SV_Target
     float4 portalEdgeColor = input.color * pulsingEdge;
     float4 finalColor = particleColor;
     
-    // 내부 굴절 효과
-    if (distFromCenter < 0.85f)
-    {
-        // 시간에 따라 변화하는 굴절 강도
-        float distortAmount = 0.15f + 0.08f * sin(g_data[input.id].curTime * 5.0f);
-        
-        // 추가 요동 효과
-        distortAmount += 0.03f * sin(waveTime * 0.7f + distFromCenter * 4.0f);
-        
-        float2 refractedUV = waveUV + (particleColor.rg - 0.5f) * distortAmount;
-        refractedUV = saturate(refractedUV);
-    
-        float4 backgroundColor = g_textures2.Sample(g_sam_0, refractedUV);
-        
-        // 시간에 따른 색상 변화 추가
-        float4 portalColor = float4(
-            0.0f + 0.1f * sin(waveTime * 0.3f),
-            0.7f + 0.1f * sin(waveTime * 0.5f),
-            1.0f + 0.1f * sin(waveTime * 0.7f),
-            0.3f + 0.05f * sin(waveTime)
-        );
-    
-        return lerp(backgroundColor, portalColor, 0.3f + 0.1f * sin(waveTime * 0.5f));
-    }
+	if (distFromCenter < 0.85f)
+	{
+		float distortAmount = 0.15f + 0.08f * sin(g_data[input.id].curTime * 5.0f);
+		distortAmount += 0.03f * sin(waveTime * 0.7f + distFromCenter * 4.0f);
+
+		float2 refractedUV = waveUV + (particleColor.rg - 0.5f) * distortAmount;
+		refractedUV = saturate(refractedUV);
+
+		float4 backgroundColor = g_textures2.Sample(g_sam_0, refractedUV);
+
+		float waveR = 0.0f + 0.1f * sin(waveTime * 0.3f);
+		float waveG = 0.7f + 0.1f * sin(waveTime * 0.5f);
+		float waveB = 1.0f + 0.1f * sin(waveTime * 0.7f);
+		float waveA = 0.3f + 0.05f * sin(waveTime);
+
+		float appearT = saturate(g_data[input.id].curTime / 5.f);
+		float mixRatio = saturate((g_data[input.id].curTime - 1.f) / 1.0f); 
+
+		float4 portalColor = float4(waveR, waveG, waveB, waveA * appearT);
+
+		float4 blended = lerp(portalColor, backgroundColor, mixRatio);
+
+		return blended;
+	}
     else
     {
         // 가장자리 발광 효과 추가
