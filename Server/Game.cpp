@@ -3,9 +3,8 @@
 #include "IOCP.h"
 #include "Timer.h"
 
-std::random_device rd;
-std::default_random_engine dre{ rd() };
-std::uniform_real_distribution<float> timeDist{ 2.f, 4.f };
+std::random_device rd_game;
+std::default_random_engine dre_game{ rd_game() };
 std::uniform_real_distribution<float> posDist{ -24.f, 24.f };
 
 //void Game::RegisterClient(int id)
@@ -141,6 +140,41 @@ std::uniform_real_distribution<float> posDist{ -24.f, 24.f };
 void Game::MovePlayer(int player_id, Vec2f& pos)
 {
 	_playerList[player_id].Move(pos);
+}
+
+bool Game::GetPlayerIds(std::array<int, 3>& ids)
+{
+	int cnt{ 0 };
+
+	// 플레이어가 꽉 차있는 상태임.
+	for (int i{}; i < MAX_PLAYER; ++i) {
+		if (false == _playerList[i].GetRunning()) {
+			if (_playerList[i].TrySetRunning(true)) {
+				ids[cnt++] = i;
+				if (cnt == 3) {
+					return true;
+				}
+			}
+		}
+	}
+
+	// 플레이어가 꽉 차있는 상태임.
+	for (auto& id : ids) {
+		if (-1 != id) {
+			// 무조건 false가 들어감.
+			_playerList[id].TrySetRunning(false);
+		}
+		id = -1;
+	}
+	return false;
+}
+
+void Game::InsertAndInitPlayers(const std::array<int, 3>& player_ids, int room_id)
+{
+	for (int i{}; i < 3; ++i) {
+		_roomList[room_id].InsertPlayer(i, player_ids[i]);
+		_playerList[player_ids[i]].Move(posDist(dre_game), posDist(dre_game));
+	}
 }
 
 void Game::Init()

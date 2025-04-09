@@ -11,3 +11,8 @@ bool RoomInfo::GetRunning() const
 {
 	return _isRunning.load();
 }
+
+void RoomInfo::InsertClient(const int idx, const int client_id)
+{
+	_clientIdList[idx] = client_id;
+}

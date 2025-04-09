@@ -100,7 +100,7 @@ bool IOCP::Start()
 	// worker_thread 따로 멤버변수로 뺴기
 
 	int thread_number = std::thread::hardware_concurrency();
-	for (int i = 0; i < thread_number; ++i) {
+	for (int i = 0; i < 2; ++i) {
 		_workers.emplace_back([this]() { Worker(); });
 	}
 	_workers.emplace_back([this]() { TimerWorker(); });
@@ -397,17 +397,19 @@ void IOCP::ProcessPacket(int key, char* p)
 
 
 
-		// -- 매칭 완료 --
+		// -- 클라이언트 세명 매칭 완료 --
 
 		// 방 번호를 얻어옴
 		int room_id{ -1 };
 		for (int i{}; i < MAX_ROOM; ++i) {
-			if (not _roomClientList[i].GetRunning()) {
-				if (_roomClientList[i].TrySetRunning(true)) {
+			if (not _roomInfoList[i].GetRunning()) {
+				if (_roomInfoList[i].TrySetRunning(true)) {
 					// 방 번호 얻기 성공
 					room_id = i;
+					break;
 				}
 			}
+			
 		}
 
 		// 방 번호를 얻어오는 데 실패함.
@@ -422,42 +424,72 @@ void IOCP::ProcessPacket(int key, char* p)
 		}
 
 		// 플레이어 번호를 얻어옴
+		std::array<int, 3> player_ids{};
+		auto ret{ GET_SINGLE(Game)->GetPlayerIds(player_ids) };
 
+		if (false == ret) {
+			// 플레이어 번호를 얻어오는 데 실패함.
+			// 일단 임시로 다시 넣고 종료.
+			for (auto& id : client_ids) {
+				if (-1 != id) {
+					_matchmakingQueue.push(id);
+				}
+			}
+			break;
+		}
 
+		// -- 방 번호와 플레이어 번호를 얻어왔음. -- 
+		// 이제 Room, RoomInfo, Player에다가 정보를 저장
 
-		// 매칭이 완료되면 본인 위치를 본인 클라이언트에 전달
+		// 플레이어를 방에 넣고 플레이어 초기화
+		GET_SINGLE(Game)->InsertAndInitPlayers(player_ids, room_id);
 
-		for (auto id : client_ids) {
-			auto pos = GET_SINGLE(Game)->GetPlayerPosition(
-				_clientInfoHash[id].clientIdInfo.playerId);
+		for (int i = 0; i < 3; ++i) {
+			// RoomInfo에 정보를 넣음
+			_roomInfoList[room_id].InsertClient(i, client_ids[i]);
 
-			packet::SCMatchmaking sc_matchmaking{ id };
-			DoSend(_clientInfoHash[id], &sc_matchmaking);
+			// ClientInfoHash에 정보를 넣음
+			_clientInfoHash[client_ids[i]].clientIdInfo.roomId = room_id;
+			_clientInfoHash[client_ids[i]].clientIdInfo.playerId = player_ids[i];
+			_clientInfoHash[client_ids[i]].ioState = IOState::INGAME;
+		}
+	
 
-			packet::SCMovePlayer sc_move_player{
-				id, pos.x, pos.y };
-			DoSend(_clientInfoHash[id], &sc_move_player);
+		// 이제 각 방에다가 플레이어 위치를 전달
+		for (int i{}; i < 3; ++i) {
+			packet::SCMatchmaking sc_matchmaking{ client_ids[i] };
+			DoSend(_clientInfoHash[client_ids[i]], &sc_matchmaking);
+			
+			auto pos = GET_SINGLE(Game)->GetPlayerPos(player_ids[i]);
+			packet::SCMovePlayer sc_move_player{ client_ids[i], pos.x, pos.y};
+			
+			for (auto other_id : client_ids) {
+				DoSend(other_id, &sc_move_player);
+			}
 		}
 	}
 	break;
 
 	case packet::Type::CS_MOVE_PLAYER:
 	{
-		packet::CSMovePlayer* packet = reinterpret_cast<packet::CSMovePlayer*>(p);
+		packet::CSMovePlayer* packet{ reinterpret_cast<packet::CSMovePlayer*>(p) };
 		if (_clientInfoHash[key].ioState != IOState::INGAME) {
 			break;
 		}
 
-		GET_SINGLE(Game)->SetPlayerPosition(
-			key,
-			Vec2f{ packet->x, packet->y });
+		auto& id_info{ _clientInfoHash[key].clientIdInfo };
 
-		auto pos = GET_SINGLE(Game)->GetPlayerPosition(_clientInfoHash[key].clientIdInfo.playerId);
+		// 받은 위치를 저장
+		Vec2f pos{ packet->x, packet->y };
+		GET_SINGLE(Game)->SetPlayerPos(
+			id_info.playerId, pos);
+
+
+		// 다른 플레이어에게 전송
 		packet::SCMovePlayer send_packet{ key, pos.x, pos.y };
+		auto other_clients{ _roomInfoList[id_info.roomId].GetClientIdList() };
 
-		// 내 방에 있는 플레이어에게 패킷을 보냄
-		auto other_players = GET_SINGLE(Game)->GetRoomClients(_clientInfoHash[key].clientIdInfo.roomId);
-		for (auto other : other_players) {
+		for (auto other : other_clients) {
 			if (other == -1) { continue; }
 			if (_clientInfoHash[other].ioState != IOState::INGAME ||
 				other == key) {

@@ -15,7 +15,7 @@ bool IOCP::Init()
 	_IOCPHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, NULL, 0);
 
 	int thread_number = std::thread::hardware_concurrency();
-	for (int i = 0; i < thread_number / 2; ++i) {
+	for (int i = 0; i < 4; ++i) {
 		_workers.emplace_back([this]() { Worker(); });
 	}
 
@@ -228,7 +228,7 @@ void IOCP::LoginWorker()
 {	
 	for (int i = 0; i < MAX_PLAYER; ++i) {
 		
-		if (delayTime > 90) {
+		if (delayTime > 75) {
 			break;
 		}
 		
