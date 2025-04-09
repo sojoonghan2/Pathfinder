@@ -2,7 +2,6 @@
 
 class GameObject;
 
-
 class Scene
 {
 public:
@@ -43,4 +42,3 @@ private:
 	vector<shared_ptr<class Light>>		_lights;
 	int									_selectedModuleType;
 };
-

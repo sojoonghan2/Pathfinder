@@ -2,12 +2,11 @@
 #include "Scene.h"
 #include "MonoBehaviour.h"
 
-class TestScene : public MonoBehaviour{
+class TestScene : public MonoBehaviour {
 public:
-    TestScene();
-    virtual ~TestScene();
-    shared_ptr<Scene> GetScene() { return activeScene; }
+	TestScene();
+	virtual ~TestScene();
+	shared_ptr<Scene> GetScene() { return activeScene; }
 private:
-    shared_ptr<Scene> activeScene = make_shared<Scene>();
+	shared_ptr<Scene> activeScene = make_shared<Scene>();
 };
-    

@@ -5,12 +5,10 @@
 
 SphereCollider::SphereCollider() : BaseCollider(ColliderType::Sphere)
 {
-
 }
 
 SphereCollider::~SphereCollider()
 {
-
 }
 
 void SphereCollider::FinalUpdate()

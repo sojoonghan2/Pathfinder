@@ -9,14 +9,14 @@ struct Player
 
 class SocketIO
 {
-private:							
+private:
 	SocketIO() {}
 
-public:								
+public:
 	static SocketIO* GetInstance()
 	{
-		static SocketIO instance;	
-		return &instance;		
+		static SocketIO instance;
+		return &instance;
 	}
 
 	~SocketIO();
@@ -24,7 +24,6 @@ public:
 public:
 
 	using BufferType = std::array<char, BUFFER_SIZE>;
-
 
 	void Init();
 	void Update();
@@ -36,12 +35,10 @@ private:
 	// 반환값으로 받아온 버퍼의 길이를 가져옴
 	int	 DoRecv();
 
-
 	template <class Packet, class ...Args>
 	void DoSend(Args ...args);
 
 	void ProcessPacket();
-
 
 private:
 	SOCKET serverSocket{ INVALID_SOCKET };
@@ -53,10 +50,8 @@ private:
 	// temp
 public:
 	std::array<Player, 3> players{};
-	int myId{-1};
-
+	int myId{ -1 };
 };
-
 
 template <class Packet, class ...Args>
 void SocketIO::DoSend(Args ...args)

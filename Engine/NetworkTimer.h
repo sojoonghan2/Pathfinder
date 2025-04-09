@@ -1,7 +1,6 @@
 #pragma once
 #pragma once
 
-
 class NetworkTimer
 {
 private:
@@ -22,4 +21,3 @@ public:
 
 	float PeekDeltaTime() const;
 };
-

@@ -37,7 +37,7 @@
 
 RuinsScene::RuinsScene()
 {
-// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
+	// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
 #pragma region ComputeShader
 	{
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"ComputeShader");
@@ -58,7 +58,7 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// 카메라
+	// 카메라
 #pragma region Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
@@ -75,7 +75,7 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// UI 카메라
+	// UI 카메라
 #pragma region UI_Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
@@ -91,7 +91,7 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// 플레이어
+	// 플레이어
 #pragma region Player
 	{
 		// 플레이어
@@ -99,7 +99,6 @@ RuinsScene::RuinsScene()
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
 		auto playerScript = make_shared<PlayerScript>();
-
 
 		for (auto gameObject : gameObjects)
 		{
@@ -257,7 +256,7 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// 터레인 큐브
+	// 터레인 큐브
 #pragma region TerrainCube
 	{
 		// 1. 기본 오브젝트 생성 및 설정
@@ -298,7 +297,7 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// 점령 중 UI
+	// 점령 중 UI
 #pragma region UI
 	{
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
@@ -327,7 +326,7 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// 천장에서 빛이 새어나오는 유적지 조명
+	// 천장에서 빛이 새어나오는 유적지 조명
 #pragma region Spot Light
 	{
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
@@ -350,7 +349,7 @@ RuinsScene::RuinsScene()
 		obj->SetRenderOff();
 		activeScene->AddGameObject(obj);
 
-		// 1. Light 오브젝트 생성 
+		// 1. Light 오브젝트 생성
 		shared_ptr<GameObject> light = make_shared<GameObject>();
 		light->SetName(L"Ancient_Ruin_Light");
 		light->AddComponent(make_shared<Transform>());
@@ -390,7 +389,7 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// 먼지 파티클
+	// 먼지 파티클
 #pragma region DustParticle
 	{
 		// 파티클 오브젝트 생성
@@ -410,12 +409,11 @@ RuinsScene::RuinsScene()
 		dustParticle->AddComponent(dustParticleSystem);
 		dustParticle->AddComponent(make_shared<TestParticleScript>());
 
-
 		activeScene->AddGameObject(dustParticle);
 	}
 #pragma endregion
 
-// 빛기둥 파티클
+	// 빛기둥 파티클
 #pragma region LightPillarParticle
 	{
 		// 파티클 오브젝트 생성
@@ -439,7 +437,7 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// 물
+	// 물
 #pragma region Water
 	{
 		shared_ptr<GameObject> water = make_shared<GameObject>();
@@ -465,58 +463,58 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// 로봇
-	/*
-#pragma region SELFDESTRUCTIONROBOT
-	{
-		std::random_device rd;
-		std::mt19937 gen(rd());
-		std::uniform_real_distribution<float> disX(-4000.0f, 4000.0f);
-		std::uniform_real_distribution<float> disZ(-4000.0f, 4000.0f);
-
-		vector<Vec3> positions;
-		float minDistance = 300.0f;
-
-		for (int i = 0; i < 10; ++i)
+	// 로봇
+		/*
+	#pragma region SELFDESTRUCTIONROBOT
 		{
-			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
-			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+			std::random_device rd;
+			std::mt19937 gen(rd());
+			std::uniform_real_distribution<float> disX(-4000.0f, 4000.0f);
+			std::uniform_real_distribution<float> disZ(-4000.0f, 4000.0f);
 
-			// 겹치지 않는 랜덤 위치 생성
-			Vec3 randomPos;
-			bool validPosition = false;
-			int maxAttempts = 100;
+			vector<Vec3> positions;
+			float minDistance = 300.0f;
 
-			while (!validPosition && maxAttempts > 0)
+			for (int i = 0; i < 10; ++i)
 			{
-				randomPos = Vec3(disX(gen), 0.0f, disZ(gen));
-				validPosition = true;
+				shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
+				vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
-				for (const Vec3& pos : positions)
+				// 겹치지 않는 랜덤 위치 생성
+				Vec3 randomPos;
+				bool validPosition = false;
+				int maxAttempts = 100;
+
+				while (!validPosition && maxAttempts > 0)
 				{
-					if ((randomPos - pos).Length() < minDistance)
+					randomPos = Vec3(disX(gen), 0.0f, disZ(gen));
+					validPosition = true;
+
+					for (const Vec3& pos : positions)
 					{
-						validPosition = false;
-						break;
+						if ((randomPos - pos).Length() < minDistance)
+						{
+							validPosition = false;
+							break;
+						}
 					}
+					maxAttempts--;
 				}
-				maxAttempts--;
+
+				positions.push_back(randomPos);
+
+				gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i + 1));
+				gameObjects[0]->SetCheckFrustum(true);
+				gameObjects[0]->AddComponent(make_shared<CrapScript>());
+				gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
+				gameObjects[0]->GetTransform()->SetLocalScale(Vec3(700.f, 700.f, 700.f));
+				activeScene->AddGameObject(gameObjects[0]);
 			}
-
-			positions.push_back(randomPos);
-
-			gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i + 1));
-			gameObjects[0]->SetCheckFrustum(true);
-			gameObjects[0]->AddComponent(make_shared<CrapScript>());
-			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
-			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(700.f, 700.f, 700.f));
-			activeScene->AddGameObject(gameObjects[0]);
 		}
-	}
-#pragma endregion
-	*/
+	#pragma endregion
+		*/
 
-// 점령 구역
+		// 점령 구역
 #pragma region Occupation
 	for (int i{}; i < 3; ++i)
 	{
@@ -567,7 +565,7 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// 지형
+	// 지형
 #pragma region Stone
 	for (int i = -1; i < 2; ++i) {
 		for (int j = -1; j < 2; ++j) {
@@ -584,15 +582,14 @@ RuinsScene::RuinsScene()
 				gameObjects[0]->AddComponent(make_shared<Transform>());
 				gameObjects[0]->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 				gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f + i * 4000, 40.f, 0.0f + j * 4000));
-				gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(0.f, PI*(i+j), 0.f));
+				gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(0.f, PI * (i + j), 0.f));
 				activeScene->AddGameObject(gameObjects[0]);
-
 			}
 		}
 	}
 #pragma endregion
 
-// 스킬 아이콘
+	// 스킬 아이콘
 #pragma region Icon
 	for (int i{}; i < 3; ++i)
 	{
@@ -624,7 +621,6 @@ RuinsScene::RuinsScene()
 		activeScene->AddGameObject(obj);
 	}
 #pragma endregion
-
 }
 
 RuinsScene::~RuinsScene() {}

@@ -21,4 +21,3 @@ private:
 	// 각 인스턴스 ID에 대해 관련된 인스턴싱 버퍼를 저장하는 맵
 	map<uint64/*instanceId*/, shared_ptr<InstancingBuffer>> _buffers;
 };
-

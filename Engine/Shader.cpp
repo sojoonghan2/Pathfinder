@@ -4,12 +4,10 @@
 
 Shader::Shader() : Object(OBJECT_TYPE::SHADER)
 {
-
 }
 
 Shader::~Shader()
 {
-
 }
 
 void Shader::CreateGraphicsShader(const wstring& path, ShaderInfo info, ShaderArg arg)
@@ -197,7 +195,7 @@ void Shader::Update()
 	{
 		GRAPHICS_CMD_LIST->IASetPrimitiveTopology(_info.topology);
 		GRAPHICS_CMD_LIST->SetPipelineState(_pipelineState.Get());
-	}	
+	}
 }
 
 void Shader::CreateShader(const wstring& path, const string& name, const string& version, ComPtr<ID3DBlob>& blob, D3D12_SHADER_BYTECODE& shaderByteCode)

@@ -33,11 +33,11 @@ public:
 	virtual ~Component();
 
 public:
-	virtual void Awake() { }
-	virtual void Start() { }
-	virtual void Update() { }
-	virtual void LateUpdate() { }
-	virtual void FinalUpdate() { }
+	virtual void Awake() {}
+	virtual void Start() {}
+	virtual void Update() {}
+	virtual void LateUpdate() {}
+	virtual void FinalUpdate() {}
 
 public:
 	COMPONENT_TYPE GetType() { return _type; }
@@ -56,4 +56,3 @@ protected:
 	COMPONENT_TYPE _type;
 	weak_ptr<GameObject> _gameObject;
 };
-

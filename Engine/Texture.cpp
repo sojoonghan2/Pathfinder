@@ -4,12 +4,10 @@
 
 Texture::Texture() : Object(OBJECT_TYPE::TEXTURE)
 {
-
 }
 
 Texture::~Texture()
 {
-
 }
 
 void Texture::Load(const wstring& path)

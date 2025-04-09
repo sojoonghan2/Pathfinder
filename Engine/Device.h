@@ -15,4 +15,3 @@ private:
 	// 각종 객체 생성
 	ComPtr<ID3D12Device>		_device;
 };
-

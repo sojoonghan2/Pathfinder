@@ -59,4 +59,3 @@ private:
 
 	float			_shootAniDurationTimer = 0.f;
 };
-

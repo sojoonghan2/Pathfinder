@@ -4,10 +4,10 @@
 class BossScript : public MasterScript
 {
 public:
-    BossScript();
-    virtual ~BossScript();
+	BossScript();
+	virtual ~BossScript();
 
-    virtual void LateUpdate() override;
+	virtual void LateUpdate() override;
 
 private:
 };

@@ -5,8 +5,6 @@
 #include "Timer.h"
 #include "MessageManager.h"
 
-
-
 // 플레이어 이동속도, 단위 m/s
 constexpr float PLAYER_SPEED_MPS{ 5.f };
 constexpr float PLAYER_SPEED_MPMS{ PLAYER_SPEED_MPS / 1000.f };
@@ -86,11 +84,9 @@ void SocketIO::Update()
 	}
 }
 
-
 void SocketIO::Worker()
 {
 	while (true) {
-
 		int ret = DoRecv();
 		if (0 == ret || SOCKET_ERROR == ret) {
 			return;
@@ -98,7 +94,7 @@ void SocketIO::Worker()
 	}
 }
 
-int SocketIO::DoRecv() 
+int SocketIO::DoRecv()
 {
 	// 기존 버퍼 내용 초기화
 	BufferType buffer{};
@@ -125,7 +121,6 @@ int SocketIO::DoRecv()
 		int remain_size = p_header->size - sizeof(packet::Header);
 
 		if (remain_size > 0) {
-
 			// 가변 길이 recv
 			recv_len = recv(
 				serverSocket,
@@ -150,9 +145,7 @@ int SocketIO::DoRecv()
 
 void SocketIO::ProcessPacket()
 {
-
 	while (not bufferQueue.empty()) {
-
 		auto& buffer = bufferQueue.front();
 		packet::Header& header = reinterpret_cast<packet::Header&>(buffer);
 		switch (header.type) {

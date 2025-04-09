@@ -3,22 +3,21 @@
 
 struct BINMaterialInfo
 {
-    Vec4			diffuse;
-    Vec4			ambient;
-    Vec4			specular;
-    wstring			name;
-    char diffuseTexName[64] = "null";
-    char normalTexName[64] = "null";
-    char specularTexName[64] = "null";
-    char detailDiffuseTexName[64] = "null";
-    char detailNormalTexName[64]= "null";
-    BYTE strlenD = 64;
-    BYTE strlenN = 64;
-    BYTE strlenS = 64;
-    BYTE strlenDD = 64;
-    BYTE strlenDN = 64;
+	Vec4			diffuse;
+	Vec4			ambient;
+	Vec4			specular;
+	wstring			name;
+	char diffuseTexName[64] = "null";
+	char normalTexName[64] = "null";
+	char specularTexName[64] = "null";
+	char detailDiffuseTexName[64] = "null";
+	char detailNormalTexName[64] = "null";
+	BYTE strlenD = 64;
+	BYTE strlenN = 64;
+	BYTE strlenS = 64;
+	BYTE strlenDD = 64;
+	BYTE strlenDN = 64;
 };
-
 
 #define VERTEXT_POSITION				0x01
 #define VERTEXT_COLOR					0x02
@@ -36,80 +35,78 @@ struct BINMaterialInfo
 
 struct BINLoadInfo
 {
-    char							m_pstrMeshName[256] = { 0 };
+	char							m_pstrMeshName[256] = { 0 };
 
-    UINT							m_nType = 0x00;
+	UINT							m_nType = 0x00;
 
-    XMFLOAT3						m_xmf3AABBCenter = XMFLOAT3(0.0f, 0.0f, 0.0f);
-    XMFLOAT3						m_xmf3AABBExtents = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT3						m_xmf3AABBCenter = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT3						m_xmf3AABBExtents = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-    int								m_nVertices = 0;
-    int       nPositions = 0;
-    XMFLOAT3* m_pxmf3Positions = NULL;
-    int       nColors = 0;
-    XMFLOAT4* m_pxmf4Colors = NULL;
-    int       nNormals = 0;
-    XMFLOAT3* m_pxmf3Normals = NULL;
+	int								m_nVertices = 0;
+	int       nPositions = 0;
+	XMFLOAT3* m_pxmf3Positions = NULL;
+	int       nColors = 0;
+	XMFLOAT4* m_pxmf4Colors = NULL;
+	int       nNormals = 0;
+	XMFLOAT3* m_pxmf3Normals = NULL;
 
-    int								nTextureCoords = 0;
-    XMFLOAT2* m_pxmf2TextureCoords0 = NULL;
-    XMFLOAT2* m_pxmf2TextureCoords1 = NULL;
+	int								nTextureCoords = 0;
+	XMFLOAT2* m_pxmf2TextureCoords0 = NULL;
+	XMFLOAT2* m_pxmf2TextureCoords1 = NULL;
 
-    int								nTangents = 0;
-    int								nBiTangents = 0;
-    XMFLOAT3* m_pxmf3Tangents = NULL;
-    XMFLOAT3* m_pxmf3BiTangents = NULL;
+	int								nTangents = 0;
+	int								nBiTangents = 0;
+	XMFLOAT3* m_pxmf3Tangents = NULL;
+	XMFLOAT3* m_pxmf3BiTangents = NULL;
 
-    int								m_nIndices = 0;
-    UINT* m_pnIndices = NULL;
+	int								m_nIndices = 0;
+	UINT* m_pnIndices = NULL;
 
-    int								m_nSubMeshes = 0;
-    int* m_pnSubSetIndices = NULL;
-    UINT** m_ppnSubSetIndices = NULL;
+	int								m_nSubMeshes = 0;
+	int* m_pnSubSetIndices = NULL;
+	UINT** m_ppnSubSetIndices = NULL;
 };
-
 
 struct BINInfo
 {
-    string								name;
-    vector<Vertex>						vertices;
-    vector<vector<uint32>>				indices;
-    vector<BINMaterialInfo>			materials;
-    shared_ptr<Transform>               transform;
+	string								name;
+	vector<Vertex>						vertices;
+	vector<vector<uint32>>				indices;
+	vector<BINMaterialInfo>			materials;
+	shared_ptr<Transform>               transform;
 };
-
 
 class BINLoader
 {
 public:
-    BINLoader();
-    ~BINLoader();
+	BINLoader();
+	~BINLoader();
 
 public:
-    void LoadBIN(const wstring& path);
+	void LoadBIN(const wstring& path);
 
-   BINInfo Li2i(BINLoadInfo loadInfo);
+	BINInfo Li2i(BINLoadInfo loadInfo);
 
 public:
-    int32 GetMeshCount() { return static_cast<int32>(_meshes.size()); }
-    const BINInfo& GetMesh(int32 idx) { return _meshes[idx]; }
+	int32 GetMeshCount() { return static_cast<int32>(_meshes.size()); }
+	const BINInfo& GetMesh(int32 idx) { return _meshes[idx]; }
 
 private:
-    void LoadMesh(FILE* pInFile, BINInfo* info);
-    void LoadMaterial(FILE* pInFile, BINInfo*info);
+	void LoadMesh(FILE* pInFile, BINInfo* info);
+	void LoadMaterial(FILE* pInFile, BINInfo* info);
 
-    BINInfo LoadFrameHierarchy(FILE* pInFile);
-    void LoadGeometry(const wstring& pstrFileName);
+	BINInfo LoadFrameHierarchy(FILE* pInFile);
+	void LoadGeometry(const wstring& pstrFileName);
 
-    void CreateTextures();
-    void CreateMaterials();
+	void CreateTextures();
+	void CreateMaterials();
 
 private:
-    wstring			_resourceDirectory;
+	wstring			_resourceDirectory;
 
-    int32                               _count = 0;
-    vector<int32>                       _parentCount;
-    vector<int32>                       _childCount;
+	int32                               _count = 0;
+	vector<int32>                       _parentCount;
+	vector<int32>                       _childCount;
 
-    vector<BINInfo>					_meshes;
+	vector<BINInfo>					_meshes;
 };

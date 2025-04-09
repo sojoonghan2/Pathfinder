@@ -6,4 +6,3 @@ class TestDragon : public MonoBehaviour
 public:
 	virtual void Update() override;
 };
-

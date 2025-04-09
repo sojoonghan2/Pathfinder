@@ -37,4 +37,3 @@ private:
 	shared_ptr<Mesh> _mesh;
 	vector<shared_ptr<Material>> _materials;
 };
-

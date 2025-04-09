@@ -45,7 +45,7 @@ struct SCLogin : Header
 	int playerId{ -1 };
 
 	SCLogin(int playerId) :
-		playerId{playerId}
+		playerId{ playerId }
 	{
 		size = sizeof(SCLogin);
 		type = Type::SC_LOGIN;
@@ -63,9 +63,9 @@ struct SCMovePlayer : Header
 	float y{ 0.f };
 
 	SCMovePlayer(const int playerId, const float x, const float y) :
-		playerId{playerId},
-		x{x},
-		y{y}
+		playerId{ playerId },
+		x{ x },
+		y{ y }
 	{
 		size = sizeof(SCMovePlayer);
 		type = Type::SC_MOVE_PLAYER;

@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "NetworkTimer.h"
 
-
 void NetworkTimer::updateDeltaTime()
 {
 	TimePoint currentFrame = Clock::now();

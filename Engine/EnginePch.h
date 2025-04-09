@@ -1,12 +1,10 @@
 #pragma once
 
-
 #include <WS2tcpip.h>
 #include <MSWSock.h>
 
 #pragma comment(lib, "WS2_32.lib")
 #pragma comment(lib, "MSWSock.lib")
-
 
 // std::byte 사용하지 않음
 #define _HAS_STD_BYTE 0
@@ -97,20 +95,19 @@ using namespace Microsoft::WRL;
 
 #define PI 3.14159265358979323846f
 
-
 // 각종 typedef
-using int8		= __int8;
-using int16		= __int16;
-using int32		= __int32;
-using int64		= __int64;
-using uint8		= unsigned __int8;
-using uint16	= unsigned __int16;
-using uint32	= unsigned __int32;
-using uint64	= unsigned __int64;
-using Vec2		= DirectX::SimpleMath::Vector2;
-using Vec3		= DirectX::SimpleMath::Vector3;
-using Vec4		= DirectX::SimpleMath::Vector4;
-using Matrix	= DirectX::SimpleMath::Matrix;
+using int8 = __int8;
+using int16 = __int16;
+using int32 = __int32;
+using int64 = __int64;
+using uint8 = unsigned __int8;
+using uint16 = unsigned __int16;
+using uint32 = unsigned __int32;
+using uint64 = unsigned __int64;
+using Vec2 = DirectX::SimpleMath::Vector2;
+using Vec3 = DirectX::SimpleMath::Vector3;
+using Vec4 = DirectX::SimpleMath::Vector4;
+using Matrix = DirectX::SimpleMath::Matrix;
 
 // Scene 전환
 //#define ALLLOAD
@@ -123,7 +120,6 @@ using Matrix	= DirectX::SimpleMath::Matrix;
 //#define BOSSLOAD
 #define PARTICLELOAD
 //#define TESTLOAD
-
 
 enum class CBV_REGISTER : uint8
 {
@@ -241,7 +237,6 @@ public:								\
     std::cout << std::string(GetGameObject()->GetName().begin(), GetGameObject()->GetName().end()) << ": " << "(" << GetTransform()->GetLocalPosition().x << ", " \
               << GetTransform()->GetLocalPosition().y << ", " \
               << GetTransform()->GetLocalPosition().z << ")" << std::endl
-
 
 struct TransformParams
 {

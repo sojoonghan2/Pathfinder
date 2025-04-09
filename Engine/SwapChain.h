@@ -17,4 +17,3 @@ private:
 	ComPtr<IDXGISwapChain>	_swapChain;
 	uint32					_backBufferIndex = 0;
 };
-

@@ -4,15 +4,15 @@
 class Player : public Component
 {
 public:
-    Player();
-    virtual ~Player();
+	Player();
+	virtual ~Player();
 
-    virtual void FinalUpdate() override;
+	virtual void FinalUpdate() override;
 
-    void LoadPlayerSkill();
-    void LoadGrenade();
-    void LoadRazer();
+	void LoadPlayerSkill();
+	void LoadGrenade();
+	void LoadRazer();
 
 public:
-    bool        _isInit = false;
+	bool        _isInit = false;
 };
