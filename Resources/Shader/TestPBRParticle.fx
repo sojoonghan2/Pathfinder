@@ -142,12 +142,13 @@ float4 PS_Main(GS_OUT input) : SV_Target
     float4 portalEdgeColor = input.color * edgeGlow;
     float4 finalColor = particleColor * portalEdgeColor;
     
-    // 투명 처리
+    // 굴절
     if (distFromCenter < 0.85f)
     {
         float distortAmount = 0.05f + 0.02f * sin(g_data[input.id].curTime * 5.0f);
         
-        float2 refractedUV = input.uv + (particleColor.rg - 0.5f) * distortAmount;
+        float2 direction = normalize(input.uv - float2(0.5f, 0.5f));
+        float2 refractedUV = input.uv + direction * distortAmount;
         refractedUV = saturate(refractedUV);
     
         float4 backgroundColor = g_textures2.Sample(g_sam_0, refractedUV);
@@ -156,7 +157,6 @@ float4 PS_Main(GS_OUT input) : SV_Target
     }
     else
     {
-        // Edge area - glowing effect
         return finalColor;
     }
 }

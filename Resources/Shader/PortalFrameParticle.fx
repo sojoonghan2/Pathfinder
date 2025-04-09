@@ -128,16 +128,13 @@ float4 PS_Main(GS_OUT input) : SV_Target
     float dist = length(offset); // 0: 중심, 1: 외곽
 
     float ratio = g_data[input.id].curTime / g_data[input.id].lifeTime;
-
-    // alpha 조정: 꼬리 길고 진하게, 전체적으로 더 밝음
-    float alpha = exp(-pow(dist * 3.5f, 2.0f)); // 중심 영역 확대
-    alpha *= pow(ratio, 0.6f); // fade-out 더 완만하게
-    alpha *= exp(-dist * 4.5f); // 꼬리 감쇠 완화
-
-    // flicker 조정: 최소값 보장해 너무 어두워지지 않게
+    
+    float alpha = exp(-pow(dist * 3.5f, 2.0f));
+    alpha *= pow(ratio, 0.1f);
+    alpha *= exp(-dist * 4.5f * 2);
+    
     float flicker = 0.95f + 0.05f * sin(g_data[input.id].rotationAngle * 30.0f + ratio * 30.0f);
-
-    // 더 밝은 불꽃 색상 계열 (선명한 노랑-주황-레드 계열)
+    
     float3 potalColor = float3(0.8f, 0.2f, 0.1f);
     
     float4 color = float4(potalColor, 1.0f) * flicker * alpha;
@@ -203,7 +200,7 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
             float r2 = Rand(float2(x * accTime, accTime));
 
             float angle = 2.0f * PI * r1;
-            float radius = 500.0f; // 100배 커진 원
+            float radius = 500.0f;
 
             g_particle[threadIndex.x].worldPos = float3(radius * cos(angle), radius * sin(angle), 0.0f);
             g_particle[threadIndex.x].worldDir = normalize(float3(cos(angle), sin(angle), 0.0f));
