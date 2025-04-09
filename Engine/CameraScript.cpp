@@ -96,6 +96,11 @@ void CameraScript::MouseInput() {
         _revolution.y += dx * 0.005f;
         _cameraRotation.y += dx * 0.005f;
 
+        _cameraRotation.x += dy * 0.005f;
+        const float minAngle = -XM_PI / 18.0f; // -30도
+        const float maxAngle = XM_PI / 18.0f;  // 30도
+        _cameraRotation.x = std::clamp(_cameraRotation.x, minAngle, maxAngle);
+
         // 커서가 화면 경계를 넘었는지 검사
         POINT cursorPos;
         GetCursorPos(&cursorPos);
