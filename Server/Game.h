@@ -1,5 +1,7 @@
 #pragma once
 #include "Player.h"
+#include "Monster.h"
+#include "Room.h"
 
 class Game
 {
@@ -11,21 +13,17 @@ private:
 
 public:
 	void RegisterClient(int id);
-	void SetPlayerPosition(const int player_id, Vec2f pos);
-	Vec2f GetPlayerPosition(const int player_id) const;
-	std::array<int, 3> GetRoomClients(const int room_id);
+
+	void ProcessPacket(const packet::Type type, void* packet);
+
 	void Init();
 
 private:
-	std::array<Player, MAX_PLAYER> playerList{};
-	std::array<Room, MAX_ROOM>	roomList{};
+	std::array<Player, MAX_PLAYER> _playerList{};
+	std::array<Room, MAX_ROOM>	_roomList{};
+	std::array<Monster, MAX_MONSTER> _monsterList{};
 
-	// 현재 사용 가능한 playerid의 큐
-	concurrency::concurrent_queue<int> playerQueue;
-	// 현재 사용 가능한 roomid의 큐
-	concurrency::concurrent_queue<int> roomQueue;
-	// 현재 매칭을 등록한 clientid의 큐
-	concurrency::concurrent_queue<int> matchmakingQueue;
+	concurrency::concurrent_queue<int> _matchmakingQueue{};
 
 };
 

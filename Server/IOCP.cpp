@@ -3,6 +3,11 @@
 
 #include "IOCP.h"
 #include "Game.h"
+#include "Timer.h"
+
+std::random_device rd;
+std::default_random_engine dre{ rd() };
+std::uniform_real_distribution<float> timeDist{ 2.f, 4.f };
 
 bool IOCP::Init()
 {
@@ -206,14 +211,7 @@ void IOCP::Worker()
 			while (remain_data > 0) {
 				int packet_size = p[0];
 				if (packet_size <= remain_data) {
-					bool ret = ProcessPacket(static_cast<int>(key), p);
-					if (false == ret) {
-						// Todo
-						closesocket(clientInfoHash[key].clientSocket);
-						clientInfoHash[key].ioState = IOState::DISCONNECT;
-						
-						break;
-					}
+					ProcessPacket(static_cast<int>(key), p);
 					p = p + packet_size;
 					remain_data = remain_data - packet_size;
 				}
@@ -317,8 +315,15 @@ void IOCP::DoSend(ClientInfo& client_info, void* packet)
 	WSASend(client_info.clientSocket, &send_over_ex->wsabuf, 1, 0, 0, &send_over_ex->over, 0);
 }
 
-bool IOCP::ProcessPacket(int key, char* p)
+void IOCP::DoSend(int client_id, void* packet)
 {
+	DoSend(clientInfoHash[client_id], packet);
+}
+
+void IOCP::ProcessPacket(int key, char* p)
+{
+
+	// IOCP에서 처리
 	packet::Header* header = reinterpret_cast<packet::Header*>(p);
 	switch (header->type)
 	{
@@ -326,15 +331,76 @@ bool IOCP::ProcessPacket(int key, char* p)
 	{
 		packet::SCLogin sc_login{ key };
 		DoSend(clientInfoHash[key], &sc_login);
-
 	}
 	break;
 
 	case packet::Type::CS_MATCHMAKING:
 	{
+		
+	// 클라이언트에 매치메이킹 패킷이 도착하였을 경우
+	// 클라이언트 아이디를 우선순위 큐에 넣고 사이즈 검사
+	// 사이즈가 3이상이면 클라이언트 3개를 뽑아냄.
 
-		// 매치메이킹 등록 및 방 생성 함수
-		GET_SINGLE(Game)->RegisterClient(key);
+	// 만약 클라이언트 3개를 뽑는데 실패한다면
+	// 여태 뽑은 클라이언트 id를 우선순위를 높혀서 다시 매치메이킹 큐에 저장
+
+	// 번호 3개를 뽑는데 성공한다면 
+	// 플레이어 번호를 3개 플레이어 큐에서 꺼냄.
+	// 꺼낸 번호 3개를 각각 클라이언트에 부여
+	// 방 번호 큐에서 번호를 하나를 꺼내와
+	// 그 번호의 방에 플레이어 아이디를 저장.
+
+		
+
+		// 일단 아이디를 넣는다.
+		_matchmakingQueue.push(key);
+
+		// 매칭 실패시 대기할 시간
+		float waiting_time = timeDist(dre);
+
+		// 큐에서 뽑아낼 3명의 클라이언트 아이디를 저장할 배열
+		std::array<int, 3> client_ids{};
+		client_ids.fill(-1);
+
+		bool loop{ false };
+		bool match{ false };
+		Timer pop_timer;
+		int count{ 1 };
+		do {
+			loop = false;
+
+			// 매치메이킹 큐에 세명이 찰 경우 3명을 뽑음
+			if (_matchmakingQueue.unsafe_size() >= 3) {
+				for (auto& id : client_ids) {
+					if (not _matchmakingQueue.try_pop(id)) {
+						loop = true;
+						break;
+					}
+				}
+				match = true;
+			}
+
+			// 실패하면 다시 넣고 대기시간을 점점 더 늘려가면서 재시도
+			if (loop) {
+
+				// 다시 넣음
+				for (auto& id : client_ids) {
+					if (-1 != id) {
+						_matchmakingQueue.push(id);
+					}
+				}
+
+				// 재시도
+				pop_timer.updateDeltaTime();
+				while (pop_timer.PeekDeltaTime() < waiting_time) {
+					std::this_thread::yield();
+				}
+				waiting_time += timeDist(dre) * count++;
+			}
+		} while (loop);
+
+
+
 
 		// 매치매이킹이 아직 안되었으면 빠져나가기
 		if (clientInfoHash[key].ioState != IOState::INGAME) {
@@ -399,10 +465,16 @@ bool IOCP::ProcessPacket(int key, char* p)
 	default:
 	{
 		std::println("packet Error. disconnect Client {}", key);
-		return false;
+
+		// todo: 패킷 에러시 클라이언트 종료
+		closesocket(clientInfoHash[key].clientSocket);
+		clientInfoHash[key].ioState = IOState::DISCONNECT;
+
+		return;
 	}
 	}
-	return true;
+
+
 }
 
 void IOCP::DoBroadcast(void* packet)

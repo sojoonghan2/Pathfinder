@@ -1,5 +1,6 @@
 #pragma once
 
+constexpr int MAX_MONSTER = MAX_ROOM * 10;
 
 
 struct Vec2f
@@ -14,24 +15,10 @@ struct Vec2f
 	{}
 };
 
-// temp
-struct Room
-{
-	std::array<int, 3> clientIdList{};
-};
-
 struct ClientIdInfo
 {
 	int playerId{ -1 };
 	int roomId{ -1 };
-};
-
-struct Player
-{
-	Vec2f pos{};
-	int clientId{ -1 };
-	float& x = pos.x;
-	float& y = pos.y;
 };
 
 enum class IOOperation
@@ -85,7 +72,7 @@ struct ClientInfo
 	SOCKET			clientSocket{ INVALID_SOCKET };	
 	int				currentDataSize{};					// 패킷 재조립을 위한 남은 데이터 수 
 	ClientIdInfo	clientIdInfo{};
-	IOState			ioState{ IOState::CONNECT };
+	IOState			ioState{ IOState::NONE };
 
 	ClientInfo()
 	{
