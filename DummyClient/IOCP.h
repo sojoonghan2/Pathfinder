@@ -22,7 +22,7 @@ private:
 	void TimerWorker();
 
 private:
-	HANDLE		IOCPHandle{ INVALID_HANDLE_VALUE };
+	HANDLE		_IOCPHandle{ INVALID_HANDLE_VALUE };
 
 	std::array<ClientInfo, MAX_PLAYER> players;
 	std::array<Timepoint, MAX_PLAYER> delays;
@@ -30,6 +30,6 @@ private:
 	std::atomic<int>	delayTime{ 0 };
 	std::atomic<int>	currentClient{ 0 };
 
-	std::vector<std::thread> workers{};
+	std::vector<std::thread> _workers{};
 };
 

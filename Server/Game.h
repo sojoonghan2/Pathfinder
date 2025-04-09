@@ -12,18 +12,18 @@ private:
 
 
 public:
-	void RegisterClient(int id);
 
-	void ProcessPacket(const packet::Type type, void* packet);
+	void MovePlayer(int player_id, Vec2f& pos);
+	bool GetNewPlayerIds(std::array<int, 3>& ids) const;
+	
+	// TODO: 몬스터를 위한 update 필요
 
 	void Init();
 
 private:
-	std::array<Player, MAX_PLAYER> _playerList{};
-	std::array<Room, MAX_ROOM>	_roomList{};
-	std::array<Monster, MAX_MONSTER> _monsterList{};
-
-	concurrency::concurrent_queue<int> _matchmakingQueue{};
+	std::array<Player, MAX_PLAYER>		_playerList{};
+	std::array<Room, MAX_ROOM>			_roomList{};
+	std::array<Monster, MAX_MONSTER>	_monsterList{};
 
 };
 

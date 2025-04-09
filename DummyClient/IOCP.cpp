@@ -12,15 +12,15 @@ bool IOCP::Init()
 	}
 
 	// IOCP 핸들 생성
-	IOCPHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, NULL, 0);
+	_IOCPHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, NULL, 0);
 
 	int thread_number = std::thread::hardware_concurrency();
 	for (int i = 0; i < thread_number / 2; ++i) {
-		workers.emplace_back([this]() { Worker(); });
+		_workers.emplace_back([this]() { Worker(); });
 	}
 
-	workers.emplace_back([this]() { TimerWorker(); });
-	workers.emplace_back([this]() { LoginWorker(); });
+	_workers.emplace_back([this]() { TimerWorker(); });
+	_workers.emplace_back([this]() { LoginWorker(); });
 
 
 	std::cout << "IOCP INIT success.\n";
@@ -35,7 +35,7 @@ void IOCP::Worker()
 		WSAOVERLAPPED* over = nullptr;
 
 		auto ret = GetQueuedCompletionStatus(
-			IOCPHandle,
+			_IOCPHandle,
 			&io_size,
 			&ULkey,
 			&over,
@@ -249,7 +249,7 @@ void IOCP::LoginWorker()
 		players[i].ioState = IOState::CONNECT;
 
 		DWORD recv_flag = 0;
-		CreateIoCompletionPort(reinterpret_cast<HANDLE>(players[i].clientSocket), IOCPHandle, i, 0);
+		CreateIoCompletionPort(reinterpret_cast<HANDLE>(players[i].clientSocket), _IOCPHandle, i, 0);
 		DoRecv(players[i]);
 		packet::CSLogin login_packet;
 		DoSend(players[i], &login_packet);
@@ -262,7 +262,7 @@ void IOCP::LoginWorker()
 
 IOCP::~IOCP()
 {
-	for (auto& thread : workers) {
+	for (auto& thread : _workers) {
 		if (thread.joinable()) {
 			thread.join();
 		}

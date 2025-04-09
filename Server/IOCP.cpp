@@ -20,9 +20,9 @@ bool IOCP::Init()
 	}
 
 	// listen socket 소켓 만들기
-	listenSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
+	_listenSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 	
-	if (INVALID_SOCKET == listenSocket) {
+	if (INVALID_SOCKET == _listenSocket) {
 		util::DisplayError();
 		return false;
 	}
@@ -35,24 +35,24 @@ bool IOCP::Init()
 	server_addr.sin_addr.S_un.S_addr = INADDR_ANY;
 
 	// bind
-	ret = bind(listenSocket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));
+	ret = bind(_listenSocket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));
 	if (0 != ret) {
 		util::DisplayError();
 		return false;
 	}
 
 	// listen
-	ret = listen(listenSocket, SOMAXCONN);
+	ret = listen(_listenSocket, SOMAXCONN);
 	if (0 != ret) {
 		util::DisplayError();
 		return false;
 	}
 
 	// IOCP 핸들 생성
-	IOCPHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
+	_IOCPHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
 
 	// 생성한 IOCP 핸들을 listen socket에 연결
-	CreateIoCompletionPort(reinterpret_cast<HANDLE>(listenSocket), IOCPHandle, 99999, 0);
+	CreateIoCompletionPort(reinterpret_cast<HANDLE>(_listenSocket), _IOCPHandle, 99999, 0);
 
 	std::println("IOCP Init Successed.");
 
@@ -62,7 +62,7 @@ bool IOCP::Init()
 bool IOCP::Start()
 {
 	// 클라이언트 accept socket 생성
-	acceptSocket = WSASocket(
+	_acceptSocket = WSASocket(
 		AF_INET,
 		SOCK_STREAM,
 		0,
@@ -70,12 +70,12 @@ bool IOCP::Start()
 		0,
 		WSA_FLAG_OVERLAPPED);
 	int flag = 1;
-	setsockopt(acceptSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
+	setsockopt(_acceptSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
 
 	// accpet를 위한 OverlappedEx 생성
 	OverlappedEx accept_over_ex;
 	accept_over_ex.operation = IOOperation::ACCEPT;
-	accept_over_ex.clientSocket = acceptSocket;
+	accept_over_ex.clientSocket = _acceptSocket;
 
 	int addr_size = sizeof(SOCKADDR_IN);
 	DWORD bytes_received{};
@@ -83,8 +83,8 @@ bool IOCP::Start()
 
 	// listen_socket에 accept_socket 비동기 Accept 등록
 	AcceptEx(
-		listenSocket,
-		acceptSocket,
+		_listenSocket,
+		_acceptSocket,
 		accept_over_ex.dataBuffer,
 		0,
 		addr_size + 16,
@@ -101,24 +101,12 @@ bool IOCP::Start()
 
 	int thread_number = std::thread::hardware_concurrency();
 	for (int i = 0; i < thread_number; ++i) {
-		workers.emplace_back([this]() { Worker(); });
+		_workers.emplace_back([this]() { Worker(); });
 	}
-	workers.emplace_back([this]() { TimerWorker(); });
+	_workers.emplace_back([this]() { TimerWorker(); });
 	std::cout << "Created " << thread_number << " Threads\n";
 
 	return true;
-}
-
-void IOCP::SetClientIdInfo(int client_id, int player_id, int room_id)
-{
-	clientInfoHash[client_id].clientIdInfo.playerId = player_id;
-	clientInfoHash[client_id].clientIdInfo.roomId = room_id;
-	clientInfoHash[client_id].ioState = IOState::INGAME;
-}
-
-IOState IOCP::GetClientIOState(int client_id)
-{
-	return clientInfoHash[client_id].ioState;
 }
 
 void IOCP::Worker()
@@ -129,7 +117,7 @@ void IOCP::Worker()
 		WSAOVERLAPPED* over = nullptr;
 
 		auto ret = GetQueuedCompletionStatus(
-			IOCPHandle,
+			_IOCPHandle,
 			&io_size,
 			&ULkey,
 			&over,
@@ -140,8 +128,8 @@ void IOCP::Worker()
 
 		if (FALSE == ret) {
 			// TODO: ERROR
-			closesocket(clientInfoHash[key].clientSocket);
-			clientInfoHash[key].ioState = IOState::DISCONNECT;
+			closesocket(_clientInfoHash[key].clientSocket);
+			_clientInfoHash[key].ioState = IOState::DISCONNECT;
 			// Send 일경우 보낸 curr_ex는 제거
 			if (curr_over_ex->operation == IOOperation::SEND) {
 				delete curr_over_ex;
@@ -158,37 +146,37 @@ void IOCP::Worker()
 			*/
 		case IOOperation::ACCEPT:
 		{
-			int client_id = sessionCnt++;
-			clientInfoHash.insert(std::make_pair(client_id, ClientInfo{}));
-			clientInfoHash[client_id].currentDataSize = 0;
-			clientInfoHash[client_id].clientSocket = acceptSocket;
-			clientInfoHash[client_id].overEx.clientSocket = acceptSocket;
+			int client_id = _sessionCnt++;
+			_clientInfoHash.insert(std::make_pair(client_id, ClientInfo{}));
+			_clientInfoHash[client_id].currentDataSize = 0;
+			_clientInfoHash[client_id].clientSocket = _acceptSocket;
+			_clientInfoHash[client_id].overEx.clientSocket = _acceptSocket;
 
 
 			// IOCP 객체에 받아들인 클라이언트의 소켓을 연결
 			auto ret = CreateIoCompletionPort(
-				reinterpret_cast<HANDLE>(acceptSocket),
-				IOCPHandle,
+				reinterpret_cast<HANDLE>(_acceptSocket),
+				_IOCPHandle,
 				client_id,
 				0);
 
 			// WSARecv 호출.
-			DoRecv(clientInfoHash[client_id]);
+			DoRecv(_clientInfoHash[client_id]);
 
 			// accept를 위한 새로운 소켓 생성
-			acceptSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+			_acceptSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 			int flag = 1;
-			setsockopt(acceptSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
+			setsockopt(_acceptSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
 
 			// Accept로 overlapped 설정 
 			ZeroMemory(&curr_over_ex->over, sizeof(curr_over_ex->over));
-			curr_over_ex->clientSocket = acceptSocket;
+			curr_over_ex->clientSocket = _acceptSocket;
 			int addr_size = sizeof(SOCKADDR_IN);
 			DWORD bytes_received{};
 
 			AcceptEx(
-				listenSocket,
-				acceptSocket,
+				_listenSocket,
+				_acceptSocket,
 				curr_over_ex->dataBuffer,
 				0,
 				addr_size + 16,
@@ -204,8 +192,8 @@ void IOCP::Worker()
 		*/
 		case IOOperation::RECV:
 		{
-			while (clientInfoHash.end() == clientInfoHash.find(key)) { std::this_thread::yield(); }
-			int remain_data = io_size + clientInfoHash[key].currentDataSize;
+			while (_clientInfoHash.end() == _clientInfoHash.find(key)) { std::this_thread::yield(); }
+			int remain_data = io_size + _clientInfoHash[key].currentDataSize;
 			char* p = curr_over_ex->dataBuffer;
 
 			while (remain_data > 0) {
@@ -219,10 +207,10 @@ void IOCP::Worker()
 
 			}
 
-			clientInfoHash[key].currentDataSize = remain_data;
+			_clientInfoHash[key].currentDataSize = remain_data;
 			if (remain_data > 0)
 				memcpy(curr_over_ex->dataBuffer, p, remain_data);
-			DoRecv(clientInfoHash[key]);
+			DoRecv(_clientInfoHash[key]);
 
 			break;
 		}
@@ -247,7 +235,7 @@ void IOCP::TimerWorker()
 	while (true) {
 
 		std::vector<int> id_delete{};
-		for (auto& [id, client_info] : clientInfoHash) {
+		for (auto& [id, client_info] : _clientInfoHash) {
 
 			// 인게임 체크해서 게임중이 아니면 지우기.
 			if (client_info.ioState == IOState::DISCONNECT) {
@@ -280,7 +268,7 @@ void IOCP::TimerWorker()
 
 		// 더이상 사용되지 않는 id는 제거
 		for (auto id : id_delete) {
-			clientInfoHash.unsafe_erase(id);
+			_clientInfoHash.unsafe_erase(id);
 		}
 	}
 }
@@ -308,7 +296,6 @@ void IOCP::DoRecv(ClientInfo& session) const
 		0);
 }
 
-
 void IOCP::DoSend(ClientInfo& client_info, void* packet)
 {
 	OverlappedEx* send_over_ex = new OverlappedEx{ reinterpret_cast<unsigned char*>(packet) };
@@ -317,7 +304,7 @@ void IOCP::DoSend(ClientInfo& client_info, void* packet)
 
 void IOCP::DoSend(int client_id, void* packet)
 {
-	DoSend(clientInfoHash[client_id], packet);
+	DoSend(_clientInfoHash[client_id], packet);
 }
 
 void IOCP::ProcessPacket(int key, char* p)
@@ -330,31 +317,38 @@ void IOCP::ProcessPacket(int key, char* p)
 	case packet::Type::CS_LOGIN:
 	{
 		packet::SCLogin sc_login{ key };
-		DoSend(clientInfoHash[key], &sc_login);
+		DoSend(_clientInfoHash[key], &sc_login);
 	}
 	break;
 
 	case packet::Type::CS_MATCHMAKING:
 	{
 		
-	// 클라이언트에 매치메이킹 패킷이 도착하였을 경우
-	// 클라이언트 아이디를 우선순위 큐에 넣고 사이즈 검사
-	// 사이즈가 3이상이면 클라이언트 3개를 뽑아냄.
+		// 클라이언트에 매치메이킹 패킷이 도착하였을 경우
+		// 클라이언트 아이디를 큐에 넣고 사이즈 검사
+		// 사이즈가 3이상이면 클라이언트 3개를 뽑아냄.
 
-	// 만약 클라이언트 3개를 뽑는데 실패한다면
-	// 여태 뽑은 클라이언트 id를 우선순위를 높혀서 다시 매치메이킹 큐에 저장
+		// 만약 클라이언트 3개를 뽑는데 실패한다면
+		// 여태 뽑은 클라이언트 id를 우선순위를 높혀서 다시 매치메이킹 큐에 저장
 
-	// 번호 3개를 뽑는데 성공한다면 
-	// 플레이어 번호를 3개 플레이어 큐에서 꺼냄.
-	// 꺼낸 번호 3개를 각각 클라이언트에 부여
-	// 방 번호 큐에서 번호를 하나를 꺼내와
-	// 그 번호의 방에 플레이어 아이디를 저장.
+		// 번호 3개를 뽑는데 성공한다면 
+		// 플레이어 번호를 3개 플레이어 큐에서 꺼냄.
+		// 꺼낸 번호 3개를 각각 클라이언트에 부여
+		// 방 번호 큐에서 번호를 하나를 꺼내와
+		// 그 번호의 방에 플레이어 아이디를 저장.
 
 		
 
 		// 일단 아이디를 넣는다.
 		_matchmakingQueue.push(key);
 
+		// 3 미만이면 그냥 나가기
+		if (_matchmakingQueue.unsafe_size() < 3) {
+			break;
+		}
+
+
+		// 현재 클라이언트가 3 이상이면 다음과 같은 매치메이킹을 실행
 		// 매칭 실패시 대기할 시간
 		float waiting_time = timeDist(dre);
 
@@ -366,6 +360,8 @@ void IOCP::ProcessPacket(int key, char* p)
 		bool match{ false };
 		Timer pop_timer;
 		int count{ 1 };
+
+		// 매치메이킹 알고리즘
 		do {
 			loop = false;
 
@@ -401,26 +397,46 @@ void IOCP::ProcessPacket(int key, char* p)
 
 
 
+		// -- 매칭 완료 --
 
-		// 매치매이킹이 아직 안되었으면 빠져나가기
-		if (clientInfoHash[key].ioState != IOState::INGAME) {
+		// 방 번호를 얻어옴
+		int room_id{ -1 };
+		for (int i{}; i < MAX_ROOM; ++i) {
+			if (not _roomClientList[i].GetRunning()) {
+				if (_roomClientList[i].TrySetRunning(true)) {
+					// 방 번호 얻기 성공
+					room_id = i;
+				}
+			}
+		}
+
+		// 방 번호를 얻어오는 데 실패함.
+		if (-1 == room_id) {
+			// 일단 임시로 다시 넣고 종료.
+			for (auto& id : client_ids) {
+				if (-1 != id) {
+					_matchmakingQueue.push(id);
+				}
+			}
 			break;
 		}
 
+		// 플레이어 번호를 얻어옴
+
+
+
 		// 매칭이 완료되면 본인 위치를 본인 클라이언트에 전달
-		auto client_ids = GET_SINGLE(Game)->GetRoomClients(
-			clientInfoHash[key].clientIdInfo.roomId);
 
 		for (auto id : client_ids) {
 			auto pos = GET_SINGLE(Game)->GetPlayerPosition(
-				clientInfoHash[id].clientIdInfo.playerId);
+				_clientInfoHash[id].clientIdInfo.playerId);
 
 			packet::SCMatchmaking sc_matchmaking{ id };
-			DoSend(clientInfoHash[id], &sc_matchmaking);
+			DoSend(_clientInfoHash[id], &sc_matchmaking);
 
 			packet::SCMovePlayer sc_move_player{
 				id, pos.x, pos.y };
-			DoSend(clientInfoHash[id], &sc_move_player);
+			DoSend(_clientInfoHash[id], &sc_move_player);
 		}
 	}
 	break;
@@ -428,7 +444,7 @@ void IOCP::ProcessPacket(int key, char* p)
 	case packet::Type::CS_MOVE_PLAYER:
 	{
 		packet::CSMovePlayer* packet = reinterpret_cast<packet::CSMovePlayer*>(p);
-		if (clientInfoHash[key].ioState != IOState::INGAME) {
+		if (_clientInfoHash[key].ioState != IOState::INGAME) {
 			break;
 		}
 
@@ -436,18 +452,18 @@ void IOCP::ProcessPacket(int key, char* p)
 			key,
 			Vec2f{ packet->x, packet->y });
 
-		auto pos = GET_SINGLE(Game)->GetPlayerPosition(clientInfoHash[key].clientIdInfo.playerId);
+		auto pos = GET_SINGLE(Game)->GetPlayerPosition(_clientInfoHash[key].clientIdInfo.playerId);
 		packet::SCMovePlayer send_packet{ key, pos.x, pos.y };
 
 		// 내 방에 있는 플레이어에게 패킷을 보냄
-		auto other_players = GET_SINGLE(Game)->GetRoomClients(clientInfoHash[key].clientIdInfo.roomId);
+		auto other_players = GET_SINGLE(Game)->GetRoomClients(_clientInfoHash[key].clientIdInfo.roomId);
 		for (auto other : other_players) {
 			if (other == -1) { continue; }
-			if (clientInfoHash[other].ioState != IOState::INGAME ||
+			if (_clientInfoHash[other].ioState != IOState::INGAME ||
 				other == key) {
 				continue;
 			}
-			DoSend(clientInfoHash[other], &send_packet);
+			DoSend(_clientInfoHash[other], &send_packet);
 		}
 	}
 	break;
@@ -456,7 +472,7 @@ void IOCP::ProcessPacket(int key, char* p)
 	{
 
 		packet::SCCheckDelayPacket send_packet{};
-		DoSend(clientInfoHash[key], &send_packet);
+		DoSend(_clientInfoHash[key], &send_packet);
 
 
 	}
@@ -467,8 +483,8 @@ void IOCP::ProcessPacket(int key, char* p)
 		std::println("packet Error. disconnect Client {}", key);
 
 		// todo: 패킷 에러시 클라이언트 종료
-		closesocket(clientInfoHash[key].clientSocket);
-		clientInfoHash[key].ioState = IOState::DISCONNECT;
+		closesocket(_clientInfoHash[key].clientSocket);
+		_clientInfoHash[key].ioState = IOState::DISCONNECT;
 
 		return;
 	}
@@ -480,17 +496,17 @@ void IOCP::ProcessPacket(int key, char* p)
 void IOCP::DoBroadcast(void* packet)
 {
 	// todo: 수정
-	for (int i = 0; i < sessionCnt; ++i) {
-		DoSend(clientInfoHash[i], packet);
+	for (int i = 0; i < _sessionCnt; ++i) {
+		DoSend(_clientInfoHash[i], packet);
 	}
 }
 
 void IOCP::DoBroadcast(int key, void* packet)
 {
 	// todo: 수정
-	for (int i = 0; i < sessionCnt; ++i) {
+	for (int i = 0; i < _sessionCnt; ++i) {
 		if (key == i) continue;
-		DoSend(clientInfoHash[i], packet);
+		DoSend(_clientInfoHash[i], packet);
 	}
 }
 
@@ -503,11 +519,11 @@ void IOCP::Disconnect(int client_id)
 
 IOCP::~IOCP()
 {
-	for (auto& thread : workers) {
+	for (auto& thread : _workers) {
 		if (thread.joinable()) {
 			thread.join();
 		}
 	}
-	closesocket(listenSocket);
+	closesocket(_listenSocket);
 	WSACleanup();
 }

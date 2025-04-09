@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Player.h"
+#include "RoomInfo.h"
 
 class IOCP
 {
@@ -13,9 +14,6 @@ public:
 
 public:
 	void DoSend(int client_id, void* packet);
-
-	void SetClientIdInfo(int client_id, int player_id, int room_id);
-	IOState GetClientIOState(int client_id);
 
 public:
 	~IOCP();
@@ -32,14 +30,20 @@ private:
 	void DoSend(ClientInfo& client_info, void* packet);
 
 private:
-	HANDLE		IOCPHandle{ INVALID_HANDLE_VALUE };
-	int			sessionCnt{0};
-	SOCKET		listenSocket{ INVALID_SOCKET };
-	SOCKET		acceptSocket{ INVALID_SOCKET };
+	HANDLE		_IOCPHandle{ INVALID_HANDLE_VALUE };
+	int			_sessionCnt{0};
+	SOCKET		_listenSocket{ INVALID_SOCKET };
+	SOCKET		_acceptSocket{ INVALID_SOCKET };
 
 
-	std::vector<std::thread> workers{};
-	concurrency::concurrent_unordered_map<int, ClientInfo> clientInfoHash;
+	std::vector<std::thread> _workers{};
+
+	// TODO:
+	// 일단	concurrent_unordered_map을 사용, 나중에는 그냥 unordered_map 바꾸기
+	concurrency::concurrent_unordered_map<int, ClientInfo> _clientInfoHash;
+	
+	std::array<RoomInfo, MAX_ROOM> _roomClientList{};
+
 	concurrency::concurrent_queue<int> _matchmakingQueue{};
 
 };

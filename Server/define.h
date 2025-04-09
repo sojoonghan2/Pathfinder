@@ -68,7 +68,7 @@ struct alignas(64) OverlappedEx
 
 struct ClientInfo
 {
-	OverlappedEx	overEx;							// RECV에 사용할 Overlapped 변수
+	OverlappedEx	overEx;								// RECV에 사용할 Overlapped 변수
 	SOCKET			clientSocket{ INVALID_SOCKET };	
 	int				currentDataSize{};					// 패킷 재조립을 위한 남은 데이터 수 
 	ClientIdInfo	clientIdInfo{};
