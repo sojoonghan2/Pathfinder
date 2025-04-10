@@ -188,6 +188,7 @@
     <ClInclude Include="CrashScene.h" />
     <ClInclude Include="CrashScript.h" />
     <ClInclude Include="d3dx12.h" />
+    <ClInclude Include="DebugRenderer.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="DustParticleSystem.h" />
     <ClInclude Include="Engine.h" />
@@ -281,6 +282,7 @@
     <ClCompile Include="CrapScript.cpp" />
     <ClCompile Include="CrashScene.cpp" />
     <ClCompile Include="CrashScript.cpp" />
+    <ClCompile Include="DebugRenderer.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="DustParticleSystem.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -380,6 +382,12 @@
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\compute.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\Debug.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\deferred.fx">

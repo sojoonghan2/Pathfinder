@@ -173,9 +173,9 @@ float4 PS_Main(GS_OUT input) : SV_Target
 
 		float4 backgroundColor = g_textures2.Sample(g_sam_0, refractedUV);
 
-		float waveR = 0.0f + 0.1f * sin(waveTime * 0.3f);
+		float waveR = 1.0f + 0.1f * sin(waveTime * 0.3f);
 		float waveG = 0.7f + 0.1f * sin(waveTime * 0.5f);
-		float waveB = 1.0f + 0.1f * sin(waveTime * 0.7f);
+		float waveB = 0.0f + 0.1f * sin(waveTime * 0.7f);
 		float waveA = 0.3f + 0.05f * sin(waveTime);
 
 		float appearT = saturate(g_data[input.id].curTime / 5.f);

@@ -9,6 +9,7 @@
 #include "Resources.h"
 #include "InstancingManager.h"
 #include "SocketIO.h"
+#include "DebugRenderer.h"
 
 void Engine::Init(const WindowInfo& info)
 {
@@ -36,6 +37,8 @@ void Engine::Init(const WindowInfo& info)
 	CreateConstantBuffer(CBV_REGISTER::b2, sizeof(MaterialParams), 512);
 
 	CreateRenderTargetGroups();
+
+	DebugRenderer::Init();
 
 	ResizeWindow(info.width, info.height);
 

@@ -7,6 +7,7 @@
 #include "Light.h"
 #include "Engine.h"
 #include "Resources.h"
+#include "DebugRenderer.h"
 
 void Scene::Awake()
 {
@@ -182,6 +183,8 @@ void Scene::RenderForward()
 		camera->SortGameObject();
 		camera->Render_Forward();
 	}
+
+	DebugRenderer::Render();
 }
 
 void Scene::PushLightData()

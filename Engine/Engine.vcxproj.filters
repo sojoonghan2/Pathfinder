@@ -324,6 +324,9 @@
     <ClCompile Include="PortalFrameParticleSystem.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
+    <ClCompile Include="DebugRenderer.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -605,6 +608,9 @@
     <ClInclude Include="PortalFrameParticleSystem.h">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClInclude>
+    <ClInclude Include="DebugRenderer.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -689,6 +695,9 @@
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\PortalFrameParticle.fx">
       <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\Debug.fx">
+      <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
