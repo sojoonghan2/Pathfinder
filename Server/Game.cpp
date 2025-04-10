@@ -145,12 +145,38 @@ void Game::MovePlayer(int player_id, Vec2f& pos)
 void Game::InitRoom(int room_id)
 {
 
+	// 플레이어 설정
 	_roomList[room_id].SetPlayerIdList(room_id);
 	auto players = _roomList[room_id].GetPlayerIdList();
 	for (auto& player_id : players) {
 		_playerList[player_id].Move(posDist(dre_game), posDist(dre_game));
 	}
+
+	// 현재는 RUINS로 고정
+
+	// 방 설정
+	_roomList[room_id].SetRoomType(RoomType::Ruin);
+	_roomList[room_id].ClearMonsterIdList();
+
+	// 몬스터 설정
 	
+	for (int i = 0; i < MAX_MONSTER; ++i) {
+		if (false == _monsterList[i].GetRunning()) {
+			if (_monsterList[i].TrySetRunning(true)) {
+				_monsterList[i].Move(posDist(dre_game), posDist(dre_game));
+				// 게먹어 게
+				_monsterList[i].SetMonsterType(MonsterType::Crab);
+				_roomList[room_id].AddMonsterId(i);
+			}
+		}
+	}
+
+
+}
+
+void Game::update()
+{
+
 }
 
 void Game::Init()

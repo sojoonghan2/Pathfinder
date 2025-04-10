@@ -15,11 +15,9 @@ constexpr float SKILL_DASH_COOLDOWN_S{ 1.f };
 constexpr float SKILL_GRENADE_COOLDOWN_S{ 10.f };
 constexpr float SKILL_RAZER_COOLDOWN_S{ 10.f };
 
-
-
-
-
-
+// MONSTER
+constexpr float MONSTER_SIZE_M{ 0.5f };
+constexpr float MONSTER_SPEED_MPS{ 2.f };
 
 // NETWORK
 constexpr int PORT_NUMBER{ 4000 };
