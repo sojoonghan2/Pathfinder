@@ -423,26 +423,17 @@ void IOCP::ProcessPacket(int key, char* p)
 			break;
 		}
 
-		// 플레이어 번호를 얻어옴
-		std::array<int, 3> player_ids{};
-		auto ret{ GET_SINGLE(Game)->GetPlayerIds(player_ids) };
-
-		if (false == ret) {
-			// 플레이어 번호를 얻어오는 데 실패함.
-			// 일단 임시로 다시 넣고 종료.
-			for (auto& id : client_ids) {
-				if (-1 != id) {
-					_matchmakingQueue.push(id);
-				}
-			}
-			break;
-		}
+		std::array<int, 3> player_ids{
+			room_id * 3,
+			room_id * 3 + 1,
+			room_id * 3 + 2
+		};
 
 		// -- 방 번호와 플레이어 번호를 얻어왔음. -- 
 		// 이제 Room, RoomInfo, Player에다가 정보를 저장
 
 		// 플레이어를 방에 넣고 플레이어 초기화
-		GET_SINGLE(Game)->InsertAndInitPlayers(player_ids, room_id);
+		GET_SINGLE(Game)->InitRoom(room_id);
 
 		for (int i = 0; i < 3; ++i) {
 			// RoomInfo에 정보를 넣음

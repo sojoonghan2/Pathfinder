@@ -142,39 +142,15 @@ void Game::MovePlayer(int player_id, Vec2f& pos)
 	_playerList[player_id].Move(pos);
 }
 
-bool Game::GetPlayerIds(std::array<int, 3>& ids)
+void Game::InitRoom(int room_id)
 {
-	int cnt{ 0 };
 
-	// 플레이어가 꽉 차있는 상태임.
-	for (int i{}; i < MAX_PLAYER; ++i) {
-		if (false == _playerList[i].GetRunning()) {
-			if (_playerList[i].TrySetRunning(true)) {
-				ids[cnt++] = i;
-				if (cnt == 3) {
-					return true;
-				}
-			}
-		}
+	_roomList[room_id].SetPlayerIdList(room_id);
+	auto players = _roomList[room_id].GetPlayerIdList();
+	for (auto& player_id : players) {
+		_playerList[player_id].Move(posDist(dre_game), posDist(dre_game));
 	}
-
-	// 플레이어가 꽉 차있는 상태임.
-	for (auto& id : ids) {
-		if (-1 != id) {
-			// 무조건 false가 들어감.
-			_playerList[id].TrySetRunning(false);
-		}
-		id = -1;
-	}
-	return false;
-}
-
-void Game::InsertAndInitPlayers(const std::array<int, 3>& player_ids, int room_id)
-{
-	for (int i{}; i < 3; ++i) {
-		_roomList[room_id].InsertPlayer(i, player_ids[i]);
-		_playerList[player_ids[i]].Move(posDist(dre_game), posDist(dre_game));
-	}
+	
 }
 
 void Game::Init()

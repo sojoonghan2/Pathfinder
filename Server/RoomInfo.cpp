@@ -16,3 +16,8 @@ void RoomInfo::InsertClient(const int idx, const int client_id)
 {
 	_clientIdList[idx] = client_id;
 }
+
+std::array<int, 3> RoomInfo::GetClientIdList() const
+{
+	return _clientIdList;
+}

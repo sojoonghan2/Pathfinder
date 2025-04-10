@@ -11,9 +11,3 @@ void Player::Move(const float x, const float y)
 	_x = x;
 	_y = y;
 }
-
-bool Player::TrySetRunning(const bool running)
-{
-	bool expected = !running;
-	return _isRunning.compare_exchange_strong(expected, running);
-}

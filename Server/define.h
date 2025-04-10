@@ -1,7 +1,5 @@
 #pragma once
 
-constexpr int MAX_MONSTER = MAX_ROOM * 10;
-
 
 struct Vec2f
 {

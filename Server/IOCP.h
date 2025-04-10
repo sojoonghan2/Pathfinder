@@ -39,11 +39,12 @@ private:
 	std::vector<std::thread> _workers{};
 
 	// TODO:
-	// 일단	concurrent_unordered_map을 사용, 나중에는 그냥 unordered_map 바꾸기
+	// 이렇게 하면 delete가 안됨.
+	// 일단 기본으로 사용 나중에 atomic_shared_ptr로 바꿔야함
 	concurrency::concurrent_unordered_map<int, ClientInfo> _clientInfoHash;
 	
-	std::array<RoomInfo, MAX_ROOM> _roomInfoList{};
-	concurrency::concurrent_queue<int> _matchmakingQueue{};
+	std::array<RoomInfo, MAX_ROOM>		_roomInfoList{};
+	concurrency::concurrent_queue<int>	_matchmakingQueue{};
 
 };
 
