@@ -14,8 +14,9 @@ void Room::Update(const float delta_time)
 		// 가장 가까운 플레이어 찾기
 		for (int i = 0; i < 3; i++) {
 			auto pos{ _playerPtrList[i]->GetPos() };
-			auto distance = std::pow(pos.x - monster_pos.x, 2)
-				+ std::pow(pos.x - monster_pos.x, 2);
+			auto distance{ static_cast<float>
+				(std::pow(pos.x - monster_pos.x, 2)
+				+ std::pow(pos.y - monster_pos.y, 2)) };
 			if (distance < min_distance) {
 				min_distance = distance;
 			}
