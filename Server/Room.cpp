@@ -37,9 +37,5 @@ void Room::SetPlayerPtrList(const int id, Player* player_ptr)
 	_playerPtrList[id] = player_ptr;
 }
 
-std::array<int, 3> Room::GetPlayerIdList() const
-{
-
-}
 
 

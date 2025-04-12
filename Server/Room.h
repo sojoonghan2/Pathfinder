@@ -18,8 +18,8 @@ public:
 
 	void Update(const float delta_time);
 
-	void SetPlayerPtr(const int room_id);
-	std::array<int, 3> GetPlayerIdList() const;
+	void SetPlayerPtrList(const int id, Player* player_ptr);
+
 	void ClearMonsterPtrList() { _monsterPtrList.clear(); }
 	void AddMonsterPtr(Monster* monster_ptr) { _monsterPtrList.push_back(monster_ptr); }
 	

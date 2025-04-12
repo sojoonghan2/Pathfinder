@@ -15,6 +15,11 @@ void Game::MovePlayer(int player_id, Vec2f& pos)
 void Game::InitRoom(int room_id)
 {
 
+	// 현재는 RUINS로 고정
+	// 방 설정
+	_roomList[room_id].SetRoomType(RoomType::Ruin);
+	_roomList[room_id].ClearMonsterPtrList();
+
 	// 플레이어 설정
 	for (int i = 0; i < 3; ++i) {
 		_roomList[room_id].SetPlayerPtrList(
@@ -23,12 +28,6 @@ void Game::InitRoom(int room_id)
 
 		_playerList[room_id * 3 + i].Move(posDist(dre_game), posDist(dre_game));
 	}
-
-	// 현재는 RUINS로 고정
-
-	// 방 설정
-	_roomList[room_id].SetRoomType(RoomType::Ruin);
-	_roomList[room_id].ClearMonsterPtrList();
 
 
 	// 몬스터 설정

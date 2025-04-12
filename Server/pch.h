@@ -22,6 +22,4 @@
 #include "../Common/protocol.h"
 #include "../Common/util.h"
 
-
-
 #include "define.h"
