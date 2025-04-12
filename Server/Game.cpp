@@ -159,16 +159,29 @@ void Game::InitRoom(int room_id)
 	_roomList[room_id].ClearMonsterIdList();
 
 	// 몬스터 설정
-	
-	for (int i = 0; i < MAX_MONSTER; ++i) {
-		if (false == _monsterList[i].GetRunning()) {
-			if (_monsterList[i].TrySetRunning(true)) {
-				_monsterList[i].Move(posDist(dre_game), posDist(dre_game));
-				// 게먹어 게
-				_monsterList[i].SetMonsterType(MonsterType::Crab);
-				_roomList[room_id].AddMonsterId(i);
+	// 일단 임시로 10마리
+	// 임시로 몬스터가 생길때까지 돌린다. 
+	std::array<int, 10> monster_ids{};
+	while (true) {
+		int count{ 0 };
+		for (int i = 0; i < MAX_MONSTER; ++i) {
+			if (false == _monsterList[i].GetRunning()) {
+				if (_monsterList[i].TrySetRunning(true)) {
+					monster_ids[count++] = i;
+					if (10 == count) {
+						break;
+					}
+				}
 			}
 		}
+	}
+
+	// 몬스터 아이디 얻어오기 성공
+	for (auto id : monster_ids) {
+		_monsterList[id].Move(posDist(dre_game), posDist(dre_game));
+		// 게먹어 게
+		_monsterList[id].SetMonsterType(MonsterType::Crab);
+		_roomList[room_id].AddMonsterId(id);
 	}
 
 
