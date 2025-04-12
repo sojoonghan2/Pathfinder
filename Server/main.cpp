@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "IOCP.h"
 #include "Game.h"
+#include "Timer.h"
 
 int main()
 {
@@ -14,7 +15,7 @@ int main()
 
 	GET_SINGLE(IOCP)->Start();
 
-	// game loop
+	Timer timer;
 	while (true) {
 		std::this_thread::yield();
 	}

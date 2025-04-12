@@ -1,14 +1,45 @@
 #include "pch.h"
 #include "Room.h"
 
-void Room::SetPlayerIdList(const int room_id)
+void Room::Update(const float delta_time)
 {
-	_playerIdList[0] = room_id * 3;
-	_playerIdList[1] = room_id * 3 + 1;
-	_playerIdList[2] = room_id * 3 + 2;
+
+	for (auto monster : _monsterPtrList) {
+		// 여기서 몬스터의 방향을 정해주자.
+
+		Player* player = nullptr;
+		float min_distance{ std::numeric_limits<float>::max() };
+		auto monster_pos{ monster->GetPos() };
+
+		// 가장 가까운 플레이어 찾기
+		for (int i = 0; i < 3; i++) {
+			auto pos{ _playerPtrList[i]->GetPos() };
+			auto distance = std::pow(pos.x - monster_pos.x, 2)
+				+ std::pow(pos.x - monster_pos.x, 2);
+			if (distance < min_distance) {
+				min_distance = distance;
+			}
+		}
+
+		// TODO?: 이거 할거면 하고
+		// 가장 가까운 플레이어가 몬스터의 시야에 들어왔는지 체크
+
+		// 몬스터가 플레이어를 쫒아가도록 방향 조정
+		monster->SetDir(_playerPtrList[0]->GetPos() - monster->GetPos());
+		monster->Update(delta_time);
+	}
+}
+
+
+
+void Room::SetPlayerPtrList(const int id, Player* player_ptr)
+{
+	_playerPtrList[id] = player_ptr;
 }
 
 std::array<int, 3> Room::GetPlayerIdList() const
 {
-	return _playerIdList;
+
 }
+
+

@@ -11,6 +11,16 @@ struct Vec2f
 		x{ x },
 		y{ y }
 	{}
+
+	Vec2f operator+(const Vec2f& rhs) const
+	{
+		return Vec2f{ x + rhs.x, y + rhs.y };
+	}
+
+	Vec2f operator-(const Vec2f& rhs) const
+	{
+		return Vec2f{ x - rhs.x, y - rhs.y };
+	}
 };
 
 struct ClientIdInfo

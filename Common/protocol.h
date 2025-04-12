@@ -16,8 +16,8 @@ constexpr float SKILL_GRENADE_COOLDOWN_S{ 10.f };
 constexpr float SKILL_RAZER_COOLDOWN_S{ 10.f };
 
 // MONSTER
-constexpr float MONSTER_SIZE_M{ 0.5f };
-constexpr float MONSTER_SPEED_MPS{ 2.f };
+constexpr float MONSTER_CRAB_SIZE_M{ 0.5f };
+constexpr float MONSTER_CRAB_SPEED_MPS{ 2.f };
 
 // NETWORK
 constexpr int PORT_NUMBER{ 4000 };
@@ -46,7 +46,8 @@ enum class Type : unsigned char
 	SC_MOVE_PLAYER,
 	CS_MOVE_PLAYER,
 	SC_CHECK_DELAY,
-	CS_CHECK_DELAY
+	CS_CHECK_DELAY,
+	SC_MOVE_MONSTER,
 };
 
 #pragma pack(push, 1)
@@ -152,6 +153,24 @@ struct CSCheckDelayPacket : Header
 	{}
 };
 
+
+// Param:
+//	int monsterId
+//	float x
+//	float y
+struct SCMoveMonster : Header
+{
+	int monsterId{ -1 };
+	float x{ 0.f };
+	float y{ 0.f };
+
+	SCMoveMonster(const int monster_id, const float x, const float y) :
+		Header{ sizeof(SCMoveMonster), Type::SC_MOVE_MONSTER },
+		monsterId{ monster_id },
+		x{ x },
+		y{ y }
+	{}
+};
 
 #pragma pack(pop)
 PACKET_END

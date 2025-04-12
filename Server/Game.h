@@ -17,10 +17,12 @@ public:
 	void InitRoom(int room_id);
 	
 
-	Vec2f GetPlayerPos(int player_id) { return _playerList[player_id].GetPos(); }
-	void SetPlayerPos(int player_id, const Vec2f& pos) { _playerList[player_id].Move(pos); }
+	Vec2f GetPlayerPos(const int player_id) { return _playerList[player_id].GetPos(); }
+	void SetPlayerPos(const int player_id, const Vec2f& pos) { _playerList[player_id].Move(pos); }
 
-	void update();
+	Monster& GetMonster(const int monster_id) { return _monsterList[monster_id]; }
+
+	void Update(const float delta_time);
 	void Init();
 
 private:

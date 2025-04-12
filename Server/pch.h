@@ -1,5 +1,5 @@
 #pragma once
-
+#define NOMINMAX
 #include <WS2tcpip.h>
 #include <MSWSock.h>
 
@@ -23,6 +23,5 @@
 #include "../Common/util.h"
 
 
+
 #include "define.h"
-
-

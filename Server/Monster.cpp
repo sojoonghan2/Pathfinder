@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "Monster.h"
+#include "Room.h"
+
 
 void Monster::Move(const Vec2f& pos)
 {
@@ -12,10 +14,26 @@ void Monster::Move(const float x, const float y)
 	_y = y;
 }
 
-void Monster::Update()
+void Monster::Update(const float delta_time)
 {
-	// 가장 가까운 플레이어의 위치를 찾아서
-	// 그 방향으로 이동하는 로직을 구현해야 함.
+	// 위치 업데이트
+	// milliseconds 단위이므로 바꾼다.
+	_x = _pos.x + _dir.x * _speed * delta_time / 1000.f;
+	_y = _pos.y + _dir.y * _speed * delta_time / 1000.f;
+}
+
+void Monster::SetDir(const Vec2f& dir)
+{
+	// normalize
+	float length = std::sqrt(dir.x * dir.x + dir.y * dir.y);
+	if (length > 0.f) {
+		_dir.x = dir.x / length;
+		_dir.y = dir.y / length;
+	}
+	else {
+		_dir.x = 0.f;
+		_dir.y = 0.f;
+	}
 }
 
 

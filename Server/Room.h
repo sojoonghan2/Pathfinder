@@ -1,4 +1,6 @@
 #pragma once
+#include "Player.h"
+#include "Monster.h"
 
 enum class RoomType : unsigned char
 {
@@ -13,16 +15,20 @@ enum class RoomType : unsigned char
 class Room
 {
 public:
-	void SetPlayerIdList(const int room_id);
+
+	void Update(const float delta_time);
+
+	void SetPlayerPtr(const int room_id);
 	std::array<int, 3> GetPlayerIdList() const;
-	void ClearMonsterIdList() { _monsterIdList.clear(); }
-	void AddMonsterId(const int monster_id) { _monsterIdList.push_back(monster_id); }
+	void ClearMonsterPtrList() { _monsterPtrList.clear(); }
+	void AddMonsterPtr(Monster* monster_ptr) { _monsterPtrList.push_back(monster_ptr); }
 	
 	void SetRoomType(const RoomType room_type) { _roomType = room_type; }
 
 private:
-	std::array<int, 3>	_playerIdList{};
-	std::vector<int>	_monsterIdList{};
+	
+	std::array<Player*, 3>	_playerPtrList{};
+	std::vector<Monster*>	_monsterPtrList{};
 
 	RoomType			_roomType{ RoomType::None };
 };

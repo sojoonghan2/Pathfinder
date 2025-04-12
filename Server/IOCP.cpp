@@ -232,44 +232,48 @@ void IOCP::Worker()
 void IOCP::TimerWorker()
 {
 	using namespace std::chrono_literals;
+	Timer update_timer;
+	Timer send_timer;
 	while (true) {
 
-		std::vector<int> id_delete{};
-		for (auto& [id, client_info] : _clientInfoHash) {
+		update_timer.updateDeltaTime();
+		GET_SINGLE(Game)->Update(update_timer.PeekDeltaTime());
+		
 
-			// 인게임 체크해서 게임중이 아니면 지우기.
-			if (client_info.ioState == IOState::DISCONNECT) {
-				id_delete.push_back(id);
-				continue;
+		// 몬스터의 위치를 플레이어한테 전송
+		if (send_timer.PeekDeltaTime() > MOVE_PACKET_TIME_MS) {
+			send_timer.updateDeltaTime();
+
+			// 일단 킵
+			for (int i = 0; i < MAX_MONSTER; ++i) {
+				const auto& monster{ GET_SINGLE(Game)->GetMonster(i) };
+				if (monster.GetRunning()) {
+
+					auto monster_pos = monster.GetPos();
+					// 패킷 생성
+					packet::SCMoveMonster sc_monster_move{
+						i,
+						monster_pos.x,
+						monster_pos.y
+					};
+
+					// 방에 있는 플레이어에게 전송
+					auto list{ _roomInfoList[monster.GetRoomId()].GetClientIdList() };
+					for (auto id : list) {
+						if (id == -1) {
+							continue;
+						}
+						if (_clientInfoHash[id].ioState != IOState::INGAME) {
+							continue;
+						}
+						DoSend(id, &sc_monster_move);
+					}
+
+				}
 			}
-
-			//// 내 위치를 가져와서 패킷을 만듦
-			//if (client_info.ioState != IOState::INGAME) {
-			//	continue;
-			//}
-
-			//auto pos = GET_SINGLE(Game)->GetPlayerPosition(client_info.clientIdInfo.playerId);
-			//packet::SCMovePlayer packet{ id, pos.x, pos.y };
-
-			//// 내 방에 있는 플레이어에게 패킷을 보냄
-			//auto other_players = GET_SINGLE(Game)->GetRoomClients(client_info.clientIdInfo.roomId);
-			//for (auto other : other_players) {
-			//	if (other == -1) { continue; }
-			//	if (clientInfoHash[other].ioState != IOState::INGAME ||
-			//		other == id) {
-			//		continue;
-			//	}
-			//	DoSend(clientInfoHash[other], &packet);
-			//}
-
 		}
 
-		std::this_thread::sleep_for(1s);
 
-		// 더이상 사용되지 않는 id는 제거
-		for (auto id : id_delete) {
-			_clientInfoHash.unsafe_erase(id);
-		}
 	}
 }
 
