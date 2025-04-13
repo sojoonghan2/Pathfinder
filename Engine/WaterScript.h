@@ -4,8 +4,7 @@
 class WaterScript : public MonoBehaviour
 {
 public:
-    virtual void LateUpdate() override;
+	virtual void LateUpdate() override;
 
 private:
-
 };

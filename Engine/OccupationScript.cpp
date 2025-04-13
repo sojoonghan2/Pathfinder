@@ -8,9 +8,9 @@
 
 void OccupationScript::LateUpdate()
 {
-    auto pos = GetTransform()->GetLocalPosition();
+	auto pos = GetTransform()->GetLocalPosition();
 
-    pos.y += 2.f;
-    if (pos.y > 900.f) pos.y = 0.f;
-    GetTransform()->SetLocalPosition(pos);
+	pos.y += 2.f;
+	if (pos.y > 900.f) pos.y = 0.f;
+	GetTransform()->SetLocalPosition(pos);
 }

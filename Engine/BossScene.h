@@ -2,13 +2,13 @@
 #include "Scene.h"
 class BossScene {
 public:
-    BossScene();
-    virtual ~BossScene();
+	BossScene();
+	virtual ~BossScene();
 
-    shared_ptr<Scene> GetScene() { return activeScene; }
+	shared_ptr<Scene> GetScene() { return activeScene; }
 
 private:
-    shared_ptr<Scene> activeScene = make_shared<Scene>();
+	shared_ptr<Scene> activeScene = make_shared<Scene>();
 
-    bool stageClear;
+	bool stageClear;
 };

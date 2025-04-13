@@ -34,7 +34,6 @@ private:
 	uint32					_currentGroupIndex = 0;
 };
 
-
 // ************************
 // ComputeDescriptorHeap
 // ************************
@@ -63,5 +62,3 @@ private:
 	ComPtr<ID3D12DescriptorHeap> _descHeap;
 	uint64						_handleSize = 0;
 };
-
-

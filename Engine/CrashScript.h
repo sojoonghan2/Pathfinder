@@ -4,10 +4,10 @@
 class CrashScript : public MasterScript
 {
 public:
-    CrashScript();
-    virtual ~CrashScript();
+	CrashScript();
+	virtual ~CrashScript();
 
-    virtual void LateUpdate() override;
+	virtual void LateUpdate() override;
 
 private:
 };

@@ -2,12 +2,11 @@
 #pragma once
 #include "MonoBehaviour.h"
 
-enum class AnimationState 
+enum class AnimationState
 {
 	Idle,
 	Walk
 };
-
 
 class TestHuman : public MonoBehaviour
 {
@@ -25,4 +24,3 @@ public:
 
 private:
 };
-

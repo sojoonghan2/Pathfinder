@@ -46,7 +46,6 @@ void Game::Init(const WindowInfo& info)
 #ifdef TESTLOAD
 	GET_SINGLE(SceneManager)->LoadScene(L"TestScene");
 #endif
-
 }
 
 void Game::Update()

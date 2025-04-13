@@ -19,6 +19,6 @@ void RazerParticleSystem::FinalUpdate()
 	Vec3 look = GetGameObject()->GetTransform()->GetParent().lock()->GetLook();
 	look.Normalize();
 	SetEmitDirection(Vec4(look.x, 0.0f, look.z, 0.0f));
-	
+
 	BaseParticleSystem::FinalUpdate();
 }

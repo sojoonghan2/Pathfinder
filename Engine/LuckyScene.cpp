@@ -30,7 +30,7 @@
 
 LuckyScene::LuckyScene()
 {
-// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
+	// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
 #pragma region ComputeShader
 	{
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"ComputeShader");
@@ -51,7 +51,7 @@ LuckyScene::LuckyScene()
 	}
 #pragma endregion
 
-// 카메라
+	// 카메라
 #pragma region Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
@@ -68,7 +68,7 @@ LuckyScene::LuckyScene()
 	}
 #pragma endregion
 
-// UI 카메라
+	// UI 카메라
 #pragma region UI_Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
@@ -84,7 +84,7 @@ LuckyScene::LuckyScene()
 	}
 #pragma endregion
 
-// 스카이 박스
+	// 스카이 박스
 #pragma region SkyBox
 	{
 		shared_ptr<GameObject> skybox = make_shared<GameObject>();
@@ -108,7 +108,7 @@ LuckyScene::LuckyScene()
 	}
 #pragma endregion
 
-// 터레인 큐브
+	// 터레인 큐브
 #pragma region TerrainCube
 	{
 		// 1. 기본 오브젝트 생성 및 설정
@@ -149,7 +149,7 @@ LuckyScene::LuckyScene()
 	}
 #pragma endregion
 
-// 플레이어
+	// 플레이어
 #pragma region Player
 	{
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
@@ -167,10 +167,10 @@ LuckyScene::LuckyScene()
 	}
 #pragma endregion
 
-// 전역 조명
+	// 전역 조명
 #pragma region Directional Light
 	{
-		// 1. light 오브젝트 생성 
+		// 1. light 오브젝트 생성
 		shared_ptr<GameObject> light = make_shared<GameObject>();
 		light->SetName(L"Directional_Light");
 		light->AddComponent(make_shared<Transform>());
@@ -193,7 +193,7 @@ LuckyScene::LuckyScene()
 	}
 #pragma endregion
 
-// 보물 상자
+	// 보물 상자
 #pragma region TREASUREBOX
 	{
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\treasure_chest\\treasure_chest.fbx");
@@ -221,7 +221,7 @@ LuckyScene::LuckyScene()
 	}
 #pragma endregion
 
-// 모듈
+	// 모듈
 #pragma region Module
 	for (int i{}; i < 3; ++i)
 	{

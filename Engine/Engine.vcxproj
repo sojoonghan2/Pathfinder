@@ -231,6 +231,7 @@
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PortalFrameParticleSystem.h" />
     <ClInclude Include="RazerParticleScript.h" />
     <ClInclude Include="RectangleCollider.h" />
     <ClInclude Include="RazerParticleSystem.h" />
@@ -328,6 +329,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PortalFrameParticleSystem.cpp" />
     <ClCompile Include="RazerParticleScript.cpp" />
     <ClCompile Include="RectangleCollider.cpp" />
     <ClCompile Include="RazerParticleSystem.cpp" />
@@ -428,6 +430,12 @@
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\FireParticle.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\PortalFrameParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\RazerParticle.fx">

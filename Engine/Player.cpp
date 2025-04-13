@@ -15,39 +15,35 @@
 
 Player::Player() : Component(COMPONENT_TYPE::PLAYER)
 {
-
 }
 
 Player::~Player()
 {
-
 }
 
 void Player::FinalUpdate()
 {
-    if (!_isInit)
-    {
-        LoadPlayerSkill();
-        _isInit = true;
-    }
+	if (!_isInit)
+	{
+		LoadPlayerSkill();
+		_isInit = true;
+	}
 }
 
 void Player::LoadPlayerSkill()
 {
-    LoadGrenade();
-    LoadRazer();
+	LoadGrenade();
+	LoadRazer();
 }
 
 void Player::LoadGrenade()
 {
-    
 }
 
 void Player::LoadRazer()
 {
 #pragma region RazerParticle
-    {
-        
-    }
+	{
+	}
 #pragma endregion
 }

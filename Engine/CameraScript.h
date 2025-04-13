@@ -44,4 +44,3 @@ private:
 	float					_currentFOV = 60.f;
 	float					_targetFOV = 60.f;
 };
-

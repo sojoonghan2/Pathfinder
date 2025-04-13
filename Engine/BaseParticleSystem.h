@@ -4,10 +4,9 @@
 class BaseParticleSystem : public ParticleSystem
 {
 public:
-    BaseParticleSystem() : ParticleSystem() {}
-    virtual ~BaseParticleSystem() {}
+	BaseParticleSystem() : ParticleSystem() {}
+	virtual ~BaseParticleSystem() {}
 
 public:
-    virtual void FinalUpdate() override { ParticleSystem::FinalUpdate(); }
+	virtual void FinalUpdate() override { ParticleSystem::FinalUpdate(); }
 };
-

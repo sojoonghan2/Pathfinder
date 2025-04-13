@@ -2,15 +2,15 @@
 #include "Scene.h"
 class ParticleScene {
 public:
-    ParticleScene();
-    virtual ~ParticleScene();
+	ParticleScene();
+	virtual ~ParticleScene();
 
-    void LoadMyParticle();
-    void LoadDebugParticle();
+	void LoadMyParticle();
+	void LoadDebugParticle();
 
-    shared_ptr<Scene> GetScene() { return activeScene; }
+	shared_ptr<Scene> GetScene() { return activeScene; }
 private:
-    shared_ptr<Scene> activeScene = make_shared<Scene>();
+	shared_ptr<Scene> activeScene = make_shared<Scene>();
 
-    bool stageClear;
+	bool stageClear;
 };

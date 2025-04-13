@@ -7,7 +7,6 @@
 
 FBXLoader::FBXLoader()
 {
-
 }
 
 FBXLoader::~FBXLoader()
@@ -23,7 +22,7 @@ void FBXLoader::LoadFbx(const wstring& path)
 	// 파일 데이터 로드
 	Import(path);
 
-	// Animation	
+	// Animation
 	LoadBones(_scene->GetRootNode());
 	LoadAnimationInfo();
 
@@ -120,7 +119,7 @@ void FBXLoader::LoadMesh(FbxMesh* mesh)
 	FbxGeometryElementMaterial* geometryElementMaterial = mesh->GetElementMaterial();
 
 	const int32 polygonSize = mesh->GetPolygonSize(0);
-	
+
 	// 폴리곤이 삼각형이 아니면 프로그램 종료
 	assert(polygonSize == 3);
 
@@ -447,7 +446,6 @@ void FBXLoader::LoadAnimationData(FbxMesh* mesh, FbxMeshInfo* meshInfo)
 	FillBoneWeight(mesh, meshInfo);
 }
 
-
 void FBXLoader::FillBoneWeight(FbxMesh* mesh, FbxMeshInfo* meshInfo)
 {
 	const int32 size = static_cast<int32>(meshInfo->boneWeights.size());
@@ -486,9 +484,9 @@ void FBXLoader::LoadOffsetMatrix(FbxCluster* cluster, const FbxAMatrix& matNodeT
 {
 	FbxAMatrix matClusterTrans;
 	FbxAMatrix matClusterLinkTrans;
-	// The transformation of the mesh at binding time 
+	// The transformation of the mesh at binding time
 	cluster->GetTransformMatrix(matClusterTrans);
-	// The transformation of the cluster(joint) at binding time from joint space to world space 
+	// The transformation of the cluster(joint) at binding time from joint space to world space
 	cluster->GetTransformLinkMatrix(matClusterLinkTrans);
 
 	FbxVector4 V0 = { 1, 0, 0, 0 };

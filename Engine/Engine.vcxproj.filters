@@ -321,6 +321,9 @@
     <ClCompile Include="TestGrenadeScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
+    <ClCompile Include="PortalFrameParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
     <ClCompile Include="NetworkTimer.cpp">
       <Filter>Network\util</Filter>
     </ClCompile>
@@ -599,12 +602,6 @@
     <ClInclude Include="TestGrenadeScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkTimer.h">
-      <Filter>Network\util</Filter>
-    </ClInclude>
-    <ClInclude Include="GameData.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -685,6 +682,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\LightPillarParticle.fx">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\PortalFrameParticle.fx">
       <Filter>Shader\Particle</Filter>
     </FxCompile>
   </ItemGroup>

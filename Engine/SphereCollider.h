@@ -20,4 +20,3 @@ private:
 
 	BoundingSphere _boundingSphere;
 };
-

@@ -9,14 +9,14 @@ struct Player
 
 class SocketIO
 {
-private:							
+private:
 	SocketIO() {}
 
-public:								
+public:
 	static SocketIO* GetInstance()
 	{
-		static SocketIO instance;	
-		return &instance;		
+		static SocketIO instance;
+		return &instance;
 	}
 
 	~SocketIO();
@@ -24,7 +24,6 @@ public:
 public:
 
 	using BufferType = std::array<char, BUFFER_SIZE>;
-
 
 	void Init();
 	void Update();
@@ -42,7 +41,6 @@ private:
 
 	void ProcessPacket();
 
-
 private:
 	SOCKET serverSocket{ INVALID_SOCKET };
 	std::thread	recvThread{};
@@ -57,7 +55,6 @@ public:
 	int myId{-1};
 
 };
-
 
 template <class Packet, class ...Args>
 void SocketIO::DoSend(Args ...args)

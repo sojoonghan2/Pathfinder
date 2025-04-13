@@ -44,7 +44,7 @@ private:
 
 private:
 	ComPtr<ID3D12Resource>				_cbvBuffer;
-	BYTE*								_mappedBuffer = nullptr;
+	BYTE* _mappedBuffer = nullptr;
 	uint32								_elementSize = 0;
 	uint32								_elementCount = 0;
 
@@ -56,4 +56,3 @@ private:
 
 	CBV_REGISTER						_reg = {};
 };
-

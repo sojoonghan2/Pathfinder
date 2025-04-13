@@ -4,16 +4,16 @@
 class LuckyScript : public MasterScript
 {
 public:
-    LuckyScript();
-    virtual ~LuckyScript();
+	LuckyScript();
+	virtual ~LuckyScript();
 
-    virtual void LateUpdate() override;
+	virtual void LateUpdate() override;
 
-    void KeyboardInput();
-    void MouseInput();
+	void KeyboardInput();
+	void MouseInput();
 
 private:
-    shared_ptr<GameObject>  _treasureChest;
+	shared_ptr<GameObject>  _treasureChest;
 
-    bool                    _getChest = false;
+	bool                    _getChest = false;
 };

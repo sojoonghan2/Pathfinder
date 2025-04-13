@@ -12,7 +12,6 @@ OverDriveParticleSystem::OverDriveParticleSystem() : BaseParticleSystem()
 	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"OverDriveParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"OverDriveComputeParticle")->Clone());
 	shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"OverDriveParticleTexture", L"..\\Resources\\Texture\\Particle\\overDrive.png");
 	SetParticleTexture(0, texture);
-	
 }
 
 void OverDriveParticleSystem::FinalUpdate()

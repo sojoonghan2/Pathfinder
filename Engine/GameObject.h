@@ -58,4 +58,3 @@ private:
 
 	bool _isRender = true;
 };
-

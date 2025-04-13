@@ -2,10 +2,10 @@
 #include "BaseParticleSystem.h"
 #include "Resources.h"
 
-class FireParticleSystem : public BaseParticleSystem
+class PortalFrameParticleSystem : public BaseParticleSystem
 {
 public:
-	FireParticleSystem();
+	PortalFrameParticleSystem();
 
 	virtual void FinalUpdate() override;
 };

@@ -15,4 +15,3 @@ public:
 private:
 	std::unordered_map<int, QueueType> messageMap;
 };
-

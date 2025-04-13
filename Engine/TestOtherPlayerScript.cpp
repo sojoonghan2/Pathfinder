@@ -36,9 +36,7 @@ void TestOtherPlayerScript::LateUpdate()
 	}
 
 #endif // NETWORK_ENABLE
-
 }
-
 
 void TestOtherPlayerScript::SetPosition(float x, float z)
 {

@@ -23,7 +23,7 @@ void RootSignature::CreateGraphicsRootSignature()
 	// b0를 상수 버퍼 뷰로 초기화
 	param[0].InitAsConstantBufferView(static_cast<uint32>(CBV_REGISTER::b0)); // b0
 	// CBV와 SRV의 범위를 루트 디스크립터 테이블로 설정
-	param[1].InitAsDescriptorTable(_countof(ranges), ranges);	
+	param[1].InitAsDescriptorTable(_countof(ranges), ranges);
 
 	D3D12_ROOT_SIGNATURE_DESC sigDesc = CD3DX12_ROOT_SIGNATURE_DESC(_countof(param), param, _countof(_samplerDesc), _samplerDesc);
 	sigDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT; // 입력 조립기 단계

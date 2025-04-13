@@ -195,7 +195,7 @@ void MeshData::Save(const wstring& filePath)
 		size_t meshNameSize = meshName.size();
 		file.write(reinterpret_cast<const char*>(&meshNameSize), sizeof(size_t));
 		file.write(reinterpret_cast<const char*>(meshName.data()), meshNameSize * sizeof(wchar_t));
-		
+
 		// 머티리얼 저장
 		size_t materialCount = info.materials.size();
 		file.write(reinterpret_cast<const char*>(&materialCount), sizeof(size_t));
@@ -276,7 +276,5 @@ vector<shared_ptr<GameObject>> MeshData::Instantiate()
 		v.push_back(gameObject);
 	}
 
-
 	return v;
 }
-

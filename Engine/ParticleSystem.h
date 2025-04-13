@@ -62,7 +62,6 @@ public:
 	// πÊ«‚
 	void SetEmitDirection(const Vec4& direction) { _direction = direction; }
 
-	
 	void ParticleStart();
 	void ParticleStop();
 	void ParticleToggle();
@@ -72,8 +71,8 @@ public:
 	shared_ptr<Material> GetComputeMaterial() { return _computeMaterial; }
 
 public:
-	virtual void Load(const wstring& path) override { }
-	virtual void Save(const wstring& path) override { }
+	virtual void Load(const wstring& path) override {}
+	virtual void Save(const wstring& path) override {}
 
 private:
 	shared_ptr<StructuredBuffer>	_particleBuffer;

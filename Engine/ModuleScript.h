@@ -6,7 +6,7 @@ enum { UP, DOWN, WAIT };
 class ModuleScript : public MonoBehaviour
 {
 public:
-    virtual void LateUpdate() override;
+	virtual void LateUpdate() override;
 
 	void KeyboardInput();
 	void MouseInput();
