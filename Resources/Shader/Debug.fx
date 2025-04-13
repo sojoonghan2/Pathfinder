@@ -4,7 +4,7 @@
 #include "params.fx"
 #include "utils.fx"
 
-cbuffer Material : register(b1)
+cbuffer Material : register(b2)
 {
 	float4 gColor;
 };

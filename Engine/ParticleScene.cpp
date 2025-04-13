@@ -489,11 +489,6 @@ ParticleScene::ParticleScene()
 			obj[i]->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 			obj[i]->AddComponent(make_shared<TestOtherPlayerScript>());
 
-			// 3. Collider 설정
-			obj[i]->AddComponent(make_shared<SphereCollider>());
-			dynamic_pointer_cast<SphereCollider>(obj[i]->GetCollider())->SetRadius(0.5f);
-			dynamic_pointer_cast<SphereCollider>(obj[i]->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
-
 			// 4. MeshRenderer 설정
 			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 			{
