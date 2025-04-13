@@ -181,10 +181,10 @@ void IOCP::Worker()
 				0,
 				addr_size + 16,
 				addr_size + 16,
-				&bytes_received,
-				&curr_over_ex->over
-			);
-			break;
+				& bytes_received,
+					& curr_over_ex->over
+					);
+					break;
 		}
 
 		/**
@@ -237,43 +237,79 @@ void IOCP::TimerWorker()
 	while (true) {
 
 		update_timer.updateDeltaTime();
-		GET_SINGLE(Game)->Update(update_timer.PeekDeltaTime());
-		
+		auto delta = update_timer.getDeltaTimeSeconds();
+		GET_SINGLE(Game)->Update(delta);
+
 
 		// 몬스터의 위치를 플레이어한테 전송
 		if (send_timer.PeekDeltaTime() > MOVE_PACKET_TIME_MS) {
 			send_timer.updateDeltaTime();
 
+			//for (int i = 0; i < MAX_ROOM; ++i) {
+
+			//	auto& room{ GET_SINGLE(Game)->GetRoom(i) };
+			//	if (room.GetRoomType() == RoomType::None) {
+			//		continue;
+			//	}
+			//	auto& monster_vec{ room.GetMonsterPtrList() };
+
+			//	for (auto monster_ptr : monster_vec) {
+			//		auto monster_pos = monster_ptr->GetPos();
+			//			// 패킷 생성
+			//		packet::SCMoveMonster sc_monster_move{
+			//			,
+			//			monster_pos.x,
+			//			monster_pos.y
+			//		};
+
+			//		// 방에 있는 플레이어에게 전송
+			//		auto list{ _roomInfoList[i].GetClientIdList() };
+			//		for (auto id : list) {
+			//			if (id == -1) {
+			//				continue;
+			//			}
+			//			if (_clientInfoHash[id].ioState != IOState::INGAME) {
+			//				continue;
+			//			}
+			//			DoSend(id, &sc_monster_move);
+			//		}
+			//	}
+			//}
+
+
+			// 현재 방이 활성화 되어있는지 확인
 			// 일단 킵
 			for (int i = 0; i < MAX_MONSTER; ++i) {
 				const auto& monster{ GET_SINGLE(Game)->GetMonster(i) };
-				if (monster.GetRunning()) {
-
-					auto monster_pos = monster.GetPos();
-					// 패킷 생성
-					packet::SCMoveMonster sc_monster_move{
-						i,
-						monster_pos.x,
-						monster_pos.y
-					};
-
-					// 방에 있는 플레이어에게 전송
-					auto list{ _roomInfoList[monster.GetRoomId()].GetClientIdList() };
-					for (auto id : list) {
-						if (id == -1) {
-							continue;
-						}
-						if (_clientInfoHash[id].ioState != IOState::INGAME) {
-							continue;
-						}
-						DoSend(id, &sc_monster_move);
-					}
-
+				auto room_id{ monster.GetRoomId() };
+				if (-1 == room_id) {
+					continue;
 				}
+				if (GET_SINGLE(Game)->GetRoom(monster.GetRoomId()).GetRoomType() == RoomType::None) {
+					continue;
+				}
+
+				auto monster_pos = monster.GetPos();
+				// 패킷 생성
+				packet::SCMoveMonster sc_monster_move{
+					i,
+					monster_pos.x,
+					monster_pos.y
+				};
+				// 방에 있는 플레이어에게 전송
+				auto list{ _roomInfoList[monster.GetRoomId()].GetClientIdList() };
+				for (auto id : list) {
+					if (id == -1) {
+						continue;
+					}
+					if (_clientInfoHash[id].ioState != IOState::INGAME) {
+						continue;
+					}
+					DoSend(id, &sc_monster_move);
+				}
+
 			}
 		}
-
-
 	}
 }
 

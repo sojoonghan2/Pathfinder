@@ -21,6 +21,7 @@ public:
 	void SetPlayerPos(const int player_id, const Vec2f& pos) { _playerList[player_id].Move(pos); }
 
 	Monster& GetMonster(const int monster_id) { return _monsterList[monster_id]; }
+	Room& GetRoom(const int room_id) { return _roomList[room_id]; }
 
 	void Update(const float delta_time);
 	void Init();

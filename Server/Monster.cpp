@@ -18,8 +18,8 @@ void Monster::Update(const float delta_time)
 {
 	// 위치 업데이트
 	// milliseconds 단위이므로 바꾼다.
-	_x = _pos.x + _dir.x * _speed * delta_time / 1000.f;
-	_y = _pos.y + _dir.y * _speed * delta_time / 1000.f;
+	_x = _pos.x + _dir.x * _speed * delta_time;
+	_y = _pos.y + _dir.y * _speed * delta_time;
 }
 
 void Monster::SetDir(const Vec2f& dir)

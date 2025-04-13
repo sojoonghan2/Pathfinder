@@ -142,6 +142,74 @@ public:
 
 };
 
+class Monster
+{
+	// 단위 m
+	Vec2f pos{};
+	float& x{ pos.x };
+	float& y{ pos.y };
+	bool show{ false };
+	sf::RectangleShape Square{ sf::Vector2f(GRID_WIDTH_PIXEL, GRID_HEIGHT_PIXEL) };
+
+
+public:
+
+	Monster(const float x, const float y, const sf::Color color, const bool show) :
+		pos{ x, y },
+		show{ show }
+	{
+		SetFillColor(color);
+		sf::FloatRect bounds = Square.getLocalBounds();
+		Square.setOrigin(bounds.width / 2, bounds.height / 2);
+	}
+
+	Monster(const float x, const float y, const sf::Color color) :
+		Monster{ x, y, color, false }
+	{}
+
+	Monster() :
+		Monster{ 0.f, 0.f, sf::Color::Red }
+	{}
+
+	void SetFillColor(const sf::Color color)
+	{
+		Square.setFillColor(color);
+	}
+
+	void Update(const Controller& controller, const float delta)
+	{
+
+	}
+
+	void Draw(sf::RenderWindow& window)
+	{
+		if (not show) return;
+
+		// 윈도우 위치 계산
+		float windowX = x / MAP_SIZE_M * WINDOW_WIDTH + (WINDOW_WIDTH * 0.5f);
+		float windowY = -y / MAP_SIZE_M * WINDOW_HEIGHT + (WINDOW_HEIGHT * 0.5f);
+
+		// 윈도우 위치에 표시
+		Square.setPosition(windowX, windowY);
+		window.draw(Square);
+	}
+
+
+	// getter and setter
+
+
+	void SetPosition(Vec2f _pos) { pos = _pos; }
+
+	void SetPosition(const float _x, const float _y)
+	{
+		SetPosition(Vec2f{ _x, _y });
+	}
+
+	void SetShow(const bool _show) { show = _show; }
+
+	Vec2f GetPosition() const { return pos; }
+};
+
 
 int main() {
 	// 창 생성 (800x800 픽셀, 제목은 "Grid Map")
@@ -157,6 +225,7 @@ int main() {
 
 
 	std::unordered_map<int, Player> players{};
+	std::unordered_map<int, Monster> monsters{};
 	int my_id = -1;
 
 	Controller controller;
@@ -199,6 +268,16 @@ int main() {
 					players[packet.clientId].SetShow(true);
 				}
 				players[packet.clientId].SetPosition(packet.x, packet.y);
+			}
+			break;
+			case packet::Type::SC_MOVE_MONSTER:
+			{
+				packet::SCMoveMonster packet = reinterpret_cast<packet::SCMoveMonster&>(buffer);
+				if (not monsters.contains(packet.monsterId)) {
+					monsters[packet.monsterId].SetFillColor(sf::Color::Green);
+					monsters[packet.monsterId].SetShow(true);
+				}
+				monsters[packet.monsterId].SetPosition(packet.x, packet.y);
 			}
 			break;
 			default:
@@ -309,6 +388,11 @@ int main() {
 		for (auto& [_, player] : players) {
 			player.Draw(window);
 		}
+
+		for (auto& [_, monster] : monsters) {
+			monster.Draw(window);
+		}
+
 
 		window.display();
 	}

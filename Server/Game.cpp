@@ -7,6 +7,8 @@ std::random_device rd_game;
 std::default_random_engine dre_game{ rd_game() };
 std::uniform_real_distribution<float> posDist{ -24.f, 24.f };
 
+std::uniform_real_distribution<float> speedDist{ 1.f, 3.f };
+
 void Game::MovePlayer(int player_id, Vec2f& pos)
 {
 	_playerList[player_id].Move(pos);
@@ -15,9 +17,7 @@ void Game::MovePlayer(int player_id, Vec2f& pos)
 void Game::InitRoom(int room_id)
 {
 
-	// 현재는 RUINS로 고정
-	// 방 설정
-	_roomList[room_id].SetRoomType(RoomType::Ruin);
+	// 방 초기화
 	_roomList[room_id].ClearMonsterPtrList();
 
 	// 플레이어 설정
@@ -35,6 +35,8 @@ void Game::InitRoom(int room_id)
 	// todo:
 	// 임시로 몬스터가 생길때까지 돌린다. 
 	std::array<int, 10> monster_ids{};
+
+
 	while (true) {
 		int count{ 0 };
 		for (int i = 0; i < MAX_MONSTER; ++i) {
@@ -47,6 +49,10 @@ void Game::InitRoom(int room_id)
 				}
 			}
 		}
+
+		if (10 == count) {
+			break;
+		}
 	}
 
 	// 몬스터 추가
@@ -58,11 +64,12 @@ void Game::InitRoom(int room_id)
 		// 나중엔 lua까지. 
 		_monsterList[id].SetMonsterType(MonsterType::Crab);
 		_monsterList[id].SetRoomId(room_id);
-		_monsterList[id].SetSpeed(MONSTER_CRAB_SPEED_MPS);
+		_monsterList[id].SetSpeed(speedDist(dre_game));
 		_roomList[room_id].AddMonsterPtr(&_monsterList[id]);
 	}
 
-
+	// 항상 방 타입을 설정하는 것은 마지막으로 한다.
+	_roomList[room_id].SetRoomType(RoomType::Ruin);
 }
 
 void Game::Update(const float delta_time)
@@ -72,6 +79,7 @@ void Game::Update(const float delta_time)
 
 	// 몬스터 업데이트
 	for (auto& room : _roomList) {
+		if (room.GetRoomType() == RoomType::None) continue;
 		room.Update(delta_time);
 	}
 }

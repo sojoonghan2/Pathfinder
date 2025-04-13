@@ -10,6 +10,7 @@ void Room::Update(const float delta_time)
 		Player* player = nullptr;
 		float min_distance{ std::numeric_limits<float>::max() };
 		auto monster_pos{ monster->GetPos() };
+		
 
 		// 가장 가까운 플레이어 찾기
 		for (int i = 0; i < 3; i++) {
@@ -19,6 +20,7 @@ void Room::Update(const float delta_time)
 				+ std::pow(pos.y - monster_pos.y, 2)) };
 			if (distance < min_distance) {
 				min_distance = distance;
+				player = _playerPtrList[i];
 			}
 		}
 
@@ -26,7 +28,7 @@ void Room::Update(const float delta_time)
 		// 가장 가까운 플레이어가 몬스터의 시야에 들어왔는지 체크
 
 		// 몬스터가 플레이어를 쫒아가도록 방향 조정
-		monster->SetDir(_playerPtrList[0]->GetPos() - monster->GetPos());
+		monster->SetDir(player->GetPos() - monster->GetPos());
 		monster->Update(delta_time);
 	}
 }

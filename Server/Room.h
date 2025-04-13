@@ -22,8 +22,10 @@ public:
 
 	void ClearMonsterPtrList() { _monsterPtrList.clear(); }
 	void AddMonsterPtr(Monster* monster_ptr) { _monsterPtrList.push_back(monster_ptr); }
-	
+
 	void SetRoomType(const RoomType room_type) { _roomType = room_type; }
+	RoomType GetRoomType() const { return _roomType; }
+	std::vector<Monster*>& GetMonsterPtrList() { return _monsterPtrList; }
 
 private:
 	
