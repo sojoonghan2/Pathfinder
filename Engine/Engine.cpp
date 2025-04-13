@@ -38,8 +38,6 @@ void Engine::Init(const WindowInfo& info)
 
 	CreateRenderTargetGroups();
 
-	DebugRenderer::Init();
-
 	ResizeWindow(info.width, info.height);
 
 	GET_SINGLE(Input)->Init(info.hwnd);

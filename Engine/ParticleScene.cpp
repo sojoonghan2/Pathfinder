@@ -215,7 +215,7 @@ ParticleScene::ParticleScene()
 			gameObject->AddComponent(make_shared<TestDragon>());
 
 			gameObject->AddComponent(make_shared<SphereCollider>());
-			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(10.f);
+			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(100.f);
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 
 			activeScene->AddGameObject(gameObject);

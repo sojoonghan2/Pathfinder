@@ -183,8 +183,6 @@ void Scene::RenderForward()
 		camera->SortGameObject();
 		camera->Render_Forward();
 	}
-
-	DebugRenderer::Render();
 }
 
 void Scene::PushLightData()
