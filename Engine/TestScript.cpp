@@ -12,37 +12,37 @@ TestScript::~TestScript() {}
 
 void TestScript::LateUpdate()
 {
-    auto pos = GetTransform()->GetLocalPosition();
+    auto pos = GetTransform()->GetLocalRotation();
 
     if (INPUT->GetButton(KEY_TYPE::Z))
     {
-        pos.x += 1.f;
+        pos.x += 0.01;
         cout << "xPos: " << pos.x << "\n";
     }
     if (INPUT->GetButton(KEY_TYPE::X))
     {
-        pos.x -= 1.f;
+        pos.x -= 0.01;
         cout << "xPos: " << pos.x << "\n";
     }
     if (INPUT->GetButton(KEY_TYPE::C))
     {
-        pos.y += 1.f;
+        pos.y += 0.01;
         cout << "yPos: " << pos.y << "\n";
     }
     if (INPUT->GetButton(KEY_TYPE::V))
     {
-        pos.y -= 1.f;
+        pos.y -= 0.01;
         cout << "yPos: " << pos.y << "\n";
     }
     if (INPUT->GetButton(KEY_TYPE::B))
     {
-        pos.z += 1.f;
+        pos.z += 0.01;
         cout << "zPos: " << pos.z << "\n";
     }
     if (INPUT->GetButton(KEY_TYPE::N))
     {
-        pos.z -= 1.f;
+        pos.z -= 0.01;
         cout << "zPos: " << pos.z << "\n";
     }
-    GetTransform()->SetLocalPosition(pos);
+    GetTransform()->SetLocalRotation(pos);
 }

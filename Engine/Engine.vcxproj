@@ -203,6 +203,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GeneratorScript.h" />
     <ClInclude Include="GlitterParticleSystem.h" />
+    <ClInclude Include="GunScript.h" />
     <ClInclude Include="LightPillarParticleSystem.h" />
     <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="LoadingScript.h" />
@@ -298,6 +299,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeneratorScript.cpp" />
     <ClCompile Include="GlitterParticleSystem.cpp" />
+    <ClCompile Include="GunScript.cpp" />
     <ClCompile Include="LightPillarParticleSystem.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="LoadingScript.cpp" />

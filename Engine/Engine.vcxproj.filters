@@ -330,6 +330,9 @@
     <ClCompile Include="TestScript.cpp">
       <Filter>Script</Filter>
     </ClCompile>
+    <ClCompile Include="GunScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -616,6 +619,9 @@
     </ClInclude>
     <ClInclude Include="TestScript.h">
       <Filter>Script</Filter>
+    </ClInclude>
+    <ClInclude Include="GunScript.h">
+      <Filter>Script\ObjectScript</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

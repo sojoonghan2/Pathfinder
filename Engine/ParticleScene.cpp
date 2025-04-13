@@ -37,6 +37,7 @@
 #include "TestOtherPlayerScript.h"
 #include "RazerParticleScript.h"
 #include "BulletScript.h"
+#include "GunScript.h"
 
 #include "SphereCollider.h"
 #include "RectangleCollider.h"
@@ -234,7 +235,7 @@ ParticleScene::ParticleScene()
 			gameObject->GetTransform()->SetLocalRotation(Vec3(PI / 2, -0.4f, 1.f));
 			gameObject->GetTransform()->SetLocalPosition(Vec3(42.f, 58.f, -3.f));
 			gameObject->AddComponent(make_shared<TestScript>());
-			gameObject->AddComponent(make_shared<TestDragon>());
+			gameObject->AddComponent(make_shared<GunScript>());
 
 			activeScene->AddGameObject(gameObject);
 		}
