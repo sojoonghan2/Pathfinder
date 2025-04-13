@@ -44,6 +44,8 @@
 #include "GameModule.h"
 #include "Player.h"
 
+#include "TestScript.h"
+
 #define PARTICLEDEBUG	FALSE
 
 ParticleScene::ParticleScene()
@@ -214,6 +216,25 @@ ParticleScene::ParticleScene()
 			gameObject->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(10.f);
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+
+			activeScene->AddGameObject(gameObject);
+		}
+
+		// รั
+		shared_ptr<MeshData> gunmeshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun\\Gun.fbx");
+		vector<shared_ptr<GameObject>> gungameObjects = gunmeshData->Instantiate();
+
+		for (auto gameObject : gungameObjects)
+		{
+			gameObject->SetName(L"Gun");
+			gameObject->SetCheckFrustum(false);
+			gameObject->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(PI / 2, -0.4f, 1.f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(42.f, 58.f, -3.f));
+			gameObject->AddComponent(make_shared<TestScript>());
+			gameObject->AddComponent(make_shared<TestDragon>());
 
 			activeScene->AddGameObject(gameObject);
 		}
