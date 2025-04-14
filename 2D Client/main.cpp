@@ -126,10 +126,13 @@ public:
 		y = std::max(y, -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 		y = std::min(y, (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 
+		float windowX = x / MAP_SIZE_M * WINDOW_WIDTH + (WINDOW_WIDTH * 0.5f);
+		float windowY = -y / MAP_SIZE_M * WINDOW_HEIGHT + (WINDOW_HEIGHT * 0.5f);
+
 		// 방향 설정
 		auto mouse_pos{ controller.getMousePos() };
-		auto dir_temp{ mouse_pos - pos };
-		float length = std::sqrt(dir_temp.x * dir_temp.x + dir_temp.y * dir_temp.y);
+		auto dir_temp{ mouse_pos - Vec2f{windowX, windowY} };
+		length = std::sqrt(dir_temp.x * dir_temp.x + dir_temp.y * dir_temp.y);
 		if (length > 0.f) {
 			dir.x = dir_temp.x / length;
 			dir.y = dir_temp.y / length;
@@ -149,19 +152,35 @@ public:
 		Square.setPosition(windowX, windowY);
 		window.draw(Square);
 
-		if (not ctrl) {
+		if (dir.x == 0.f && dir.y == 0.f) {
 			return;
 		}
 
+		sf::VertexArray cone(sf::TriangleFan);
+		sf::Color cone_color{ 255,0,0,120 };
+		cone.append(sf::Vertex(sf::Vector2f{windowX, windowY}, cone_color)); // 중심점
 
+		float angle_degree{ 60.f };
+		float angle_rad = angle_degree * 3.14159265f / 180.f;
+		float base_angle = std::atan2(dir.y, dir.x) * 180.f / 3.14159265f;;
 
+		float start_angle = base_angle - angle_degree / 2.f;
+
+		for (int i = 0; i <= 30; ++i) {
+			float angle = (start_angle + (angle_degree * i / 30.f)) * 3.14159265f / 180.f;
+			sf::Vector2f point = sf::Vector2f{ windowX, windowY }
+			+ sf::Vector2f(std::cos(angle), std::sin(angle)) * 50.f;
+			cone.append(sf::Vertex(point, cone_color));
+		}
+
+		window.draw(cone);
 	}
 
 
 	// getter and setter
 
 
-	void SetPosition(Vec2f _pos) { pos = _pos; }
+	void SetPosition(const Vec2f& _pos) { pos = _pos; }
 
 	void SetPosition(const float _x, const float _y)
 	{ SetPosition(Vec2f{ _x, _y }); }
@@ -171,6 +190,11 @@ public:
 	Vec2f GetPosition() const { return pos; }
 
 	void SetCtrl(const bool _ctrl) { ctrl = _ctrl; }
+
+	void SetDir(const Vec2f& _dir) { dir = _dir; }
+	void SetDir(const float _dirx, const float _diry)
+	{ dir.x = _dirx; dir.y = _diry; }
+
 };
 
 class Monster
@@ -288,7 +312,7 @@ int main() {
 				packet::SCMatchmaking packet = reinterpret_cast<packet::SCMatchmaking&>(buffer);
 				players[packet.clientId].SetFillColor(sf::Color::Red);
 				players[packet.clientId].SetShow(true);
-
+				players[packet.clientId].SetCtrl(true);
 				my_id = packet.clientId;
 			}
 			break;
@@ -383,13 +407,16 @@ int main() {
 		// --
 
 		// mouse
-		sf::Vector2f mouse = (sf::Vector2f)sf::Mouse::getPosition(window);
-		controller.setMousePos(Vec2f{ mouse.x, mouse.y });
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+			sf::Vector2f mouse = (sf::Vector2f)sf::Mouse::getPosition(window);
+			controller.setMousePos(Vec2f{ mouse.x, mouse.y });
+		}
 
 
 		// player
 		frame_timer.updateDeltaTime();
 		auto delta = frame_timer.getDeltaTimeSeconds();
+
 
 		if (-1 != my_id) {
 			players[my_id].Update(controller, delta);
