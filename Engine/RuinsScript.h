@@ -20,4 +20,6 @@ private:
 	float _blinkTime = 0.75f;
 	float _elapsedTime = 0.0f;
 	bool _isVisible = true;
+
+	bool _initialized = false;
 };

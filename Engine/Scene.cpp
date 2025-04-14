@@ -78,7 +78,7 @@ void Scene::Render()
 	RenderFinal();
 
 	// 디버그 렌더링
-	DebugRenderer::Render();
+	//DebugRenderer::Render();
 
 	// 메인 카메라와 나머지 카메라에서 전방 렌더링
 	RenderForward();
