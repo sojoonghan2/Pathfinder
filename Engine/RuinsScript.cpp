@@ -3,8 +3,10 @@
 #include "Input.h"
 #include "Engine.h"
 #include "SceneManager.h"
+#include "Scene.h"
 #include "GameObject.h"
 #include "Timer.h"
+#include "SphereCollider.h"
 
 RuinsScript::RuinsScript() {}
 

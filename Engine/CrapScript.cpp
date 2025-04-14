@@ -68,6 +68,8 @@ void CrapScript::LateUpdate()
 		MoveRandomly();
 		CheckBoundary();
 	}
+
+	CheckBulletHits();
 }
 
 void CrapScript::MoveRandomly()
@@ -99,4 +101,30 @@ void CrapScript::CheckBoundary()
 	}
 
 	GetTransform()->SetLocalPosition(pos);
+}
+
+void CrapScript::CheckBulletHits()
+{
+	// 모든 총알에 대해 충돌 검사
+	for (int i = 0; i < 50; ++i)
+	{
+		wstring bulletName = L"Bullet" + to_wstring(i);
+		auto bulletObject = GET_SINGLE(SceneManager)->FindObjectByName(bulletName);
+
+		if (bulletObject)
+		{
+			auto is_collision = GET_SINGLE(SceneManager)->Collition(GetGameObject(), bulletObject);
+			if (is_collision)
+			{
+				if (!_initialized)
+				{
+					_initialized = true;
+					return;
+				}
+
+				std::cout << "오브젝트 충돌 발생\n\n";
+				break;
+			}
+		}
+	}
 }

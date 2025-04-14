@@ -9,6 +9,7 @@
 #include "Resources.h"
 #include "InstancingManager.h"
 #include "SocketIO.h"
+#include "DebugRenderer.h"
 
 void Engine::Init(const WindowInfo& info)
 {
@@ -42,6 +43,7 @@ void Engine::Init(const WindowInfo& info)
 	GET_SINGLE(Input)->Init(info.hwnd);
 	GET_SINGLE(Timer)->Init();
 	GET_SINGLE(Resources)->Init();
+	//GET_SINGLE(DebugRenderer)->Init();
 	GET_SINGLE(SceneManager)->Init();
 }
 

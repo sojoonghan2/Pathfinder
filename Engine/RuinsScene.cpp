@@ -116,7 +116,7 @@ RuinsScene::RuinsScene()
 		for (int i{}; i < 50; ++i)
 		{
 			shared_ptr<GameObject> bullet = make_shared<GameObject>();
-			bullet->SetName(L"Bullet" + std::to_wstring(i + 1));
+			bullet->SetName(L"Bullet" + std::to_wstring(i));
 			bullet->SetCheckFrustum(true);
 			bullet->SetStatic(false);
 
@@ -141,6 +141,11 @@ RuinsScene::RuinsScene()
 				material->SetTexture(0, texture);
 				meshRenderer->SetMaterial(material);
 			}
+
+			bullet->AddComponent(make_shared<SphereCollider>());
+			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetRadius(10.f);
+			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+
 			bullet->AddComponent(meshRenderer);
 
 			activeScene->AddGameObject(bullet);
@@ -464,55 +469,58 @@ RuinsScene::RuinsScene()
 #pragma endregion
 
 	// 로봇
-		/*
-	#pragma region SELFDESTRUCTIONROBOT
+#pragma region SELFDESTRUCTIONROBOT
+	{
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<float> disX(-4000.0f, 4000.0f);
+		std::uniform_real_distribution<float> disZ(-4000.0f, 4000.0f);
+
+		vector<Vec3> positions;
+		float minDistance = 300.0f;
+
+		for (int i = 0; i < 1; ++i)
 		{
-			std::random_device rd;
-			std::mt19937 gen(rd());
-			std::uniform_real_distribution<float> disX(-4000.0f, 4000.0f);
-			std::uniform_real_distribution<float> disZ(-4000.0f, 4000.0f);
+			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
+			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
-			vector<Vec3> positions;
-			float minDistance = 300.0f;
+			// 겹치지 않는 랜덤 위치 생성
+			Vec3 randomPos;
+			bool validPosition = false;
+			int maxAttempts = 100;
 
-			for (int i = 0; i < 10; ++i)
+			while (!validPosition && maxAttempts > 0)
 			{
-				shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
-				vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+				randomPos = Vec3(disX(gen), 0.0f, disZ(gen));
+				validPosition = true;
 
-				// 겹치지 않는 랜덤 위치 생성
-				Vec3 randomPos;
-				bool validPosition = false;
-				int maxAttempts = 100;
-
-				while (!validPosition && maxAttempts > 0)
+				for (const Vec3& pos : positions)
 				{
-					randomPos = Vec3(disX(gen), 0.0f, disZ(gen));
-					validPosition = true;
-
-					for (const Vec3& pos : positions)
+					if ((randomPos - pos).Length() < minDistance)
 					{
-						if ((randomPos - pos).Length() < minDistance)
-						{
-							validPosition = false;
-							break;
-						}
+						validPosition = false;
+						break;
 					}
-					maxAttempts--;
 				}
-
-				positions.push_back(randomPos);
-
-				gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i + 1));
-				gameObjects[0]->SetCheckFrustum(true);
-				gameObjects[0]->AddComponent(make_shared<CrapScript>());
-				gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
-				gameObjects[0]->GetTransform()->SetLocalScale(Vec3(700.f, 700.f, 700.f));
-				activeScene->AddGameObject(gameObjects[0]);
+				maxAttempts--;
 			}
+
+			positions.push_back(randomPos);
+
+			gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i + 1));
+			gameObjects[0]->SetCheckFrustum(true);
+			gameObjects[0]->AddComponent(make_shared<CrapScript>());
+			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
+			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(700.f, 700.f, 700.f));
+
+			gameObjects[0]->AddComponent(make_shared<SphereCollider>());
+			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
+			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
+
+			activeScene->AddGameObject(gameObjects[0]);
 		}
-	#pragma endregion
-		*/
+	}
+#pragma endregion
 
 		// 점령 구역
 #pragma region Occupation

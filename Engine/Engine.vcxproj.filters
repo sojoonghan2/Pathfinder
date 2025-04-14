@@ -324,6 +324,15 @@
     <ClCompile Include="PortalFrameParticleSystem.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
+    <ClCompile Include="DebugRenderer.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="TestScript.cpp">
+      <Filter>Script</Filter>
+    </ClCompile>
+    <ClCompile Include="GunScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
     <ClCompile Include="NetworkTimer.cpp">
       <Filter>Network\util</Filter>
     </ClCompile>
@@ -686,6 +695,9 @@
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\PortalFrameParticle.fx">
       <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\Debug.fx">
+      <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

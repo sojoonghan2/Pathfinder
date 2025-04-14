@@ -1097,6 +1097,30 @@ void Resources::CreateDefaultShader()
 		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\water.fx", info, arg);
 		Add<Shader>(L"Water", shader);
 	}
+
+	// Debug
+	{
+		ShaderInfo info =
+		{
+			SHADER_TYPE::FORWARD,
+			RASTERIZER_TYPE::WIREFRAME,
+			DEPTH_STENCIL_TYPE::LESS,
+			BLEND_TYPE::DEFAULT
+		};
+
+		ShaderArg arg =
+		{
+			"VS_Debug",
+			"",
+			"",
+			"",
+			"PS_Debug"
+		};
+
+		std::shared_ptr<Shader> shader = std::make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\Debug.fx", info, arg);
+		Add<Shader>(L"Debug", shader);
+	}
 }
 
 // 머터리얼 정보(텍스쳐, 노멀)
@@ -1357,5 +1381,16 @@ void Resources::CreateDefaultMaterial()
 		material->SetTexture(1, normalTexture);
 
 		Add<Material>(L"Water", material);
+	}
+
+	// Debug
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Debug");
+
+		shared_ptr<Material> material = make_shared<Material>();
+		material = std::make_shared<Material>();
+		material->SetShader(shader);
+
+		Add<Material>(L"Debug", material);
 	}
 }

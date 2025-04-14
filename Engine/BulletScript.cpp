@@ -65,7 +65,7 @@ void BulletScript::MouseInput()
 			}
 
 			dir.Normalize();
-			_velocity = dir * 10000.f;
+			_velocity = dir * 30000.f;
 		}
 	}
 	else

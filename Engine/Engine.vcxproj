@@ -189,6 +189,7 @@
     <ClInclude Include="CrashScene.h" />
     <ClInclude Include="CrashScript.h" />
     <ClInclude Include="d3dx12.h" />
+    <ClInclude Include="DebugRenderer.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="DustParticleSystem.h" />
     <ClInclude Include="Engine.h" />
@@ -204,6 +205,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GeneratorScript.h" />
     <ClInclude Include="GlitterParticleSystem.h" />
+    <ClInclude Include="GunScript.h" />
     <ClInclude Include="LightPillarParticleSystem.h" />
     <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="LoadingScript.h" />
@@ -259,6 +261,7 @@
     <ClInclude Include="TestPBRParticleSystem.h" />
     <ClInclude Include="PlayerScript.h" />
     <ClInclude Include="TestScene.h" />
+    <ClInclude Include="TestScript.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TitleScene.h" />
@@ -283,6 +286,7 @@
     <ClCompile Include="CrapScript.cpp" />
     <ClCompile Include="CrashScene.cpp" />
     <ClCompile Include="CrashScript.cpp" />
+    <ClCompile Include="DebugRenderer.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="DustParticleSystem.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -297,6 +301,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeneratorScript.cpp" />
     <ClCompile Include="GlitterParticleSystem.cpp" />
+    <ClCompile Include="GunScript.cpp" />
     <ClCompile Include="LightPillarParticleSystem.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="LoadingScript.cpp" />
@@ -357,6 +362,7 @@
     <ClCompile Include="TestPBRParticleSystem.cpp" />
     <ClCompile Include="PlayerScript.cpp" />
     <ClCompile Include="TestScene.cpp" />
+    <ClCompile Include="TestScript.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TitleScene.cpp" />
@@ -382,6 +388,12 @@
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\compute.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\Debug.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\deferred.fx">

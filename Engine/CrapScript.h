@@ -9,6 +9,7 @@ public:
 
 	void MoveRandomly();
 	void CheckBoundary();
+	void CheckBulletHits();
 
 private:
 	float _speed = 1000.f;
@@ -18,4 +19,6 @@ private:
 
 	bool _isMoving = false;
 	float _pauseDuration{};
+
+	bool _initialized = false;
 };
