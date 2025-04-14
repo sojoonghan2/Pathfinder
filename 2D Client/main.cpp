@@ -31,6 +31,7 @@ class Controller
 {
 private:
 	StatusType keyboardStatus{};
+	Vec2f mousePos{};
 
 public:
 	void applyKeyboardStatus(KeyStatus key)
@@ -47,6 +48,16 @@ public:
 	{
 		return keyboardStatus & static_cast<StatusType>(key);
 	}
+
+	Vec2f getMousePos() const
+	{
+		return mousePos;
+	}
+
+	void setMousePos(const Vec2f& pos)
+	{
+		mousePos = pos;
+	}
 };
 
 class Player
@@ -54,10 +65,12 @@ class Player
 private:
 	// 단위 m
 	Vec2f pos{};
+	Vec2f dir{};
 	float& x{pos.x};
 	float& y{pos.y};
 	bool show{ false };
 	sf::RectangleShape Square{ sf::Vector2f(GRID_WIDTH_PIXEL, GRID_HEIGHT_PIXEL) };
+	bool ctrl{ false };
 
 public:
 
@@ -85,7 +98,10 @@ public:
 
 	void Update(const Controller& controller, const float delta)
 	{
-		// 방향을 얻어냄
+		if (not ctrl) {
+			return;
+		}
+
 		float dirX{}, dirY{};
 		if (controller.getKeyBoardStatus(KeyStatus::Left)) { dirX--; }
 		if (controller.getKeyBoardStatus(KeyStatus::Right)) { dirX++; }
@@ -110,7 +126,14 @@ public:
 		y = std::max(y, -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 		y = std::min(y, (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 
-
+		// 방향 설정
+		auto mouse_pos{ controller.getMousePos() };
+		auto dir_temp{ mouse_pos - pos };
+		float length = std::sqrt(dir_temp.x * dir_temp.x + dir_temp.y * dir_temp.y);
+		if (length > 0.f) {
+			dir.x = dir_temp.x / length;
+			dir.y = dir_temp.y / length;
+		}
 
 	}
 
@@ -125,6 +148,13 @@ public:
 		// 윈도우 위치에 표시
 		Square.setPosition(windowX, windowY);
 		window.draw(Square);
+
+		if (not ctrl) {
+			return;
+		}
+
+
+
 	}
 
 
@@ -140,6 +170,7 @@ public:
 
 	Vec2f GetPosition() const { return pos; }
 
+	void SetCtrl(const bool _ctrl) { ctrl = _ctrl; }
 };
 
 class Monster
@@ -257,6 +288,7 @@ int main() {
 				packet::SCMatchmaking packet = reinterpret_cast<packet::SCMatchmaking&>(buffer);
 				players[packet.clientId].SetFillColor(sf::Color::Red);
 				players[packet.clientId].SetShow(true);
+
 				my_id = packet.clientId;
 			}
 			break;
@@ -349,6 +381,11 @@ int main() {
 		// --
 		// Update
 		// --
+
+		// mouse
+		sf::Vector2f mouse = (sf::Vector2f)sf::Mouse::getPosition(window);
+		controller.setMousePos(Vec2f{ mouse.x, mouse.y });
+
 
 		// player
 		frame_timer.updateDeltaTime();

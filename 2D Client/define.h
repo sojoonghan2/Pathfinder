@@ -10,4 +10,14 @@ struct Vec2f
 		x{ x },
 		y{ y }
 	{}
+
+	Vec2f operator-(const Vec2f& other)
+	{
+		return Vec2f{ x - other.x, y - other.y };
+	}
+
+	Vec2f operator+(const Vec2f& other)
+	{
+		return Vec2f{ x + other.x, y + other.y };
+	}
 };
