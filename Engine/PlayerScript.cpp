@@ -11,15 +11,8 @@
 #include "SocketIO.h"
 #include "Animator.h"
 
-PlayerScript::PlayerScript()
-{
-}
-
-PlayerScript::~PlayerScript()
-{
-}
-
-
+PlayerScript::PlayerScript() {}
+PlayerScript::~PlayerScript() {}
 
 void PlayerScript::LateUpdate()
 {
@@ -39,7 +32,6 @@ void PlayerScript::LateUpdate()
 		Vec3 pos = GetTransform()->GetLocalPosition();
 		GET_SINGLE(SocketIO)->DoSend<packet::CSMovePlayer>(pos.x, pos.y);
 	}
-
 #endif
 
 	_isMove = false;
@@ -51,16 +43,8 @@ void PlayerScript::LateUpdate()
 	Animation();
 }
 
-void PlayerScript::KeyboardInput()
-{
-	Move();
-	Dash();
-}
-
-void PlayerScript::MouseInput()
-{
-	Shoot();
-}
+void PlayerScript::KeyboardInput() { Move(); Dash(); }
+void PlayerScript::MouseInput() { Shoot(); }
 
 void PlayerScript::Animation()
 {
@@ -93,7 +77,8 @@ void PlayerScript::Move()
 {
 	if (_isDashing || _isGrenade || _isRazer) return;
 
-	Vec3 pos = GetTransform()->GetLocalPosition();
+	_prevPosition = GetTransform()->GetLocalPosition();
+	Vec3 pos = _prevPosition;
 
 	shared_ptr<GameObject> cameraObj = GET_SINGLE(SceneManager)->GetActiveScene()->GetMainCamera()->GetGameObject();
 	Vec3 camForward = cameraObj->GetTransform()->GetLook();
@@ -109,6 +94,7 @@ void PlayerScript::Move()
 	if (INPUT->GetButton(KEY_TYPE::S)) moveDir -= camForward;
 	if (INPUT->GetButton(KEY_TYPE::A)) moveDir -= camRight;
 	if (INPUT->GetButton(KEY_TYPE::D)) moveDir += camRight;
+	if (INPUT->GetButton(KEY_TYPE::T)) PRINTPOSITION;
 
 	if (moveDir.LengthSquared() > 0.01f)
 	{
@@ -147,6 +133,7 @@ void PlayerScript::Move()
 	pos.z = max(mapMinZ, min(pos.z, mapMaxZ));
 
 	GetTransform()->SetLocalPosition(pos);
+	CheckDummyHits();
 }
 
 void PlayerScript::Dash()
@@ -156,12 +143,8 @@ void PlayerScript::Dash()
 	if (_dashCooldownTimer > 0.f)
 	{
 		_dashCooldownTimer -= DELTA_TIME;
-
-		// 쿨타임이 막 끝났을 때 UI 아이콘 켜기
 		if (_dashCooldownTimer <= 0.f)
-		{
 			GET_SINGLE(SceneManager)->FindObjectByName(L"DashUI")->SetRenderOn();
-		}
 	}
 
 	if (_isDashing)
@@ -196,7 +179,6 @@ void PlayerScript::Shoot()
 {
 	if (_isGrenade || _isRazer || _isDashing) return;
 
-	// 마우스를 누르고 있으면 isShoot 유지
 	if (INPUT->GetButton(KEY_TYPE::LBUTTON))
 	{
 		if (!_isShoot)
@@ -223,18 +205,13 @@ void PlayerScript::ThrowGrenade()
 	if (_grenadeCooldownTimer > 0.f)
 	{
 		_grenadeCooldownTimer -= DELTA_TIME;
-
-		// 쿨타임이 막 끝났을 때 UI 켜기
 		if (_grenadeCooldownTimer <= 0.f)
-		{
 			GET_SINGLE(SceneManager)->FindObjectByName(L"GrenadeUI")->SetRenderOn();
-		}
 	}
 
 	if (_isGrenade)
 	{
 		_grenadeAniDurationTimer -= DELTA_TIME;
-
 		if (_grenadeAniDurationTimer <= 0.f)
 		{
 			_isGrenade = false;
@@ -260,18 +237,13 @@ void PlayerScript::ShootRazer()
 	if (_razerCooldownTimer > 0.f)
 	{
 		_razerCooldownTimer -= DELTA_TIME;
-
-		// 쿨타임이 막 끝났을 때 UI 켜기
 		if (_razerCooldownTimer <= 0.f)
-		{
 			GET_SINGLE(SceneManager)->FindObjectByName(L"RazerUI")->SetRenderOn();
-		}
 	}
 
 	if (_isRazer)
 	{
 		_razerAniDurationTimer -= DELTA_TIME;
-
 		if (_razerAniDurationTimer <= 0.f)
 		{
 			_isRazer = false;
@@ -295,7 +267,6 @@ void PlayerScript::SetPosition(float x, float z)
 	Vec3 pos = GetTransform()->GetLocalPosition();
 	pos.x = x * 200.f;
 	pos.z = z * 200.f;
-
 	GetTransform()->SetLocalPosition(pos);
 }
 
@@ -326,5 +297,31 @@ void PlayerScript::RotateToCameraLook()
 		float targetYaw = atan2f(camLook.x, camLook.z) + XM_PI;
 		Vec3 targetRot = Vec3(-XM_PIDIV2, targetYaw, 0.f);
 		GetTransform()->SetLocalRotation(targetRot);
+	}
+}
+
+void PlayerScript::CheckDummyHits()
+{
+	auto player = GetGameObject();
+	auto dummy = GET_SINGLE(SceneManager)->FindObjectByName(L"dummy");
+	if (!player || !dummy) return;
+
+	bool is_collision = GET_SINGLE(SceneManager)->Collition(player, dummy);
+	if (is_collision)
+	{
+		// 방향 계산
+		Vec3 curPos = player->GetTransform()->GetLocalPosition();
+		Vec3 dir = (curPos - dummy->GetTransform()->GetLocalPosition());
+		if (dir.LengthSquared() > 0.001f)
+		{
+			dir.Normalize();
+			curPos += dir * 10.f; // 소폭 밀기
+			player->GetTransform()->SetLocalPosition(curPos);
+		}
+		else
+		{
+			// 동일 위치일 경우 fallback: _prevPosition 사용
+			player->GetTransform()->SetLocalPosition(_prevPosition);
+		}
 	}
 }

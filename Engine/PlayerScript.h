@@ -33,6 +33,8 @@ public:
 	bool GetIsGrenade() { return _isGrenade; }
 	bool GetIsRazer() { return _isRazer; }
 
+	void CheckDummyHits();
+
 private:
 	bool			_isMove = false;
 	bool			_isDashing = false;
@@ -61,4 +63,5 @@ private:
 	float			_shootAniDurationTimer = 0.f;
 
 	NetworkTimer	_moveTimer;
+	Vec3			_prevPosition = Vec3::Zero;
 };

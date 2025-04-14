@@ -109,6 +109,11 @@ RuinsScene::RuinsScene()
 			gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 			gameObject->AddComponent(playerScript);
 			gameObject->AddComponent(make_shared<TestDragon>());
+
+			gameObject->AddComponent(make_shared<SphereCollider>());
+			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(200.f);
+			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+
 			activeScene->AddGameObject(gameObject);
 		}
 
@@ -468,6 +473,35 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
+	// 더미 콜라이더
+#pragma region DummyCollider
+	{
+		shared_ptr<GameObject> dummy = make_shared<GameObject>();
+		dummy->SetName(L"dummy");
+		dummy->AddComponent(make_shared<Transform>());
+		dummy->GetTransform()->SetLocalPosition(Vec3(-1375.2f, 0.f, 846.233f));
+		dummy->GetTransform()->SetLocalScale(Vec3(70.f, 70.f, 70.f));
+		dummy->SetStatic(true);
+
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+			meshRenderer->SetMesh(sphereMesh);
+		}
+		{
+			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
+			meshRenderer->SetMaterial(material->Clone());
+		}
+		dummy->AddComponent(meshRenderer);
+
+		dummy->AddComponent(make_shared<SphereCollider>());
+		dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetRadius(35.f);
+		dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetCenter(Vec3(0.0f, 0.0f, 0.0f));
+
+		activeScene->AddGameObject(dummy);
+	}
+#pragma endregion
+
 	// 로봇
 #pragma region SELFDESTRUCTIONROBOT
 	{
@@ -507,7 +541,7 @@ RuinsScene::RuinsScene()
 
 			positions.push_back(randomPos);
 
-			gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i + 1));
+			gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i));
 			gameObjects[0]->SetCheckFrustum(true);
 			gameObjects[0]->AddComponent(make_shared<CrapScript>());
 			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
