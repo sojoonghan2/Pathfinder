@@ -3,8 +3,8 @@
 
 struct Vec2f
 {
-	float x{};
-	float y{};
+	float x{ 0.f };
+	float y{ 0.f };
 
 	Vec2f() = default;
 	Vec2f(const float x, const float y) :

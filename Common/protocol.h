@@ -108,32 +108,42 @@ struct CSMatchmaking : Header
 //	int clientId
 //	float x
 //	float y
+//	float dirX
+//	float dirY
 struct SCMovePlayer : Header
 {
 	int clientId{ -1 };
 	float x{ 0.f };
 	float y{ 0.f };
+	float dirX{ 0.f };
+	float dirY{ 0.f };
 
-	SCMovePlayer(const int client_id, const float x, const float y) :
+
+	SCMovePlayer(const int client_id, const float x, const float y, const float dirX, const float dirY) :
 		Header{ sizeof(SCMovePlayer), Type::SC_MOVE_PLAYER },
-		clientId{client_id},
-		x{x},
-		y{y}
+		clientId{ client_id },
+		x{ x }, y{ y },
+		dirX{ dirX }, dirY{ dirY }
 	{}
 };
 
 // Param:
 //	float x
 //	float y
+//	float dirX
+//	float dirY
 struct CSMovePlayer : Header
 {
 	float x{ 0.f };
 	float y{ 0.f };
+	float dirX{ 0.f };
+	float dirY{ 0.f };
 
-	CSMovePlayer(const float x, const float y) :
+
+	CSMovePlayer(const float x, const float y, const float dirX, const float dirY) :
 		Header{ sizeof(CSMovePlayer), Type::CS_MOVE_PLAYER },
-		x{ x },
-		y{ y }
+		x{ x }, y{ y },
+		dirX{ dirX }, dirY{ dirY }
 	{}
 };
 
@@ -158,17 +168,21 @@ struct CSCheckDelayPacket : Header
 //	int monsterId
 //	float x
 //	float y
+//	float dirX
+//	float dirY
 struct SCMoveMonster : Header
 {
 	int monsterId{ -1 };
 	float x{ 0.f };
 	float y{ 0.f };
+	float dirX{ 0.f };
+	float dirY{ 0.f };
 
-	SCMoveMonster(const int monster_id, const float x, const float y) :
+	SCMoveMonster(const int monster_id, const float x, const float y, const float dirX, const float dirY) :
 		Header{ sizeof(SCMoveMonster), Type::SC_MOVE_MONSTER },
 		monsterId{ monster_id },
-		x{ x },
-		y{ y }
+		x{ x }, y{ y },
+		dirX{ dirX }, dirY{ dirY }
 	{}
 };
 

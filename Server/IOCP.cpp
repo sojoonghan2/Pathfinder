@@ -290,11 +290,14 @@ void IOCP::TimerWorker()
 				}
 
 				auto monster_pos = monster.GetPos();
+				auto monster_dir = monster.GetDir();
 				// 패킷 생성
 				packet::SCMoveMonster sc_monster_move{
 					i,
 					monster_pos.x,
-					monster_pos.y
+					monster_pos.y,
+					monster_dir.x,
+					monster_dir.y
 				};
 				// 방에 있는 플레이어에게 전송
 				auto list{ _roomInfoList[monster.GetRoomId()].GetClientIdList() };
@@ -491,8 +494,12 @@ void IOCP::ProcessPacket(int key, char* p)
 			packet::SCMatchmaking sc_matchmaking{ client_ids[i] };
 			DoSend(_clientInfoHash[client_ids[i]], &sc_matchmaking);
 			
-			auto pos = GET_SINGLE(Game)->GetPlayerPos(player_ids[i]);
-			packet::SCMovePlayer sc_move_player{ client_ids[i], pos.x, pos.y};
+			auto& player = GET_SINGLE(Game)->GetPlayer(player_ids[i]);
+			auto pos = player.GetPos();
+			auto dir = player.GetDir();
+
+
+			packet::SCMovePlayer sc_move_player{ client_ids[i], pos.x, pos.y, dir.x, dir.y};
 			
 			for (auto other_id : client_ids) {
 				DoSend(other_id, &sc_move_player);
@@ -511,13 +518,15 @@ void IOCP::ProcessPacket(int key, char* p)
 		auto& id_info{ _clientInfoHash[key].clientIdInfo };
 
 		// 받은 위치를 저장
-		Vec2f pos{ packet->x, packet->y };
-		GET_SINGLE(Game)->SetPlayerPos(
-			id_info.playerId, pos);
+		auto& player = GET_SINGLE(Game)->GetPlayer(id_info.playerId);
+		player.SetDir(Vec2f{ packet->dirX, packet->dirY });
+		player.Move(packet->x, packet->y);
 
+		auto pos = player.GetPos();
+		auto dir = player.GetDir();
 
 		// 다른 플레이어에게 전송
-		packet::SCMovePlayer send_packet{ key, pos.x, pos.y };
+		packet::SCMovePlayer send_packet{ key, pos.x, pos.y, dir.x, dir.y };
 		auto other_clients{ _roomInfoList[id_info.roomId].GetClientIdList() };
 
 		for (auto other : other_clients) {

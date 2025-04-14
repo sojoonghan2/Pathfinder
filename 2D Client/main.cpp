@@ -195,12 +195,15 @@ public:
 	void SetDir(const float _dirx, const float _diry)
 	{ dir.x = _dirx; dir.y = _diry; }
 
+	Vec2f GetDir() const { return dir; }
+
 };
 
 class Monster
 {
 	// 단위 m
 	Vec2f pos{};
+	Vec2f dir{};
 	float& x{ pos.x };
 	float& y{ pos.y };
 	bool show{ false };
@@ -247,6 +250,29 @@ public:
 		// 윈도우 위치에 표시
 		Square.setPosition(windowX, windowY);
 		window.draw(Square);
+
+		if (dir.x == 0.f && dir.y == 0.f) {
+			return;
+		}
+
+		sf::VertexArray cone(sf::TriangleFan);
+		sf::Color cone_color{ 255,0,0,120 };
+		cone.append(sf::Vertex(sf::Vector2f{ windowX, windowY }, cone_color)); // 중심점
+
+		float angle_degree{ 60.f };
+		float angle_rad = angle_degree * 3.14159265f / 180.f;
+		float base_angle = std::atan2(dir.y, dir.x) * 180.f / 3.14159265f;;
+
+		float start_angle = base_angle - angle_degree / 2.f;
+
+		for (int i = 0; i <= 30; ++i) {
+			float angle = (start_angle + (angle_degree * i / 30.f)) * 3.14159265f / 180.f;
+			sf::Vector2f point = sf::Vector2f{ windowX, windowY }
+			+ sf::Vector2f(std::cos(angle), std::sin(angle)) * 50.f;
+			cone.append(sf::Vertex(point, cone_color));
+		}
+
+		window.draw(cone);
 	}
 
 
@@ -263,6 +289,12 @@ public:
 	void SetShow(const bool _show) { show = _show; }
 
 	Vec2f GetPosition() const { return pos; }
+
+	void NormalizeAndSetDir(const Vec2f& _dir) { dir = _dir; }
+	void SetDir(const float _dirx, const float _diry)
+	{
+		dir.x = _dirx; dir.y = _diry;
+	}
 };
 
 
@@ -323,6 +355,7 @@ int main() {
 					players[packet.clientId].SetFillColor(sf::Color::Black);
 					players[packet.clientId].SetShow(true);
 				}
+				players[packet.clientId].SetDir(packet.dirX, packet.dirY);
 				players[packet.clientId].SetPosition(packet.x, packet.y);
 			}
 			break;
@@ -333,6 +366,7 @@ int main() {
 					monsters[packet.monsterId].SetFillColor(sf::Color::Green);
 					monsters[packet.monsterId].SetShow(true);
 				}
+				monsters[packet.monsterId].SetDir(packet.dirX, packet.dirY);
 				monsters[packet.monsterId].SetPosition(packet.x, packet.y);
 			}
 			break;
@@ -425,7 +459,8 @@ int main() {
 			if (send_timer.PeekDeltaTime() > MOVE_PACKET_TIME_MS) {
 				send_timer.updateDeltaTime();
 				auto pos = players[my_id].GetPosition();
-				socket_io.DoSend<packet::CSMovePlayer>(pos.x, pos.y);
+				auto dir = players[my_id].GetDir();
+				socket_io.DoSend<packet::CSMovePlayer>(pos.x, pos.y, dir.x, dir.y);
 			}
 		}
 

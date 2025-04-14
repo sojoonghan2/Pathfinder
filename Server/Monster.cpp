@@ -22,7 +22,7 @@ void Monster::Update(const float delta_time)
 	_y = _pos.y + _dir.y * _speed * delta_time;
 }
 
-void Monster::SetDir(const Vec2f& dir)
+void Monster::NormalizeAndSetDir(const Vec2f& dir)
 {
 	// normalize
 	float length = std::sqrt(dir.x * dir.x + dir.y * dir.y);

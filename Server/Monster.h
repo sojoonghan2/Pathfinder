@@ -36,10 +36,14 @@ public:
 	void SetSpeed(const float speed) { _speed = speed; }
 	
 	// 내부적으로 normalize됨.
-	void SetDir(const Vec2f& dir);
+	void NormalizeAndSetDir(const Vec2f& dir);
 
 	Vec2f GetPos() const { return _pos; }
 	int GetRoomId() const { return _roomId; }
+	Vec2f GetDir() const { return _dir; }
+
+
+	
 
 private:
 	Vec2f	_pos{};
@@ -47,7 +51,7 @@ private:
 	float&	_y{ _pos.y };
 
 	// normalize해야 함.
-	Vec2f	_dir{ 0.f, 0.f };
+	Vec2f	_dir{};
 
 	int		_roomId{ -1 };
 
