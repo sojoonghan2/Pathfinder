@@ -476,29 +476,45 @@ RuinsScene::RuinsScene()
 	// 더미 콜라이더
 #pragma region DummyCollider
 	{
-		shared_ptr<GameObject> dummy = make_shared<GameObject>();
-		dummy->SetName(L"dummy");
-		dummy->AddComponent(make_shared<Transform>());
-		dummy->GetTransform()->SetLocalPosition(Vec3(-1375.2f, 0.f, 846.233f));
-		dummy->GetTransform()->SetLocalScale(Vec3(70.f, 70.f, 70.f));
-		dummy->SetStatic(true);
+		vector<pair<Vec3, float>> dummyInfo;
+		dummyInfo.emplace_back(Vec3(-1375.2f, 0.f, 846.233f), 35.f);
+		dummyInfo.emplace_back(Vec3(1542.62, 0, 862.32), 35.f);
 
-		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		dummyInfo.emplace_back(Vec3(-407.447, 0, 2158.73), 35.f);
+		dummyInfo.emplace_back(Vec3(735.708, 0, 2148.51), 35.f);
+		dummyInfo.emplace_back(Vec3(754.53, 0, 3144.35), 35.f);
+		dummyInfo.emplace_back(Vec3(-372.698, 0, 3130.5), 35.f);
+		
+		int count = 0;
+		for (auto info : dummyInfo)
 		{
-			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
-			meshRenderer->SetMesh(sphereMesh);
-		}
-		{
-			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
-			meshRenderer->SetMaterial(material->Clone());
-		}
-		dummy->AddComponent(meshRenderer);
+			shared_ptr<GameObject> dummy = make_shared<GameObject>();
 
-		dummy->AddComponent(make_shared<SphereCollider>());
-		dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetRadius(35.f);
-		dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetCenter(Vec3(0.0f, 0.0f, 0.0f));
+			wstring name = L"dummy" + to_wstring(count++);
+			dummy->SetName(name);
 
-		activeScene->AddGameObject(dummy);
+			dummy->AddComponent(make_shared<Transform>());
+			dummy->GetTransform()->SetLocalPosition(info.first);
+			dummy->GetTransform()->SetLocalScale(Vec3(info.second * 2, info.second * 2, info.second * 2));
+			dummy->SetStatic(true);
+
+			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+				meshRenderer->SetMesh(sphereMesh);
+			}
+			{
+				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
+				meshRenderer->SetMaterial(material->Clone());
+			}
+			dummy->AddComponent(meshRenderer);
+
+			dummy->AddComponent(make_shared<SphereCollider>());
+			dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetRadius(35.f);
+			dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetCenter(Vec3(0.0f, 0.0f, 0.0f));
+
+			activeScene->AddGameObject(dummy);
+		}
 	}
 #pragma endregion
 

@@ -303,25 +303,33 @@ void PlayerScript::RotateToCameraLook()
 void PlayerScript::CheckDummyHits()
 {
 	auto player = GetGameObject();
-	auto dummy = GET_SINGLE(SceneManager)->FindObjectByName(L"dummy");
-	if (!player || !dummy) return;
+	if (!player) return;
 
-	bool is_collision = GET_SINGLE(SceneManager)->Collition(player, dummy);
-	if (is_collision)
+	int index = 1;
+	while (true)
 	{
-		// 방향 계산
-		Vec3 curPos = player->GetTransform()->GetLocalPosition();
-		Vec3 dir = (curPos - dummy->GetTransform()->GetLocalPosition());
-		if (dir.LengthSquared() > 0.001f)
+		wstring name = L"dummy" + to_wstring(index++);
+		auto dummy = GET_SINGLE(SceneManager)->FindObjectByName(name);
+		if (!dummy)
+			break;
+
+		bool is_collision = GET_SINGLE(SceneManager)->Collition(player, dummy);
+		if (is_collision)
 		{
-			dir.Normalize();
-			curPos += dir * 10.f; // 소폭 밀기
-			player->GetTransform()->SetLocalPosition(curPos);
-		}
-		else
-		{
-			// 동일 위치일 경우 fallback: _prevPosition 사용
-			player->GetTransform()->SetLocalPosition(_prevPosition);
+			Vec3 curPos = player->GetTransform()->GetLocalPosition();
+			Vec3 dir = (curPos - dummy->GetTransform()->GetLocalPosition());
+			if (dir.LengthSquared() > 0.001f)
+			{
+				dir.Normalize();
+				curPos += dir * 10.f; // 소폭 밀기
+				player->GetTransform()->SetLocalPosition(curPos);
+			}
+			else
+			{
+				player->GetTransform()->SetLocalPosition(_prevPosition);
+			}
+
+			break;
 		}
 	}
 }
