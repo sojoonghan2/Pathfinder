@@ -9,8 +9,8 @@ public:
 
 	using QueueType = std::queue<std::shared_ptr<Msg>>;
 
-	void PushMessage(int id, std::shared_ptr<Msg> msg);
-	QueueType& GetMessageQueue(int id);
+	void PushMessage(const int id, std::shared_ptr<Msg> msg);
+	QueueType& GetMessageQueue(const int id);
 
 private:
 	std::unordered_map<int, QueueType> messageMap;
