@@ -26,6 +26,7 @@
 #include "BulletScript.h"
 
 #include "SphereCollider.h"
+#include "BoxCollider.h"
 
 #include "DustParticleSystem.h"
 #include "GlitterParticleSystem.h"
@@ -469,12 +470,15 @@ RuinsScene::RuinsScene()
 		}
 
 		water->AddComponent(meshRenderer);
+		water->SetRenderOff();
 		activeScene->AddGameObject(water);
 	}
 #pragma endregion
 
 	// 더미 콜라이더
 #pragma region DummyCollider
+	int dummyCount{};
+	// 스피어
 	{
 		vector<pair<Vec3, float>> dummyInfo;
 		dummyInfo.emplace_back(Vec3(-1375.2f, 0.f, 846.233f), 35.f);
@@ -486,12 +490,12 @@ RuinsScene::RuinsScene()
 		dummyInfo.emplace_back(Vec3(754.53, 0, 3144.35), 35.f);
 		dummyInfo.emplace_back(Vec3(-372.698, 0, 3130.5), 35.f);
 		
-		int count = 0;
-		for (auto info : dummyInfo)
+		
+		for (const auto& info : dummyInfo)
 		{
 			shared_ptr<GameObject> dummy = make_shared<GameObject>();
 
-			wstring name = L"dummy" + to_wstring(count++);
+			wstring name = L"dummy" + to_wstring(dummyCount++);
 			dummy->SetName(name);
 
 			dummy->AddComponent(make_shared<Transform>());
@@ -511,8 +515,43 @@ RuinsScene::RuinsScene()
 			dummy->AddComponent(meshRenderer);
 
 			dummy->AddComponent(make_shared<SphereCollider>());
-			dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetRadius(35.f);
-			dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetCenter(Vec3(0.0f, 0.0f, 0.0f));
+			dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetRadius(info.second);
+			dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+
+			activeScene->AddGameObject(dummy);
+		}
+	}
+	// 큐브
+	{
+		vector<pair<Vec3, Vec3>> dummyInfo;
+		dummyInfo.emplace_back(Vec3(0.f, 0.f, 0.f), Vec3(100.f, 100.f, 100.f));
+
+		for (const auto& info : dummyInfo)
+		{
+			shared_ptr<GameObject> dummy = make_shared<GameObject>();
+
+			wstring name = L"dummy" + to_wstring(dummyCount++);
+			dummy->SetName(name);
+
+			dummy->AddComponent(make_shared<Transform>());
+			dummy->GetTransform()->SetLocalPosition(info.first);
+			dummy->GetTransform()->SetLocalScale(info.second * 2);
+			dummy->SetStatic(true);
+
+			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> cubeMesh = GET_SINGLE(Resources)->LoadCubeMesh();
+				meshRenderer->SetMesh(cubeMesh);
+			}
+			{
+				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
+				meshRenderer->SetMaterial(material->Clone());
+			}
+			dummy->AddComponent(meshRenderer);
+
+			dummy->AddComponent(make_shared<BoxCollider>());
+			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetExtents(info.second);
+			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetCenter(Vec3(0.0f, 0.0f, 0.0f));
 
 			activeScene->AddGameObject(dummy);
 		}

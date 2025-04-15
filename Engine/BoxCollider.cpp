@@ -16,7 +16,9 @@ BoxCollider::~BoxCollider()
 
 void BoxCollider::FinalUpdate()
 {
-	_boundingBox.Center = GetCenter();
+    Vec3 worldPos = GetTransform()->GetWorldPosition();
+
+    _boundingBox.Center = worldPos + _center;
     _boundingBox.Extents = _extents;
 }
 

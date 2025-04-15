@@ -21,12 +21,10 @@ SphereCollider::~SphereCollider()
 
 void SphereCollider::FinalUpdate()
 {
-    _boundingSphere.Center = GetGameObject()->GetTransform()->GetWorldPosition();
+    Vec3 worldPos = GetGameObject()->GetTransform()->GetWorldPosition();
 
+    _boundingSphere.Center = worldPos + _center;
     _boundingSphere.Radius = _radius;
-    _boundingSphere.Center = GetCenter();
-
-	//DebugRenderer::DrawSphere(_boundingSphere.Center, _boundingSphere.Radius, Vec4(1, 0, 0, 1));
 }
 
 bool SphereCollider::Intersects(Vec4 rayOrigin, Vec4 rayDir, OUT float& distance)
