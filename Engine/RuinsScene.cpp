@@ -591,7 +591,7 @@ RuinsScene::RuinsScene()
 			gameObjects[0]->SetCheckFrustum(true);
 			gameObjects[0]->AddComponent(make_shared<NetworkCrabScript>());
 			gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(100000.f, 0.f, 100000.f));
-			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(700.f, 700.f, 700.f));
+			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(300.f, 300.f, 300.f));
 
 			gameObjects[0]->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
@@ -614,7 +614,7 @@ RuinsScene::RuinsScene()
 		occupation->AddComponent(make_shared<Transform>());
 		occupation->AddComponent(make_shared<OccupationScript>());
 		occupation->GetTransform()->SetLocalScale(Vec3(2000.f, 1.f, 2000.f));
-		occupation->GetTransform()->SetLocalPosition(Vec3(0.f, i * 300, 0.f));
+		occupation->GetTransform()->SetLocalPosition(Vec3(0.f, i * 300.f, 0.f));
 		occupation->SetStatic(false);
 
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();

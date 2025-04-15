@@ -150,8 +150,8 @@ void SocketIO::ProcessPacket()
 		case packet::Type::SC_MOVE_MONSTER:
 		{
 			packet::SCMoveMonster packet{ reinterpret_cast<packet::SCMoveMonster&>(buffer) };
-			if (idList.end() == std::find(idList.begin(), idList.end(), packet.monsterId)) {
-				idList.push_back(packet.monsterId);
+			if (monsterIdList.end() == std::find(monsterIdList.begin(), monsterIdList.end(), packet.monsterId)) {
+				monsterIdList.push_back(packet.monsterId);
 			}
 			auto msg{ std::make_shared<MsgMove>(packet.x, packet.y, packet.dirX, packet.dirY) };
 			GET_SINGLE(MessageManager)->PushMessage(packet.monsterId, msg);
@@ -182,7 +182,7 @@ int SocketIO::GetMonsterId()
 	if (monsterIdList.size() <= monsterIdCount) {
 		return -1;
 	}
-	return monsterIdList[monsterIdCount];
+	return monsterIdList[monsterIdCount++];
 }
 
 SocketIO::~SocketIO()

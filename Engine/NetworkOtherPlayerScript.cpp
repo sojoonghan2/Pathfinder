@@ -9,6 +9,7 @@
 #include "SceneManager.h"
 #include "MessageManager.h"
 #include "SocketIO.h"
+#include "Animator.h"
 
 NetworkOtherPlayerScript::NetworkOtherPlayerScript()
 {
@@ -21,12 +22,12 @@ NetworkOtherPlayerScript::~NetworkOtherPlayerScript()
 void NetworkOtherPlayerScript::LateUpdate()
 {
 
-	if (-1 == id) {
-		id = GET_SINGLE(SocketIO)->GetNextId();
+	if (-1 == _id) {
+		_id = GET_SINGLE(SocketIO)->GetNextId();
 	}
 
-	if (-1 != id) {
-		auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(id);
+	if (-1 != _id) {
+		auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(_id);
 		while (not queue.empty()) {
 			auto& message{ queue.front() };
 			switch (message->type)
@@ -37,6 +38,19 @@ void NetworkOtherPlayerScript::LateUpdate()
 					std::static_pointer_cast<MsgMove>(message) };
 				SetPosition(message_move->x, message_move->y);
 				SetDir(message_move->dirX, message_move->dirY);
+
+				// 움직임 감지
+				if (_lastX != message_move->x || _lastY != message_move->y) {
+					_isMove = true;
+				}
+
+				// 움직임 동일
+				if (_lastX == message_move->x && _lastY == message_move->y) {
+					_isMove = false;
+				}
+				_lastX = message_move->x;
+				_lastY = message_move->y;
+
 			}
 			break;
 			default:
@@ -45,6 +59,8 @@ void NetworkOtherPlayerScript::LateUpdate()
 			queue.pop();
 		}
 	}
+
+	Animation();
 
 }
 
@@ -66,5 +82,22 @@ void NetworkOtherPlayerScript::SetDir(float x, float z)
 		float targetYaw = atan2f(Look.x, Look.z) + XM_PI;
 		Vec3 targetRot = Vec3(-XM_PIDIV2, targetYaw, 0.f);
 		GetTransform()->SetLocalRotation(targetRot);
+	}
+}
+
+
+void NetworkOtherPlayerScript::Animation()
+{
+	uint32 nextAnimIndex = 0;
+
+	if (_isMove)
+		nextAnimIndex = 1;
+	else
+		nextAnimIndex = 0;
+
+	if (_currentAnimIndex != nextAnimIndex)
+	{
+		GetAnimator()->Play(nextAnimIndex);
+		_currentAnimIndex = nextAnimIndex;
 	}
 }

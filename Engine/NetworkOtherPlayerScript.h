@@ -12,7 +12,13 @@ public:
 	void SetPosition(float x, float z);
 	void SetDir(float x, float z);
 
+	void Animation();
+
 private:
-	float		_speed = PLAYER_SPEED_MPS * METER_TO_CLIENT;
-	int			id = -1;
+	int			_id{ -1 };
+	float		_lastX{ -1.f };
+	float		_lastY{ -1.f };
+	bool		_isMove{ true };
+	uint32		_currentAnimIndex{ 0 };
+
 };

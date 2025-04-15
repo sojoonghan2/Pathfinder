@@ -9,6 +9,7 @@
 #include "Scene.h"
 #include "GameObject.h"
 #include "Transform.h"
+#include "Animator.h"
 
 #include "MessageManager.h"
 #include "SocketIO.h"
@@ -35,6 +36,19 @@ void NetworkCrabScript::LateUpdate()
 					std::static_pointer_cast<MsgMove>(message) };
 				SetPosition(message_move->x, message_move->y);
 				SetDir(message_move->dirX, message_move->dirY);
+
+				// 움직임 감지
+				if (_lastX != message_move->x || _lastY != message_move->y) {
+					_isMove = true;
+				}
+
+				// 움직임 동일
+				if (_lastX == message_move->x && _lastY == message_move->y) {
+					_isMove = false;
+				}
+				_lastX = message_move->x;
+				_lastY = message_move->y;
+
 			}
 			break;
 			default:
@@ -45,6 +59,7 @@ void NetworkCrabScript::LateUpdate()
 	}
 
 	CheckBulletHits();
+	Animation();
 }
 
 void NetworkCrabScript::SetPosition(float x, float z)
@@ -59,7 +74,7 @@ void NetworkCrabScript::SetPosition(float x, float z)
 
 void NetworkCrabScript::SetDir(float x, float z)
 {
-	Vec3 Look{ x, 0.f, z };
+	Vec3 Look{ x, 0.f, z };	
 	if (Look.LengthSquared() > 0.0001f)
 	{
 		float targetYaw = atan2f(Look.x, Look.z) + XM_PI;
@@ -68,7 +83,21 @@ void NetworkCrabScript::SetDir(float x, float z)
 	}
 }
 
+void NetworkCrabScript::Animation()
+{
+	uint32 nextAnimIndex = 0;
 
+	if (_isMove)
+		nextAnimIndex = 1;
+	else
+		nextAnimIndex = 0;
+
+	if (_currentAnimIndex != nextAnimIndex)
+	{
+		GetAnimator()->Play(nextAnimIndex);
+		_currentAnimIndex = nextAnimIndex;
+	}
+}
 void NetworkCrabScript::CheckBulletHits()
 {
 	// 모든 총알에 대해 충돌 검사
