@@ -139,7 +139,6 @@ void SocketIO::ProcessPacket()
 			if (idList.end() == std::find(idList.begin(), idList.end(), packet.clientId) &&
 				packet.clientId != myId) {
 				idList.push_back(packet.clientId);
-				std::println("{} put success.", packet.clientId);
 			}
 			auto msg{ std::make_shared<MsgMove>(packet.x, packet.y, packet.dirX, packet.dirY) };
 			GET_SINGLE(MessageManager)->PushMessage(packet.clientId, msg);
@@ -151,6 +150,9 @@ void SocketIO::ProcessPacket()
 		case packet::Type::SC_MOVE_MONSTER:
 		{
 			packet::SCMoveMonster packet{ reinterpret_cast<packet::SCMoveMonster&>(buffer) };
+			if (idList.end() == std::find(idList.begin(), idList.end(), packet.monsterId)) {
+				idList.push_back(packet.monsterId);
+			}
 			auto msg{ std::make_shared<MsgMove>(packet.x, packet.y, packet.dirX, packet.dirY) };
 			GET_SINGLE(MessageManager)->PushMessage(packet.monsterId, msg);
 
@@ -158,7 +160,7 @@ void SocketIO::ProcessPacket()
 		break;
 		default:
 		{
-			std::println("Packet Error.");
+			std::cout << "Packet Error\n";
 		}
 		break;
 		}
@@ -172,8 +174,15 @@ int SocketIO::GetNextId()
 	if (idList.size() <= idCount) {
 		return -1;
 	}
-	std::println("{} get success", idList[idCount]);
 	return idList[idCount++];
+}
+
+int SocketIO::GetMonsterId()
+{
+	if (monsterIdList.size() <= monsterIdCount) {
+		return -1;
+	}
+	return monsterIdList[monsterIdCount];
 }
 
 SocketIO::~SocketIO()

@@ -34,7 +34,7 @@
 #include "MasterScript.h"
 #include "TestGrenadeScript.h"
 #include "RuinsScript.h"
-#include "TestOtherPlayerScript.h"
+#include "NetworkOtherPlayerScript.h"
 #include "RazerParticleScript.h"
 #include "BulletScript.h"
 #include "GunScript.h"
@@ -473,6 +473,7 @@ ParticleScene::ParticleScene()
 #pragma endregion
 
 #pragma region OtherPlayer
+#ifdef NETWORK_ENABLE
 	{
 		std::array<shared_ptr<GameObject>, 2> obj{};
 		for (int i = 0; i < 2; ++i) {
@@ -487,7 +488,7 @@ ParticleScene::ParticleScene()
 			obj[i]->AddComponent(make_shared<Transform>());
 			obj[i]->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 			obj[i]->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
-			obj[i]->AddComponent(make_shared<TestOtherPlayerScript>());
+			obj[i]->AddComponent(make_shared<NetworkOtherPlayerScript>());
 
 			// 4. MeshRenderer ¼³Á¤
 			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -507,6 +508,7 @@ ParticleScene::ParticleScene()
 			activeScene->AddGameObject(obj[i]);
 		}
 	}
+#endif // NETWORK_ENABLE
 #pragma endregion
 
 	LoadDebugParticle();

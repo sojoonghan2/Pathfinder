@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "TestOtherPlayerScript.h"
+#include "NetworkOtherPlayerScript.h"
 
 #include "Transform.h"
 #include "Camera.h"
@@ -10,17 +10,16 @@
 #include "MessageManager.h"
 #include "SocketIO.h"
 
-TestOtherPlayerScript::TestOtherPlayerScript()
+NetworkOtherPlayerScript::NetworkOtherPlayerScript()
 {
 }
 
-TestOtherPlayerScript::~TestOtherPlayerScript()
+NetworkOtherPlayerScript::~NetworkOtherPlayerScript()
 {
 }
 
-void TestOtherPlayerScript::LateUpdate()
+void NetworkOtherPlayerScript::LateUpdate()
 {
-#ifdef NETWORK_ENABLE
 
 	if (-1 == id) {
 		id = GET_SINGLE(SocketIO)->GetNextId();
@@ -47,20 +46,25 @@ void TestOtherPlayerScript::LateUpdate()
 		}
 	}
 
-#endif // NETWORK_ENABLE
 }
 
-void TestOtherPlayerScript::SetPosition(float x, float z)
+void NetworkOtherPlayerScript::SetPosition(float x, float z)
 {
 	Vec3 pos = GetTransform()->GetLocalPosition();
 	pos.x = x * METER_TO_CLIENT;
-	pos.y = 500.f;
+	pos.y = 0.f;
 	pos.z = z * METER_TO_CLIENT;
 
 	GetTransform()->SetLocalPosition(pos);
 }
 
-void TestOtherPlayerScript::SetDir(float x, float z)
+void NetworkOtherPlayerScript::SetDir(float x, float z)
 {
-	GetTransform()->LookAt(Vec3{ x, 0, z });
+	Vec3 Look{ x, 0.f, z };
+	if (Look.LengthSquared() > 0.0001f)
+	{
+		float targetYaw = atan2f(Look.x, Look.z) + XM_PI;
+		Vec3 targetRot = Vec3(-XM_PIDIV2, targetYaw, 0.f);
+		GetTransform()->SetLocalRotation(targetRot);
+	}
 }

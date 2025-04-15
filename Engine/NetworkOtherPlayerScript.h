@@ -1,11 +1,11 @@
 #pragma once
 #include "MonoBehaviour.h"
 
-class TestOtherPlayerScript : public MonoBehaviour
+class NetworkOtherPlayerScript : public MonoBehaviour
 {
 public:
-	TestOtherPlayerScript();
-	virtual ~TestOtherPlayerScript();
+	NetworkOtherPlayerScript();
+	virtual ~NetworkOtherPlayerScript();
 
 	virtual void LateUpdate() override;
 

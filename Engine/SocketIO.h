@@ -27,7 +27,10 @@ public:
 
 	void Init();
 	void Update();
+
+	// Temp ID get. 수정예정
 	int GetNextId();
+	int GetMonsterId();
 
 	template <class Packet, class ...Args>
 	void DoSend(Args ...args);
@@ -46,8 +49,16 @@ private:
 	std::thread	recvThread{};
 	std::queue<BufferType> bufferQueue;
 	NetworkTimer sendTimer;
+
+
+	// temp ID List.
+	// TODO: 이거 애초에 할거면 큐로 해야지 왜 벡터임?
 	std::vector<int> idList;
 	int idCount{ 0 };
+
+	std::vector<int> monsterIdList;
+	int monsterIdCount{ 0 };
+
 
 	// temp
 public:

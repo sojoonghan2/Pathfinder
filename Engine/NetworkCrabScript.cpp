@@ -1,0 +1,90 @@
+#include "pch.h"
+#include "NetworkCrabScript.h"
+#include "Input.h"
+#include "Timer.h"
+#include "Animator.h"
+#include "MeshData.h"
+#include "Resources.h"
+#include "SceneManager.h"
+#include "Scene.h"
+#include "GameObject.h"
+#include "Transform.h"
+
+#include "MessageManager.h"
+#include "SocketIO.h"
+
+
+NetworkCrabScript::NetworkCrabScript()
+{}
+
+void NetworkCrabScript::LateUpdate()
+{
+	if (-1 == _id) {
+		_id = GET_SINGLE(SocketIO)->GetMonsterId();
+	}
+
+	if (-1 != _id) {
+		auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(_id);
+		while (not queue.empty()) {
+			auto& message{ queue.front() };
+			switch (message->type)
+			{
+			case MsgType::MOVE:
+			{
+				std::shared_ptr<MsgMove> message_move{
+					std::static_pointer_cast<MsgMove>(message) };
+				SetPosition(message_move->x, message_move->y);
+				SetDir(message_move->dirX, message_move->dirY);
+			}
+			break;
+			default:
+				break;
+			}
+			queue.pop();
+		}
+	}
+
+	CheckBulletHits();
+}
+
+void NetworkCrabScript::SetPosition(float x, float z)
+{
+	Vec3 pos = GetTransform()->GetLocalPosition();
+	pos.x = x * METER_TO_CLIENT;
+	pos.y = 0.f;
+	pos.z = z * METER_TO_CLIENT;
+
+	GetTransform()->SetLocalPosition(pos);
+}
+
+void NetworkCrabScript::SetDir(float x, float z)
+{
+	Vec3 Look{ x, 0.f, z };
+	if (Look.LengthSquared() > 0.0001f)
+	{
+		float targetYaw = atan2f(Look.x, Look.z) + XM_PI;
+		Vec3 targetRot = Vec3(-XM_PIDIV2, targetYaw, 0.f);
+		GetTransform()->SetLocalRotation(targetRot);
+	}
+}
+
+
+void NetworkCrabScript::CheckBulletHits()
+{
+	// 모든 총알에 대해 충돌 검사
+	for (int i = 0; i < 50; ++i)
+	{
+		wstring bulletName = L"Bullet" + to_wstring(i);
+		auto bulletObject = GET_SINGLE(SceneManager)->FindObjectByName(bulletName);
+
+		if (bulletObject)
+		{
+			auto is_collision = GET_SINGLE(SceneManager)->Collition(GetGameObject(), bulletObject);
+			if (is_collision)
+			{
+				std::cout << "오브젝트 충돌 발생\n\n";
+				break;
+			}
+		}
+	}
+}

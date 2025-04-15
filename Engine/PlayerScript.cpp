@@ -49,7 +49,9 @@ void PlayerScript::LateUpdate()
 		_moveTimer.updateDeltaTime();
 		Vec3 pos = GetTransform()->GetLocalPosition();
 		Vec3 dir = GetTransform()->GetLook();
-		GET_SINGLE(SocketIO)->DoSend<packet::CSMovePlayer>(pos.x, pos.z, dir.x, dir.z);
+		GET_SINGLE(SocketIO)->DoSend<packet::CSMovePlayer>(
+			pos.x / METER_TO_CLIENT, pos.z / METER_TO_CLIENT,
+			dir.x, dir.z);
 	}
 
 #endif
@@ -61,6 +63,7 @@ void PlayerScript::LateUpdate()
 	ThrowGrenade();
 	ShootRazer();
 	Animation();
+
 }
 
 void PlayerScript::KeyboardInput()
