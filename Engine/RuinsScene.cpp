@@ -36,6 +36,7 @@
 #include "FireParticleSystem.h"
 #include "IceParticleSystem.h"
 #include "RazerParticleSystem.h"
+#include "CrapParticleSystem.h"
 
 RuinsScene::RuinsScene()
 {
@@ -604,7 +605,7 @@ RuinsScene::RuinsScene()
 			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
 			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(700.f, 700.f, 700.f));
 
-			shared_ptr<FireParticleSystem> crapParticleSystem = make_shared<FireParticleSystem>();
+			shared_ptr<CrapParticleSystem> crapParticleSystem = make_shared<CrapParticleSystem>();
 			crapParticleSystem->SetParticleScale(100.f, 80.f);
 			gameObjects[0]->AddComponent(crapParticleSystem);
 
