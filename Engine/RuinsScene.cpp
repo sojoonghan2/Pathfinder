@@ -117,7 +117,7 @@ RuinsScene::RuinsScene()
 
 			gameObject->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(150.f);
-			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
 			activeScene->AddGameObject(gameObject);
 
@@ -127,6 +127,7 @@ RuinsScene::RuinsScene()
 
 			wire->AddComponent(make_shared<Transform>());
 			wire->GetTransform()->SetParent(gameObject->GetTransform());
+			wire->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 100.f));
 			wire->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 
 			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -506,14 +507,14 @@ RuinsScene::RuinsScene()
 	// ½ºÇÇ¾î
 	{
 		vector<pair<Vec3, float>> dummyInfo;
-		dummyInfo.emplace_back(Vec3(-1375.2f, 0.f, 846.233f), 35.f);
-		dummyInfo.emplace_back(Vec3(1542.62, 0, 862.32), 35.f);
+		dummyInfo.emplace_back(Vec3(-1375.2f, 100.f, 900.f), 80.f);
+		dummyInfo.emplace_back(Vec3(1542.62f, 100.f, 900.f), 80.f);
 
-		dummyInfo.emplace_back(Vec3(-407.447, 0, 2158.73), 35.f);
-		dummyInfo.emplace_back(Vec3(735.708, 0, 2148.51), 35.f);
+		dummyInfo.emplace_back(Vec3(-407.447f, 100.f, 2300.f), 80.f);
+		dummyInfo.emplace_back(Vec3(735.708f, 100.f, 2300.f), 80.f);
 
-		dummyInfo.emplace_back(Vec3(754.53, 0, 3144.35), 35.f);
-		dummyInfo.emplace_back(Vec3(-372.698, 0, 3130.5), 35.f);
+		dummyInfo.emplace_back(Vec3(754.53f, 100.f, 3250.f), 80.f);
+		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 80.f);
 		
 		
 		for (const auto& info : dummyInfo)
