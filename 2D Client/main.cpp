@@ -16,6 +16,29 @@ constexpr float GRID_WIDTH_PIXEL
 constexpr float GRID_HEIGHT_PIXEL
 	{ static_cast<float>(WINDOW_HEIGHT) / static_cast<float>(GRID_CONUT) };
 
+Vec2f WindowToGame(const Vec2f& pos)
+{
+	float x = (pos.x - (WINDOW_WIDTH * 0.5f)) * MAP_SIZE_M / WINDOW_WIDTH;
+	float y = -(pos.y - (WINDOW_HEIGHT * 0.5f)) * MAP_SIZE_M / WINDOW_HEIGHT;
+	return Vec2f{ x, y };
+}
+
+Vec2f GameToWindow(const Vec2f& pos)
+{
+	float windowX = pos.x / MAP_SIZE_M * WINDOW_WIDTH + (WINDOW_WIDTH * 0.5f);
+	float windowY = -pos.y / MAP_SIZE_M * WINDOW_HEIGHT + (WINDOW_HEIGHT * 0.5f);
+	return Vec2f{ windowX, windowY };
+}
+
+void NormalizeVec(Vec2f& pos)
+{
+	float length = std::sqrt(pos.x * pos.x + pos.y * pos.y);
+	if (length > 0.f) {
+		pos.x /= length;
+		pos.y /= length;
+	}
+}
+
 
 using StatusType = unsigned char;
 
@@ -126,17 +149,12 @@ public:
 		y = std::max(y, -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 		y = std::min(y, (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
 
-		float windowX = x / MAP_SIZE_M * WINDOW_WIDTH + (WINDOW_WIDTH * 0.5f);
-		float windowY = -y / MAP_SIZE_M * WINDOW_HEIGHT + (WINDOW_HEIGHT * 0.5f);
+		
 
 		// 방향 설정
-		auto mouse_pos{ controller.getMousePos() };
-		auto dir_temp{ mouse_pos - Vec2f{windowX, windowY} };
-		length = std::sqrt(dir_temp.x * dir_temp.x + dir_temp.y * dir_temp.y);
-		if (length > 0.f) {
-			dir.x = dir_temp.x / length;
-			dir.y = dir_temp.y / length;
-		}
+		auto mouse_pos{ WindowToGame(controller.getMousePos()) };
+		dir = mouse_pos - pos;
+		NormalizeVec(dir);
 
 	}
 
@@ -145,8 +163,9 @@ public:
 		if (not show) return;
 
 		// 윈도우 위치 계산
-		float windowX = x / MAP_SIZE_M * WINDOW_WIDTH + (WINDOW_WIDTH * 0.5f);
-		float windowY = -y / MAP_SIZE_M * WINDOW_HEIGHT + (WINDOW_HEIGHT * 0.5f);
+		auto window_pos{ GameToWindow(pos) };
+		auto& windowX = window_pos.x;
+		auto& windowY = window_pos.y;
 
 		// 윈도우 위치에 표시
 		Square.setPosition(windowX, windowY);
@@ -162,7 +181,7 @@ public:
 
 		float angle_degree{ 60.f };
 		float angle_rad = angle_degree * 3.14159265f / 180.f;
-		float base_angle = std::atan2(dir.y, dir.x) * 180.f / 3.14159265f;;
+		float base_angle = std::atan2(-dir.y, dir.x) * 180.f / 3.14159265f;;
 
 		float start_angle = base_angle - angle_degree / 2.f;
 
@@ -244,8 +263,9 @@ public:
 		if (not show) return;
 
 		// 윈도우 위치 계산
-		float windowX = x / MAP_SIZE_M * WINDOW_WIDTH + (WINDOW_WIDTH * 0.5f);
-		float windowY = -y / MAP_SIZE_M * WINDOW_HEIGHT + (WINDOW_HEIGHT * 0.5f);
+		auto window_pos{ GameToWindow(pos) };
+		auto& windowX = window_pos.x;
+		auto& windowY = window_pos.y;
 
 		// 윈도우 위치에 표시
 		Square.setPosition(windowX, windowY);
@@ -261,7 +281,7 @@ public:
 
 		float angle_degree{ 60.f };
 		float angle_rad = angle_degree * 3.14159265f / 180.f;
-		float base_angle = std::atan2(dir.y, dir.x) * 180.f / 3.14159265f;;
+		float base_angle = std::atan2(-dir.y, dir.x) * 180.f / 3.14159265f;;
 
 		float start_angle = base_angle - angle_degree / 2.f;
 
