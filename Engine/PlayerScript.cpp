@@ -24,12 +24,23 @@ PlayerScript::~PlayerScript()
 void PlayerScript::LateUpdate()
 {
 #ifdef NETWORK_ENABLE
-	int id = GET_SINGLE(SocketIO)->myId;
+	int id{ GET_SINGLE(SocketIO)->myId};
 	if (-1 != id) {
-		auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(id);
+		auto& queue{ GET_SINGLE(MessageManager)->GetMessageQueue(id) };
 		while (not queue.empty()) {
-			auto& message = queue.front();
-			SetPosition(message.first, message.second);
+			auto& message{ queue.front() };
+			switch (message->type)
+			{
+			case MsgType::MOVE:
+			{
+				std::shared_ptr<MsgMove> message_move{
+					std::static_pointer_cast<MsgMove>(message) };
+				SetPosition(message_move->x, message_move->y);
+			}
+			break;
+			default:
+				break;
+			}
 			queue.pop();
 		}
 	}
@@ -37,7 +48,8 @@ void PlayerScript::LateUpdate()
 	if (_moveTimer.PeekDeltaTime() > MOVE_PACKET_TIME_MS) {
 		_moveTimer.updateDeltaTime();
 		Vec3 pos = GetTransform()->GetLocalPosition();
-		GET_SINGLE(SocketIO)->DoSend<packet::CSMovePlayer>(pos.x, pos.y);
+		Vec3 dir = GetTransform()->GetLook();
+		GET_SINGLE(SocketIO)->DoSend<packet::CSMovePlayer>(pos.x, pos.z, dir.x, dir.z);
 	}
 
 #endif
@@ -290,7 +302,7 @@ void PlayerScript::ShootRazer()
 	}
 }
 
-void PlayerScript::SetPosition(float x, float z)
+void PlayerScript::SetPosition(const float x, const float z)
 {
 	Vec3 pos = GetTransform()->GetLocalPosition();
 	pos.x = x * 200.f;
@@ -298,6 +310,7 @@ void PlayerScript::SetPosition(float x, float z)
 
 	GetTransform()->SetLocalPosition(pos);
 }
+
 
 void PlayerScript::RotateToCameraOnShoot()
 {

@@ -1,4 +1,5 @@
 #pragma once
+#include "Message.h"
 
 class MessageManager
 {
@@ -6,10 +7,9 @@ class MessageManager
 
 public:
 
-	using QueueType = std::queue<std::pair<float, float>>;
+	using QueueType = std::queue<std::shared_ptr<Msg>>;
 
-	// temp
-	void InsertMessage(int id, float x, float y);
+	void PushMessage(int id, std::shared_ptr<Msg> msg);
 	QueueType& GetMessageQueue(int id);
 
 private:

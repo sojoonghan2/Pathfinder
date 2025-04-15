@@ -115,7 +115,7 @@ void IOCP::TimerWorker()
 	while (true) {
 		auto next_time = std::chrono::high_resolution_clock::now() + duration;
 		for (int i = 0; i < currentClient; ++i) {
-			packet::CSMovePlayer move_packet{0.f, 0.f};
+			packet::CSMovePlayer move_packet{0.f, 0.f, 1.f, 0.f};
 			DoSend(players[i], &move_packet);
 			packet::CSCheckDelayPacket delay_packet;
 			delays[i] = std::chrono::high_resolution_clock::now();

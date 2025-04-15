@@ -292,8 +292,9 @@ void IOCP::TimerWorker()
 				auto monster_pos = monster.GetPos();
 				auto monster_dir = monster.GetDir();
 				// 패킷 생성
+				// 일단 임시로 MAX_PLAYER를 더한 아이디를 준다.
 				packet::SCMoveMonster sc_monster_move{
-					i,
+					MAX_PLAYER + i,
 					monster_pos.x,
 					monster_pos.y,
 					monster_dir.x,

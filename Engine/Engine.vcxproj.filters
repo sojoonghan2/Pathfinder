@@ -52,6 +52,9 @@
     <Filter Include="Network\util">
       <UniqueIdentifier>{173b7caa-495e-4245-81fa-977da523f6b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network\Message">
+      <UniqueIdentifier>{7ba72e15-6d52-499a-97e3-c68695854e61}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -285,9 +288,6 @@
     <ClCompile Include="SocketIO.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="MessageManager.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\util.cpp">
       <Filter>Network\Common</Filter>
     </ClCompile>
@@ -335,6 +335,12 @@
     </ClCompile>
     <ClCompile Include="TestScript.cpp">
       <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageManager.cpp">
+      <Filter>Network\Message</Filter>
+    </ClCompile>
+    <ClCompile Include="Message.cpp">
+      <Filter>Network\Message</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -572,9 +578,6 @@
     <ClInclude Include="SocketIO.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="MessageManager.h">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\util.h">
       <Filter>Network\Common</Filter>
     </ClInclude>
@@ -625,6 +628,12 @@
     </ClInclude>
     <ClInclude Include="TestScript.h">
       <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageManager.h">
+      <Filter>Network\Message</Filter>
+    </ClInclude>
+    <ClInclude Include="Message.h">
+      <Filter>Network\Message</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

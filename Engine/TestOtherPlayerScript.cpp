@@ -29,8 +29,20 @@ void TestOtherPlayerScript::LateUpdate()
 	if (-1 != id) {
 		auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(id);
 		while (not queue.empty()) {
-			auto& message = queue.front();
-			SetPosition(message.first, message.second);
+			auto& message{ queue.front() };
+			switch (message->type)
+			{
+			case MsgType::MOVE:
+			{
+				std::shared_ptr<MsgMove> message_move{
+					std::static_pointer_cast<MsgMove>(message) };
+				SetPosition(message_move->x, message_move->y);
+				SetDir(message_move->dirX, message_move->dirY);
+			}
+			break;
+			default:
+				break;
+			}
 			queue.pop();
 		}
 	}
@@ -46,4 +58,9 @@ void TestOtherPlayerScript::SetPosition(float x, float z)
 	pos.z = z * METER_TO_CLIENT;
 
 	GetTransform()->SetLocalPosition(pos);
+}
+
+void TestOtherPlayerScript::SetDir(float x, float z)
+{
+	GetTransform()->LookAt(Vec3{ x, 0, z });
 }

@@ -141,9 +141,19 @@ void SocketIO::ProcessPacket()
 				idList.push_back(packet.clientId);
 				std::println("{} put success.", packet.clientId);
 			}
-			GET_SINGLE(MessageManager)->InsertMessage(packet.clientId, packet.x, packet.y);
-			players[packet.clientId].x = packet.x;
-			players[packet.clientId].y = packet.y;
+			auto msg{ std::make_shared<MsgMove>(packet.x, packet.y, packet.dirX, packet.dirY) };
+			GET_SINGLE(MessageManager)->PushMessage(packet.clientId, msg);
+			//players[packet.clientId].x = packet.x;
+			//players[packet.clientId].y = packet.y;
+		}
+		break;
+
+		case packet::Type::SC_MOVE_MONSTER:
+		{
+			packet::SCMoveMonster packet{ reinterpret_cast<packet::SCMoveMonster&>(buffer) };
+			auto msg{ std::make_shared<MsgMove>(packet.x, packet.y, packet.dirX, packet.dirY) };
+			GET_SINGLE(MessageManager)->PushMessage(packet.monsterId, msg);
+
 		}
 		break;
 		default:
@@ -158,6 +168,7 @@ void SocketIO::ProcessPacket()
 
 int SocketIO::GetNextId()
 {
+	// TODO: 임시로 해놨음
 	if (idList.size() <= idCount) {
 		return -1;
 	}

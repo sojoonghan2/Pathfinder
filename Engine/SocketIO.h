@@ -51,7 +51,7 @@ private:
 
 	// temp
 public:
-	std::unordered_map<int, Player> players{};
+	// std::unordered_map<int, Player> players{};
 	int myId{-1};
 
 };

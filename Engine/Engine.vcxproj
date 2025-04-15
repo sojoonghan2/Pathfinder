@@ -221,6 +221,7 @@
     <ClInclude Include="MeshData.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="GameModule.h" />
+    <ClInclude Include="Message.h" />
     <ClInclude Include="MessageManager.h" />
     <ClInclude Include="ModuleScript.h" />
     <ClInclude Include="MonoBehaviour.h" />
@@ -317,6 +318,7 @@
     <ClCompile Include="MeshData.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="GameModule.cpp" />
+    <ClCompile Include="Message.cpp" />
     <ClCompile Include="MessageManager.cpp" />
     <ClCompile Include="ModuleScript.cpp" />
     <ClCompile Include="MonoBehaviour.cpp" />

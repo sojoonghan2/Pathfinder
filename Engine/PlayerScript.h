@@ -23,7 +23,7 @@ public:
 	void RotateToCameraOnShoot();
 	void RotateToCameraLook();
 
-	void SetPosition(float x, float z);
+	void SetPosition(const float x, const float z);
 
 	float GetRazerCooldown() { return _razerCooldown; }
 	float GetRazerCooldownTimer() { return _razerCooldownTimer; }
