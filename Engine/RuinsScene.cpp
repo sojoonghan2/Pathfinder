@@ -34,6 +34,7 @@
 #include "LightPillarParticleSystem.h"
 #include "TestGrenadeScript.h"
 #include "FireParticleSystem.h"
+#include "IceParticleSystem.h"
 #include "RazerParticleSystem.h"
 
 RuinsScene::RuinsScene()
@@ -524,7 +525,7 @@ RuinsScene::RuinsScene()
 	// Å¥ºê
 	{
 		vector<pair<Vec3, Vec3>> dummyInfo;
-		dummyInfo.emplace_back(Vec3(0.f, 0.f, 0.f), Vec3(100.f, 100.f, 100.f));
+		//dummyInfo.emplace_back(Vec3(0.f, 0.f, 0.f), Vec3(100.f, 100.f, 100.f));
 
 		for (const auto& info : dummyInfo)
 		{
@@ -602,6 +603,10 @@ RuinsScene::RuinsScene()
 			gameObjects[0]->AddComponent(make_shared<CrapScript>());
 			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
 			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(700.f, 700.f, 700.f));
+
+			shared_ptr<FireParticleSystem> crapParticleSystem = make_shared<FireParticleSystem>();
+			crapParticleSystem->SetParticleScale(100.f, 80.f);
+			gameObjects[0]->AddComponent(crapParticleSystem);
 
 			gameObjects[0]->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
