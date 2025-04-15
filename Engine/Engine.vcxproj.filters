@@ -336,6 +336,9 @@
     <ClCompile Include="TestScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>Object\Component\Collider</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -625,6 +628,9 @@
     </ClInclude>
     <ClInclude Include="TestScript.h">
       <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>Object\Component\Collider</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

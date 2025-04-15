@@ -482,6 +482,7 @@ RuinsScene::RuinsScene()
 
 		dummyInfo.emplace_back(Vec3(-407.447, 0, 2158.73), 35.f);
 		dummyInfo.emplace_back(Vec3(735.708, 0, 2148.51), 35.f);
+
 		dummyInfo.emplace_back(Vec3(754.53, 0, 3144.35), 35.f);
 		dummyInfo.emplace_back(Vec3(-372.698, 0, 3130.5), 35.f);
 		

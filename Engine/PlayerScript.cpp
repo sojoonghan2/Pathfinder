@@ -305,7 +305,7 @@ void PlayerScript::CheckDummyHits()
 	auto player = GetGameObject();
 	if (!player) return;
 
-	int index = 1;
+	int index{};
 	while (true)
 	{
 		wstring name = L"dummy" + to_wstring(index++);

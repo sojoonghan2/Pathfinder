@@ -19,6 +19,9 @@ public:
 
 	BoundingSphere GetBoundingSphere() { return _boundingSphere; }
 
+	virtual Vec3 GetMin() override { return _center - Vec3(_radius, _radius, _radius); }
+	virtual Vec3 GetMax() override { return _center + Vec3(_radius, _radius, _radius); }
+
 private:
 	// Local ±âÁØ
 	float		_radius = 1.f;
