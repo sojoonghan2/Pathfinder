@@ -348,6 +348,12 @@
     <ClCompile Include="NetworkOtherPlayerScript.cpp">
       <Filter>Script\ObjectScript\NetworkScript</Filter>
     </ClCompile>
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>Object\Component\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="CrapParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -644,6 +650,12 @@
     <ClInclude Include="NetworkOtherPlayerScript.h">
       <Filter>Script\ObjectScript\NetworkScript</Filter>
     </ClInclude>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>Object\Component\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="CrapParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -731,6 +743,9 @@
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\Debug.fx">
       <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\CrapParticle.fx">
+      <Filter>Shader\Particle</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

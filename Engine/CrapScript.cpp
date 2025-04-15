@@ -9,6 +9,7 @@
 #include "Scene.h"
 #include "GameObject.h"
 #include "Transform.h"
+#include "ParticleSystem.h"
 
 CrapScript::CrapScript()
 {
@@ -122,7 +123,12 @@ void CrapScript::CheckBulletHits()
 					return;
 				}
 
-				std::cout << "오브젝트 충돌 발생\n\n";
+				if (GetGameObject()->GetParticleSystem())
+				{
+					GetGameObject()->GetParticleSystem()->ParticleStart();
+					cout << "거미 충돌\n";
+				}
+
 				break;
 			}
 		}

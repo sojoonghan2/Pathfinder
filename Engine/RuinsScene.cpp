@@ -26,6 +26,7 @@
 #include "BulletScript.h"
 
 #include "SphereCollider.h"
+#include "BoxCollider.h"
 
 #include "DustParticleSystem.h"
 #include "GlitterParticleSystem.h"
@@ -33,7 +34,11 @@
 #include "LightPillarParticleSystem.h"
 #include "TestGrenadeScript.h"
 #include "FireParticleSystem.h"
+#include "IceParticleSystem.h"
 #include "RazerParticleSystem.h"
+#include "CrapParticleSystem.h"
+#include "TestPBRParticleSystem.h"
+#include "PortalFrameParticleSystem.h"
 #include "NetworkOtherPlayerScript.h"
 #include "NetworkCrabScript.h"
 
@@ -111,7 +116,34 @@ RuinsScene::RuinsScene()
 			gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 			gameObject->AddComponent(playerScript);
 			gameObject->AddComponent(make_shared<TestDragon>());
+
+			gameObject->AddComponent(make_shared<SphereCollider>());
+			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(150.f);
+			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
+
 			activeScene->AddGameObject(gameObject);
+
+			shared_ptr<GameObject> wire = make_shared<GameObject>();
+			wstring name = L"wire";
+			wire->SetName(name);
+
+			wire->AddComponent(make_shared<Transform>());
+			wire->GetTransform()->SetParent(gameObject->GetTransform());
+			wire->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 100.f));
+			wire->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+
+			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+				meshRenderer->SetMesh(sphereMesh);
+			}
+			{
+				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
+				meshRenderer->SetMaterial(material->Clone());
+			}
+			wire->AddComponent(meshRenderer);
+
+			activeScene->AddGameObject(wire);
 		}
 
 		// 총알
@@ -517,7 +549,91 @@ RuinsScene::RuinsScene()
 		}
 
 		water->AddComponent(meshRenderer);
+		water->SetRenderOff();
 		activeScene->AddGameObject(water);
+	}
+#pragma endregion
+
+	// 더미 콜라이더
+#pragma region DummyCollider
+	int dummyCount{};
+	// 스피어
+	{
+		vector<pair<Vec3, float>> dummyInfo;
+		dummyInfo.emplace_back(Vec3(-1375.2f, 100.f, 900.f), 80.f);
+		dummyInfo.emplace_back(Vec3(1542.62f, 100.f, 900.f), 80.f);
+
+		dummyInfo.emplace_back(Vec3(-407.447f, 100.f, 2300.f), 80.f);
+		dummyInfo.emplace_back(Vec3(735.708f, 100.f, 2300.f), 80.f);
+
+		dummyInfo.emplace_back(Vec3(754.53f, 100.f, 3250.f), 80.f);
+		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 80.f);
+		
+		
+		for (const auto& info : dummyInfo)
+		{
+			shared_ptr<GameObject> dummy = make_shared<GameObject>();
+
+			wstring name = L"dummy" + to_wstring(dummyCount++);
+			dummy->SetName(name);
+
+			dummy->AddComponent(make_shared<Transform>());
+			dummy->GetTransform()->SetLocalPosition(info.first);
+			dummy->GetTransform()->SetLocalScale(Vec3(info.second * 2, info.second * 2, info.second * 2));
+			dummy->SetStatic(true);
+
+			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+				meshRenderer->SetMesh(sphereMesh);
+			}
+			{
+				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
+				meshRenderer->SetMaterial(material->Clone());
+			}
+			dummy->AddComponent(meshRenderer);
+
+			dummy->AddComponent(make_shared<SphereCollider>());
+			dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetRadius(info.second);
+			dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+
+			activeScene->AddGameObject(dummy);
+		}
+	}
+	// 큐브
+	{
+		vector<pair<Vec3, Vec3>> dummyInfo;
+		//dummyInfo.emplace_back(Vec3(0.f, 0.f, 0.f), Vec3(100.f, 100.f, 100.f));
+
+		for (const auto& info : dummyInfo)
+		{
+			shared_ptr<GameObject> dummy = make_shared<GameObject>();
+
+			wstring name = L"dummy" + to_wstring(dummyCount++);
+			dummy->SetName(name);
+
+			dummy->AddComponent(make_shared<Transform>());
+			dummy->GetTransform()->SetLocalPosition(info.first);
+			dummy->GetTransform()->SetLocalScale(info.second * 2);
+			dummy->SetStatic(true);
+
+			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> cubeMesh = GET_SINGLE(Resources)->LoadCubeMesh();
+				meshRenderer->SetMesh(cubeMesh);
+			}
+			{
+				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
+				meshRenderer->SetMaterial(material->Clone());
+			}
+			dummy->AddComponent(meshRenderer);
+
+			dummy->AddComponent(make_shared<BoxCollider>());
+			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetExtents(info.second);
+			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetCenter(Vec3(0.0f, 0.0f, 0.0f));
+
+			activeScene->AddGameObject(dummy);
+		}
 	}
 #pragma endregion
 
@@ -561,7 +677,7 @@ RuinsScene::RuinsScene()
 
 			positions.push_back(randomPos);
 
-			gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i + 1));
+			gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i));
 			gameObjects[0]->SetCheckFrustum(true);
 			gameObjects[0]->AddComponent(make_shared<CrapScript>());
 			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
@@ -710,6 +826,52 @@ RuinsScene::RuinsScene()
 		}
 		obj->AddComponent(CrosshairmeshRenderer);
 		activeScene->AddGameObject(obj);
+	}
+#pragma endregion
+
+#pragma region PotalParticle
+	{
+		// 파티클 오브젝트 생성
+		shared_ptr<GameObject> testPBRParticle = make_shared<GameObject>();
+		wstring testPBRParticleName = L"potalParticle";
+		testPBRParticle->SetName(testPBRParticleName);
+		testPBRParticle->SetCheckFrustum(true);
+		testPBRParticle->SetStatic(false);
+
+		// 좌표 컴포넌트 추가
+		testPBRParticle->AddComponent(make_shared<Transform>());
+		testPBRParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, 4000.f));
+		testPBRParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+
+		// 파티클 시스템 컴포넌트 추가
+		shared_ptr<TestPBRParticleSystem> testPBRParticleSystem = make_shared<TestPBRParticleSystem>();
+		testPBRParticle->AddComponent(make_shared<TestParticleScript>());
+		testPBRParticle->AddComponent(testPBRParticleSystem);
+
+		activeScene->AddGameObject(testPBRParticle);
+	}
+#pragma endregion
+
+#pragma region PortalFrameParticle
+	{
+		// 파티클 오브젝트 생성
+		shared_ptr<GameObject> portalFrameParticle = make_shared<GameObject>();
+		wstring portalFrameParticleName = L"portalFrameParticle";
+		portalFrameParticle->SetName(portalFrameParticleName);
+		portalFrameParticle->SetCheckFrustum(true);
+		portalFrameParticle->SetStatic(false);
+
+		// 좌표 컴포넌트 추가
+		portalFrameParticle->AddComponent(make_shared<Transform>());
+		portalFrameParticle->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, 4000.f));
+		portalFrameParticle->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+
+		// 파티클 시스템 컴포넌트 추가
+		shared_ptr<PortalFrameParticleSystem> portalFrameParticleSystem = make_shared<PortalFrameParticleSystem>();
+		portalFrameParticle->AddComponent(make_shared<TestParticleScript>());
+		portalFrameParticle->AddComponent(portalFrameParticleSystem);
+
+		activeScene->AddGameObject(portalFrameParticle);
 	}
 #pragma endregion
 }
