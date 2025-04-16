@@ -35,7 +35,7 @@ void NetworkCrabScript::LateUpdate()
 				std::shared_ptr<MsgMove> message_move{
 					std::static_pointer_cast<MsgMove>(message) };
 				SetPosition(message_move->x, message_move->y);
-				SetDir(message_move->dirX, message_move->dirY);
+				// SetDir(message_move->dirX, message_move->dirY);
 
 				// 움직임 감지
 				if (_lastX != message_move->x || _lastY != message_move->y) {
@@ -75,12 +75,7 @@ void NetworkCrabScript::SetPosition(float x, float z)
 void NetworkCrabScript::SetDir(float x, float z)
 {
 	Vec3 Look{ x, 0.f, z };	
-	if (Look.LengthSquared() > 0.0001f)
-	{
-		float targetYaw = atan2f(Look.x, Look.z) + XM_PI;
-		Vec3 targetRot = Vec3(-XM_PIDIV2, targetYaw, 0.f);
-		GetTransform()->SetLocalRotation(targetRot);
-	}
+	GetTransform()->SetLocalRotation(Look);
 }
 
 void NetworkCrabScript::Animation()
