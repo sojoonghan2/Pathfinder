@@ -496,6 +496,7 @@ RuinsScene::RuinsScene()
 		}
 
 		water->AddComponent(meshRenderer);
+		water->SetRenderOff();
 		activeScene->AddGameObject(water);
 	}
 #pragma endregion
@@ -569,6 +570,28 @@ RuinsScene::RuinsScene()
 		dummyInfo.emplace_back(Vec3(-6450.f, 0.f, -3532.34f), Vec3(2500.f, 2500.f, 2500.f));
 		dummyInfo.emplace_back(Vec3(-3404.29f, 0.f, -3465.64f), Vec3(300.f, 300.f, 300.f));
 
+		// 맨 뒤 오른쪽 나무 조형물
+		for (int i{}; i < 10; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(3080.72f, 0.f, -4950.f + 300.f * i), Vec3(300.f, 300.f, 300.f));
+		}
+		for (int i{}; i < 3; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(2779.74 - 300.f * i, 0, -4855.58), Vec3(300.f, 300.f, 300.f));
+		}
+		for (int i{}; i < 4; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(2779.74 - 300.f * i, 0, -4555.58), Vec3(300.f, 300.f, 300.f));
+		}
+		for (int i{}; i < 6; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(2779.74 - 300.f * i, 0, -4255.58), Vec3(300.f, 300.f, 300.f));
+		}
+		dummyInfo.emplace_back(Vec3(4621.03f, 0.f, -3476.5f), Vec3(300.f, 300.f, 300.f));
+		dummyInfo.emplace_back(Vec3(2719.49f, 0.f, -3697.63f), Vec3(300.f, 300.f, 300.f));
+		dummyInfo.emplace_back(Vec3(1907.74f, 0.f, -4109.48f), Vec3(300.f, 300.f, 300.f));
+		dummyInfo.emplace_back(Vec3(1267.43f, 0.f, -4018.13f), Vec3(300.f, 300.f, 300.f));
+		dummyInfo.emplace_back(Vec3(5150.f, 0.f, -4710.1f), Vec3(600.f, 600.f, 600.f));
 
 		for (const auto& info : dummyInfo)
 		{
