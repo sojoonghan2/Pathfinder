@@ -7,6 +7,7 @@
 #include "GameObject.h"
 #include "Timer.h"
 #include "SphereCollider.h"
+#include "ParticleSystem.h"
 
 RuinsScript::RuinsScript() {}
 
@@ -33,22 +34,36 @@ void RuinsScript::Occupation()
 		if (GET_SINGLE(SceneManager)->FindObjectByName(L"OccupationUI")) _occupationUI = GET_SINGLE(SceneManager)->FindObjectByName(L"OccupationUI");
 	}
 
-	auto playerPos = _player->GetTransform()->GetLocalPosition();
-
-	if (playerPos.x >= -2000.0f && playerPos.x <= 2000.0f &&
-		playerPos.z >= -2000.0f && playerPos.z <= 2000.0f)
+	if (_water->GetTransform()->GetLocalPosition().y < -200.f)
 	{
-		Vec3 pos = _water->GetTransform()->GetLocalPosition();
-		pos.y -= 0.2f;
-		_water->GetTransform()->SetLocalPosition(pos);
-		BlinkUI();
+		_isClear = true;
+		if (!_isCreatePortal)
+		{
+			_occupationUI->SetRenderOff();
+			_isCreatePortal = true;
+			CreatePortal();
+		}
 	}
-	else
+
+	if (!_isClear)
 	{
-		Vec3 pos = _water->GetTransform()->GetLocalPosition();
-		pos.y += 0.1f;
-		_water->GetTransform()->SetLocalPosition(pos);
-		_occupationUI->SetRenderOff();
+		auto playerPos = _player->GetTransform()->GetLocalPosition();
+
+		if (playerPos.x >= -2000.0f && playerPos.x <= 2000.0f &&
+			playerPos.z >= -2000.0f && playerPos.z <= 2000.0f)
+		{
+			Vec3 pos = _water->GetTransform()->GetLocalPosition();
+			pos.y -= 0.2f;
+			_water->GetTransform()->SetLocalPosition(pos);
+			BlinkUI();
+		}
+		else
+		{
+			Vec3 pos = _water->GetTransform()->GetLocalPosition();
+			pos.y += 0.1f;
+			_water->GetTransform()->SetLocalPosition(pos);
+			_occupationUI->SetRenderOff();
+		}
 	}
 }
 
@@ -66,4 +81,13 @@ void RuinsScript::BlinkUI()
 		_occupationUI->SetRenderOn();
 	else
 		_occupationUI->SetRenderOff();
+}
+
+void RuinsScript::CreatePortal()
+{
+	auto portalParticle = GET_SINGLE(SceneManager)->FindObjectByName(L"potalParticle");
+	portalParticle->GetParticleSystem()->ParticleStart();
+
+	auto portalFrameParticle = GET_SINGLE(SceneManager)->FindObjectByName(L"portalFrameParticle");
+	portalFrameParticle->GetParticleSystem()->ParticleStart();
 }

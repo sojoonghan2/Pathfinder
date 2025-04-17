@@ -290,6 +290,30 @@ RuinsScene::RuinsScene()
 		obj->AddComponent(CrosshairmeshRenderer);
 		obj->SetRenderOff();
 		activeScene->AddGameObject(obj);
+
+		// 체력 UI
+		shared_ptr<GameObject> hpUI = make_shared<GameObject>();
+		hpUI->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		hpUI->AddComponent(make_shared<Transform>());
+		hpUI->SetName(L"HPUI");
+		hpUI->GetTransform()->SetLocalScale(Vec3(200.f, 100.f, 100.f));
+		hpUI->GetTransform()->SetLocalPosition(Vec3(-450.f, -300.f, 1.f));
+		shared_ptr<MeshRenderer> hpUImeshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			hpUImeshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+			shared_ptr<Texture> texture{};
+			texture = GET_SINGLE(Resources)->Load<Texture>(L"HPUI", L"..\\Resources\\Texture\\HPUI.png");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			hpUImeshRenderer->SetMaterial(material);
+		}
+		hpUI->AddComponent(hpUImeshRenderer);
+		activeScene->AddGameObject(hpUI);
 	}
 #pragma endregion
 
@@ -496,7 +520,6 @@ RuinsScene::RuinsScene()
 		}
 
 		water->AddComponent(meshRenderer);
-		water->SetRenderOff();
 		activeScene->AddGameObject(water);
 	}
 #pragma endregion
@@ -550,8 +573,8 @@ RuinsScene::RuinsScene()
 	{
 		vector<pair<Vec3, Vec3>> dummyInfo;
 		// 맨 앞 돌 입구
-		dummyInfo.emplace_back(Vec3(-2080.72f, 0.f, 6404.7f), Vec3(3000.f, 3000.f, 3000.f));
-		dummyInfo.emplace_back(Vec3(2580.72f, 0.f, 6404.7f), Vec3(3000.f, 3000.f, 3000.f));
+		dummyInfo.emplace_back(Vec3(-2080.72f, 0.f, 6604.7f), Vec3(3000.f, 3000.f, 3000.f));
+		dummyInfo.emplace_back(Vec3(2580.72f, 0.f, 6604.7f), Vec3(3000.f, 3000.f, 3000.f));
 
 		// 돌 입구 왼쪽 날개
 		for (int i{}; i < 7; ++i)
@@ -636,7 +659,7 @@ RuinsScene::RuinsScene()
 		vector<Vec3> positions;
 		float minDistance = 300.0f;
 
-		for (int i = 0; i < 1; ++i)
+		for (int i = 0; i < 10; ++i)
 		{
 			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
 			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();

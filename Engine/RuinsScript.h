@@ -11,6 +11,7 @@ public:
 
 	void Occupation();
 	void BlinkUI();
+	void CreatePortal();
 
 private:
 	shared_ptr<GameObject>  _water;
@@ -22,4 +23,7 @@ private:
 	bool _isVisible = true;
 
 	bool _initialized = false;
+
+	bool _isClear = false;
+	bool _isCreatePortal = false;
 };
