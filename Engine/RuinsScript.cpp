@@ -23,7 +23,15 @@ void RuinsScript::LateUpdate() {
 		}
 	}
 
-	Occupation();
+	// SERVER TODO: 키보드 대신 모든 플레이어 로딩 되면 게임 시작되도록
+	if (INPUT->GetButton(KEY_TYPE::N))
+	{
+		_isStart = true;
+		cout << "Ruins Scene Start!\n";
+		GET_SINGLE(SceneManager)->FindObjectByName(L"WaitUI")->SetRenderOff();
+	}
+
+	if(_isStart) Occupation();
 }
 void RuinsScript::Occupation()
 {

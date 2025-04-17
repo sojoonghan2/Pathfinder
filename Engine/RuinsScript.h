@@ -23,7 +23,4 @@ private:
 	bool _isVisible = true;
 
 	bool _initialized = false;
-
-	bool _isClear = false;
-	bool _isCreatePortal = false;
 };

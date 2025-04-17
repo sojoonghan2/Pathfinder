@@ -14,4 +14,9 @@ public:
 
 	// 씬 전환될 때 호출
 	void ApplyModuleAbillities();
+
+protected:
+	bool _isStart = false;
+	bool _isClear = false;
+	bool _isCreatePortal = false;
 };

@@ -383,6 +383,36 @@ RuinsScene::RuinsScene()
 			meshRenderer->SetMaterial(material);
 		}
 		obj->AddComponent(meshRenderer);
+		obj->SetRenderOff();
+		activeScene->AddGameObject(obj);
+	}
+#pragma endregion
+
+	// 다른 플레이어 대기 UI
+#pragma region WaitUI
+	{
+		shared_ptr<GameObject> obj = make_shared<GameObject>();
+		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		obj->AddComponent(make_shared<Transform>());
+		obj->SetName(L"WaitUI");
+		obj->GetTransform()->SetLocalScale(Vec3(1500.f, 1000.f, 100.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(0.f, 250.f, 500.f));
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			meshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"WaitUI", L"..\\Resources\\Texture\\WaitUI.png");
+
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			meshRenderer->SetMaterial(material);
+		}
+		obj->AddComponent(meshRenderer);
 		activeScene->AddGameObject(obj);
 	}
 #pragma endregion
