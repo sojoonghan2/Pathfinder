@@ -21,6 +21,14 @@ public:
 
 	const Matrix& GetLocalToWorldMatrix() { return _matWorld; }
 	Vec3 GetWorldPosition() { return _matWorld.Translation(); }
+	Vec3 GetWorldScale() const
+	{
+		float scaleX = _matWorld.Right().Length();
+		float scaleY = _matWorld.Up().Length();
+		float scaleZ = _matWorld.Backward().Length();
+
+		return Vec3(scaleX, scaleY, scaleZ);
+	}
 
 	const Quaternion GetLocalRotationQuat() { return _quaternion; }
 

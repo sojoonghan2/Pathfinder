@@ -11,6 +11,7 @@ public:
 
 	void Occupation();
 	void BlinkUI();
+	void CreatePortal();
 
 private:
 	shared_ptr<GameObject>  _water;

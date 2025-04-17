@@ -126,7 +126,6 @@ void CrapScript::CheckBulletHits()
 				if (GetGameObject()->GetParticleSystem())
 				{
 					GetGameObject()->GetParticleSystem()->ParticleStart();
-					cout << "거미 충돌\n";
 				}
 
 				break;

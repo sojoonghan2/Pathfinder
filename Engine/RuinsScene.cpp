@@ -118,7 +118,7 @@ RuinsScene::RuinsScene()
 			gameObject->AddComponent(make_shared<TestDragon>());
 
 			gameObject->AddComponent(make_shared<SphereCollider>());
-			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(150.f);
+			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(100.f);
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
 			activeScene->AddGameObject(gameObject);
@@ -130,7 +130,7 @@ RuinsScene::RuinsScene()
 			wire->AddComponent(make_shared<Transform>());
 			wire->GetTransform()->SetParent(gameObject->GetTransform());
 			wire->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 100.f));
-			wire->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+			wire->GetTransform()->SetLocalScale(Vec3(125.f, 125.f, 125.f));
 
 			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 			{
@@ -292,6 +292,30 @@ RuinsScene::RuinsScene()
 		obj->AddComponent(CrosshairmeshRenderer);
 		obj->SetRenderOff();
 		activeScene->AddGameObject(obj);
+
+		// 체력 UI
+		shared_ptr<GameObject> hpUI = make_shared<GameObject>();
+		hpUI->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		hpUI->AddComponent(make_shared<Transform>());
+		hpUI->SetName(L"HPUI");
+		hpUI->GetTransform()->SetLocalScale(Vec3(200.f, 100.f, 100.f));
+		hpUI->GetTransform()->SetLocalPosition(Vec3(-450.f, -300.f, 1.f));
+		shared_ptr<MeshRenderer> hpUImeshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			hpUImeshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+			shared_ptr<Texture> texture{};
+			texture = GET_SINGLE(Resources)->Load<Texture>(L"HPUI", L"..\\Resources\\Texture\\HPUI.png");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			hpUImeshRenderer->SetMaterial(material);
+		}
+		hpUI->AddComponent(hpUImeshRenderer);
+		activeScene->AddGameObject(hpUI);
 	}
 #pragma endregion
 
@@ -405,6 +429,36 @@ RuinsScene::RuinsScene()
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
 
 			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"OccupationUI", L"..\\Resources\\Texture\\OccupationUI.png");
+
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			meshRenderer->SetMaterial(material);
+		}
+		obj->AddComponent(meshRenderer);
+		obj->SetRenderOff();
+		activeScene->AddGameObject(obj);
+	}
+#pragma endregion
+
+	// 다른 플레이어 대기 UI
+#pragma region WaitUI
+	{
+		shared_ptr<GameObject> obj = make_shared<GameObject>();
+		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		obj->AddComponent(make_shared<Transform>());
+		obj->SetName(L"WaitUI");
+		obj->GetTransform()->SetLocalScale(Vec3(1500.f, 1000.f, 100.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(0.f, 250.f, 500.f));
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			meshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"WaitUI", L"..\\Resources\\Texture\\WaitUI.png");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
@@ -549,7 +603,6 @@ RuinsScene::RuinsScene()
 		}
 
 		water->AddComponent(meshRenderer);
-		water->SetRenderOff();
 		activeScene->AddGameObject(water);
 	}
 #pragma endregion
@@ -560,14 +613,13 @@ RuinsScene::RuinsScene()
 	// 스피어
 	{
 		vector<pair<Vec3, float>> dummyInfo;
-		dummyInfo.emplace_back(Vec3(-1375.2f, 100.f, 900.f), 80.f);
-		dummyInfo.emplace_back(Vec3(1542.62f, 100.f, 900.f), 80.f);
-
-		dummyInfo.emplace_back(Vec3(-407.447f, 100.f, 2300.f), 80.f);
-		dummyInfo.emplace_back(Vec3(735.708f, 100.f, 2300.f), 80.f);
-
-		dummyInfo.emplace_back(Vec3(754.53f, 100.f, 3250.f), 80.f);
-		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 80.f);
+		// 돌 기둥
+		dummyInfo.emplace_back(Vec3(-1375.2f, 100.f, 900.f), 100.f);
+		dummyInfo.emplace_back(Vec3(1542.62f, 100.f, 900.f), 100.f);
+		dummyInfo.emplace_back(Vec3(-407.447f, 100.f, 2300.f), 100.f);
+		dummyInfo.emplace_back(Vec3(735.708f, 100.f, 2300.f), 100.f);
+		dummyInfo.emplace_back(Vec3(754.53f, 100.f, 3250.f), 100.f);
+		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 100.f);
 		
 		
 		for (const auto& info : dummyInfo)
@@ -603,7 +655,49 @@ RuinsScene::RuinsScene()
 	// 큐브
 	{
 		vector<pair<Vec3, Vec3>> dummyInfo;
-		//dummyInfo.emplace_back(Vec3(0.f, 0.f, 0.f), Vec3(100.f, 100.f, 100.f));
+		// 맨 앞 돌 입구
+		dummyInfo.emplace_back(Vec3(-2080.72f, 0.f, 6604.7f), Vec3(3000.f, 3000.f, 3000.f));
+		dummyInfo.emplace_back(Vec3(2580.72f, 0.f, 6604.7f), Vec3(3000.f, 3000.f, 3000.f));
+
+		// 돌 입구 왼쪽 날개
+		for (int i{}; i < 7; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(-3780.03f, 0.f, 4446.2f - 300.f * i), Vec3(300.f, 300.f, 300.f));
+		}
+
+		// 돌 입구 오른쪽 날개
+		for (int i{}; i < 11; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(4258.3f, 0.f, 4446.2f - 300.f * i), Vec3(300.f, 300.f, 300.f));
+		}
+
+		// 맨 뒤 왼쪽 나무 조형물
+		dummyInfo.emplace_back(Vec3(-2716.06f, 0.f, -4892.46f), Vec3(1000.f, 1000.f, 1000.f));
+		dummyInfo.emplace_back(Vec3(-6450.f, 0.f, -3532.34f), Vec3(2500.f, 2500.f, 2500.f));
+		dummyInfo.emplace_back(Vec3(-3404.29f, 0.f, -3465.64f), Vec3(300.f, 300.f, 300.f));
+
+		// 맨 뒤 오른쪽 나무 조형물
+		for (int i{}; i < 10; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(3080.72f, 0.f, -4950.f + 300.f * i), Vec3(300.f, 300.f, 300.f));
+		}
+		for (int i{}; i < 3; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(2779.74 - 300.f * i, 0, -4855.58), Vec3(300.f, 300.f, 300.f));
+		}
+		for (int i{}; i < 4; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(2779.74 - 300.f * i, 0, -4555.58), Vec3(300.f, 300.f, 300.f));
+		}
+		for (int i{}; i < 6; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(2779.74 - 300.f * i, 0, -4255.58), Vec3(300.f, 300.f, 300.f));
+		}
+		dummyInfo.emplace_back(Vec3(4621.03f, 0.f, -3476.5f), Vec3(300.f, 300.f, 300.f));
+		dummyInfo.emplace_back(Vec3(2719.49f, 0.f, -3697.63f), Vec3(300.f, 300.f, 300.f));
+		dummyInfo.emplace_back(Vec3(1907.74f, 0.f, -4109.48f), Vec3(300.f, 300.f, 300.f));
+		dummyInfo.emplace_back(Vec3(1267.43f, 0.f, -4018.13f), Vec3(300.f, 300.f, 300.f));
+		dummyInfo.emplace_back(Vec3(5150.f, 0.f, -4710.1f), Vec3(600.f, 600.f, 600.f));
 
 		for (const auto& info : dummyInfo)
 		{
@@ -614,7 +708,7 @@ RuinsScene::RuinsScene()
 
 			dummy->AddComponent(make_shared<Transform>());
 			dummy->GetTransform()->SetLocalPosition(info.first);
-			dummy->GetTransform()->SetLocalScale(info.second * 2);
+			dummy->GetTransform()->SetLocalScale(info.second);
 			dummy->SetStatic(true);
 
 			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -629,8 +723,8 @@ RuinsScene::RuinsScene()
 			dummy->AddComponent(meshRenderer);
 
 			dummy->AddComponent(make_shared<BoxCollider>());
-			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetExtents(info.second);
-			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetCenter(Vec3(0.0f, 0.0f, 0.0f));
+			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetExtents(info.second / 1.5);
+			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetCenter(info.first);
 
 			activeScene->AddGameObject(dummy);
 		}
@@ -649,7 +743,7 @@ RuinsScene::RuinsScene()
 		vector<Vec3> positions;
 		float minDistance = 300.0f;
 
-		for (int i = 0; i < 1; ++i)
+		for (int i = 0; i < 10; ++i)
 		{
 			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
 			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
@@ -775,23 +869,19 @@ RuinsScene::RuinsScene()
 	// 지형
 #pragma region Stone
 	for (int i = -1; i < 2; ++i) {
-		for (int j = -1; j < 2; ++j) {
-			if (i == 0 || j == 0) {
-				continue;
-			}
-			{
-				shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\ruins\\Ruin_B.fbx");
+		{
+			if (i == 0) continue;
+			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\ruins\\Ruin_B.fbx");
 
-				vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
-				gameObjects[0]->SetName(L"Stone" + std::to_wstring(i + j + 2));
-				gameObjects[0]->SetCheckFrustum(false);
-				gameObjects[0]->AddComponent(make_shared<Transform>());
-				gameObjects[0]->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
-				gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f + i * 4000, 40.f, 0.0f + j * 4000));
-				gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(0.f, PI * (i + j), 0.f));
-				activeScene->AddGameObject(gameObjects[0]);
-			}
+			gameObjects[0]->SetName(L"Stone" + std::to_wstring(i + 1));
+			gameObjects[0]->SetCheckFrustum(false);
+			gameObjects[0]->AddComponent(make_shared<Transform>());
+			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+			gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(100.0f + i * 4000, -50.f, -4550));
+			gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(0.f, PI * (i - 1), 0.f));
+			activeScene->AddGameObject(gameObjects[0]);
 		}
 	}
 #pragma endregion

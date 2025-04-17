@@ -52,6 +52,33 @@ LoadingScene::LoadingScene() : stageClear(false)
 	activeScene->AddGameObject(title);
 #pragma endregion
 
+#pragma region LoadingIcon
+	{
+		shared_ptr<GameObject> icon = make_shared<GameObject>();
+		icon->SetName(L"LoadingIcon");
+		icon->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI"));
+		icon->AddComponent(make_shared<Transform>());
+		icon->GetTransform()->SetLocalScale(Vec3(200.f, 200.f, 1.f));
+		icon->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 1.f));
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			meshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Occupation");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"LoadingIcon", L"..\\Resources\\Texture\\LoadingIcon.png");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			meshRenderer->SetMaterial(material);
+		}
+		icon->AddComponent(meshRenderer);
+		icon->SetRenderOff();
+		activeScene->AddGameObject(icon);
+	}
+#pragma endregion
+
 	// 생성자에서 초기화만 수행
 	stageClear = false;
 }

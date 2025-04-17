@@ -9,5 +9,8 @@ public:
 
 	virtual void LateUpdate() override;
 
+	void MatchMaking();
+
 private:
+	bool	_isMatch = false;
 };

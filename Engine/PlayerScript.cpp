@@ -337,55 +337,14 @@ void PlayerScript::CheckDummyHits()
 			Vec3 dummyPos = dummy->GetTransform()->GetLocalPosition();
 			Vec3 dir = (curPos - dummyPos);
 
-			// 콜라이더 타입 확인
-			auto collider = dummy->GetCollider();
-			if (auto boxCollider = dynamic_pointer_cast<BoxCollider>(collider))
+			if (dir.LengthSquared() > 0.001f)
 			{
-				// 박스 콜라이더 처리
-				Vec3 boxExtents = boxCollider->GetExtents();
-				Vec3 boxCenter = boxCollider->GetCenter();
-				// 로컬 중심에서 월드 중심으로 변환
-				Vec3 worldBoxCenter = dummyPos + boxCenter;
-
-				// 플레이어와 박스의 상대 위치 계산
-				Vec3 relativePos = curPos - worldBoxCenter;
-
-				// 각 축별 침투 깊이 계산
-				float penetrationX = boxExtents.x - abs(relativePos.x);
-				float penetrationY = boxExtents.y - abs(relativePos.y);
-				float penetrationZ = boxExtents.z - abs(relativePos.z);
-
-				// 가장 작은 침투 깊이를 갖는 축을 찾아 해당 방향으로 밀어냄
-				if (penetrationX <= penetrationY && penetrationX <= penetrationZ)
-				{
-					// X축 방향으로 밀어냄
-					float pushDir = (relativePos.x > 0) ? 1.0f : -1.0f;
-					curPos.x += pushDir * (penetrationX + 0.01f); // 약간의 여유 추가
-				}
-				else if (penetrationY <= penetrationX && penetrationY <= penetrationZ)
-				{
-					// Y축 방향으로 밀어냄
-					float pushDir = (relativePos.y > 0) ? 1.0f : -1.0f;
-					curPos.y += pushDir * (penetrationY + 0.01f);
-				}
-				else
-				{
-					// Z축 방향으로 밀어냄
-					float pushDir = (relativePos.z > 0) ? 1.0f : -1.0f;
-					curPos.z += pushDir * (penetrationZ + 0.01f);
-				}
+				dir.Normalize();
+				curPos += dir * 10.f; // 소폭 밀기
 			}
-			else // 기본 구형 콜라이더 처리 (기존 코드)
+			else
 			{
-				if (dir.LengthSquared() > 0.001f)
-				{
-					dir.Normalize();
-					curPos += dir * 10.f; // 소폭 밀기
-				}
-				else
-				{
-					curPos = _prevPosition;
-				}
+				curPos = _prevPosition;
 			}
 
 			player->GetTransform()->SetLocalPosition(curPos);
