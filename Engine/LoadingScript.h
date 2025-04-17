@@ -8,12 +8,13 @@ public:
 	virtual ~LoadingScript();
 
 	virtual void LateUpdate() override;
+	virtual void Awake() override;
 
 	void StartLoadingThread();
 	void SceneLoad();
 
 private:
-	std::thread* loadThread;
+	std::thread*	loadThread;
 	bool            loadEnd = false;
 	bool            isInitialized = false;
 };

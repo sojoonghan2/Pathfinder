@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "LoadingScript.h"
 #include "Input.h"
+#include "Timer.h"
 #include "Engine.h"
 #include "SceneManager.h"
 #include "GameObject.h"
@@ -16,10 +17,7 @@
 #include "TestScene.h"
 
 LoadingScript::LoadingScript() : loadEnd(false), loadThread(nullptr), isInitialized(false)
-{
-	// 여기서 스레드 시작
-	StartLoadingThread();
-}
+{}
 
 LoadingScript::~LoadingScript()
 {
@@ -57,6 +55,15 @@ void LoadingScript::StartLoadingThread()
 
 void LoadingScript::LateUpdate()
 {
+	// 아이콘 회전
+	auto icon = GET_SINGLE(SceneManager)->FindObjectByName(L"LoadingIcon");
+	if (icon)
+	{
+		Vec3 rotation = icon->GetTransform()->GetLocalRotation();
+		rotation.z += DELTA_TIME * 3.f;
+		icon->GetTransform()->SetLocalRotation(rotation);
+	}
+
 	// 아직 초기화되지 않았다면 초기화
 	if (!isInitialized)
 	{
@@ -67,7 +74,6 @@ void LoadingScript::LateUpdate()
 	{
 		cout << "Loading completed, preparing to switch scenes..." << endl;
 
-		// 스레드가 아직 실행 중이라면 완료될 때까지 대기
 		if (loadThread->joinable())
 		{
 			loadThread->join();
@@ -75,10 +81,16 @@ void LoadingScript::LateUpdate()
 			loadThread = nullptr;
 		}
 
-		// 로딩이 완료되었으므로 다음 씬으로 전환
-		cout << "Switching to TitleScene..." << endl;
-		GET_SINGLE(SceneManager)->LoadScene(L"TitleScene");
+		cout << "Switching to RuinsScene..." << endl;
+		GET_SINGLE(SceneManager)->LoadScene(L"RuinsScene");
 	}
+}
+
+void LoadingScript::Awake()
+{
+	// SERVER TODO:
+	// 메시지로 로딩할 씬 받아와서 로드
+	StartLoadingThread();
 }
 
 void LoadingScript::SceneLoad()
@@ -87,33 +99,9 @@ void LoadingScript::SceneLoad()
 
 	// 씬 로딩 작업 수행
 	{
-		cout << "Loading TitleScene..." << endl;
-		shared_ptr<TitleScene> titleScene = make_shared<TitleScene>();
-		GET_SINGLE(SceneManager)->RegisterScene(L"TitleScene", titleScene->GetScene());
-
 		cout << "Loading RuinsScene..." << endl;
 		shared_ptr<RuinsScene> ruinsScene = make_shared<RuinsScene>();
 		GET_SINGLE(SceneManager)->RegisterScene(L"RuinsScene", ruinsScene->GetScene());
-
-		cout << "Loading FactoryScene..." << endl;
-		shared_ptr<FactoryScene> factoryScene = make_shared<FactoryScene>();
-		GET_SINGLE(SceneManager)->RegisterScene(L"FactoryScene", factoryScene->GetScene());
-
-		cout << "Loading ExplorationScene..." << endl;
-		shared_ptr<ExplorationScene> explorationScene = make_shared<ExplorationScene>();
-		GET_SINGLE(SceneManager)->RegisterScene(L"ExplorationScene", explorationScene->GetScene());
-
-		cout << "Loading CrashScene..." << endl;
-		shared_ptr<CrashScene> crashScene = make_shared<CrashScene>();
-		GET_SINGLE(SceneManager)->RegisterScene(L"CrashScene", crashScene->GetScene());
-
-		cout << "Loading LuckyScene..." << endl;
-		shared_ptr<LuckyScene> luckyScene = make_shared<LuckyScene>();
-		GET_SINGLE(SceneManager)->RegisterScene(L"LuckyScene", luckyScene->GetScene());
-
-		cout << "Loading BossScene..." << endl;
-		shared_ptr<BossScene> bossScene = make_shared<BossScene>();
-		GET_SINGLE(SceneManager)->RegisterScene(L"BossScene", bossScene->GetScene());
 	}
 
 	// 로딩 완료 플래그 설정
