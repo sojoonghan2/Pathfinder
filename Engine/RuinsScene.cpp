@@ -496,7 +496,6 @@ RuinsScene::RuinsScene()
 		}
 
 		water->AddComponent(meshRenderer);
-		water->SetRenderOff();
 		activeScene->AddGameObject(water);
 	}
 #pragma endregion
@@ -507,12 +506,11 @@ RuinsScene::RuinsScene()
 	// 스피어
 	{
 		vector<pair<Vec3, float>> dummyInfo;
+		// 돌 기둥
 		dummyInfo.emplace_back(Vec3(-1375.2f, 100.f, 900.f), 100.f);
 		dummyInfo.emplace_back(Vec3(1542.62f, 100.f, 900.f), 100.f);
-
 		dummyInfo.emplace_back(Vec3(-407.447f, 100.f, 2300.f), 100.f);
 		dummyInfo.emplace_back(Vec3(735.708f, 100.f, 2300.f), 100.f);
-
 		dummyInfo.emplace_back(Vec3(754.53f, 100.f, 3250.f), 100.f);
 		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 100.f);
 		
@@ -550,7 +548,27 @@ RuinsScene::RuinsScene()
 	// 큐브
 	{
 		vector<pair<Vec3, Vec3>> dummyInfo;
-		dummyInfo.emplace_back(Vec3(-2080.72f, 0.f, 4704.7f), Vec3(3500.f, 3500.f, 300.f));
+		// 맨 앞 돌 입구
+		dummyInfo.emplace_back(Vec3(-2080.72f, 0.f, 6404.7f), Vec3(3000.f, 3000.f, 3000.f));
+		dummyInfo.emplace_back(Vec3(2580.72f, 0.f, 6404.7f), Vec3(3000.f, 3000.f, 3000.f));
+
+		// 돌 입구 왼쪽 날개
+		for (int i{}; i < 7; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(-3780.03f, 0.f, 4446.2f - 300.f * i), Vec3(300.f, 300.f, 300.f));
+		}
+
+		// 돌 입구 오른쪽 날개
+		for (int i{}; i < 11; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(4258.3f, 0.f, 4446.2f - 300.f * i), Vec3(300.f, 300.f, 300.f));
+		}
+
+		// 맨 뒤 왼쪽 나무 조형물
+		dummyInfo.emplace_back(Vec3(-2716.06f, 0.f, -4892.46f), Vec3(1000.f, 1000.f, 1000.f));
+		dummyInfo.emplace_back(Vec3(-6450.f, 0.f, -3532.34f), Vec3(2500.f, 2500.f, 2500.f));
+		dummyInfo.emplace_back(Vec3(-3404.29f, 0.f, -3465.64f), Vec3(300.f, 300.f, 300.f));
+
 
 		for (const auto& info : dummyInfo)
 		{
@@ -696,23 +714,19 @@ RuinsScene::RuinsScene()
 	// 지형
 #pragma region Stone
 	for (int i = -1; i < 2; ++i) {
-		for (int j = -1; j < 2; ++j) {
-			if (i == 0 || j == 0) {
-				continue;
-			}
-			{
-				shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\ruins\\Ruin_B.fbx");
+		{
+			if (i == 0) continue;
+			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\ruins\\Ruin_B.fbx");
 
-				vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
-				gameObjects[0]->SetName(L"Stone" + std::to_wstring(i + j + 2));
-				gameObjects[0]->SetCheckFrustum(false);
-				gameObjects[0]->AddComponent(make_shared<Transform>());
-				gameObjects[0]->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
-				gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f + i * 4000, 40.f, 0.0f + j * 4000));
-				gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(0.f, PI * (i + j), 0.f));
-				activeScene->AddGameObject(gameObjects[0]);
-			}
+			gameObjects[0]->SetName(L"Stone" + std::to_wstring(i + 1));
+			gameObjects[0]->SetCheckFrustum(false);
+			gameObjects[0]->AddComponent(make_shared<Transform>());
+			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+			gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(100.0f + i * 4000, -50.f, -4550));
+			gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(0.f, PI * (i - 1), 0.f));
+			activeScene->AddGameObject(gameObjects[0]);
 		}
 	}
 #pragma endregion
