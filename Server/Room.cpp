@@ -3,6 +3,11 @@
 
 void Room::Update(const float delta_time)
 {
+	// 활성화 되어 있는 방만 update한다.
+	if (RoomType::None == _roomType ||
+		RoomStatus::Running != _roomStatus) {
+		return;
+	}
 
 	for (auto monster : _monsterPtrList) {
 		// 여기서 몬스터의 방향을 정해주자.

@@ -32,6 +32,16 @@ constexpr int MAX_PLAYER{ 10000 };
 constexpr int MAX_ROOM{ MAX_PLAYER / 3 + 1 };
 constexpr int MAX_MONSTER{ MAX_ROOM * 10 };
 
+enum class RoomType : unsigned char
+{
+	None = 0,
+	Ruin,
+	Factory,
+	Ristrict,
+	Falling,
+	Lucky
+};
+
 #define PACKET_START	namespace packet {
 #define PACKET_END		}
 
@@ -39,15 +49,24 @@ PACKET_START
 enum class Type : unsigned char
 {
 	NONE,
+
+	// prepare
 	SC_LOGIN,
 	CS_LOGIN,
 	SC_MATCHMAKING,
 	CS_MATCHMAKING,
+	SC_LOAD,			// todo
+	CS_LOAD_COMPLETE,	// todo
+	SC_GAME_START,		// todo
+
+	// move
 	SC_MOVE_PLAYER,
 	CS_MOVE_PLAYER,
+	SC_MOVE_MONSTER,
+
+	// other
 	SC_CHECK_DELAY,
 	CS_CHECK_DELAY,
-	SC_MOVE_MONSTER,
 };
 
 #pragma pack(push, 1)
@@ -57,18 +76,17 @@ struct Header
 	Type			type{ Type::NONE };
 
 	Header() = default;
-	Header(unsigned char size, Type type) :
+	Header(const unsigned char size, const Type type) :
 		size{ size },
 		type{ type }
 	{}
 };
 
 
-
 // NO Param
 struct SCLogin : Header
 {
-	SCLogin(int client_id) :
+	SCLogin() :
 		Header{ sizeof(SCLogin), Type::SC_LOGIN }
 	{}
 };
@@ -81,16 +99,13 @@ struct CSLogin : Header
 	{}
 };
 
-
-
-
 // Param
 //	int playerId: 클라이언트의 플레이어 아이디
 struct SCMatchmaking : Header
 {
 	int clientId{ -1 };
 
-	SCMatchmaking(int client_id) :
+	SCMatchmaking(const int client_id) :
 		Header{ sizeof(SCMatchmaking), Type::SC_MATCHMAKING },
 		clientId{ client_id }
 	{}
@@ -101,6 +116,33 @@ struct CSMatchmaking : Header
 {
 	CSMatchmaking() :
 		Header{ sizeof(CSMatchmaking), Type::CS_MATCHMAKING }
+	{}
+};
+
+// RoomType room_type
+struct SCLoad : Header
+{
+	RoomType room_type{ RoomType::None };
+
+	SCLoad(const RoomType room_type) :
+		Header{ sizeof(SCMatchmaking), Type::SC_MATCHMAKING },
+		room_type{ room_type }
+	{}
+};
+
+// No Param
+struct CSLoadComplete : Header
+{
+	CSLoadComplete() :
+		Header{ sizeof(CSLoadComplete), Type::CS_MATCHMAKING }
+	{}
+};
+
+// No Param
+struct SCGameStart : Header
+{
+	SCGameStart() :
+		Header{ sizeof(SCGameStart), Type::CS_MATCHMAKING }
 	{}
 };
 
@@ -147,23 +189,6 @@ struct CSMovePlayer : Header
 	{}
 };
 
-// No Param
-struct SCCheckDelayPacket : Header
-{
-	SCCheckDelayPacket() :
-		Header{ sizeof(SCCheckDelayPacket), Type::SC_CHECK_DELAY }
-	{}
-};
-
-// No Param
-struct CSCheckDelayPacket : Header
-{
-	CSCheckDelayPacket() :
-		Header{ sizeof(CSCheckDelayPacket), Type::CS_CHECK_DELAY }		
-	{}
-};
-
-
 // Param:
 //	int monsterId
 //	float x
@@ -185,6 +210,23 @@ struct SCMoveMonster : Header
 		dirX{ dirX }, dirY{ dirY }
 	{}
 };
+
+// No Param
+struct SCCheckDelayPacket : Header
+{
+	SCCheckDelayPacket() :
+		Header{ sizeof(SCCheckDelayPacket), Type::SC_CHECK_DELAY }
+	{}
+};
+
+// No Param
+struct CSCheckDelayPacket : Header
+{
+	CSCheckDelayPacket() :
+		Header{ sizeof(CSCheckDelayPacket), Type::CS_CHECK_DELAY }
+	{}
+};
+
 
 #pragma pack(pop)
 PACKET_END

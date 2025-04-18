@@ -124,6 +124,8 @@ void IOCP::Worker()
 			INFINITE);
 
 		OverlappedEx* curr_over_ex = reinterpret_cast<OverlappedEx*>(over);
+		
+		// 예상 volatile 필요한 위치
 		int key = static_cast<int>(ULkey);
 
 		if (FALSE == ret) {
@@ -285,7 +287,7 @@ void IOCP::TimerWorker()
 				if (-1 == room_id) {
 					continue;
 				}
-				if (GET_SINGLE(Game)->GetRoom(monster.GetRoomId()).GetRoomType() == RoomType::None) {
+				if (GET_SINGLE(Game)->GetRoom(monster.GetRoomId()).GetRoomStatus() != RoomStatus::Running) {
 					continue;
 				}
 
@@ -360,7 +362,7 @@ void IOCP::ProcessPacket(int key, char* p)
 	{
 	case packet::Type::CS_LOGIN:
 	{
-		packet::SCLogin sc_login{ key };
+		packet::SCLogin sc_login{};
 		DoSend(_clientInfoHash[key], &sc_login);
 	}
 	break;
@@ -447,7 +449,7 @@ void IOCP::ProcessPacket(int key, char* p)
 		int room_id{ -1 };
 		for (int i{}; i < MAX_ROOM; ++i) {
 			if (not _roomInfoList[i].GetRunning()) {
-				if (_roomInfoList[i].TrySetRunning(true)) {
+				if (_roomInfoList[i].CompareSetRunning(true)) {
 					// 방 번호 얻기 성공
 					room_id = i;
 					break;
@@ -489,23 +491,43 @@ void IOCP::ProcessPacket(int key, char* p)
 			_clientInfoHash[client_ids[i]].ioState = IOState::INGAME;
 		}
 	
+	}
+	break;
 
-		// 이제 각 방에다가 플레이어 위치를 전달
+	case packet::Type::CS_LOAD_COMPLETE:
+	{
+		// 대기 완료 플레이어 수를 조정
+		
+
+		// 세명의 플레이어가 다 로딩이 완료되었다면
+		
+
+
+		// 방의 상태를 RUNNING으로 하고
+		// 게임 시작 패킷을 보낼 것.
+
+		
+
+
+		// 방에 있는 플레이어들에게 위치를 보냄
 		for (int i{}; i < 3; ++i) {
 			packet::SCMatchmaking sc_matchmaking{ client_ids[i] };
 			DoSend(_clientInfoHash[client_ids[i]], &sc_matchmaking);
-			
+
 			auto& player = GET_SINGLE(Game)->GetPlayer(player_ids[i]);
 			auto pos = player.GetPos();
 			auto dir = player.GetDir();
 
 
-			packet::SCMovePlayer sc_move_player{ client_ids[i], pos.x, pos.y, dir.x, dir.y};
-			
+			packet::SCMovePlayer sc_move_player{ client_ids[i], pos.x, pos.y, dir.x, dir.y };
+
 			for (auto other_id : client_ids) {
 				DoSend(other_id, &sc_move_player);
 			}
 		}
+
+
+
 	}
 	break;
 
@@ -550,14 +572,15 @@ void IOCP::ProcessPacket(int key, char* p)
 
 	}
 	break;
+	
 
 	default:
 	{
 		std::println("packet Error. disconnect Client {}", key);
 
 		// todo: 패킷 에러시 클라이언트 종료
-		closesocket(_clientInfoHash[key].clientSocket);
 		_clientInfoHash[key].ioState = IOState::DISCONNECT;
+		closesocket(_clientInfoHash[key].clientSocket);
 
 		return;
 	}

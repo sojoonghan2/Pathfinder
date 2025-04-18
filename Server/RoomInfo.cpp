@@ -1,10 +1,9 @@
 #include "pch.h"
 #include "RoomInfo.h"
 
-bool RoomInfo::TrySetRunning(const bool running)
+bool RoomInfo::CompareSetRunning(bool old_value, const bool new_value)
 {
-	bool expected = not running;
-	return _isRunning.compare_exchange_strong(expected, running);
+	return _isRunning.compare_exchange_strong(old_value, new_value);
 }
 
 bool RoomInfo::GetRunning() const

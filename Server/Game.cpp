@@ -17,8 +17,13 @@ void Game::MovePlayer(int player_id, Vec2f& pos)
 void Game::InitRoom(int room_id)
 {
 
-	// 방 초기화
+	// 방 설정
+	_roomList[room_id].SetRoomStatus(RoomStatus::Preparing);
 	_roomList[room_id].ClearMonsterPtrList();
+
+	// TODO:
+	// 여기를 랜덤으로 받게끔 설정.
+	_roomList[room_id].SetRoomType(RoomType::Ruin);
 
 	// 플레이어 설정
 	for (int i = 0; i < 3; ++i) {
@@ -68,8 +73,6 @@ void Game::InitRoom(int room_id)
 		_roomList[room_id].AddMonsterPtr(&_monsterList[id]);
 	}
 
-	// 항상 방 타입을 설정하는 것은 마지막으로 한다.
-	_roomList[room_id].SetRoomType(RoomType::Ruin);
 }
 
 void Game::Update(const float delta_time)
@@ -79,7 +82,6 @@ void Game::Update(const float delta_time)
 
 	// 몬스터 업데이트
 	for (auto& room : _roomList) {
-		if (room.GetRoomType() == RoomType::None) continue;
 		room.Update(delta_time);
 	}
 }
