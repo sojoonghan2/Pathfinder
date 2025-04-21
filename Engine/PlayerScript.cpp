@@ -43,6 +43,41 @@ void PlayerScript::LateUpdate()
 	ThrowGrenade();
 	ShootRazer();
 	Animation();
+
+	// 테스트용 HP 코드
+	if (INPUT->GetButton(KEY_TYPE::K))
+	{
+		auto hpTransform = GET_SINGLE(SceneManager)->FindObjectByName(L"HP")->GetTransform();
+
+		Vec3 hpScale = hpTransform->GetLocalScale();
+		Vec3 hpPos = hpTransform->GetLocalPosition();
+
+		float delta = 10.f;
+
+		if (hpScale.x - delta > 0.f)
+		{
+			hpScale.x -= delta;
+			hpPos.x -= delta * 0.5f;
+
+			hpTransform->SetLocalScale(hpScale);
+			hpTransform->SetLocalPosition(hpPos);
+		}
+	}
+	if (INPUT->GetButton(KEY_TYPE::L))
+	{
+		auto hpTransform = GET_SINGLE(SceneManager)->FindObjectByName(L"HP")->GetTransform();
+
+		Vec3 hpScale = hpTransform->GetLocalScale();
+		Vec3 hpPos = hpTransform->GetLocalPosition();
+
+		float delta = 10.f;
+
+		hpScale.x += delta;
+		hpPos.x += delta * 0.5f;
+
+		hpTransform->SetLocalScale(hpScale);
+		hpTransform->SetLocalPosition(hpPos);
+	}
 }
 
 void PlayerScript::KeyboardInput() { Move(); Dash(); }

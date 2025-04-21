@@ -334,29 +334,52 @@ RuinsScene::RuinsScene()
 		obj->SetRenderOff();
 		activeScene->AddGameObject(obj);
 
-		// Ã¼·Â UI
-		shared_ptr<GameObject> hpUI = make_shared<GameObject>();
-		hpUI->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
-		hpUI->AddComponent(make_shared<Transform>());
-		hpUI->SetName(L"HPUI");
-		hpUI->GetTransform()->SetLocalScale(Vec3(200.f, 100.f, 100.f));
-		hpUI->GetTransform()->SetLocalPosition(Vec3(-450.f, -300.f, 1.f));
-		shared_ptr<MeshRenderer> hpUImeshRenderer = make_shared<MeshRenderer>();
+		// hp
+		shared_ptr<GameObject> hpBase = make_shared<GameObject>();
+		hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		hpBase->AddComponent(make_shared<Transform>());
+		hpBase->SetName(L"HPBase");
+		hpBase->GetTransform()->SetLocalScale(Vec3(200.f, 100.f, 100.f));
+		hpBase->GetTransform()->SetLocalPosition(Vec3(-450.f, -300.f, 1.f));
+		shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-			hpUImeshRenderer->SetMesh(mesh);
+			hpBasemeshRenderer->SetMesh(mesh);
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
 			shared_ptr<Texture> texture{};
-			texture = GET_SINGLE(Resources)->Load<Texture>(L"HPUI", L"..\\Resources\\Texture\\HPUI.png");
+			texture = GET_SINGLE(Resources)->Load<Texture>(L"HPBase", L"..\\Resources\\Texture\\HPBase.png");
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
 			material->SetTexture(0, texture);
-			hpUImeshRenderer->SetMaterial(material);
+			hpBasemeshRenderer->SetMaterial(material);
 		}
-		hpUI->AddComponent(hpUImeshRenderer);
-		activeScene->AddGameObject(hpUI);
+		hpBase->AddComponent(hpBasemeshRenderer);
+		activeScene->AddGameObject(hpBase);
+
+		shared_ptr<GameObject> hp = make_shared<GameObject>();
+		hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		hp->AddComponent(make_shared<Transform>());
+		hp->SetName(L"HP");
+		hp->GetTransform()->SetLocalScale(Vec3(200.f, 100.f, 100.f));
+		hp->GetTransform()->SetLocalPosition(Vec3(-450.f, -300.f, 1.f));
+		shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			hpmeshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+			shared_ptr<Texture> texture{};
+			texture = GET_SINGLE(Resources)->Load<Texture>(L"HP", L"..\\Resources\\Texture\\HP.png");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			hpmeshRenderer->SetMaterial(material);
+		}
+		hp->AddComponent(hpmeshRenderer);
+		activeScene->AddGameObject(hp);
 	}
 #pragma endregion
 
