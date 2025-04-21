@@ -63,7 +63,50 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-	// 카메라
+// *********************************************
+// UI 테스트
+// 0. 월드 공간 위치 정보
+// 1. 노말 벡터 정보
+// 2. 색상 정보
+// 3. 분산광 결과
+// 4. 반사광 결과
+// 5. 그림자
+// *********************************************
+#pragma region UI_Test
+	for (int32 i = 0; i < 6; i++)
+	{
+		shared_ptr<GameObject> obj = make_shared<GameObject>();
+		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		obj->AddComponent(make_shared<Transform>());
+		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(-350.f + (i * 120), 250.f, 500.f));
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			meshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
+
+			shared_ptr<Texture> texture;
+			if (i < 3)
+				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->GetRTTexture(i);
+			else if (i < 5)
+				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->GetRTTexture(i - 3);
+			else
+				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->GetRTTexture(0);
+
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			meshRenderer->SetMaterial(material);
+		}
+		obj->AddComponent(meshRenderer);
+		activeScene->AddGameObject(obj);
+	}
+#pragma endregion
+
+// 카메라
 #pragma region Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
@@ -317,14 +360,14 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-	// 터레인 큐브
+
+// 터레인 큐브
 #pragma region TerrainCube
 	{
 		// 1. 기본 오브젝트 생성 및 설정
 		shared_ptr<GameObject> terraincube = make_shared<GameObject>();
 		terraincube->AddComponent(make_shared<Transform>());
-		terraincube->SetCheckFrustum(true);
-
+		terraincube->SetCheckFrustum(false);
 		// 2. Transform 컴포넌트 추가 및 설정
 		terraincube->AddComponent(make_shared<Transform>());
 		// 씬의 임시 크기
@@ -340,15 +383,15 @@ RuinsScene::RuinsScene()
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\New_ruins.jpg");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
 			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsFloor", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
-			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\New_ruins.jpg");
+			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
 			material->SetTexture(0, texture);
-			material->SetTexture(1, floorTexture);
-			material->SetTexture(2, topTexture);
+			material->SetTexture(2, floorTexture);
+			material->SetTexture(1, topTexture);
 			meshRenderer->SetMaterial(material);
 		}
 		terraincube->AddComponent(meshRenderer);
@@ -358,7 +401,9 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-	// 점령 중 UI
+
+// 점령 중 UI
+
 #pragma region UI
 	{
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
@@ -366,7 +411,7 @@ RuinsScene::RuinsScene()
 		obj->AddComponent(make_shared<Transform>());
 		obj->SetName(L"OccupationUI");
 		obj->GetTransform()->SetLocalScale(Vec3(1500.f, 1000.f, 100.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(0.f, 250.f, 500.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(0.f, 250.f, 155500.f));
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
@@ -883,6 +928,33 @@ RuinsScene::RuinsScene()
 		portalFrameParticle->AddComponent(portalFrameParticleSystem);
 
 		activeScene->AddGameObject(portalFrameParticle);
+	}
+#pragma endregion
+}
+#pragma region Spot Light
+	{
+		// 1. Light 오브젝트 생성 
+		shared_ptr<GameObject> light = make_shared<GameObject>();
+		light->SetName(L"Ancient_Ruin_Light");
+		light->AddComponent(make_shared<Transform>());
+		light->GetTransform()->SetLocalPosition(Vec3(0.f, 4900.f, 0.f));
+
+		// 2-1. Light 컴포넌트 추가 및 속성 설정
+		light->AddComponent(make_shared<Light>());
+		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
+
+		// 2-2. 스팟 라이트 방향 설정
+		light->GetLight()->SetLightDirection(Vec3(0.f, -1.f, 0.f));
+
+		float lightpower = 0.5f;
+		// 3. 조명 색상 및 강도 조정 (따뜻한 황금빛)
+		light->GetLight()->SetDiffuse(Vec3(1.0f, 0.85f, 0.6f) * lightpower);
+		light->GetLight()->SetAmbient(Vec3(0.25f, 0.2f, 0.25f) * lightpower);
+		light->GetLight()->SetSpecular(Vec3(0.9f, 0.8f, 0.6f) * lightpower);
+
+		// 4. Scene에 추가
+		activeScene->AddGameObject(light);
+
 	}
 #pragma endregion
 }
