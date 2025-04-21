@@ -463,6 +463,7 @@ RuinsScene::RuinsScene()
 #pragma endregion
 
 	// 천장에서 빛이 새어나오는 유적지 조명
+	/*
 #pragma region Spot Light
 	{
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
@@ -524,7 +525,7 @@ RuinsScene::RuinsScene()
 		activeScene->AddGameObject(ambientLight);
 	}
 #pragma endregion
-
+*/
 	// 먼지 파티클
 #pragma region DustParticle
 	{
@@ -581,7 +582,7 @@ RuinsScene::RuinsScene()
 		water->AddComponent(make_shared<Transform>());
 		water->AddComponent(make_shared<WaterScript>());
 		water->GetTransform()->SetLocalScale(Vec3(10000.f, 1.f, 10000.f));
-		water->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 50.f));
+		water->GetTransform()->SetLocalPosition(Vec3(-100000.f, 300.f, 50.f));
 		water->SetStatic(true);
 
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -930,7 +931,6 @@ RuinsScene::RuinsScene()
 		activeScene->AddGameObject(portalFrameParticle);
 	}
 #pragma endregion
-}
 #pragma region Spot Light
 	{
 		// 1. Light 오브젝트 생성 
