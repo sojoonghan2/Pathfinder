@@ -97,22 +97,19 @@ void Camera::SortShadowObject()
 		if (gameObject->GetMeshRenderer() == nullptr)
 			continue;
 
-		if (gameObject->IsStatic())
-			continue;
+		//if (gameObject->IsStatic())
+		//	continue;
 
 		if (IsCulled(gameObject->GetLayerIndex()))
 			continue;
 
-		if (gameObject->GetCheckFrustum())
-		{
-			if (_frustum.ContainsSphere(
-				gameObject->GetTransform()->GetWorldPosition(),
-				gameObject->GetTransform()->GetBoundingSphereRadius()) == false)
-			{
+		if (gameObject->GetCheckFrustum()) {
+			if (_frustum.ContainsSphere(gameObject->GetTransform()->GetWorldPosition(), gameObject->GetTransform()->GetBoundingSphereRadius()) == false) {
 				continue;
 			}
 		}
 
+		// 모든 필터링 조건 제거
 		_vecShadow.push_back(gameObject);
 	}
 }
@@ -144,6 +141,7 @@ void Camera::Render_Forward()
 
 void Camera::Render_Shadow()
 {
+	// 이거 왜 받는거임? 진짜 모름
 	S_MatView = _matView;
 	S_MatProjection = _matProjection;
 

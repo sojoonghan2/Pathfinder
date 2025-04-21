@@ -27,6 +27,7 @@ struct VS_OUT
     float3 viewTangent : TANGENT;
     float3 viewBinormal : BINORMAL;
     float3 worldNormal : TEXCOORD1;
+    float4 shadowPos : TEXCOORD3;
 };
 
 VS_OUT VS_Main(VS_IN input)
@@ -36,7 +37,6 @@ VS_OUT VS_Main(VS_IN input)
     if (g_int_1 == 1)
         Skinning(input.pos, input.normal, input.tangent, input.weight, input.indices);
     
-    // 인스턴스 또는 전역 행렬 사용
     matrix matWorld = (g_int_0 == 1) ? input.matWorld : g_matWorld;
     matrix matWV = (g_int_0 == 1) ? input.matWV : g_matWV;
     matrix matWVP = (g_int_0 == 1) ? input.matWVP : g_matWVP;
@@ -48,9 +48,12 @@ VS_OUT VS_Main(VS_IN input)
     output.viewTangent = normalize(mul(float4(input.tangent, 0.f), matWV).xyz);
     output.viewBinormal = normalize(cross(output.viewTangent, output.viewNormal));
     
-    // 월드 공간의 법선 계산 추가
+    // Compute shadow position (no flip here)
+    output.shadowPos = mul(float4(input.pos, 1.f), matWorld);
+    output.shadowPos = mul(output.shadowPos, g_mat_0);
+
     output.worldNormal = normalize(mul(float4(input.normal, 0.f), matWorld).xyz);
-    
+
     return output;
 }
 
@@ -71,27 +74,38 @@ PS_OUT PS_Main(VS_OUT input)
 {
     PS_OUT output = (PS_OUT) 0;
     
-    // 방향 벡터 정의
-    const float3 UP_VECTOR = float3(0, 1, 0);
+    // Transform to normalized shadow UV
+    float3 shadowCoord = input.shadowPos.xyz / input.shadowPos.w;
+    shadowCoord = shadowCoord * 0.5f + 0.5f;
+    // Sample shadow
+    float rawShadow = 1.0f;
+    if (shadowCoord.x >= 0 && shadowCoord.x <= 1 &&
+        shadowCoord.y >= 0 && shadowCoord.y <= 1)
+    {
+        rawShadow = g_shadowTexture.SampleCmpLevelZero(
+            g_shadowSampler, shadowCoord.xy, shadowCoord.z - 0.001f);
+    }
+    
+    // Only apply shadow on downward faces
     const float3 DOWN_VECTOR = float3(0, -1, 0);
+    float downFactor = GetBlendFactor(input.worldNormal, DOWN_VECTOR, 0.7f);
+    float shadow = lerp(1.0f, rawShadow, downFactor);
     
-    // 텍스처 블렌딩을 위한 가중치 계산
-    float upFactor = GetBlendFactor(input.worldNormal, UP_VECTOR, 0.7f); // 위쪽 면
-    float downFactor = GetBlendFactor(input.worldNormal, DOWN_VECTOR, 0.7f); // 아래쪽 면
+    // Texture blending
+    const float3 UP_VECTOR = float3(0, 1, 0);
+    float upFactor = GetBlendFactor(input.worldNormal, UP_VECTOR, 0.7f);
+    float4 mainTex = g_textures.Sample(g_sam_0, input.uv);
+    float4 topTex = g_textures2.Sample(g_sam_0, input.uv);
+    float4 bottomTex = g_textures1.Sample(g_sam_0, input.uv);
     
-    // 텍스처 샘플링
-    float4 mainTexture = g_textures.Sample(g_sam_0, input.uv);
-    float4 bottomTexture = g_textures1.Sample(g_sam_0, input.uv);
-    float4 topTexture = g_textures2.Sample(g_sam_0, input.uv);
+    float4 color = mainTex;
+    color = lerp(color, topTex, upFactor);
+    color = lerp(color, bottomTex, downFactor);
     
-    // 최종 색상 블렌딩
-    float4 color = mainTexture;
-    color = lerp(color, bottomTexture, downFactor);
-    color = lerp(color, topTexture, upFactor);
-    
-    output.position = float4(input.viewPos.xyz, 0.f);
-    output.normal = float4(input.viewNormal.xyz, 0.f);
+    output.position = float4(input.viewPos, 0.f);
+    output.normal = float4(input.viewNormal, 0.f);
     output.color = color;
+    output.color.rgb *= shadow;
     
     return output;
 }
