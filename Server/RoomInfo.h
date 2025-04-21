@@ -4,17 +4,25 @@
 class RoomInfo
 {
 public:
+
+	// cas
+	bool CASRunning(bool old_value, const bool new_value);
+	bool CASLoadingCount(int old_value, const int new_value);
+
+	
 	bool GetRunning() const;
-	bool CompareSetRunning(bool old_value, const bool new_value);
 	void InsertClient(const int idx, const int client_id);
 	std::array<int, 3> GetClientIdList() const;
 
-	bool TrySetCount(int old_value, const int new_value);
-	int GetLoadCount() const { return _loadCount.load(); }
+	int GetLoadingCount() const { return _loadingCount.load(); }
+	void IncreaseLoadingCount() { ++_loadingCount; }
+
+	void SetLoadingCount(const int count) { _loadingCount.store(count); }
+
 		
 private:
 	std::array<int, 3>	_clientIdList{};
 	std::atomic_bool	_isRunning{ false };
-	std::atomic_int		_loadCount{ -1 };
+	std::atomic_int		_loadingCount{ -1 };
 };
 

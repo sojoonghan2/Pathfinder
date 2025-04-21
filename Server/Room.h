@@ -35,6 +35,7 @@ public:
 	std::vector<Monster*>& GetMonsterPtrList() { return _monsterPtrList; }
 
 	RoomStatus GetRoomStatus() const { return _roomStatus; }
+	RoomType GetRoomType() const { return _roomType; }
 
 private:
 	

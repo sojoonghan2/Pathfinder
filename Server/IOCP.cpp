@@ -449,7 +449,7 @@ void IOCP::ProcessPacket(int key, char* p)
 		int room_id{ -1 };
 		for (int i{}; i < MAX_ROOM; ++i) {
 			if (not _roomInfoList[i].GetRunning()) {
-				if (_roomInfoList[i].CompareSetRunning(true)) {
+				if (_roomInfoList[i].CASRunning(false, true)) {
 					// 방 번호 얻기 성공
 					room_id = i;
 					break;
@@ -478,8 +478,11 @@ void IOCP::ProcessPacket(int key, char* p)
 		// -- 방 번호와 플레이어 번호를 얻어왔음. -- 
 		// 이제 Room, RoomInfo, Player에다가 정보를 저장
 
-		// 플레이어를 방에 넣고 플레이어 초기화
+		// 게임 쪽 초기화. 방, 플레이어, 몬스터의 실제 정보를 초기화해준다.
 		GET_SINGLE(Game)->InitRoom(room_id);
+		
+		// roominfo에 로딩 완료된 플레이어 0명으로 설정
+		_roomInfoList[room_id].SetLoadingCount(0);
 
 		for (int i = 0; i < 3; ++i) {
 			// RoomInfo에 정보를 넣음
@@ -490,6 +493,14 @@ void IOCP::ProcessPacket(int key, char* p)
 			_clientInfoHash[client_ids[i]].clientIdInfo.playerId = player_ids[i];
 			_clientInfoHash[client_ids[i]].ioState = IOState::INGAME;
 		}
+
+		// SC_LOAD 로드할 방의 타입을 줌.
+		auto room_type{ GET_SINGLE(Game)->GetRoom(room_id).GetRoomType() };
+		packet::SCLoad load_packet{ room_type };
+		
+		for (int i = 0; i < 3; ++i) {
+			DoSend(client_ids[i], &load_packet);
+		}
 	
 	}
 	break;
@@ -497,17 +508,42 @@ void IOCP::ProcessPacket(int key, char* p)
 	case packet::Type::CS_LOAD_COMPLETE:
 	{
 		// 대기 완료 플레이어 수를 조정
+		auto room_id{ _clientInfoHash[key].clientIdInfo.roomId };
 		
+		// 혹시 모를 예외처리
+		if (false == _roomInfoList[room_id].GetRunning()) {
+			Disconnect(key);
+		}
 
+		// 플레이어 완료 현황
+		bool load_complete{ false };
+		while (true) {
+			auto targ{ _roomInfoList[room_id].GetLoadingCount() };
+			if (_roomInfoList[room_id].CASLoadingCount(targ, targ + 1)) {
+				if (3 == targ + 1) {
+					load_complete = true;
+				}
+				break;
+			}
+		}
+
+		// 아직 로딩이 안됐음
+		if (not load_complete) {
+			break;
+		}
+
+		// 로딩 완료
 		// 세명의 플레이어가 다 로딩이 완료되었다면
-		
-
-
-		// 방의 상태를 RUNNING으로 하고
+		// 방의 상태를 RUNNING으로 하고 ( room update에 쓰이는 변수 )
 		// 게임 시작 패킷을 보낼 것.
 
-		
-
+		// 클라이언트 아이디와 플레이어 아이디를 가져온다.
+		auto client_ids{ _roomInfoList[room_id].GetClientIdList() };
+		std::array<int, 3> player_ids{
+			room_id * 3,
+			room_id * 3 + 1,
+			room_id * 3 + 2
+		};
 
 		// 방에 있는 플레이어들에게 위치를 보냄
 		for (int i{}; i < 3; ++i) {
@@ -527,6 +563,8 @@ void IOCP::ProcessPacket(int key, char* p)
 		}
 
 
+		GET_SINGLE(Game)->GetRoom(room_id).SetRoomStatus(RoomStatus::Running);
+				
 
 	}
 	break;
@@ -608,7 +646,10 @@ void IOCP::DoBroadcast(int key, void* packet)
 
 void IOCP::Disconnect(int client_id)
 {
-	
+	if (INVALID_SOCKET == _clientInfoHash[client_id].clientSocket) {
+		closesocket(_clientInfoHash[client_id].clientSocket);
+	}
+	// 나중에 만들 atomic_shared_ptr로 자동으로 지울 예정.
 }
 
 
