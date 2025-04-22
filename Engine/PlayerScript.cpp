@@ -54,10 +54,10 @@ void PlayerScript::LateUpdate()
 
 		float delta = 10.f;
 
-		if (hpScale.x - delta > 0.f)
+		if (hpScale.x - delta >= 0.f)
 		{
 			hpScale.x -= delta;
-			hpPos.x -= delta * 0.5f;
+			hpPos.x -= delta * 0.41f; // 여기에 0.41을 곱해줘야 뒤로 안밀림, 왜 0.41인지는 나도 모름 걍 노가다로 찾음
 
 			hpTransform->SetLocalScale(hpScale);
 			hpTransform->SetLocalPosition(hpPos);
@@ -72,11 +72,14 @@ void PlayerScript::LateUpdate()
 
 		float delta = 10.f;
 
-		hpScale.x += delta;
-		hpPos.x += delta * 0.5f;
+		if (hpScale.x + delta <= 200.f)
+		{
+			hpScale.x += delta;
+			hpPos.x += delta * 0.41f; // 여기에 0.41을 곱해줘야 뒤로 안밀림, 왜 0.41인지는 나도 모름 걍 노가다로 찾음
 
-		hpTransform->SetLocalScale(hpScale);
-		hpTransform->SetLocalPosition(hpPos);
+			hpTransform->SetLocalScale(hpScale);
+			hpTransform->SetLocalPosition(hpPos);
+		}
 	}
 }
 

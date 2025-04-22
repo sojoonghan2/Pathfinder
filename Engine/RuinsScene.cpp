@@ -605,7 +605,7 @@ RuinsScene::RuinsScene()
 		water->AddComponent(make_shared<Transform>());
 		water->AddComponent(make_shared<WaterScript>());
 		water->GetTransform()->SetLocalScale(Vec3(10000.f, 1.f, 10000.f));
-		water->GetTransform()->SetLocalPosition(Vec3(-100000.f, 300.f, 50.f));
+		water->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 50.f));
 		water->SetStatic(true);
 
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -758,7 +758,7 @@ RuinsScene::RuinsScene()
 		vector<Vec3> positions;
 		float minDistance = 300.0f;
 
-		for (int i = 0; i < 10; ++i)
+		for (int i = 0; i < 1; ++i)
 		{
 			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
 			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
