@@ -205,11 +205,18 @@ RuinsScene::RuinsScene()
 			gameObject->GetTransform()->SetLocalPosition(Vec3(42.f, 58.f, -3.f));
 			gameObject->AddComponent(make_shared<GunScript>());
 
+			activeScene->AddGameObject(gameObject);
+
+			shared_ptr<GameObject> particleObject = make_shared<GameObject>();
+			particleObject->SetName(L"GunFlameParticle");
+			particleObject->AddComponent(make_shared<Transform>());
+			particleObject->GetTransform()->SetParent(gameObject->GetTransform());
+			particleObject->GetTransform()->SetLocalPosition(Vec3(2.f, 0.f, 0.f));
 			shared_ptr<GunFlameParticleSystem> gunFlameParticleSystem = make_shared<GunFlameParticleSystem>();
 			gunFlameParticleSystem->SetParticleScale(100.f, 80.f);
-			gameObject->AddComponent(gunFlameParticleSystem);
+			particleObject->AddComponent(gunFlameParticleSystem);
 
-			activeScene->AddGameObject(gameObject);
+			activeScene->AddGameObject(particleObject);
 		}
 
 		// ÃÑ¾Ë

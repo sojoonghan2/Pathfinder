@@ -5,6 +5,8 @@
 #include "Input.h"
 #include "Timer.h"
 #include "ParticleSystem.h"
+#include "Scene.h"
+#include "SceneManager.h"
 
 GunScript::GunScript() {}
 GunScript::~GunScript() {}
@@ -28,12 +30,14 @@ void GunScript::UpdateGunTransformByInput()
 	if (INPUT->GetButton(KEY_TYPE::LBUTTON) && state == 1)
 	{
 		state = 5;
-		GetGameObject()->GetParticleSystem()->ParticleStart();
+		auto gunFlame = GET_SINGLE(SceneManager)->FindObjectByName(L"GunFlameParticle");
+		if(gunFlame) gunFlame->GetParticleSystem()->ParticleStart();
 	}
 	else if (INPUT->GetButton(KEY_TYPE::LBUTTON))
 	{
 		state = 4;
-		GetGameObject()->GetParticleSystem()->ParticleStart();
+		auto gunFlame = GET_SINGLE(SceneManager)->FindObjectByName(L"GunFlameParticle");
+		if (gunFlame) gunFlame->GetParticleSystem()->ParticleStart();
 	}
 	if (INPUT->GetButton(KEY_TYPE::R))
 		state = 7;
