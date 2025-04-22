@@ -24,6 +24,8 @@
 #include "CrapScript.h"
 #include "RazerParticleScript.h"
 #include "BulletScript.h"
+#include "GunScript.h"
+#include "TestScript.h"
 
 #include "SphereCollider.h"
 #include "BoxCollider.h"
@@ -39,6 +41,7 @@
 #include "CrapParticleSystem.h"
 #include "TestPBRParticleSystem.h"
 #include "PortalFrameParticleSystem.h"
+#include "GunFlameParticleSystem.h"
 
 RuinsScene::RuinsScene()
 {
@@ -185,6 +188,28 @@ RuinsScene::RuinsScene()
 			wire->AddComponent(meshRenderer);
 
 			activeScene->AddGameObject(wire);
+		}
+
+		// ÃÑ
+		shared_ptr<MeshData> gunmeshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun\\Gun.fbx");
+		vector<shared_ptr<GameObject>> gungameObjects = gunmeshData->Instantiate();
+
+		for (auto gameObject : gungameObjects)
+		{
+			gameObject->SetName(L"Gun");
+			gameObject->SetCheckFrustum(false);
+			gameObject->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(PI / 2, -0.4f, 1.f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(42.f, 58.f, -3.f));
+			gameObject->AddComponent(make_shared<GunScript>());
+
+			shared_ptr<GunFlameParticleSystem> gunFlameParticleSystem = make_shared<GunFlameParticleSystem>();
+			gunFlameParticleSystem->SetParticleScale(100.f, 80.f);
+			gameObject->AddComponent(gunFlameParticleSystem);
+
+			activeScene->AddGameObject(gameObject);
 		}
 
 		// ÃÑ¾Ë

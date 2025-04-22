@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "Input.h"
 #include "Timer.h"
+#include "ParticleSystem.h"
 
 GunScript::GunScript() {}
 GunScript::~GunScript() {}
@@ -25,9 +26,15 @@ void GunScript::UpdateGunTransformByInput()
 	if (INPUT->GetButton(KEY_TYPE::E))
 		state = 3;
 	if (INPUT->GetButton(KEY_TYPE::LBUTTON) && state == 1)
+	{
 		state = 5;
+		GetGameObject()->GetParticleSystem()->ParticleStart();
+	}
 	else if (INPUT->GetButton(KEY_TYPE::LBUTTON))
+	{
 		state = 4;
+		GetGameObject()->GetParticleSystem()->ParticleStart();
+	}
 	if (INPUT->GetButton(KEY_TYPE::R))
 		state = 7;
 
