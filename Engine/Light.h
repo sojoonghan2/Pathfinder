@@ -54,6 +54,10 @@ public:
 	void SetAmbient(const Vec3& ambient) { _lightInfo.color.ambient = ambient; }
 	void SetSpecular(const Vec3& specular) { _lightInfo.color.specular = specular; }
 
+	Vec4 GetDiffuse() { return _lightInfo.color.diffuse; }
+	Vec4 GetAmbient() { return _lightInfo.color.ambient; }
+	Vec4 GetSpecular() { return _lightInfo.color.specular; }
+
 	void SetLightType(LIGHT_TYPE type);
 	void SetLightRange(float range) { _lightInfo.range = range; }
 	void SetLightAngle(float angle) { _lightInfo.angle = angle; }

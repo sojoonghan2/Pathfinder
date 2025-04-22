@@ -12,6 +12,7 @@
 #include "Animator.h"
 #include "BoxCollider.h"
 #include "SphereCollider.h"
+#include "light.h"
 
 PlayerScript::PlayerScript() {}
 PlayerScript::~PlayerScript() {}
@@ -44,7 +45,7 @@ void PlayerScript::LateUpdate()
 	ShootRazer();
 	Animation();
 
-	// 테스트용 HP 코드
+	// 테스트용 HP 코드(함수로 뺄거면 빼시게)
 	if (INPUT->GetButton(KEY_TYPE::K))
 	{
 		auto hpTransform = GET_SINGLE(SceneManager)->FindObjectByName(L"HP")->GetTransform();
@@ -77,6 +78,74 @@ void PlayerScript::LateUpdate()
 
 		hpTransform->SetLocalScale(hpScale);
 		hpTransform->SetLocalPosition(hpPos);
+	}
+	auto light = GET_SINGLE(SceneManager)->FindObjectByName(L"directional")->GetLight();
+	if (INPUT->GetButton(KEY_TYPE::KEY_1))
+	{
+		Vec4 dif = light->GetDiffuse();
+		dif.x += 0.1;
+		light->SetDiffuse(Vec3(dif.x, dif.y, dif.z));
+		cout << "Dif: " << dif.x << ", " << dif.y << ", " << dif.z << "\n";
+	}
+	if (INPUT->GetButton(KEY_TYPE::KEY_2))
+	{
+		Vec4 dif = light->GetDiffuse();
+		dif.y += 0.1;
+		light->SetDiffuse(Vec3(dif.x, dif.y, dif.z));
+		cout << "Dif: " << dif.x << ", " << dif.y << ", " << dif.z << "\n";
+	}
+	if (INPUT->GetButton(KEY_TYPE::KEY_3))
+	{
+		Vec4 dif = light->GetDiffuse();
+		dif.z += 0.1;
+		light->SetDiffuse(Vec3(dif.x, dif.y, dif.z));
+		cout << "Dif: " << dif.x << ", " << dif.y << ", " << dif.z << "\n";
+
+	}
+	if (INPUT->GetButton(KEY_TYPE::KEY_4))
+	{
+		Vec4 amb = light->GetAmbient();
+		amb.x += 0.1;
+		light->SetAmbient(Vec3(amb.x, amb.y, amb.z));
+		cout << "Amb: " << amb.x << ", " << amb.y << ", " << amb.z << "\n";
+
+	}
+	if (INPUT->GetButton(KEY_TYPE::KEY_5))
+	{
+		Vec4 amb = light->GetAmbient();
+		amb.y += 0.1;
+		light->SetAmbient(Vec3(amb.x, amb.y, amb.z));
+		cout << "Amb: " << amb.x << ", " << amb.y << ", " << amb.z << "\n";
+
+	}
+	if (INPUT->GetButton(KEY_TYPE::KEY_6))
+	{
+		Vec4 amb = light->GetAmbient();
+		amb.z += 0.1;
+		light->SetAmbient(Vec3(amb.x, amb.y, amb.z));
+		cout << "Amb: " << amb.x << ", " << amb.y << ", " << amb.z << "\n";
+
+	}
+	if (INPUT->GetButton(KEY_TYPE::KEY_7))
+	{
+		Vec4 spc = light->GetDiffuse();
+		spc.x += 0.1;
+		light->SetDiffuse(Vec3(spc.x, spc.y, spc.z));
+		cout << "Spc: " << spc.x << ", " << spc.y << ", " << spc.z << "\n";
+	}
+	if (INPUT->GetButton(KEY_TYPE::KEY_8))
+	{
+		Vec4 spc = light->GetDiffuse();
+		spc.y += 0.1;
+		light->SetDiffuse(Vec3(spc.x, spc.y, spc.z));
+		cout << "Spc: " << spc.x << ", " << spc.y << ", " << spc.z << "\n";
+	}
+	if (INPUT->GetButton(KEY_TYPE::KEY_9))
+	{
+		Vec4 spc = light->GetDiffuse();
+		spc.z += 0.1;
+		light->SetDiffuse(Vec3(spc.x, spc.y, spc.z));
+		cout << "Spc: " << spc.x << ", " << spc.y << ", " << spc.z << "\n";
 	}
 }
 

@@ -406,9 +406,9 @@ RuinsScene::RuinsScene()
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
-			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsFloor", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
-			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\RuinsMin.png");
+			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsFloor", L"..\\Resources\\Texture\\TerrainCube\\RuinsTop.jpg");
+			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\RuinsMin.png");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
@@ -851,7 +851,7 @@ RuinsScene::RuinsScene()
 			gameObject->GetTransform()->SetLocalScale(Vec3(50.f, 50.f, 50.f));
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 3500.0f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 1.5708f, 0.0f));
-			activeScene->AddGameObject(gameObject);
+			//activeScene->AddGameObject(gameObject);
 		}
 	}
 #pragma endregion
@@ -954,30 +954,25 @@ RuinsScene::RuinsScene()
 		activeScene->AddGameObject(portalFrameParticle);
 	}
 #pragma endregion
-#pragma region Spot Light
+
+	// 전역 조명 (중앙은 밝고, 가장자리는 어둡게)
+#pragma region Directional Light
 	{
-		// 1. Light 오브젝트 생성 
 		shared_ptr<GameObject> light = make_shared<GameObject>();
-		light->SetName(L"Ancient_Ruin_Light");
+		light->SetName(L"directional");
 		light->AddComponent(make_shared<Transform>());
 		light->GetTransform()->SetLocalPosition(Vec3(0.f, 4900.f, 0.f));
 
-		// 2-1. Light 컴포넌트 추가 및 속성 설정
 		light->AddComponent(make_shared<Light>());
 		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
-
-		// 2-2. 스팟 라이트 방향 설정
 		light->GetLight()->SetLightDirection(Vec3(0.f, -1.f, 0.f));
+		
+		float centerPower = 1.2f;
+		light->GetLight()->SetDiffuse(Vec3(0.f, 0.f, 0.f) * centerPower);
+		light->GetLight()->SetAmbient(Vec3(0.f, 0.f, 0.f));
+		light->GetLight()->SetSpecular(Vec3(0.f, 0.f, 0.f) * centerPower);
 
-		float lightpower = 0.5f;
-		// 3. 조명 색상 및 강도 조정 (따뜻한 황금빛)
-		light->GetLight()->SetDiffuse(Vec3(1.0f, 0.85f, 0.6f) * lightpower);
-		light->GetLight()->SetAmbient(Vec3(0.25f, 0.2f, 0.25f) * lightpower);
-		light->GetLight()->SetSpecular(Vec3(0.9f, 0.8f, 0.6f) * lightpower);
-
-		// 4. Scene에 추가
 		activeScene->AddGameObject(light);
-
 	}
 #pragma endregion
 }
