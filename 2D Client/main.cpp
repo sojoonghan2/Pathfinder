@@ -361,6 +361,9 @@ int main() {
 			}
 			break;
 
+
+
+
 			case packet::Type::SC_MATCHMAKING:
 			{
 				packet::SCMatchmaking packet = reinterpret_cast<packet::SCMatchmaking&>(buffer);
@@ -368,7 +371,12 @@ int main() {
 				players[packet.clientId].SetShow(true);
 				players[packet.clientId].SetCtrl(true);
 				my_id = packet.clientId;
+				// TODO: 방 타입 받아와서 설정하기. 지금은 ruins 고정
+				// packet.roomType;
+
+				socket_io.DoSend<packet::CSLoadComplete>();
 			}
+
 			break;
 			case packet::Type::SC_MOVE_PLAYER:
 			{

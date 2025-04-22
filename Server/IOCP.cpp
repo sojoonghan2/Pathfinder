@@ -460,6 +460,7 @@ void IOCP::ProcessPacket(int key, char* p)
 
 		// 방 번호를 얻어오는 데 실패함.
 		if (-1 == room_id) {
+			// TODO: 여기 부분을 최적화
 			// 일단 임시로 다시 넣고 종료.
 			for (auto& id : client_ids) {
 				if (-1 != id) {
@@ -469,6 +470,7 @@ void IOCP::ProcessPacket(int key, char* p)
 			break;
 		}
 
+		// 플레이어 아이디는 방 번호에 따라 고정.
 		std::array<int, 3> player_ids{
 			room_id * 3,
 			room_id * 3 + 1,
@@ -476,7 +478,8 @@ void IOCP::ProcessPacket(int key, char* p)
 		};
 
 		// -- 방 번호와 플레이어 번호를 얻어왔음. -- 
-		// 이제 Room, RoomInfo, Player에다가 정보를 저장
+		// 이제 게임을 시작히기 위해
+		// Room, RoomInfo, Player에다가 정보를 저장
 
 		// 게임 쪽 초기화. 방, 플레이어, 몬스터의 실제 정보를 초기화해준다.
 		GET_SINGLE(Game)->InitRoom(room_id);
@@ -494,19 +497,25 @@ void IOCP::ProcessPacket(int key, char* p)
 			_clientInfoHash[client_ids[i]].ioState = IOState::INGAME;
 		}
 
-		// SC_LOAD 로드할 방의 타입을 줌.
+		// SC_MATCHMAKING 매칭 완료 알림 및 로드할 방의 타입을 줌.
 		auto room_type{ GET_SINGLE(Game)->GetRoom(room_id).GetRoomType() };
-		packet::SCLoad load_packet{ room_type };
 		
+		// 클라이언트 로딩 시작
 		for (int i = 0; i < 3; ++i) {
-			DoSend(client_ids[i], &load_packet);
+			packet::SCMatchmaking matchmaking_packet{ client_ids[i], room_type };
+			DoSend(client_ids[i], &matchmaking_packet);
 		}
+
+
 	
 	}
 	break;
 
 	case packet::Type::CS_LOAD_COMPLETE:
 	{
+		// TODO:
+		// 예외 처리 고고
+
 		// 대기 완료 플레이어 수를 조정
 		auto room_id{ _clientInfoHash[key].clientIdInfo.roomId };
 		
@@ -515,7 +524,7 @@ void IOCP::ProcessPacket(int key, char* p)
 			Disconnect(key);
 		}
 
-		// 플레이어 완료 현황
+		// 플레이어 로딩 현황 갱신
 		bool load_complete{ false };
 		while (true) {
 			auto targ{ _roomInfoList[room_id].GetLoadingCount() };
@@ -537,6 +546,9 @@ void IOCP::ProcessPacket(int key, char* p)
 		// 방의 상태를 RUNNING으로 하고 ( room update에 쓰이는 변수 )
 		// 게임 시작 패킷을 보낼 것.
 
+		// 로딩 카운트 초기화.
+		_roomInfoList[room_id].SetLoadingCount(0);
+
 		// 클라이언트 아이디와 플레이어 아이디를 가져온다.
 		auto client_ids{ _roomInfoList[room_id].GetClientIdList() };
 		std::array<int, 3> player_ids{
@@ -545,15 +557,16 @@ void IOCP::ProcessPacket(int key, char* p)
 			room_id * 3 + 2
 		};
 
+
 		// 방에 있는 플레이어들에게 위치를 보냄
 		for (int i{}; i < 3; ++i) {
-			packet::SCMatchmaking sc_matchmaking{ client_ids[i] };
-			DoSend(_clientInfoHash[client_ids[i]], &sc_matchmaking);
 
 			auto& player = GET_SINGLE(Game)->GetPlayer(player_ids[i]);
 			auto pos = player.GetPos();
 			auto dir = player.GetDir();
 
+			packet::SCGameStart sc_game_start{};
+			DoSend(client_ids[i], &sc_game_start);
 
 			packet::SCMovePlayer sc_move_player{ client_ids[i], pos.x, pos.y, dir.x, dir.y };
 
@@ -562,7 +575,7 @@ void IOCP::ProcessPacket(int key, char* p)
 			}
 		}
 
-
+		// 게임 시작. 방 상태를 Running으로.
 		GET_SINGLE(Game)->GetRoom(room_id).SetRoomStatus(RoomStatus::Running);
 				
 

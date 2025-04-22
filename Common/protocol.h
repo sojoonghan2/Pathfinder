@@ -55,7 +55,6 @@ enum class Type : unsigned char
 	CS_LOGIN,
 	SC_MATCHMAKING,
 	CS_MATCHMAKING,
-	SC_LOAD,			// todo
 	CS_LOAD_COMPLETE,	// todo
 	SC_GAME_START,		// todo
 
@@ -101,13 +100,16 @@ struct CSLogin : Header
 
 // Param
 //	int playerId: 클라이언트의 플레이어 아이디
+//  roomType
 struct SCMatchmaking : Header
 {
 	int clientId{ -1 };
+	RoomType roomType{ RoomType::None };
 
-	SCMatchmaking(const int client_id) :
+	SCMatchmaking(const int client_id, const RoomType room_type) :
 		Header{ sizeof(SCMatchmaking), Type::SC_MATCHMAKING },
-		clientId{ client_id }
+		clientId{ client_id },
+		roomType{ room_type }
 	{}
 };
 
@@ -120,15 +122,15 @@ struct CSMatchmaking : Header
 };
 
 // RoomType room_type
-struct SCLoad : Header
-{
-	RoomType room_type{ RoomType::None };
-
-	SCLoad(const RoomType room_type) :
-		Header{ sizeof(SCMatchmaking), Type::SC_MATCHMAKING },
-		room_type{ room_type }
-	{}
-};
+//struct SCLoad : Header
+//{
+//	RoomType room_type{ RoomType::None };
+//
+//	SCLoad(const RoomType room_type) :
+//		Header{ sizeof(SCMatchmaking), Type::SC_MATCHMAKING },
+//		room_type{ room_type }
+//	{}
+//};
 
 // No Param
 struct CSLoadComplete : Header

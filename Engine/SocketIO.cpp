@@ -128,7 +128,7 @@ void SocketIO::ProcessPacket()
 		case packet::Type::SC_MATCHMAKING:
 		{
 			packet::SCMatchmaking packet = reinterpret_cast<packet::SCMatchmaking&>(buffer);
-			std::cout << "SC_MATCHMAKING, id : " << packet.clientId << std::endl;
+			std::cout << "MATCHMAKING COMPLETED, id : " << packet.clientId << std::endl;
 			myId = packet.clientId;
 		}
 		break;
