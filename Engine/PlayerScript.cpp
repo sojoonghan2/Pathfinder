@@ -44,6 +44,34 @@ void PlayerScript::LateUpdate()
 	ShootRazer();
 	Animation();
 
+	// 카메라 흔들림 감소 처리
+	if (_cameraShakeOffset.LengthSquared() > 0.001f)
+	{
+		// 카메라 위치 복구
+		shared_ptr<GameObject> cameraObj = GET_SINGLE(SceneManager)->GetActiveScene()->GetMainCamera()->GetGameObject();
+		if (cameraObj != nullptr)
+		{
+			Vec3 camPos = cameraObj->GetTransform()->GetLocalPosition();
+			cameraObj->GetTransform()->SetLocalPosition(camPos - _cameraShakeOffset);
+
+			// 흔들림 감소
+			_cameraShakeOffset *= (1.0f - _cameraShakeDecay * DELTA_TIME);
+
+			// 매우 작은 값이면 0으로 설정
+			if (_cameraShakeOffset.LengthSquared() < 0.001f)
+				_cameraShakeOffset = Vec3(0.f);
+
+			// 수정된 흔들림 적용
+			cameraObj->GetTransform()->SetLocalPosition(camPos - _cameraShakeOffset + _cameraShakeOffset);
+		}
+	}
+
+	// 사격을 멈추면 반동 누적치 감소
+	if (!_isShoot)
+	{
+		_recoilAccumulation = max(0.0f, _recoilAccumulation - 0.5f * DELTA_TIME);
+	}
+
 	// 테스트용 HP 코드
 	if (INPUT->GetButton(KEY_TYPE::K))
 	{
@@ -230,6 +258,8 @@ void PlayerScript::Shoot()
 		{
 			_shootAniDurationTimer = 1.0f;
 		}
+
+		ShakeCamera();
 	}
 	else
 	{
@@ -300,6 +330,28 @@ void PlayerScript::ShootRazer()
 		_razerAniDurationTimer = 7.5f;
 		GET_SINGLE(SceneManager)->FindObjectByName(L"RazerUI")->SetRenderOff();
 	}
+}
+
+void PlayerScript::ShakeCamera()
+{
+	shared_ptr<GameObject> cameraObj = GET_SINGLE(SceneManager)->GetActiveScene()->GetMainCamera()->GetGameObject();
+	if (cameraObj == nullptr)
+		return;
+
+	// 반동 누적 (연속 사격 시 반동이 점점 커짐)
+	_recoilAccumulation = min(_recoilAccumulation + 0.2f, _maxRecoil);
+
+	// 수직 반동은 항상 위쪽으로, 수평 반동은 좌우 랜덤
+	float verticalShake = -_verticalRecoil * (1.0f + _recoilAccumulation * 0.3f);
+	float horizontalShake = (rand() % 2000 / 1000.0f - 1.0f) * _horizontalRecoil * (1.0f + _recoilAccumulation * 0.2f);
+
+	// 새 흔들림을 현재 흔들림에 추가
+	_cameraShakeOffset.x += horizontalShake;
+	_cameraShakeOffset.y += verticalShake;
+
+	// 카메라 위치 업데이트
+	Vec3 camPos = cameraObj->GetTransform()->GetLocalPosition();
+	cameraObj->GetTransform()->SetLocalPosition(camPos + _cameraShakeOffset);
 }
 
 void PlayerScript::SetPosition(float x, float z)
