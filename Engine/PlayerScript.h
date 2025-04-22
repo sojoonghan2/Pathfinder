@@ -67,10 +67,11 @@ private:
 	NetworkTimer	_moveTimer;
 	Vec3			_prevPosition = Vec3::Zero;
 
-	Vec3 _cameraShakeOffset = Vec3(0.f);
-	float _cameraShakeDecay = 10.0f;  // 흔들림이 감소하는 속도
-	float _verticalRecoil = 5.0f;     // 수직 반동 강도
-	float _horizontalRecoil = 2.0f;   // 수평 반동 강도
-	float _recoilAccumulation = 0.0f; // 지속 사격 시 반동 누적
-	const float _maxRecoil = 3.0f;    // 최대 반동 누적량
+	Vec3			_cameraShakeOffset = Vec3(0.f);
+	float			_cameraShakeDecay = 10.0f;
+	float			_verticalRecoil = 5.0f;
+	float			_horizontalRecoil = 5.0f;
+	float			_forwardRecoil = 7.0f;
+	float			_recoilAccumulation = 0.0f;
+	const float		_maxRecoil = 3.0f;
 };

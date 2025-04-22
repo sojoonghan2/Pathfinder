@@ -338,18 +338,16 @@ void PlayerScript::ShakeCamera()
 	if (cameraObj == nullptr)
 		return;
 
-	// 반동 누적 (연속 사격 시 반동이 점점 커짐)
 	_recoilAccumulation = min(_recoilAccumulation + 0.2f, _maxRecoil);
 
-	// 수직 반동은 항상 위쪽으로, 수평 반동은 좌우 랜덤
-	float verticalShake = -_verticalRecoil * (1.0f + _recoilAccumulation * 0.3f);
-	float horizontalShake = (rand() % 2000 / 1000.0f - 1.0f) * _horizontalRecoil * (1.0f + _recoilAccumulation * 0.2f);
+	Vec3 playerLook = GetTransform()->GetUp();
+	playerLook.Normalize();
 
-	// 새 흔들림을 현재 흔들림에 추가
-	_cameraShakeOffset.x += horizontalShake;
-	_cameraShakeOffset.y += verticalShake;
+	float recoilAmount = _horizontalRecoil * (1.0f + _recoilAccumulation * 0.2f);
+	float shakeStrength = (rand() % 2000 / 1000.0f - 1.0f) * recoilAmount;
+	Vec3 shakeOffset = playerLook * shakeStrength;
+	_cameraShakeOffset += shakeOffset;
 
-	// 카메라 위치 업데이트
 	Vec3 camPos = cameraObj->GetTransform()->GetLocalPosition();
 	cameraObj->GetTransform()->SetLocalPosition(camPos + _cameraShakeOffset);
 }
