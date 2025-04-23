@@ -28,7 +28,7 @@ void Game::InitRoom(int room_id)
 	// 플레이어 설정
 	for (int i = 0; i < 3; ++i) {
 		_roomList[room_id].SetPlayerPtrList(
-			room_id + i,
+			i,
 			&_playerList[room_id * 3 + i]);
 
 		_playerList[room_id * 3 + i].Move(posDist(dre_game), posDist(dre_game));

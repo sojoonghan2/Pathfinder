@@ -23,5 +23,5 @@ std::array<int, 3> RoomInfo::GetClientIdList() const
 
 bool RoomInfo::CASLoadingCount(int old_value, const int new_value)
 {
-	return false;
+	return _loadingCount.compare_exchange_strong(old_value, new_value);
 }

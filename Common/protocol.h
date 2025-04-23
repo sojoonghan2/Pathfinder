@@ -136,7 +136,7 @@ struct CSMatchmaking : Header
 struct CSLoadComplete : Header
 {
 	CSLoadComplete() :
-		Header{ sizeof(CSLoadComplete), Type::CS_MATCHMAKING }
+		Header{ sizeof(CSLoadComplete), Type::CS_LOAD_COMPLETE }
 	{}
 };
 
@@ -144,7 +144,7 @@ struct CSLoadComplete : Header
 struct SCGameStart : Header
 {
 	SCGameStart() :
-		Header{ sizeof(SCGameStart), Type::CS_MATCHMAKING }
+		Header{ sizeof(SCGameStart), Type::SC_GAME_START }
 	{}
 };
 

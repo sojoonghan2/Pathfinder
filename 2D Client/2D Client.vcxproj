@@ -146,7 +146,6 @@
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Common\CommonDefine.h" />
     <ClInclude Include="..\Common\protocol.h" />
     <ClInclude Include="..\Common\util.h" />
     <ClInclude Include="define.h" />

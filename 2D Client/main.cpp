@@ -360,8 +360,11 @@ int main() {
 			{
 			}
 			break;
+			case packet::Type::SC_GAME_START:
+			{
 
-
+			}
+			break;
 
 
 			case packet::Type::SC_MATCHMAKING:
