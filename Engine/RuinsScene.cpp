@@ -66,49 +66,6 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// *********************************************
-// UI 테스트
-// 0. 월드 공간 위치 정보
-// 1. 노말 벡터 정보
-// 2. 색상 정보
-// 3. 분산광 결과
-// 4. 반사광 결과
-// 5. 그림자
-// *********************************************
-#pragma region UI_Test
-	for (int32 i = 0; i < 6; i++)
-	{
-		shared_ptr<GameObject> obj = make_shared<GameObject>();
-		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
-		obj->AddComponent(make_shared<Transform>());
-		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(-350.f + (i * 120), 250.f, 500.f));
-		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-		{
-			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-			meshRenderer->SetMesh(mesh);
-		}
-		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
-
-			shared_ptr<Texture> texture;
-			if (i < 3)
-				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->GetRTTexture(i);
-			else if (i < 5)
-				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->GetRTTexture(i - 3);
-			else
-				texture = GEngine->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->GetRTTexture(0);
-
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, texture);
-			meshRenderer->SetMaterial(material);
-		}
-		obj->AddComponent(meshRenderer);
-		activeScene->AddGameObject(obj);
-	}
-#pragma endregion
-
 // 카메라
 #pragma region Camera
 	{
@@ -833,6 +790,53 @@ RuinsScene::RuinsScene()
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
 			activeScene->AddGameObject(gameObjects[0]);
+
+			// hp
+			shared_ptr<GameObject> hpBase = make_shared<GameObject>();
+			hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+			hpBase->AddComponent(make_shared<Transform>());
+			hpBase->SetName(L"CrapHPBase" + std::to_wstring(i));
+			hpBase->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
+			hpBase->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
+			shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+				hpBasemeshRenderer->SetMesh(mesh);
+			}
+			{
+				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+				shared_ptr<Texture> texture{};
+				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrapHPBase", L"..\\Resources\\Texture\\CrapHPBase.png");
+				shared_ptr<Material> material = make_shared<Material>();
+				material->SetShader(shader);
+				material->SetTexture(0, texture);
+				hpBasemeshRenderer->SetMaterial(material);
+			}
+			hpBase->AddComponent(hpBasemeshRenderer);
+			activeScene->AddGameObject(hpBase);
+
+			shared_ptr<GameObject> hp = make_shared<GameObject>();
+			hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+			hp->AddComponent(make_shared<Transform>());
+			hp->SetName(L"CrapHP");
+			hp->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
+			hp->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
+			shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+				hpmeshRenderer->SetMesh(mesh);
+			}
+			{
+				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+				shared_ptr<Texture> texture{};
+				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrapHP", L"..\\Resources\\Texture\\CrapHP.png");
+				shared_ptr<Material> material = make_shared<Material>();
+				material->SetShader(shader);
+				material->SetTexture(0, texture);
+				hpmeshRenderer->SetMaterial(material);
+			}
+			hp->AddComponent(hpmeshRenderer);
+			activeScene->AddGameObject(hp);
 		}
 	}
 #pragma endregion

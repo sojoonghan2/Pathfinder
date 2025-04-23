@@ -126,6 +126,27 @@ void CrapScript::CheckBulletHits()
 				if (GetGameObject()->GetParticleSystem())
 				{
 					GetGameObject()->GetParticleSystem()->ParticleStart();
+					auto hpTransform = GET_SINGLE(SceneManager)->FindObjectByName(L"CrapHP")->GetTransform();
+
+					Vec3 hpScale = hpTransform->GetLocalScale();
+					Vec3 hpPos = hpTransform->GetLocalPosition();
+
+					float delta = 10.f;
+
+					if (hpScale.x - delta >= 0.f)
+					{
+						hpScale.x -= delta;
+						hpPos.x -= delta * 0.41f; // 여기에 0.41을 곱해줘야 뒤로 안밀림, 왜 0.41인지는 나도 모름 걍 노가다로 찾음
+
+						hpTransform->SetLocalScale(hpScale);
+						hpTransform->SetLocalPosition(hpPos);
+
+					}
+
+					if ((hpScale.x - delta) <= 0.f)
+					{
+						cout << "응애 거미 사망\n";
+					}
 				}
 
 				break;
