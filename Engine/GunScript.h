@@ -13,6 +13,8 @@ private:
 	void UpdateGunTransformByInput();
 	void ApplyTransformInstantly();
 
+	void FlamePlaying();
+
 	void SetIdlePose();
 	void SetMovePose();
 	void SetDashPose();
@@ -28,4 +30,6 @@ private:
 	Vec3 _targetRot = Vec3(0.f);
 	float _idleTime = 0.f;
 	float _shootMoveTime = 0.f;
+
+	bool _isFlamePlaying = false;
 };

@@ -188,6 +188,17 @@ RuinsScene::RuinsScene()
 			wire->AddComponent(meshRenderer);
 
 			activeScene->AddGameObject(wire);
+
+			shared_ptr<GameObject> particleObject = make_shared<GameObject>();
+			particleObject->SetName(L"GunFlameParticle");
+			particleObject->AddComponent(make_shared<Transform>());
+			particleObject->GetTransform()->SetParent(gameObject->GetTransform());
+			particleObject->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 150.f));
+			shared_ptr<GunFlameParticleSystem> gunFlameParticleSystem = make_shared<GunFlameParticleSystem>();
+			gunFlameParticleSystem->SetParticleScale(100.f, 80.f);
+			particleObject->AddComponent(gunFlameParticleSystem);
+
+			activeScene->AddGameObject(particleObject);
 		}
 
 		// ÃÑ
@@ -206,17 +217,6 @@ RuinsScene::RuinsScene()
 			gameObject->AddComponent(make_shared<GunScript>());
 
 			activeScene->AddGameObject(gameObject);
-
-			shared_ptr<GameObject> particleObject = make_shared<GameObject>();
-			particleObject->SetName(L"GunFlameParticle");
-			particleObject->AddComponent(make_shared<Transform>());
-			particleObject->GetTransform()->SetParent(gameObject->GetTransform());
-			particleObject->GetTransform()->SetLocalPosition(Vec3(2.f, 0.f, 0.f));
-			shared_ptr<GunFlameParticleSystem> gunFlameParticleSystem = make_shared<GunFlameParticleSystem>();
-			gunFlameParticleSystem->SetParticleScale(100.f, 80.f);
-			particleObject->AddComponent(gunFlameParticleSystem);
-
-			activeScene->AddGameObject(particleObject);
 		}
 
 		// ÃÑ¾Ë
@@ -829,7 +829,7 @@ RuinsScene::RuinsScene()
 			gameObjects[0]->AddComponent(crapParticleSystem);
 
 			gameObjects[0]->AddComponent(make_shared<SphereCollider>());
-			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
+			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(300.f);
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
 			activeScene->AddGameObject(gameObjects[0]);

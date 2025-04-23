@@ -15,6 +15,7 @@ void GunScript::Update()
 {
 	UpdateGunTransformByInput();
 	ApplyTransformInstantly();
+	FlamePlaying();
 }
 
 void GunScript::UpdateGunTransformByInput()
@@ -30,14 +31,10 @@ void GunScript::UpdateGunTransformByInput()
 	if (INPUT->GetButton(KEY_TYPE::LBUTTON) && state == 1)
 	{
 		state = 5;
-		auto gunFlame = GET_SINGLE(SceneManager)->FindObjectByName(L"GunFlameParticle");
-		if(gunFlame) gunFlame->GetParticleSystem()->ParticleStart();
 	}
 	else if (INPUT->GetButton(KEY_TYPE::LBUTTON))
 	{
 		state = 4;
-		auto gunFlame = GET_SINGLE(SceneManager)->FindObjectByName(L"GunFlameParticle");
-		if (gunFlame) gunFlame->GetParticleSystem()->ParticleStart();
 	}
 	if (INPUT->GetButton(KEY_TYPE::R))
 		state = 7;
@@ -58,6 +55,35 @@ void GunScript::UpdateGunTransformByInput()
 void GunScript::ApplyTransformInstantly()
 {
 	GetTransform()->SetLocalPosition(_targetPos);
+}
+
+void GunScript::FlamePlaying()
+{
+	if (INPUT->GetButton(KEY_TYPE::LBUTTON))
+	{
+		if (!_isFlamePlaying)
+		{
+			auto gunFlame = GET_SINGLE(SceneManager)->FindObjectByName(L"GunFlameParticle");
+			if (gunFlame)
+			{
+				gunFlame->GetParticleSystem()->ParticleStart();
+				_isFlamePlaying = true;
+			}
+		}
+	}
+	else
+	{
+		if (_isFlamePlaying)
+		{
+			auto gunFlame = GET_SINGLE(SceneManager)->FindObjectByName(L"GunFlameParticle");
+			if (gunFlame)
+			{
+				gunFlame->GetParticleSystem()->ParticleStop();
+				_isFlamePlaying = false;
+			}
+		}
+	}
+
 }
 
 void GunScript::SetIdlePose()
