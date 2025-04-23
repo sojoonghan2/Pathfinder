@@ -28,8 +28,7 @@ void NetworkCrabScript::LateUpdate()
 		auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(_id);
 		while (not queue.empty()) {
 			auto& message{ queue.front() };
-			switch (message->type)
-			{
+			switch (message->type) {
 			case MsgType::MOVE:
 			{
 				std::shared_ptr<MsgMove> message_move{

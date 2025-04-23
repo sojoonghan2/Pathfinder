@@ -8,6 +8,7 @@
 #include "Timer.h"
 #include "SphereCollider.h"
 #include "ParticleSystem.h"
+#include "MessageManager.h"
 
 RuinsScript::RuinsScript() {}
 
@@ -23,7 +24,25 @@ void RuinsScript::LateUpdate() {
 		}
 	}
 
-	// SERVER TODO: 키보드 대신 모든 플레이어 로딩 되면 게임 시작되도록
+	// SERVER TODO: 이거를 loadingscript로.
+#ifdef NETWORK_ENABLE
+	auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(ID_RUIN_SCENE);
+	while (not queue.empty()) {
+		auto& message{ queue.front() };
+		switch (message->type) {
+		case MsgType::START_GAME:
+		{
+			_isStart = true;
+			cout << "Ruins Scene Start!\n";
+			GET_SINGLE(SceneManager)->FindObjectByName(L"WaitUI")->SetRenderOff();
+		}
+		break;
+		default: break;
+		}
+		queue.pop();
+	}
+
+#endif // NETWORK_ENABLE
 	if (INPUT->GetButton(KEY_TYPE::N))
 	{
 		_isStart = true;

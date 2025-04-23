@@ -1,11 +1,11 @@
 #pragma once
 #include "NetworkTimer.h"
 
-struct Player
-{
-	float x{};
-	float y{};
-};
+//struct Player
+//{
+//	float x{};
+//	float y{};
+//};
 
 class SocketIO
 {
@@ -31,6 +31,7 @@ public:
 	// Temp ID get. 수정예정
 	int GetNextId();
 	int GetMonsterId();
+	RoomType GetRoomType() const { return _roomType; }
 
 	template <class Packet, class ...Args>
 	void DoSend(Args ...args);
@@ -45,25 +46,27 @@ private:
 	void ProcessPacket();
 
 private:
-	SOCKET serverSocket{ INVALID_SOCKET };
-	std::thread	recvThread{};
-	std::queue<BufferType> bufferQueue;
-	NetworkTimer sendTimer;
+	SOCKET _serverSocket{ INVALID_SOCKET };
+	std::thread	_recvThread{};
+	std::queue<BufferType> _bufferQueue;
+	NetworkTimer _sendTimer;
 
 
 	// temp ID List.
 	// TODO: 이거 애초에 할거면 큐로 해야지 왜 벡터임?
-	std::vector<int> idList;
-	int idCount{ 0 };
+	std::vector<int> _idList;
+	int _idCount{ 0 };
 
-	std::vector<int> monsterIdList;
-	int monsterIdCount{ 0 };
+	std::vector<int> _monsterIdList;
+	int _monsterIdCount{ 0 };
+	RoomType _roomType{ RoomType::None };
 
 
 	// temp
 public:
+	// todo:
 	// std::unordered_map<int, Player> players{};
-	int myId{-1};
+	int _myId{-1};
 
 };
 
@@ -78,7 +81,7 @@ void SocketIO::DoSend(Args ...args)
 	memcpy(buffer.data(), &packet, sizeof(packet));
 
 	// 보내기
-	int ret = send(serverSocket, buffer.data(), sizeof(packet), 0);
+	int ret = send(_serverSocket, buffer.data(), sizeof(packet), 0);
 	if (SOCKET_ERROR == ret) {
 		util::DisplayError();
 	}

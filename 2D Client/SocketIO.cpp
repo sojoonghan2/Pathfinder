@@ -13,8 +13,8 @@ void SocketIO::Init()
 	}
 
 	// 소켓 생성
-	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-	if (serverSocket == INVALID_SOCKET) {
+	_serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+	if (_serverSocket == INVALID_SOCKET) {
 		util::DisplayQuitError();
 	}
 
@@ -36,7 +36,7 @@ void SocketIO::Start()
 	}
 
 	// connect
-	ret = connect(serverSocket, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
+	ret = connect(_serverSocket, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 	if (SOCKET_ERROR == ret) {
 		util::DisplayQuitError();
 	}
@@ -44,7 +44,7 @@ void SocketIO::Start()
 	std::println("Connected to server successfully.");
 
 	// 스레드 생성
-	recvThread = std::thread{ [this]() { Worker(); } };
+	_recvThread = std::thread{ [this]() { Worker(); } };
 	
 	// 로그인 알림
 	DoSend<packet::CSLogin>();
@@ -72,7 +72,7 @@ int SocketIO::DoRecv()
 
 	// 고정 길이 RECV
 	int recv_len = recv(
-		serverSocket,
+		_serverSocket,
 		recvBuffer.data(),
 		sizeof(packet::Header),
 		MSG_WAITALL);
@@ -95,7 +95,7 @@ int SocketIO::DoRecv()
 
 			// 가변 길이 recv
 			recv_len = recv(
-				serverSocket,
+				_serverSocket,
 				recvBuffer.data() + sizeof(packet::Header),
 				remain_size,
 				MSG_WAITALL);
@@ -123,9 +123,9 @@ void SocketIO::ProcessPacket()
 
 SocketIO::~SocketIO()
 {
-	if (recvThread.joinable()) {
-		recvThread.join();  // 스레드 종료 대기
+	if (_recvThread.joinable()) {
+		_recvThread.join();  // 스레드 종료 대기
 	}
-	closesocket(serverSocket);
+	closesocket(_serverSocket);
 	WSACleanup();
 }

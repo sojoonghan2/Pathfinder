@@ -17,4 +17,5 @@ private:
 	std::thread*	loadThread;
 	bool            loadEnd = false;
 	bool            isInitialized = false;
+	RoomType		roomType = RoomType::None;
 };

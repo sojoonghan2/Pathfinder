@@ -43,7 +43,7 @@ void PlayerScript::Start()
 void PlayerScript::LateUpdate()
 {
 #ifdef NETWORK_ENABLE
-	int id{ GET_SINGLE(SocketIO)->myId};
+	int id{ GET_SINGLE(SocketIO)->_myId};
 	if (-1 != id) {
 		auto& queue{ GET_SINGLE(MessageManager)->GetMessageQueue(id) };
 		while (not queue.empty()) {

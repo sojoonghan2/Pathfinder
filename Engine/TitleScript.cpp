@@ -5,6 +5,7 @@
 #include "SceneManager.h"
 #include "GameObject.h"
 #include "Timer.h"
+#include "SocketIO.h"
 
 TitleScript::TitleScript() {}
 
@@ -17,6 +18,11 @@ void TitleScript::LateUpdate() {
 		if (INPUT->GetButton(KEY_TYPE::N))
 		{
 			_isMatch = true;
+#ifdef NETWORK_ENABLE
+			GET_SINGLE(SocketIO)->DoSend<packet::CSMatchmaking>();
+
+#endif // NETWORK_ENABLE
+
 		}
 		if (INPUT->GetButton(KEY_TYPE::M))
 		{

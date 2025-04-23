@@ -247,36 +247,6 @@ void IOCP::TimerWorker()
 		if (send_timer.PeekDeltaTime() > MOVE_PACKET_TIME_MS) {
 			send_timer.updateDeltaTime();
 
-			//for (int i = 0; i < MAX_ROOM; ++i) {
-
-			//	auto& room{ GET_SINGLE(Game)->GetRoom(i) };
-			//	if (room.GetRoomType() == RoomType::None) {
-			//		continue;
-			//	}
-			//	auto& monster_vec{ room.GetMonsterPtrList() };
-
-			//	for (auto monster_ptr : monster_vec) {
-			//		auto monster_pos = monster_ptr->GetPos();
-			//			// 패킷 생성
-			//		packet::SCMoveMonster sc_monster_move{
-			//			,
-			//			monster_pos.x,
-			//			monster_pos.y
-			//		};
-
-			//		// 방에 있는 플레이어에게 전송
-			//		auto list{ _roomInfoList[i].GetClientIdList() };
-			//		for (auto id : list) {
-			//			if (id == -1) {
-			//				continue;
-			//			}
-			//			if (_clientInfoHash[id].ioState != IOState::INGAME) {
-			//				continue;
-			//			}
-			//			DoSend(id, &sc_monster_move);
-			//		}
-			//	}
-			//}
 
 
 			// 현재 방이 활성화 되어있는지 확인
@@ -293,8 +263,10 @@ void IOCP::TimerWorker()
 
 				auto monster_pos = monster.GetPos();
 				auto monster_dir = monster.GetDir();
+
 				// 패킷 생성
 				// 일단 임시로 MAX_PLAYER를 더한 아이디를 준다.
+				// TODO: 오브젝트를 한 자료구조에(shared_ptr) 저장하게 되면 id만을 보낼 것.
 				packet::SCMoveMonster sc_monster_move{
 					MAX_PLAYER + i,
 					monster_pos.x,
@@ -369,7 +341,6 @@ void IOCP::ProcessPacket(int key, char* p)
 
 	case packet::Type::CS_MATCHMAKING:
 	{
-		
 		// 클라이언트에 매치메이킹 패킷이 도착하였을 경우
 		// 클라이언트 아이디를 큐에 넣고 사이즈 검사
 		// 사이즈가 3이상이면 클라이언트 3개를 뽑아냄.
@@ -662,6 +633,7 @@ void IOCP::Disconnect(int client_id)
 	if (INVALID_SOCKET == _clientInfoHash[client_id].clientSocket) {
 		closesocket(_clientInfoHash[client_id].clientSocket);
 	}
+	// Todo:
 	// 나중에 만들 atomic_shared_ptr로 자동으로 지울 예정.
 }
 

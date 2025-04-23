@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "Timer.h"
 #include "MessageManager.h"
+#include "SceneManager.h"
 
 
 void SocketIO::Init()
@@ -16,8 +17,8 @@ void SocketIO::Init()
 	}
 
 	// 소켓 생성
-	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-	if (serverSocket == INVALID_SOCKET) {
+	_serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+	if (_serverSocket == INVALID_SOCKET) {
 		util::DisplayQuitError();
 	}
 
@@ -34,7 +35,7 @@ void SocketIO::Init()
 	}
 
 	// connect
-	ret = connect(serverSocket, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
+	ret = connect(_serverSocket, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 	if (SOCKET_ERROR == ret) {
 		util::DisplayQuitError();
 	}
@@ -42,7 +43,7 @@ void SocketIO::Init()
 	std::println("Connected to server successfully.");
 
 	// 스레드 생성
-	recvThread = std::thread{ [this]() { Worker(); } };
+	_recvThread = std::thread{ [this]() { Worker(); } };
 
 	// 로그인 알림
 	DoSend<packet::CSLogin>();
@@ -72,7 +73,7 @@ int SocketIO::DoRecv()
 
 	// 고정 길이 RECV
 	int recv_len = recv(
-		serverSocket,
+		_serverSocket,
 		buffer.data(),
 		sizeof(packet::Header),
 		MSG_WAITALL);
@@ -94,7 +95,7 @@ int SocketIO::DoRecv()
 		if (remain_size > 0) {
 			// 가변 길이 recv
 			recv_len = recv(
-				serverSocket,
+				_serverSocket,
 				buffer.data() + sizeof(packet::Header),
 				remain_size,
 				MSG_WAITALL);
@@ -110,14 +111,14 @@ int SocketIO::DoRecv()
 		}
 	}
 
-	bufferQueue.emplace(buffer);
+	_bufferQueue.emplace(buffer);
 	return recv_len;
 }
 
 void SocketIO::ProcessPacket()
 {
-	while (not bufferQueue.empty()) {
-		auto& buffer = bufferQueue.front();
+	while (not _bufferQueue.empty()) {
+		auto& buffer = _bufferQueue.front();
 		packet::Header& header = reinterpret_cast<packet::Header&>(buffer);
 		switch (header.type) {
 		case packet::Type::SC_LOGIN:
@@ -125,33 +126,49 @@ void SocketIO::ProcessPacket()
 
 		}
 		break;
+		case packet::Type::SC_GAME_START:
+		{
+			// 게임 시작 메시지를 보내자
+			// todo:
+			// 일단 임시로 ruinsScene에 보냄
+
+			auto msg{ std::make_shared<MsgStartGame>() };
+			GET_SINGLE(MessageManager)->PushMessage(ID_RUIN_SCENE, msg);
+
+		}
+		break;
 		case packet::Type::SC_MATCHMAKING:
 		{
 			packet::SCMatchmaking packet = reinterpret_cast<packet::SCMatchmaking&>(buffer);
 			std::cout << "MATCHMAKING COMPLETED, id : " << packet.clientId << std::endl;
-			myId = packet.clientId;
+			_myId = packet.clientId;
+			_roomType = packet.roomType;
+
+			// todo: 예외처리 필요한가?
+			GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
+
+			// todo:
+			// 로딩 신으로 넘기라는 메시지를 보내자
 		}
 		break;
 
 		case packet::Type::SC_MOVE_PLAYER:
 		{
 			packet::SCMovePlayer packet = reinterpret_cast<packet::SCMovePlayer&>(buffer);
-			if (idList.end() == std::find(idList.begin(), idList.end(), packet.clientId) &&
-				packet.clientId != myId) {
-				idList.push_back(packet.clientId);
+			if (_idList.end() == std::find(_idList.begin(), _idList.end(), packet.clientId) &&
+				packet.clientId != _myId) {
+				_idList.push_back(packet.clientId);
 			}
 			auto msg{ std::make_shared<MsgMove>(packet.x, packet.y, packet.dirX, packet.dirY) };
 			GET_SINGLE(MessageManager)->PushMessage(packet.clientId, msg);
-			//players[packet.clientId].x = packet.x;
-			//players[packet.clientId].y = packet.y;
 		}
 		break;
 
 		case packet::Type::SC_MOVE_MONSTER:
 		{
 			packet::SCMoveMonster packet{ reinterpret_cast<packet::SCMoveMonster&>(buffer) };
-			if (monsterIdList.end() == std::find(monsterIdList.begin(), monsterIdList.end(), packet.monsterId)) {
-				monsterIdList.push_back(packet.monsterId);
+			if (_monsterIdList.end() == std::find(_monsterIdList.begin(), _monsterIdList.end(), packet.monsterId)) {
+				_monsterIdList.push_back(packet.monsterId);
 			}
 			auto msg{ std::make_shared<MsgMove>(packet.x, packet.y, packet.dirX, packet.dirY) };
 			GET_SINGLE(MessageManager)->PushMessage(packet.monsterId, msg);
@@ -164,32 +181,32 @@ void SocketIO::ProcessPacket()
 		}
 		break;
 		}
-		bufferQueue.pop();
+		_bufferQueue.pop();
 	}
 }
 
 int SocketIO::GetNextId()
 {
 	// TODO: 임시로 해놨음
-	if (idList.size() <= idCount) {
+	if (_idList.size() <= _idCount) {
 		return -1;
 	}
-	return idList[idCount++];
+	return _idList[_idCount++];
 }
 
 int SocketIO::GetMonsterId()
 {
-	if (monsterIdList.size() <= monsterIdCount) {
+	if (_monsterIdList.size() <= _monsterIdCount) {
 		return -1;
 	}
-	return monsterIdList[monsterIdCount++];
+	return _monsterIdList[_monsterIdCount++];
 }
 
 SocketIO::~SocketIO()
 {
-	if (recvThread.joinable()) {
-		recvThread.join();  // 스레드 종료 대기
+	if (_recvThread.joinable()) {
+		_recvThread.join();  // 스레드 종료 대기
 	}
-	closesocket(serverSocket);
+	closesocket(_serverSocket);
 	WSACleanup();
 }

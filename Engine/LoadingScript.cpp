@@ -15,6 +15,7 @@
 #include "LuckyScene.h"
 #include "BossScene.h"
 #include "TestScene.h"
+#include "SocketIO.h"
 
 LoadingScript::LoadingScript() : loadEnd(false), loadThread(nullptr), isInitialized(false)
 {}
@@ -50,6 +51,14 @@ void LoadingScript::StartLoadingThread()
 	}
 
 	// 새 스레드 생성 및 시작
+#ifdef NETWORK_ENABLE
+	roomType = GET_SINGLE(SocketIO)->GetRoomType();
+#endif // NETWORK_ENABLE
+
+#ifndef NETWORK_ENABLE
+	roomType = RoomType::Ruin;
+#endif // !NETWORK_ENABLE
+
 	loadThread = new std::thread(&LoadingScript::SceneLoad, this);
 }
 
@@ -100,11 +109,49 @@ void LoadingScript::SceneLoad()
 	// 씬 로딩 작업 수행
 	{
 		cout << "Loading RuinsScene..." << endl;
-		shared_ptr<RuinsScene> ruinsScene = make_shared<RuinsScene>();
-		GET_SINGLE(SceneManager)->RegisterScene(L"RuinsScene", ruinsScene->GetScene());
+		switch (roomType)
+		{
+		case RoomType::None:
+		{
+			cout << "ERROR: Type is not exist" << endl;
+		}
+		break;
+		case RoomType::Ruin:
+		{
+			shared_ptr<RuinsScene> ruinsScene = make_shared<RuinsScene>();
+			GET_SINGLE(SceneManager)->RegisterScene(L"RuinsScene", ruinsScene->GetScene());
+		}
+		break;
+		case RoomType::Factory:
+		{
+			shared_ptr<FactoryScene> factoryScene = make_shared<FactoryScene>();
+			GET_SINGLE(SceneManager)->RegisterScene(L"FactoryScene", factoryScene->GetScene());
+		}
+		break;
+		case RoomType::Ristrict:
+		{
+		}	
+		break;
+		case RoomType::Falling:
+		{
+		}
+		break;
+		case RoomType::Lucky:
+		{
+		}
+		break;
+		default:
+			break;
+		}
 	}
 
 	// 로딩 완료 플래그 설정
 	cout << "Scene loading completed, setting loadEnd flag" << endl;
+
+#ifdef NETWORK_ENABLE
+	// 예외처리정도 해주면 좋을듯?
+	GET_SINGLE(SocketIO)->DoSend<packet::CSLoadComplete>();
+#endif // NETWORK_ENABLE
+
 	loadEnd = true;
 }

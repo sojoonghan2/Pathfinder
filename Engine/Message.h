@@ -1,9 +1,15 @@
 #pragma once
 
+enum
+{
+	ID_RUIN_SCENE = 100000,
+};
+
 enum class MsgType
 {
 	NONE = 0,
-	MOVE
+	MOVE,
+	START_GAME,
 };
 
 struct Msg
@@ -31,3 +37,9 @@ struct MsgMove : Msg
 	{}
 };
 
+struct MsgStartGame : Msg
+{
+	MsgStartGame() :
+		Msg{ MsgType::START_GAME }
+	{}
+};
