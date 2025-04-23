@@ -1,60 +1,86 @@
 #include "pch.h"
 #include "Input.h"
-#include "Engine.h"
+#include <WindowsX.h>
 
 void Input::Init(HWND hwnd)
 {
 	_hwnd = hwnd;
-	_states.resize(KEY_TYPE_COUNT, KEY_STATE::NONE);
+	_keyInfos.resize(KEY_TYPE_COUNT);
 }
 
 void Input::Update()
 {
-	HWND hwnd = ::GetActiveWindow();
-	if (_hwnd != hwnd)
-	{
-		for (uint32 key = 0; key < KEY_TYPE_COUNT; key++)
-			_states[key] = KEY_STATE::NONE;
+	_frameCount++;
 
+	if (_hwnd != ::GetActiveWindow())
+	{
+		for (auto& key : _keyInfos)
+			key.state = KEY_STATE::NONE;
 		return;
 	}
 
 	BYTE asciiKeys[KEY_TYPE_COUNT] = {};
-	if (::GetKeyboardState(asciiKeys) == false)
+	if (::GetKeyboardState(asciiKeys) == FALSE)
 		return;
 
-	for (uint32 key = 0; key < KEY_TYPE_COUNT; key++)
+	for (uint32_t key = 0; key < KEY_TYPE_COUNT; ++key)
 	{
-		// 키가 눌려 있으면 true
-		if (asciiKeys[key] & 0x80)
-		{
-			KEY_STATE& state = _states[key];
+		bool isPressed = (asciiKeys[key] & 0x80) != 0;
+		KeyInfo& info = _keyInfos[key];
 
-			// 이전 프레임에 키를 누른 상태라면 PRESS
-			if (state == KEY_STATE::PRESS || state == KEY_STATE::DOWN)
-				state = KEY_STATE::PRESS;
-			else
-				state = KEY_STATE::DOWN;
-		}
-		else
+		switch (info.state)
 		{
-			KEY_STATE& state = _states[key];
+		case KEY_STATE::NONE:
+			if (isPressed)
+			{
+				info.state = KEY_STATE::DOWN;
+				info.lastDownTick = _frameCount;
+			}
+			break;
 
-			// 이전 프레임에 키를 누른 상태라면 UP
-			if (state == KEY_STATE::PRESS || state == KEY_STATE::DOWN)
-				state = KEY_STATE::UP;
+		case KEY_STATE::DOWN:
+		case KEY_STATE::PRESS:
+			if (isPressed)
+			{
+				info.state = KEY_STATE::PRESS;
+			}
 			else
-				state = KEY_STATE::NONE;
+			{
+				info.state = KEY_STATE::UP;
+				info.lastUpTick = _frameCount;
+			}
+			break;
+
+		case KEY_STATE::UP:
+			if (info.lastUpTick == _frameCount - 1)
+				info.state = KEY_STATE::NONE;
+			break;
 		}
 	}
 
 	::GetCursorPos(&_mousePos);
-	::ScreenToClient(GEngine->GetWindow().hwnd, &_mousePos);
-
-	// 마우스 이동량 계산 (현재 위치 - 이전 위치)
+	::ScreenToClient(_hwnd, &_mousePos);
 	_mouseDelta.x = _mousePos.x - _prevMousePos.x;
 	_mouseDelta.y = _mousePos.y - _prevMousePos.y;
-
-	// 이전 마우스 위치 업데이트
 	_prevMousePos = _mousePos;
+}
+
+bool Input::GetButton(KEY_TYPE key)
+{
+	return GetState(key) == KEY_STATE::PRESS || GetState(key) == KEY_STATE::DOWN;
+}
+
+bool Input::GetButtonDown(KEY_TYPE key)
+{
+	return GetState(key) == KEY_STATE::DOWN;
+}
+
+bool Input::GetButtonUp(KEY_TYPE key)
+{
+	return GetState(key) == KEY_STATE::UP;
+}
+
+KEY_STATE Input::GetState(KEY_TYPE key) const
+{
+	return _keyInfos[static_cast<uint8_t>(key)].state;
 }

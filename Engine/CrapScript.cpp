@@ -73,6 +73,21 @@ void CrapScript::LateUpdate()
 	CheckBulletHits();
 }
 
+void CrapScript::Start()
+{
+	_bullets.resize(50);
+	for (int i = 0; i < 50; ++i)
+	{
+		wstring name = L"Bullet" + to_wstring(i);
+		_bullets[i] = GET_SINGLE(SceneManager)->FindObjectByName(name);
+	}
+
+	auto hpObj = GET_SINGLE(SceneManager)->FindObjectByName(L"CrapHP");
+	if (hpObj)
+		_hpTransform = hpObj->GetTransform();
+}
+
+
 void CrapScript::MoveRandomly()
 {
 	Vec3 pos = GetTransform()->GetLocalPosition();
@@ -106,51 +121,42 @@ void CrapScript::CheckBoundary()
 
 void CrapScript::CheckBulletHits()
 {
-	// 모든 총알에 대해 충돌 검사
-	for (int i = 0; i < 50; ++i)
+	if (!_hpTransform) return;
+
+	for (const auto& bullet : _bullets)
 	{
-		wstring bulletName = L"Bullet" + to_wstring(i);
-		auto bulletObject = GET_SINGLE(SceneManager)->FindObjectByName(bulletName);
+		if (!bullet) continue;
 
-		if (bulletObject)
+		if (GET_SINGLE(SceneManager)->Collition(GetGameObject(), bullet))
 		{
-			auto is_collision = GET_SINGLE(SceneManager)->Collition(GetGameObject(), bulletObject);
-			if (is_collision)
+			if (!_initialized)
 			{
-				if (!_initialized)
-				{
-					_initialized = true;
-					return;
-				}
-
-				if (GetGameObject()->GetParticleSystem())
-				{
-					GetGameObject()->GetParticleSystem()->ParticleStart();
-					auto hpTransform = GET_SINGLE(SceneManager)->FindObjectByName(L"CrapHP")->GetTransform();
-
-					Vec3 hpScale = hpTransform->GetLocalScale();
-					Vec3 hpPos = hpTransform->GetLocalPosition();
-
-					float delta = 10.f;
-
-					if (hpScale.x - delta >= 0.f)
-					{
-						hpScale.x -= delta;
-						hpPos.x -= delta * 0.41f; // 여기에 0.41을 곱해줘야 뒤로 안밀림, 왜 0.41인지는 나도 모름 걍 노가다로 찾음
-
-						hpTransform->SetLocalScale(hpScale);
-						hpTransform->SetLocalPosition(hpPos);
-
-					}
-
-					if ((hpScale.x - delta) <= 0.f)
-					{
-						cout << "응애 거미 사망\n";
-					}
-				}
-
-				break;
+				_initialized = true;
+				return;
 			}
+
+			if (GetGameObject()->GetParticleSystem())
+				GetGameObject()->GetParticleSystem()->ParticleStart();
+
+			Vec3 hpScale = _hpTransform->GetLocalScale();
+			Vec3 hpPos = _hpTransform->GetLocalPosition();
+			float delta = 10.f;
+
+			if (hpScale.x - delta >= 0.f)
+			{
+				hpScale.x -= delta;
+				hpPos.x -= delta * 0.41f;
+
+				_hpTransform->SetLocalScale(hpScale);
+				_hpTransform->SetLocalPosition(hpPos);
+			}
+
+			if ((hpScale.x - delta) <= 0.f)
+			{
+				cout << "응애 거미 사망\n";
+			}
+
+			break;
 		}
 	}
 }

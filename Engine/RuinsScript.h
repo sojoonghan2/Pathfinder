@@ -8,6 +8,7 @@ public:
 	virtual ~RuinsScript();
 
 	virtual void LateUpdate() override;
+	virtual void Start() override;
 
 	void Occupation();
 	void BlinkUI();
@@ -17,6 +18,11 @@ private:
 	shared_ptr<GameObject>  _water;
 	shared_ptr<GameObject>  _player;
 	shared_ptr<GameObject> _occupationUI;
+
+	shared_ptr<GameObject> _waitUI;
+	shared_ptr<GameObject> _portalParticle;
+	shared_ptr<GameObject> _portalFrameParticle;
+
 
 	float _blinkTime = 0.75f;
 	float _elapsedTime = 0.0f;

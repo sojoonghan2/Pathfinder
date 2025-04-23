@@ -7,6 +7,7 @@ public:
 	GunScript();
 	virtual ~GunScript();
 
+	virtual void Start() override;
 	virtual void Update() override;
 
 private:
@@ -32,4 +33,6 @@ private:
 	float _shootMoveTime = 0.f;
 
 	bool _isFlamePlaying = false;
+
+	shared_ptr<GameObject> _gunFlame;
 };

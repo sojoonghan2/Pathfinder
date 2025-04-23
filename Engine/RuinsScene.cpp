@@ -423,7 +423,7 @@ RuinsScene::RuinsScene()
 		obj->AddComponent(make_shared<Transform>());
 		obj->SetName(L"OccupationUI");
 		obj->GetTransform()->SetLocalScale(Vec3(1500.f, 1000.f, 100.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(0.f, 250.f, 155500.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(0.f, 250.f, 500.f));
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
@@ -747,7 +747,7 @@ RuinsScene::RuinsScene()
 		vector<Vec3> positions;
 		float minDistance = 300.0f;
 
-		for (int i = 0; i < 1; ++i)
+		for (int i = 0; i < 0; ++i)
 		{
 			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
 			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();

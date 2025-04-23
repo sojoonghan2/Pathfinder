@@ -6,6 +6,7 @@ class CrapScript : public MonoBehaviour
 public:
 	CrapScript();
 	virtual void LateUpdate() override;
+	virtual void Start() override;
 
 	void MoveRandomly();
 	void CheckBoundary();
@@ -21,4 +22,8 @@ private:
 	float _pauseDuration{};
 
 	bool _initialized = false;
+
+private:
+	vector<shared_ptr<GameObject>> _bullets;
+	shared_ptr<Transform> _hpTransform;
 };

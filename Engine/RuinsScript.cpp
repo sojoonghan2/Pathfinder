@@ -33,15 +33,19 @@ void RuinsScript::LateUpdate() {
 
 	if(_isStart) Occupation();
 }
+
+void RuinsScript::Start()
+{
+	_waitUI = GET_SINGLE(SceneManager)->FindObjectByName(L"WaitUI");
+	_portalParticle = GET_SINGLE(SceneManager)->FindObjectByName(L"potalParticle");
+	_portalFrameParticle = GET_SINGLE(SceneManager)->FindObjectByName(L"portalFrameParticle");
+	_water = GET_SINGLE(SceneManager)->FindObjectByName(L"Water");
+	_player = GET_SINGLE(SceneManager)->FindObjectByName(L"OBJ");
+	_occupationUI = GET_SINGLE(SceneManager)->FindObjectByName(L"OccupationUI");
+}
+
 void RuinsScript::Occupation()
 {
-	if (!_water && !_player && !_occupationUI)
-	{
-		if (GET_SINGLE(SceneManager)->FindObjectByName(L"Water")) _water = GET_SINGLE(SceneManager)->FindObjectByName(L"Water");
-		if (GET_SINGLE(SceneManager)->FindObjectByName(L"OBJ")) _player = GET_SINGLE(SceneManager)->FindObjectByName(L"OBJ");
-		if (GET_SINGLE(SceneManager)->FindObjectByName(L"OccupationUI")) _occupationUI = GET_SINGLE(SceneManager)->FindObjectByName(L"OccupationUI");
-	}
-
 	if (_water->GetTransform()->GetLocalPosition().y < -200.f)
 	{
 		_isClear = true;
@@ -93,9 +97,8 @@ void RuinsScript::BlinkUI()
 
 void RuinsScript::CreatePortal()
 {
-	auto portalParticle = GET_SINGLE(SceneManager)->FindObjectByName(L"potalParticle");
-	portalParticle->GetParticleSystem()->ParticleStart();
-
-	auto portalFrameParticle = GET_SINGLE(SceneManager)->FindObjectByName(L"portalFrameParticle");
-	portalFrameParticle->GetParticleSystem()->ParticleStart();
+	if (_portalParticle)
+		_portalParticle->GetParticleSystem()->ParticleStart();
+	if (_portalFrameParticle)
+		_portalFrameParticle->GetParticleSystem()->ParticleStart();
 }

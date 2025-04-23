@@ -1,70 +1,36 @@
 #pragma once
+#include <Windows.h>
 
 enum class KEY_TYPE
 {
-	UP = VK_UP,
-	DOWN = VK_DOWN,
-	LEFT = VK_LEFT,
-	RIGHT = VK_RIGHT,
-
-	PAGEUP = VK_PRIOR,
-	PAGEDOWN = VK_NEXT,
-
-	A = 'A',
-	B = 'B',
-	C = 'C',
-	D = 'D',
-	E = 'E',
-	F = 'F',
-	G = 'G',
-	H = 'H',
-	I = 'I',
-	J = 'J',
-	K = 'K',
-	L = 'L',
-	M = 'M',
-	N = 'N',
-	O = 'O',
-	P = 'P',
-	Q = 'Q',
-	R = 'R',
-	S = 'S',
-	T = 'T',
-	U = 'U',
-	V = 'V',
-	W = 'W',
-	X = 'X',
-	Y = 'Y',
-	Z = 'Z',
-
-	ADD = VK_ADD,
-	SUBTRACT = VK_SUBTRACT,
-	TAB = VK_TAB,
-
-	KEY_1 = '1',
-	KEY_2 = '2',
-	KEY_3 = '3',
-	KEY_4 = '4',
-
-	LBUTTON = VK_LBUTTON,
-	RBUTTON = VK_RBUTTON,
-
+	UP = VK_UP, DOWN = VK_DOWN, LEFT = VK_LEFT, RIGHT = VK_RIGHT,
+	PAGEUP = VK_PRIOR, PAGEDOWN = VK_NEXT,
+	A = 'A', B = 'B', C = 'C', D = 'D', E = 'E', F = 'F', G = 'G', H = 'H',
+	I = 'I', J = 'J', K = 'K', L = 'L', M = 'M', N = 'N', O = 'O', P = 'P',
+	Q = 'Q', R = 'R', S = 'S', T = 'T', U = 'U', V = 'V', W = 'W', X = 'X',
+	Y = 'Y', Z = 'Z',
+	ADD = VK_ADD, SUBTRACT = VK_SUBTRACT, TAB = VK_TAB,
+	KEY_1 = '1', KEY_2 = '2', KEY_3 = '3', KEY_4 = '4',
+	LBUTTON = VK_LBUTTON, RBUTTON = VK_RBUTTON,
 	SPACE = VK_SPACE,
 };
 
 enum class KEY_STATE
 {
-	NONE,
-	PRESS,
-	DOWN,
-	UP,
-	END
+	NONE, PRESS, DOWN, UP, END
 };
 
 enum
 {
-	KEY_TYPE_COUNT = static_cast<int32>(UINT8_MAX + 1),
-	KEY_STATE_COUNT = static_cast<int32>(KEY_STATE::END),
+	KEY_TYPE_COUNT = static_cast<int32_t>(UINT8_MAX + 1),
+	KEY_STATE_COUNT = static_cast<int32_t>(KEY_STATE::END),
+};
+
+struct KeyInfo
+{
+	KEY_STATE state = KEY_STATE::NONE;
+	int64_t lastDownTick = -1;
+	int64_t lastUpTick = -1;
 };
 
 class Input
@@ -75,27 +41,22 @@ public:
 	void Init(HWND hwnd);
 	void Update();
 
-	// 누르고 있을 때
-	bool GetButton(KEY_TYPE key) { return GetState(key) == KEY_STATE::PRESS; }
-	// 맨 처음 눌렀을 때
-	bool GetButtonDown(KEY_TYPE key) { return GetState(key) == KEY_STATE::DOWN; }
-	// 맨 처음 눌렀다 뗐을 때
-	bool GetButtonUp(KEY_TYPE key) { return GetState(key) == KEY_STATE::UP; }
+	bool GetButton(KEY_TYPE key);
+	bool GetButtonDown(KEY_TYPE key);
+	bool GetButtonUp(KEY_TYPE key);
 
-	const POINT& GetMousePos() { return _mousePos; }
-
+	const POINT& GetMousePos() const { return _mousePos; }
 	POINT GetMouseDelta() const { return _mouseDelta; }
 
 private:
-	inline KEY_STATE GetState(KEY_TYPE key) { return _states[static_cast<uint8>(key)]; }
-
+	KEY_STATE GetState(KEY_TYPE key) const;
 private:
-	HWND _hwnd;
-	vector<KEY_STATE> _states;
+	HWND _hwnd = nullptr;
+	std::vector<KeyInfo> _keyInfos;
 
-	POINT _mousePos = {};      // 현재 마우스 위치
-	POINT _prevMousePos = {};  // 이전 프레임의 마우스 위치
-	POINT _mouseDelta = {};    // 마우스 이동량 (델타)
+	POINT _mousePos = {};
+	POINT _prevMousePos = {};
+	POINT _mouseDelta = {};
 
-	POINT _currentMousePos;
+	int64_t _frameCount = 0;
 };
