@@ -47,7 +47,6 @@ void SocketIO::Init()
 
 	// 로그인 알림
 	DoSend<packet::CSLogin>();
-	DoSend<packet::CSMatchmaking>();
 }
 
 void SocketIO::Update()

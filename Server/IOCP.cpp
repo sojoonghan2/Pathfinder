@@ -354,7 +354,9 @@ void IOCP::ProcessPacket(int key, char* p)
 		// 방 번호 큐에서 번호를 하나를 꺼내와
 		// 그 번호의 방에 플레이어 아이디를 저장.
 
-		
+		// TODO:
+		// 최적화 할 것: 매치매이킹 패킷이 여러개 들어오면 짤라야 한다.
+		// atomic한 STATE 변수가 필요할 예정
 
 		// 일단 아이디를 넣는다.
 		_matchmakingQueue.push(key);

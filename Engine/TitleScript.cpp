@@ -17,12 +17,12 @@ void TitleScript::LateUpdate() {
 	{
 		if (INPUT->GetButton(KEY_TYPE::N))
 		{
-			_isMatch = true;
 #ifdef NETWORK_ENABLE
+			if (false == _isMatch)
 			GET_SINGLE(SocketIO)->DoSend<packet::CSMatchmaking>();
 
 #endif // NETWORK_ENABLE
-
+			_isMatch = true;
 		}
 		if (INPUT->GetButton(KEY_TYPE::M))
 		{
