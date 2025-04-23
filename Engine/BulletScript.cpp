@@ -43,7 +43,7 @@ void BulletScript::MouseInput()
 			auto parent = GetTransform()->GetParent().lock();
 			_parentTransform = parent->GetTransform();
 			Vec3 parentPos = _parentTransform->GetLocalPosition();
-			parentPos.y += 400.f;
+			parentPos.y += 450.f;
 			GetTransform()->SetLocalPosition(parentPos);
 			GetTransform()->RemoveParent();
 
@@ -65,7 +65,7 @@ void BulletScript::MouseInput()
 			}
 
 			dir.Normalize();
-			_velocity = dir * 30000.f;
+			_velocity = dir * 10000.f;
 		}
 	}
 	else

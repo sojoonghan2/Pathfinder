@@ -4,7 +4,7 @@
 GunFlameParticleSystem::GunFlameParticleSystem() : BaseParticleSystem()
 {
 	SetParticleInterval(0.005f, 0.0f);
-	SetParticleLifeTime(0.2f, 0.2f);
+	SetParticleLifeTime(0.3f, 0.3f);
 	SetParticleSpeed(700.0f, 700.0f);
 	SetParticleScale(5.0f, 30.0f);
 	SetDuration(10000000.f);

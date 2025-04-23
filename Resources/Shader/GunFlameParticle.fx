@@ -4,6 +4,8 @@
 #include "params.fx"
 #include "utils.fx"
 
+#define PI 3.141592
+
 struct Particle
 {
 	float3 worldPos;
@@ -64,7 +66,7 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 		return;
 
 	float ratio = g_data[id].curTime / g_data[id].lifeTime;
-	float scale = ((g_float_1 - g_float_0) * ratio + g_float_0) * 0.5f;
+	float scale = ((g_float_1 - g_float_0) * ratio + g_float_0); // 확대 효과 위해 *1.0f
 
 	output[0].position = vtx.viewPos + float4(-scale, scale, 0.f, 0.f);
 	output[1].position = vtx.viewPos + float4(scale, scale, 0.f, 0.f);
@@ -95,8 +97,23 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 float4 PS_Main(GS_OUT input) : SV_Target
 {
 	float4 color = g_textures.Sample(g_sam_0, input.uv);
-	color.rgb *= 5.0f; // 밝기 증가로 플래시 효과
-	color.a *= smoothstep(1.0f, 0.0f, g_data[input.id].curTime / g_data[input.id].lifeTime);
+	color.rgb *= 4.0f;
+
+	float lifeRatio = g_data[input.id].curTime / g_data[input.id].lifeTime;
+
+	float alpha = 0.0f;
+
+	if (lifeRatio < 0.5f)
+	{
+		alpha = smoothstep(0.0f, 0.5f, lifeRatio) * 0.5f;
+	}
+	else
+	{
+		alpha = smoothstep(1.0f, 0.6f, lifeRatio) * 0.5f;
+	}
+
+	color.a *= alpha;
+
 	return color;
 }
 
@@ -124,8 +141,6 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 	float dirX = g_vec4_1.x;
 	float dirY = g_vec4_1.y;
 	float dirZ = g_vec4_1.z;
-	float minSpeed = g_vec4_0.z;
-	float maxSpeed = g_vec4_0.w;
 
 	g_shared[0].addCount = addCount;
 	GroupMemoryBarrierWithGroupSync();
@@ -150,21 +165,13 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 
 		if (g_particle[threadIndex.x].alive == 1)
 		{
-			float3 baseDir = normalize(float3(dirX, dirY, dirZ));
-
-			// 난수 노이즈 생성
-			float3 noise = float3(
-			Rand(float2(threadIndex.x * 0.17f, accTime)),
-			Rand(float2(threadIndex.x * 0.37f, accTime)),
-			Rand(float2(threadIndex.x * 0.57f, accTime)));
-
-			// [-0.5 ~ 0.5] 범위로 만들고 퍼짐 정도(scale) 조절
-			float3 spread = (noise - 0.5f) * 0.2f; // 0.2: 탄퍼짐 정도
-			
-			float3 finalDir = normalize(baseDir + spread);
-			g_particle[threadIndex.x].worldDir = finalDir;
-
+			g_particle[threadIndex.x].worldDir = normalize(float3(dirX, dirY, dirZ));
 			g_particle[threadIndex.x].worldPos = float3(0, 0, 0);
+			float x = ((float) threadIndex.x / (float) maxCount) + accTime;
+			float3 noise = float3(
+				Rand(float2(x, accTime)),
+				Rand(float2(x * 0.31f, accTime)),
+				Rand(float2(x * 0.59f, accTime)));
 			g_particle[threadIndex.x].lifeTime = (maxLifeTime - minLifeTime) * noise.x + minLifeTime;
 			g_particle[threadIndex.x].curTime = 0.f;
 		}
@@ -177,11 +184,6 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 			g_particle[threadIndex.x].alive = 0;
 			return;
 		}
-
-		float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
-		float speed = (maxSpeed - minSpeed) * ratio + minSpeed;
-		g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
 	}
 }
-
 #endif
