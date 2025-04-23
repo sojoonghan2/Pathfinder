@@ -8,6 +8,7 @@ public:
 	PlayerScript();
 	virtual ~PlayerScript();
 
+	virtual void Start() override;
 	virtual void LateUpdate() override;
 
 	void KeyboardInput();
@@ -19,6 +20,9 @@ public:
 	void Shoot();
 	void ThrowGrenade();
 	void ShootRazer();
+
+	void ShakeCamera();
+	void Recoil();
 
 	void RotateToCameraOnShoot();
 	void RotateToCameraLook();
@@ -64,4 +68,28 @@ private:
 
 	NetworkTimer	_moveTimer;
 	Vec3			_prevPosition = Vec3::Zero;
+
+	Vec3			_cameraShakeOffset = Vec3(0.f);
+	float			_cameraShakeDecay = 10.0f;
+	float			_verticalRecoil = 5.0f;
+	float			_horizontalRecoil = 5.0f;
+	float			_forwardRecoil = 7.0f;
+	float			_recoilAccumulation = 0.0f;
+	const float		_maxRecoil = 3.0f;
+
+	// UI
+	shared_ptr<GameObject> _dashUI;
+	shared_ptr<GameObject> _grenadeUI;
+	shared_ptr<GameObject> _razerUI;
+	shared_ptr<GameObject> _crosshairUI;
+
+	// HP
+	shared_ptr<Transform> _hpTransform;
+
+	// Ä«¸Þ¶ó
+	shared_ptr<GameObject> _cameraObj;
+
+	// Dummy Ä³½Ì
+	vector<shared_ptr<GameObject>> _dummyList;
+	bool _dummiesInitialized = false;
 };

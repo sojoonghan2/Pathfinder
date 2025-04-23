@@ -4,49 +4,79 @@
 #include "GameObject.h"
 #include "Input.h"
 #include "Timer.h"
+#include "ParticleSystem.h"
+#include "Scene.h"
+#include "SceneManager.h"
 
 GunScript::GunScript() {}
 GunScript::~GunScript() {}
+
+void GunScript::Start()
+{
+	_gunFlame = GET_SINGLE(SceneManager)->FindObjectByName(L"GunFlameParticle");
+}
+
 
 void GunScript::Update()
 {
 	UpdateGunTransformByInput();
 	ApplyTransformInstantly();
+	FlamePlaying();
 }
 
 void GunScript::UpdateGunTransformByInput()
 {
-	int state = 0; // ±âº»: Idle
+	bool moving = INPUT->GetButton(KEY_TYPE::W) || INPUT->GetButton(KEY_TYPE::A) ||
+		INPUT->GetButton(KEY_TYPE::S) || INPUT->GetButton(KEY_TYPE::D);
 
-	if (INPUT->GetButton(KEY_TYPE::W) || INPUT->GetButton(KEY_TYPE::A) || INPUT->GetButton(KEY_TYPE::S) || INPUT->GetButton(KEY_TYPE::D))
-		state = 1;
-	if (INPUT->GetButton(KEY_TYPE::SPACE))
-		state = 2;
-	if (INPUT->GetButton(KEY_TYPE::E))
-		state = 3;
-	if (INPUT->GetButton(KEY_TYPE::LBUTTON) && state == 1)
-		state = 5;
-	else if (INPUT->GetButton(KEY_TYPE::LBUTTON))
-		state = 4;
-	if (INPUT->GetButton(KEY_TYPE::R))
-		state = 7;
-
-	switch (state)
-	{
-	case 0: SetIdlePose(); break;
-	case 1: SetMovePose(); break;
-	case 2: SetDashPose(); break;
-	case 3: SetGrenadePose(); break;
-	case 4: SetShootIdlePose(); break;
-	case 5: SetShootMovePose(); break;
-	case 7: SetRazerPose(); break;
-	default: SetIdlePose(); break;
+	if (INPUT->GetButton(KEY_TYPE::R)) {
+		SetRazerPose();
+	}
+	else if (INPUT->GetButton(KEY_TYPE::E)) {
+		SetGrenadePose();
+	}
+	else if (INPUT->GetButton(KEY_TYPE::SPACE)) {
+		SetDashPose();
+	}
+	else if (INPUT->GetButton(KEY_TYPE::LBUTTON) && moving) {
+		SetShootMovePose();
+	}
+	else if (INPUT->GetButton(KEY_TYPE::LBUTTON)) {
+		SetShootIdlePose();
+	}
+	else if (moving) {
+		SetMovePose();
+	}
+	else {
+		SetIdlePose();
 	}
 }
 
 void GunScript::ApplyTransformInstantly()
 {
 	GetTransform()->SetLocalPosition(_targetPos);
+}
+
+void GunScript::FlamePlaying()
+{
+	if (!_gunFlame) return;
+
+	if (INPUT->GetButton(KEY_TYPE::LBUTTON))
+	{
+		if (!_isFlamePlaying)
+		{
+			_gunFlame->GetParticleSystem()->ParticleStart();
+			_isFlamePlaying = true;
+		}
+	}
+	else
+	{
+		if (_isFlamePlaying)
+		{
+			_gunFlame->GetParticleSystem()->ParticleStop();
+			_isFlamePlaying = false;
+		}
+	}
 }
 
 void GunScript::SetIdlePose()

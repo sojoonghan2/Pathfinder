@@ -39,7 +39,7 @@ cbuffer TRANSFORM_PARAMS : register(b1)
 };
 
 // 머터리얼 다용도 파라미터
-cbuffer MATERIAL_PARAMS : register(b2)
+cbuffer _PARAMS : register(b2)
 {
     int     g_int_0;
     int     g_int_1;
@@ -73,11 +73,13 @@ Texture2D g_textures1 : register(t1);
 Texture2D g_textures2 : register(t2);
 Texture2D g_textures3 : register(t3);
 Texture2D g_textures4 : register(t4);
+Texture2D g_shadowTexture : register(t5); // 실제 register 번호에 맞게
 
 // 본 애니메이션 행렬 버퍼
 StructuredBuffer<Matrix> g_mat_bone : register(t7);
 
 // 샘플러 상태
 SamplerState g_sam_0 : register(s0);
+SamplerComparisonState g_shadowSampler : register(s1);
 
 #endif

@@ -42,47 +42,57 @@ VS_OUT VS_DirLight(VS_IN input)
 
 PS_OUT PS_DirLight(VS_OUT input)
 {
-    PS_OUT output = (PS_OUT)0;
+    PS_OUT output = (PS_OUT) 0;
 
     float3 viewPos = g_textures.Sample(g_sam_0, input.uv).xyz;
     if (viewPos.z <= 0.f)
         clip(-1);
 
     float3 viewNormal = g_textures1.Sample(g_sam_0, input.uv).xyz;
-
     LightColor color = CalculateLightColor(g_int_0, viewNormal, viewPos);
 
-    // 그림자
+    // 그림자 계산
     if (length(color.diffuse) != 0)
     {
+        
         matrix shadowCameraVP = g_mat_0;
 
-        float4 worldPos = mul(float4(viewPos.xyz, 1.f), g_matViewInv);
+        // 뷰 공간 → 월드 공간
+        float4 worldPos = mul(float4(viewPos, 1.f), g_matViewInv);
+
+        // 월드 → 그림자 카메라 공간
         float4 shadowClipPos = mul(worldPos, shadowCameraVP);
         float depth = shadowClipPos.z / shadowClipPos.w;
 
-        // x [-1 ~ 1] -> u [0 ~ 1]
-        // y [1 ~ -1] -> v [0 ~ 1]
+        // Shadow Map UV 계산
         float2 uv = shadowClipPos.xy / shadowClipPos.w;
         uv.y = -uv.y;
-        uv = uv * 0.5 + 0.5;
-
-        if (0 < uv.x && uv.x < 1 && 0 < uv.y && uv.y < 1)
+        uv = uv * 0.5f + 0.5f;
+        
+        depth = depth * 0.5f + 0.5f;
+        // UV가 ShadowMap 내부에 있을 때만 그림자 샘플링
+        if (uv.x >= 0 && uv.x <= 1 && uv.y >= 0 && uv.y <= 1)
         {
             float shadowDepth = g_textures2.Sample(g_sam_0, uv).x;
-            if (shadowDepth > 0 && depth > shadowDepth + 0.00001f)
+            float bias = 0.05f;
+
+            if (depth < shadowDepth + bias)
             {
+                // 그림자 적용
                 color.diffuse *= 0.5f;
                 color.specular = (float4) 0.f;
             }
+            
         }
     }
 
+    
     output.diffuse = color.diffuse + color.ambient;
     output.specular = color.specular;
 
     return output;
 }
+
 
 // [Point Light]
 // g_int_0 : Light index
@@ -190,7 +200,7 @@ PS_OUT PS_SpotLight(VS_OUT input)
     float3 viewToCam = normalize(viewCamPos - viewPos);
     float specularFactor = pow(max(dot(viewReflect, viewToCam), 0.f), 32.0f);
     float4 specular = light.color.specular * specularFactor * attenuation;
-
+   
     // 최종 출력값 설정
     output.diffuse = diffuse + light.color.ambient;
     output.specular = specular;
@@ -212,6 +222,7 @@ VS_OUT VS_Final(VS_IN input)
     output.uv = input.uv;
 
     return output;
+    
 }
 
 float4 PS_Final(VS_OUT input) : SV_Target

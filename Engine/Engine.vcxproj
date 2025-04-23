@@ -161,6 +161,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -206,6 +207,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GeneratorScript.h" />
     <ClInclude Include="GlitterParticleSystem.h" />
+    <ClInclude Include="GunFlameParticleSystem.h" />
     <ClInclude Include="GunScript.h" />
     <ClInclude Include="LightPillarParticleSystem.h" />
     <ClInclude Include="LoadingScene.h" />
@@ -241,6 +243,7 @@
     <ClInclude Include="RectangleCollider.h" />
     <ClInclude Include="RazerParticleSystem.h" />
     <ClInclude Include="RenderTargetGroup.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Resources.h" />
     <ClInclude Include="RootSignature.h" />
     <ClInclude Include="RuinsScene.h" />
@@ -306,6 +309,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeneratorScript.cpp" />
     <ClCompile Include="GlitterParticleSystem.cpp" />
+    <ClCompile Include="GunFlameParticleSystem.cpp" />
     <ClCompile Include="GunScript.cpp" />
     <ClCompile Include="LightPillarParticleSystem.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
@@ -425,6 +429,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="..\Resources\Shader\GunFlameParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="..\Resources\Shader\lighting.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -499,6 +509,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Engine.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -16,6 +16,30 @@
 PlayerScript::PlayerScript() {}
 PlayerScript::~PlayerScript() {}
 
+void PlayerScript::Start()
+{
+	_dashUI = GET_SINGLE(SceneManager)->FindObjectByName(L"DashUI");
+	_grenadeUI = GET_SINGLE(SceneManager)->FindObjectByName(L"GrenadeUI");
+	_razerUI = GET_SINGLE(SceneManager)->FindObjectByName(L"RazerUI");
+	_crosshairUI = GET_SINGLE(SceneManager)->FindObjectByName(L"CrosshairUI");
+
+	auto hpObj = GET_SINGLE(SceneManager)->FindObjectByName(L"HP");
+	if (hpObj) _hpTransform = hpObj->GetTransform();
+
+	_cameraObj = GET_SINGLE(SceneManager)->GetActiveScene()->GetMainCamera()->GetGameObject();
+
+	// Dummy 캐싱
+	int index = 0;
+	while (true)
+	{
+		wstring name = L"dummy" + to_wstring(index++);
+		auto dummy = GET_SINGLE(SceneManager)->FindObjectByName(name);
+		if (!dummy) break;
+		_dummyList.push_back(dummy);
+	}
+	_dummiesInitialized = true;
+}
+
 void PlayerScript::LateUpdate()
 {
 #ifdef NETWORK_ENABLE
@@ -57,7 +81,23 @@ void PlayerScript::LateUpdate()
 	ThrowGrenade();
 	ShootRazer();
 	Animation();
+	Recoil();
 
+	// 테스트용 HP 코드
+	if (_hpTransform && INPUT->GetButton(KEY_TYPE::K))
+	{
+		Vec3 scale = _hpTransform->GetLocalScale();
+		Vec3 pos = _hpTransform->GetLocalPosition();
+
+		float delta = 10.f;
+		if (scale.x - delta >= 0.f)
+		{
+			scale.x -= delta;
+			pos.x -= delta * 0.41f;
+			_hpTransform->SetLocalScale(scale);
+			_hpTransform->SetLocalPosition(pos);
+		}
+	}
 }
 
 void PlayerScript::KeyboardInput() { Move(); Dash(); }
@@ -97,9 +137,8 @@ void PlayerScript::Move()
 	_prevPosition = GetTransform()->GetLocalPosition();
 	Vec3 pos = _prevPosition;
 
-	shared_ptr<GameObject> cameraObj = GET_SINGLE(SceneManager)->GetActiveScene()->GetMainCamera()->GetGameObject();
-	Vec3 camForward = cameraObj->GetTransform()->GetLook();
-	Vec3 camRight = cameraObj->GetTransform()->GetRight();
+	Vec3 camForward = _cameraObj->GetTransform()->GetLook();
+	Vec3 camRight = _cameraObj->GetTransform()->GetRight();
 	camForward.y = 0;
 	camRight.y = 0;
 	camForward.Normalize();
@@ -160,8 +199,8 @@ void PlayerScript::Dash()
 	if (_dashCooldownTimer > 0.f)
 	{
 		_dashCooldownTimer -= DELTA_TIME;
-		if (_dashCooldownTimer <= 0.f)
-			GET_SINGLE(SceneManager)->FindObjectByName(L"DashUI")->SetRenderOn();
+		if (_dashCooldownTimer <= 0.f && _dashUI)
+			_dashUI->SetRenderOn();
 	}
 
 	if (_isDashing)
@@ -188,7 +227,7 @@ void PlayerScript::Dash()
 		_dashDirection = lookDir;
 		_isDashing = true;
 		_dashTimer = _dashDuration;
-		GET_SINGLE(SceneManager)->FindObjectByName(L"DashUI")->SetRenderOff();
+		_dashUI->SetRenderOff();
 	}
 }
 
@@ -207,6 +246,8 @@ void PlayerScript::Shoot()
 		{
 			_shootAniDurationTimer = 1.0f;
 		}
+
+		ShakeCamera();
 	}
 	else
 	{
@@ -279,7 +320,53 @@ void PlayerScript::ShootRazer()
 	}
 }
 
-void PlayerScript::SetPosition(const float x, const float z)
+void PlayerScript::ShakeCamera()
+{
+	_recoilAccumulation = min(_recoilAccumulation + 0.2f, _maxRecoil);
+
+	Vec3 playerLook = GetTransform()->GetUp();
+	playerLook.Normalize();
+
+	float recoilAmount = _horizontalRecoil * (1.0f + _recoilAccumulation * 0.2f);
+	float shakeStrength = (rand() % 2000 / 1000.0f - 1.0f) * recoilAmount;
+	Vec3 shakeOffset = playerLook * shakeStrength;
+	_cameraShakeOffset += shakeOffset;
+
+	Vec3 camPos = _cameraObj->GetTransform()->GetLocalPosition();
+	_cameraObj->GetTransform()->SetLocalPosition(camPos + _cameraShakeOffset);
+}
+
+void PlayerScript::Recoil()
+{
+	// 카메라 흔들림 감소 처리
+	if (_cameraShakeOffset.LengthSquared() > 0.001f)
+	{
+		// 카메라 위치 복구
+		if (_cameraObj != nullptr)
+		{
+			Vec3 camPos = _cameraObj->GetTransform()->GetLocalPosition();
+			_cameraObj->GetTransform()->SetLocalPosition(camPos - _cameraShakeOffset);
+
+			// 흔들림 감소
+			_cameraShakeOffset *= (1.0f - _cameraShakeDecay * DELTA_TIME);
+
+			// 매우 작은 값이면 0으로 설정
+			if (_cameraShakeOffset.LengthSquared() < 0.001f)
+				_cameraShakeOffset = Vec3(0.f);
+
+			// 수정된 흔들림 적용
+			_cameraObj->GetTransform()->SetLocalPosition(camPos - _cameraShakeOffset + _cameraShakeOffset);
+		}
+	}
+
+	// 사격을 멈추면 반동 누적치 감소
+	if (!_isShoot)
+	{
+		_recoilAccumulation = max(0.0f, _recoilAccumulation - 0.5f * DELTA_TIME);
+	}
+}
+
+void PlayerScript::SetPosition(float x, float z)
 {
 	Vec3 pos = GetTransform()->GetLocalPosition();
 	pos.x = x * 200.f;
@@ -290,23 +377,24 @@ void PlayerScript::SetPosition(const float x, const float z)
 
 void PlayerScript::RotateToCameraOnShoot()
 {
-	if (INPUT->GetButton(KEY_TYPE::RBUTTON))
+	if (_crosshairUI)
 	{
-		auto crosshair = GET_SINGLE(SceneManager)->FindObjectByName(L"CrosshairUI");
-		crosshair->SetRenderOn();
-		RotateToCameraLook();
+		if (INPUT->GetButton(KEY_TYPE::RBUTTON))
+		{
+			_crosshairUI->SetRenderOn();
+			RotateToCameraLook();
+		}
+		if (INPUT->GetButtonUp(KEY_TYPE::RBUTTON))
+		{
+			_crosshairUI->SetRenderOff();
+		}
 	}
-	if (INPUT->GetButtonUp(KEY_TYPE::RBUTTON))
-	{
-		auto crosshair = GET_SINGLE(SceneManager)->FindObjectByName(L"CrosshairUI");
-		crosshair->SetRenderOff();
-	}
+
 }
 
 void PlayerScript::RotateToCameraLook()
 {
-	shared_ptr<GameObject> cameraObj = GET_SINGLE(SceneManager)->GetActiveScene()->GetMainCamera()->GetGameObject();
-	Vec3 camLook = cameraObj->GetTransform()->GetLook();
+	Vec3 camLook = _cameraObj->GetTransform()->GetLook();
 	camLook.y = 0.f;
 	camLook.Normalize();
 
@@ -320,15 +408,14 @@ void PlayerScript::RotateToCameraLook()
 
 void PlayerScript::CheckDummyHits()
 {
+	if (!_dummiesInitialized) return;
+
 	auto player = GetGameObject();
 	if (!player) return;
-	int index{};
-	while (true)
+
+	for (auto& dummy : _dummyList)
 	{
-		wstring name = L"dummy" + to_wstring(index++);
-		auto dummy = GET_SINGLE(SceneManager)->FindObjectByName(name);
-		if (!dummy)
-			break;
+		if (!dummy) continue;
 
 		bool is_collision = GET_SINGLE(SceneManager)->Collition(player, dummy);
 		if (is_collision)
@@ -340,7 +427,7 @@ void PlayerScript::CheckDummyHits()
 			if (dir.LengthSquared() > 0.001f)
 			{
 				dir.Normalize();
-				curPos += dir * 10.f; // 소폭 밀기
+				curPos += dir * 10.f;
 			}
 			else
 			{

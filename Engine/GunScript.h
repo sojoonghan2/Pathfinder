@@ -7,11 +7,14 @@ public:
 	GunScript();
 	virtual ~GunScript();
 
+	virtual void Start() override;
 	virtual void Update() override;
 
 private:
 	void UpdateGunTransformByInput();
 	void ApplyTransformInstantly();
+
+	void FlamePlaying();
 
 	void SetIdlePose();
 	void SetMovePose();
@@ -28,4 +31,8 @@ private:
 	Vec3 _targetRot = Vec3(0.f);
 	float _idleTime = 0.f;
 	float _shootMoveTime = 0.f;
+
+	bool _isFlamePlaying = false;
+
+	shared_ptr<GameObject> _gunFlame;
 };

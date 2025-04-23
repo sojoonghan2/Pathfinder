@@ -397,7 +397,6 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 		for (size_t b = 0; b < boneCount; b++)
 			offsetVec[b] = _bones[b].matOffset;
 
-		// OffsetMatrix StructuredBuffer ?Έν…
 		_offsetBuffer = make_shared<StructuredBuffer>();
 		_offsetBuffer->Init(sizeof(Matrix), static_cast<uint32>(offsetVec.size()), offsetVec.data());
 
@@ -406,7 +405,6 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 		{
 			AnimClipInfo& animClip = _animClips[i];
 
-			// ? λ‹λ©”μ΄???„λ ???•λ³΄
 			vector<AnimFrameParams> frameParams;
 			frameParams.resize(_bones.size() * animClip.frameCount);
 

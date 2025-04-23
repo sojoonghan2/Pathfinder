@@ -24,6 +24,8 @@
 #include "CrapScript.h"
 #include "RazerParticleScript.h"
 #include "BulletScript.h"
+#include "GunScript.h"
+#include "TestScript.h"
 
 #include "SphereCollider.h"
 #include "BoxCollider.h"
@@ -41,6 +43,7 @@
 #include "PortalFrameParticleSystem.h"
 #include "NetworkOtherPlayerScript.h"
 #include "NetworkCrabScript.h"
+#include "GunFlameParticleSystem.h"
 
 RuinsScene::RuinsScene()
 {
@@ -65,7 +68,7 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-	// 카메라
+// 카메라
 #pragma region Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
@@ -144,6 +147,35 @@ RuinsScene::RuinsScene()
 			wire->AddComponent(meshRenderer);
 
 			activeScene->AddGameObject(wire);
+
+			shared_ptr<GameObject> particleObject = make_shared<GameObject>();
+			particleObject->SetName(L"GunFlameParticle");
+			particleObject->AddComponent(make_shared<Transform>());
+			particleObject->GetTransform()->SetParent(gameObject->GetTransform());
+			particleObject->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 150.f));
+			shared_ptr<GunFlameParticleSystem> gunFlameParticleSystem = make_shared<GunFlameParticleSystem>();
+			gunFlameParticleSystem->SetParticleScale(50.f, 50.f);
+			particleObject->AddComponent(gunFlameParticleSystem);
+
+			activeScene->AddGameObject(particleObject);
+		}
+
+		// 총
+		shared_ptr<MeshData> gunmeshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun\\Gun.fbx");
+		vector<shared_ptr<GameObject>> gungameObjects = gunmeshData->Instantiate();
+
+		for (auto gameObject : gungameObjects)
+		{
+			gameObject->SetName(L"Gun");
+			gameObject->SetCheckFrustum(false);
+			gameObject->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(PI / 2, -0.4f, 1.f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(42.f, 58.f, -3.f));
+			gameObject->AddComponent(make_shared<GunScript>());
+
+			activeScene->AddGameObject(gameObject);
 		}
 
 		// 총알
@@ -155,7 +187,7 @@ RuinsScene::RuinsScene()
 			bullet->SetStatic(false);
 
 			bullet->AddComponent(make_shared<Transform>());
-			bullet->GetTransform()->SetLocalScale(Vec3(30.f, 30.f, 30.f));
+			bullet->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
 			bullet->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 			bullet->GetTransform()->GetTransform()->RemoveParent();
 			bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
@@ -293,29 +325,52 @@ RuinsScene::RuinsScene()
 		obj->SetRenderOff();
 		activeScene->AddGameObject(obj);
 
-		// 체력 UI
-		shared_ptr<GameObject> hpUI = make_shared<GameObject>();
-		hpUI->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
-		hpUI->AddComponent(make_shared<Transform>());
-		hpUI->SetName(L"HPUI");
-		hpUI->GetTransform()->SetLocalScale(Vec3(200.f, 100.f, 100.f));
-		hpUI->GetTransform()->SetLocalPosition(Vec3(-450.f, -300.f, 1.f));
-		shared_ptr<MeshRenderer> hpUImeshRenderer = make_shared<MeshRenderer>();
+		// hp
+		shared_ptr<GameObject> hpBase = make_shared<GameObject>();
+		hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		hpBase->AddComponent(make_shared<Transform>());
+		hpBase->SetName(L"HPBase");
+		hpBase->GetTransform()->SetLocalScale(Vec3(200.f, 100.f, 100.f));
+		hpBase->GetTransform()->SetLocalPosition(Vec3(-450.f, -300.f, 1.f));
+		shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-			hpUImeshRenderer->SetMesh(mesh);
+			hpBasemeshRenderer->SetMesh(mesh);
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
 			shared_ptr<Texture> texture{};
-			texture = GET_SINGLE(Resources)->Load<Texture>(L"HPUI", L"..\\Resources\\Texture\\HPUI.png");
+			texture = GET_SINGLE(Resources)->Load<Texture>(L"HPBase", L"..\\Resources\\Texture\\HPBase.png");
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
 			material->SetTexture(0, texture);
-			hpUImeshRenderer->SetMaterial(material);
+			hpBasemeshRenderer->SetMaterial(material);
 		}
-		hpUI->AddComponent(hpUImeshRenderer);
-		activeScene->AddGameObject(hpUI);
+		hpBase->AddComponent(hpBasemeshRenderer);
+		activeScene->AddGameObject(hpBase);
+
+		shared_ptr<GameObject> hp = make_shared<GameObject>();
+		hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		hp->AddComponent(make_shared<Transform>());
+		hp->SetName(L"HP");
+		hp->GetTransform()->SetLocalScale(Vec3(200.f, 100.f, 100.f));
+		hp->GetTransform()->SetLocalPosition(Vec3(-450.f, -300.f, 1.f));
+		shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			hpmeshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+			shared_ptr<Texture> texture{};
+			texture = GET_SINGLE(Resources)->Load<Texture>(L"HP", L"..\\Resources\\Texture\\HP.png");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			hpmeshRenderer->SetMaterial(material);
+		}
+		hp->AddComponent(hpmeshRenderer);
+		activeScene->AddGameObject(hp);
 	}
 #pragma endregion
 
@@ -376,8 +431,7 @@ RuinsScene::RuinsScene()
 		// 1. 기본 오브젝트 생성 및 설정
 		shared_ptr<GameObject> terraincube = make_shared<GameObject>();
 		terraincube->AddComponent(make_shared<Transform>());
-		terraincube->SetCheckFrustum(true);
-
+		terraincube->SetCheckFrustum(false);
 		// 2. Transform 컴포넌트 추가 및 설정
 		terraincube->AddComponent(make_shared<Transform>());
 		// 씬의 임시 크기
@@ -393,15 +447,15 @@ RuinsScene::RuinsScene()
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\New_ruins.jpg");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
 			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsFloor", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
-			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\New_ruins.jpg");
+			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
 			material->SetTexture(0, texture);
-			material->SetTexture(1, floorTexture);
-			material->SetTexture(2, topTexture);
+			material->SetTexture(2, floorTexture);
+			material->SetTexture(1, topTexture);
 			meshRenderer->SetMaterial(material);
 		}
 		terraincube->AddComponent(meshRenderer);
@@ -411,7 +465,9 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-	// 점령 중 UI
+
+// 점령 중 UI
+
 #pragma region UI
 	{
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
@@ -471,6 +527,7 @@ RuinsScene::RuinsScene()
 #pragma endregion
 
 	// 천장에서 빛이 새어나오는 유적지 조명
+	/*
 #pragma region Spot Light
 	{
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
@@ -532,7 +589,7 @@ RuinsScene::RuinsScene()
 		activeScene->AddGameObject(ambientLight);
 	}
 #pragma endregion
-
+*/
 	// 먼지 파티클
 #pragma region DustParticle
 	{
@@ -743,7 +800,7 @@ RuinsScene::RuinsScene()
 		vector<Vec3> positions;
 		float minDistance = 300.0f;
 
-		for (int i = 0; i < 10; ++i)
+		for (int i = 0; i < 1; ++i)
 		{
 			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
 			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
@@ -804,10 +861,57 @@ RuinsScene::RuinsScene()
 			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(300.f, 300.f, 300.f));
 
 			gameObjects[0]->AddComponent(make_shared<SphereCollider>());
-			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
+			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(300.f);
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
 			activeScene->AddGameObject(gameObjects[0]);
+
+			// hp
+			shared_ptr<GameObject> hpBase = make_shared<GameObject>();
+			hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+			hpBase->AddComponent(make_shared<Transform>());
+			hpBase->SetName(L"CrapHPBase" + std::to_wstring(i));
+			hpBase->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
+			hpBase->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
+			shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+				hpBasemeshRenderer->SetMesh(mesh);
+			}
+			{
+				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+				shared_ptr<Texture> texture{};
+				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrapHPBase", L"..\\Resources\\Texture\\CrapHPBase.png");
+				shared_ptr<Material> material = make_shared<Material>();
+				material->SetShader(shader);
+				material->SetTexture(0, texture);
+				hpBasemeshRenderer->SetMaterial(material);
+			}
+			hpBase->AddComponent(hpBasemeshRenderer);
+			activeScene->AddGameObject(hpBase);
+
+			shared_ptr<GameObject> hp = make_shared<GameObject>();
+			hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+			hp->AddComponent(make_shared<Transform>());
+			hp->SetName(L"CrapHP");
+			hp->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
+			hp->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
+			shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+				hpmeshRenderer->SetMesh(mesh);
+			}
+			{
+				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+				shared_ptr<Texture> texture{};
+				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrapHP", L"..\\Resources\\Texture\\CrapHP.png");
+				shared_ptr<Material> material = make_shared<Material>();
+				material->SetShader(shader);
+				material->SetTexture(0, texture);
+				hpmeshRenderer->SetMaterial(material);
+			}
+			hp->AddComponent(hpmeshRenderer);
+			activeScene->AddGameObject(hp);
 		}
 	}
 #endif // NETWORK_ENABLE
@@ -962,6 +1066,32 @@ RuinsScene::RuinsScene()
 		portalFrameParticle->AddComponent(portalFrameParticleSystem);
 
 		activeScene->AddGameObject(portalFrameParticle);
+	}
+#pragma endregion
+#pragma region Spot Light
+	{
+		// 1. Light 오브젝트 생성 
+		shared_ptr<GameObject> light = make_shared<GameObject>();
+		light->SetName(L"Ancient_Ruin_Light");
+		light->AddComponent(make_shared<Transform>());
+		light->GetTransform()->SetLocalPosition(Vec3(0.f, 4900.f, 0.f));
+
+		// 2-1. Light 컴포넌트 추가 및 속성 설정
+		light->AddComponent(make_shared<Light>());
+		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
+
+		// 2-2. 스팟 라이트 방향 설정
+		light->GetLight()->SetLightDirection(Vec3(0.f, -1.f, 0.f));
+
+		float lightpower = 0.5f;
+		// 3. 조명 색상 및 강도 조정 (따뜻한 황금빛)
+		light->GetLight()->SetDiffuse(Vec3(1.0f, 0.85f, 0.6f) * lightpower);
+		light->GetLight()->SetAmbient(Vec3(0.25f, 0.2f, 0.25f) * lightpower);
+		light->GetLight()->SetSpecular(Vec3(0.9f, 0.8f, 0.6f) * lightpower);
+
+		// 4. Scene에 추가
+		activeScene->AddGameObject(light);
+
 	}
 #pragma endregion
 }

@@ -155,15 +155,15 @@ shared_ptr<Mesh> Resources::LoadCubeMesh()
 	vec[6] = Vertex(Vec3(+w2, +h2, +d2), Vec2(0.0f, 0.0f), Vec3(0.0f, 0.0f, 1.0f), Vec3(-1.0f, 0.0f, 0.0f));
 	vec[7] = Vertex(Vec3(-w2, +h2, +d2), Vec2(1.0f, 0.0f), Vec3(0.0f, 0.0f, 1.0f), Vec3(-1.0f, 0.0f, 0.0f));
 	// 윗면
-	vec[8] = Vertex(Vec3(-w2, +h2, -d2), Vec2(0.0f, 1.0f), Vec3(0.0f, 1.0f, 0.0f), Vec3(1.0f, 0.0f, 0.0f));
-	vec[9] = Vertex(Vec3(-w2, +h2, +d2), Vec2(0.0f, 0.0f), Vec3(0.0f, 1.0f, 0.0f), Vec3(1.0f, 0.0f, 0.0f));
-	vec[10] = Vertex(Vec3(+w2, +h2, +d2), Vec2(1.0f, 0.0f), Vec3(0.0f, 1.0f, 0.0f), Vec3(1.0f, 0.0f, 0.0f));
-	vec[11] = Vertex(Vec3(+w2, +h2, -d2), Vec2(1.0f, 1.0f), Vec3(0.0f, 1.0f, 0.0f), Vec3(1.0f, 0.0f, 0.0f));
+	vec[8] = Vertex(Vec3(-w2, +h2, -d2), Vec2(0.0f, 1.0f), Vec3(0.0f, -1.0f, 0.0f), Vec3(0.0f, 1.0f, 0.0f));
+	vec[9] = Vertex(Vec3(-w2, +h2, +d2), Vec2(0.0f, 0.0f), Vec3(0.0f, -1.0f, 0.0f), Vec3(0.0f, 1.0f, 0.0f));
+	vec[10] = Vertex(Vec3(+w2, +h2, +d2), Vec2(1.0f, 0.0f), Vec3(0.0f, -1.0f, 0.0f), Vec3(0.0f, 1.0f, 0.0f));
+	vec[11] = Vertex(Vec3(+w2, +h2, -d2), Vec2(1.0f, 1.0f), Vec3(0.0f, -1.0f, 0.0f), Vec3(0.0f, 1.0f, 0.0f));
 	// 아랫면
-	vec[12] = Vertex(Vec3(-w2, -h2, -d2), Vec2(1.0f, 1.0f), Vec3(0.0f, -1.0f, 0.0f), Vec3(-1.0f, 0.0f, 0.0f));
-	vec[13] = Vertex(Vec3(+w2, -h2, -d2), Vec2(0.0f, 1.0f), Vec3(0.0f, -1.0f, 0.0f), Vec3(-1.0f, 0.0f, 0.0f));
-	vec[14] = Vertex(Vec3(+w2, -h2, +d2), Vec2(0.0f, 0.0f), Vec3(0.0f, -1.0f, 0.0f), Vec3(-1.0f, 0.0f, 0.0f));
-	vec[15] = Vertex(Vec3(-w2, -h2, +d2), Vec2(1.0f, 0.0f), Vec3(0.0f, -1.0f, 0.0f), Vec3(-1.0f, 0.0f, 0.0f));
+	vec[12] = Vertex(Vec3(-w2, -h2, -d2), Vec2(1.0f, 1.0f), Vec3(0.0f, 1.0f, 0.0f), Vec3(0.0f, -1.0f, 0.0f));
+	vec[13] = Vertex(Vec3(+w2, -h2, -d2), Vec2(0.0f, 1.0f), Vec3(0.0f, 1.0f, 0.0f), Vec3(0.0f, -1.0f, 0.0f));
+	vec[14] = Vertex(Vec3(+w2, -h2, +d2), Vec2(0.0f, 0.0f), Vec3(0.0f, 1.0f, 0.0f), Vec3(0.0f, -1.0f, 0.0f));
+	vec[15] = Vertex(Vec3(-w2, -h2, +d2), Vec2(1.0f, 0.0f), Vec3(0.0f, 1.0f, 0.0f), Vec3(0.0f, -1.0f, 0.0f));
 	// 왼쪽면
 	vec[16] = Vertex(Vec3(-w2, -h2, +d2), Vec2(0.0f, 1.0f), Vec3(-1.0f, 0.0f, 0.0f), Vec3(0.0f, 0.0f, -1.0f));
 	vec[17] = Vertex(Vec3(-w2, +h2, +d2), Vec2(0.0f, 0.0f), Vec3(-1.0f, 0.0f, 0.0f), Vec3(0.0f, 0.0f, -1.0f));
@@ -742,6 +742,40 @@ void Resources::CreateDefaultShader()
 		Add<Shader>(L"CrapComputeParticle", computeShader);
 	}
 
+	// GunFlameParticle
+	{
+		ShaderInfo info =
+		{
+			// 파티클
+			SHADER_TYPE::PARTICLE,
+			// 뒷면 제거
+			RASTERIZER_TYPE::CULL_BACK,
+			// 뎁스 버퍼에 기록 X
+			DEPTH_STENCIL_TYPE::LESS_NO_WRITE,
+			// 알파 블렌딩
+			BLEND_TYPE::ALPHA_BLEND,
+			// 기본 도형: 점
+			D3D_PRIMITIVE_TOPOLOGY_POINTLIST
+		};
+
+		ShaderArg arg =
+		{
+			"VS_Main",
+			"",
+			"",
+			"GS_Main",
+			"PS_Main"
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\GunFlameParticle.fx", info, arg);
+		Add<Shader>(L"GunFlameParticle", shader);
+
+		shared_ptr<Shader> computeShader = make_shared<Shader>();
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\GunFlameParticle.fx", "CS_Main", "cs_5_0");
+		Add<Shader>(L"GunFlameComputeParticle", computeShader);
+	}
+
 	// FireParticle
 	{
 		ShaderInfo info =
@@ -1249,6 +1283,19 @@ void Resources::CreateDefaultMaterial()
 		shared_ptr<Material> computeMaterial = make_shared<Material>();
 		computeMaterial->SetShader(computShader);
 		Add<Material>(L"CrapComputeParticle", computeMaterial);
+	}
+
+	// GunFlameParticle
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"GunFlameParticle");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		Add<Material>(L"GunFlameParticle", material);
+
+		shared_ptr<Shader> computShader = GET_SINGLE(Resources)->Get<Shader>(L"GunFlameComputeParticle");
+		shared_ptr<Material> computeMaterial = make_shared<Material>();
+		computeMaterial->SetShader(computShader);
+		Add<Material>(L"GunFlameComputeParticle", computeMaterial);
 	}
 
 	// FireParticle

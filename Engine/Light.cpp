@@ -14,7 +14,7 @@ Light::Light() : Component(COMPONENT_TYPE::LIGHT)
 	_shadowCamera->AddComponent(make_shared<Transform>());
 	_shadowCamera->AddComponent(make_shared<Camera>());
 	uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
-	_shadowCamera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI´Â ¾È ÂïÀ½
+	_shadowCamera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false); // UI´Â ¾È ÂïÀ½
 }
 
 Light::~Light()
@@ -24,12 +24,13 @@ Light::~Light()
 void Light::FinalUpdate()
 {
 	_lightInfo.position = GetTransform()->GetWorldPosition();
-
-	_shadowCamera->GetTransform()->SetLocalPosition(GetTransform()->GetLocalPosition());
+	
+	_shadowCamera->GetTransform()->SetLocalPosition(GetTransform()->GetWorldPosition());
 	_shadowCamera->GetTransform()->SetLocalRotation(GetTransform()->GetLocalRotation());
 	_shadowCamera->GetTransform()->SetLocalScale(GetTransform()->GetLocalScale());
-
 	_shadowCamera->FinalUpdate();
+
+
 }
 
 void Light::Render()
@@ -71,6 +72,9 @@ void Light::SetLightDirection(Vec3 direction)
 	_lightInfo.direction = direction;
 
 	GetTransform()->LookAt(direction);
+
+	_shadowCamera->GetTransform()->LookAt(direction);
+
 }
 
 void Light::SetLightType(LIGHT_TYPE type)
