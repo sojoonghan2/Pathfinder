@@ -37,6 +37,7 @@ void NetworkOtherPlayerScript::LateUpdate()
 					std::static_pointer_cast<MsgMove>(message) };
 				SetPosition(message_move->x, message_move->y);
 				SetDir(message_move->dirX, message_move->dirY);
+	//			std::println("ID: {} dir {} {}", _id, message_move->dirX, message_move->dirY);
 
 				// 움직임 감지
 				if (_lastX != message_move->x || _lastY != message_move->y) {
@@ -76,6 +77,7 @@ void NetworkOtherPlayerScript::SetPosition(float x, float z)
 void NetworkOtherPlayerScript::SetDir(float x, float z)
 {
 	Vec3 Look{ x, 0.f, z };
+	Look.Normalize();
 	if (Look.LengthSquared() > 0.0001f)
 	{
 		float targetYaw = atan2f(Look.x, Look.z) + XM_PI;

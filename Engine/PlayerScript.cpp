@@ -68,6 +68,8 @@ void PlayerScript::LateUpdate()
 		_moveTimer.updateDeltaTime();
 		Vec3 pos = GetTransform()->GetLocalPosition();
 		Vec3 dir = GetTransform()->GetLook();
+		dir.y = 0.f;
+		dir.Normalize();
 		GET_SINGLE(SocketIO)->DoSend<packet::CSMovePlayer>(
 			pos.x / METER_TO_CLIENT, pos.z / METER_TO_CLIENT,
 			dir.x, dir.z);
