@@ -146,7 +146,7 @@ RuinsScene::RuinsScene()
 			}
 			wire->AddComponent(meshRenderer);
 
-			activeScene->AddGameObject(wire);
+			//activeScene->AddGameObject(wire);
 
 			shared_ptr<GameObject> particleObject = make_shared<GameObject>();
 			particleObject->SetName(L"GunFlameParticle");
@@ -211,6 +211,10 @@ RuinsScene::RuinsScene()
 			bullet->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetRadius(10.f);
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+
+			shared_ptr<CrapParticleSystem> gunFlameParticleSystem = make_shared<CrapParticleSystem>();
+			gunFlameParticleSystem->SetParticleScale(50.f, 50.f);
+			bullet->AddComponent(gunFlameParticleSystem);
 
 			bullet->AddComponent(meshRenderer);
 
@@ -700,7 +704,7 @@ RuinsScene::RuinsScene()
 				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
 				meshRenderer->SetMaterial(material->Clone());
 			}
-			dummy->AddComponent(meshRenderer);
+			//dummy->AddComponent(meshRenderer);
 
 			dummy->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetRadius(info.second);
@@ -777,7 +781,7 @@ RuinsScene::RuinsScene()
 				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
 				meshRenderer->SetMaterial(material->Clone());
 			}
-			dummy->AddComponent(meshRenderer);
+			//dummy->AddComponent(meshRenderer);
 
 			dummy->AddComponent(make_shared<BoxCollider>());
 			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetExtents(info.second / 1.5);
@@ -839,6 +843,53 @@ RuinsScene::RuinsScene()
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
 			activeScene->AddGameObject(gameObjects[0]);
+
+			// hp
+			shared_ptr<GameObject> hpBase = make_shared<GameObject>();
+			hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+			hpBase->AddComponent(make_shared<Transform>());
+			hpBase->SetName(L"CrapHPBase" + std::to_wstring(i));
+			hpBase->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
+			hpBase->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
+			shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+				hpBasemeshRenderer->SetMesh(mesh);
+			}
+			{
+				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+				shared_ptr<Texture> texture{};
+				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrapHPBase", L"..\\Resources\\Texture\\CrapHPBase.png");
+				shared_ptr<Material> material = make_shared<Material>();
+				material->SetShader(shader);
+				material->SetTexture(0, texture);
+				hpBasemeshRenderer->SetMaterial(material);
+			}
+			hpBase->AddComponent(hpBasemeshRenderer);
+			activeScene->AddGameObject(hpBase);
+
+			shared_ptr<GameObject> hp = make_shared<GameObject>();
+			hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+			hp->AddComponent(make_shared<Transform>());
+			hp->SetName(L"CrapHP");
+			hp->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
+			hp->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
+			shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+				hpmeshRenderer->SetMesh(mesh);
+			}
+			{
+				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+				shared_ptr<Texture> texture{};
+				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrapHP", L"..\\Resources\\Texture\\CrapHP.png");
+				shared_ptr<Material> material = make_shared<Material>();
+				material->SetShader(shader);
+				material->SetTexture(0, texture);
+				hpmeshRenderer->SetMaterial(material);
+			}
+			hp->AddComponent(hpmeshRenderer);
+			activeScene->AddGameObject(hp);
 		}
 	}
 #endif // !NETWORK_ENABLE
@@ -916,8 +967,6 @@ RuinsScene::RuinsScene()
 	}
 #endif // NETWORK_ENABLE
 #pragma endregion
-
-
 
 		// 점령 구역
 #pragma region Occupation
@@ -1074,7 +1123,7 @@ RuinsScene::RuinsScene()
 		shared_ptr<GameObject> light = make_shared<GameObject>();
 		light->SetName(L"Ancient_Ruin_Light");
 		light->AddComponent(make_shared<Transform>());
-		light->GetTransform()->SetLocalPosition(Vec3(0.f, 4900.f, 0.f));
+		light->GetTransform()->SetLocalPosition(Vec3(0.f, 9900.f, 0.f));
 
 		// 2-1. Light 컴포넌트 추가 및 속성 설정
 		light->AddComponent(make_shared<Light>());

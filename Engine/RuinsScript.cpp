@@ -72,6 +72,9 @@ void RuinsScript::Occupation()
 		{
 			_occupationUI->SetRenderOff();
 			_isCreatePortal = true;
+			auto pos = _water->GetTransform()->GetLocalPosition();
+			pos.y = -10000.f;
+			_water->GetTransform()->SetLocalPosition(pos);
 			CreatePortal();
 		}
 	}
