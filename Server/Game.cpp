@@ -9,10 +9,6 @@ std::uniform_real_distribution<float> posDist{ -24.f, 24.f };
 
 std::uniform_real_distribution<float> speedDist{ 1.f, 3.f };
 
-void Game::MovePlayer(int player_id, Vec2f& pos)
-{
-	_playerList[player_id].Move(pos);
-}
 
 void Game::InitRoom(int room_id)
 {
@@ -30,7 +26,7 @@ void Game::InitRoom(int room_id)
 		_roomList[room_id].SetPlayerPtrList(
 			i,
 			&_playerList[room_id * 3 + i]);
-
+		_playerList[room_id * 3 + i].SetPlayerType(PlayerType::Dealer);
 		_playerList[room_id * 3 + i].Move(posDist(dre_game), posDist(dre_game));
 	}
 

@@ -312,7 +312,7 @@ public:
 
 	Vec2f GetPosition() const { return pos; }
 
-	void NormalizeAndSetDir(const Vec2f& _dir) { dir = _dir; }
+	void SetDir(const Vec2f& _dir) { dir = _dir; }
 	void SetDir(const float _dirx, const float _diry)
 	{
 		dir.x = _dirx; dir.y = _diry;

@@ -50,6 +50,9 @@
     <ClCompile Include="RoomInfo.cpp">
       <Filter>IOCP</Filter>
     </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IOCP.h">
@@ -84,6 +87,9 @@
     </ClInclude>
     <ClInclude Include="RoomInfo.h">
       <Filter>IOCP</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Object</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

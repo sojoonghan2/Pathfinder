@@ -33,7 +33,9 @@ void Room::Update(const float delta_time)
 		// 가장 가까운 플레이어가 몬스터의 시야에 들어왔는지 체크
 
 		// 몬스터가 플레이어를 쫒아가도록 방향 조정
-		monster->NormalizeAndSetDir(player->GetPos() - monster->GetPos());
+		auto dir{ player->GetPos() - monster->GetPos() };
+		dir.Normalize();
+		monster->SetDir(dir);
 		monster->Update(delta_time);
 	}
 }

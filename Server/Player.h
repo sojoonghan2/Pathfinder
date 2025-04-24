@@ -1,4 +1,5 @@
 #pragma once
+#include "Object.h"
 
 enum class PlayerType : unsigned char
 {
@@ -9,24 +10,14 @@ enum class PlayerType : unsigned char
 };
 
 // 나중에 상속 구조로 변경
-class Player
+class Player : public Object
 {
 public:
-	void Move(const Vec2f& pos);
-	void Move(const float x, const float y);
-
-	Vec2f GetPos() const { return _pos; }
-	
-	
-	Vec2f GetDir() const { return _dir; }
-	void SetDir(const Vec2f& dir) { _dir = dir; }
+	// getter and setter
+	void SetPlayerType(const PlayerType& type) { _type = type; }
 
 private:
-	Vec2f		_pos{};
-	float&		_x{ _pos.x };
-	float&		_y{ _pos.y };
-	Vec2f		_dir{};
-
+	// Todo:: Dealer로 변경하기
 	PlayerType	_type{ PlayerType::None };
 	
 };

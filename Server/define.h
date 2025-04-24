@@ -21,6 +21,19 @@ struct Vec2f
 	{
 		return Vec2f{ x - rhs.x, y - rhs.y };
 	}
+
+	void Normalize()
+	{
+		float length = std::sqrt(x * x + y * y);
+		if (length > 0.f) {
+			x = x / length;
+			y = y / length;
+		}
+		else {
+			x = 0.f;
+			y = 0.f;
+		}
+	}
 };
 
 struct ClientIdInfo

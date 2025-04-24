@@ -13,7 +13,6 @@ private:
 
 public:
 
-	void MovePlayer(int player_id, Vec2f& pos);
 	void InitRoom(int room_id);
 	
 	Monster& GetMonster(const int monster_id) { return _monsterList[monster_id]; }

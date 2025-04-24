@@ -1,4 +1,5 @@
 #pragma once
+#include "Object.h"
 
 
 enum class MonsterType : unsigned char
@@ -11,12 +12,9 @@ enum class MonsterType : unsigned char
 };
 
 // 나중에 상속 구조로 변경
-class Monster
+class Monster : public Object
 {
 public:
-	void Move(const Vec2f& pos);
-	void Move(const float x, const float y);
-
 	bool GetRunning() const;
 
 	// CAS를 사용해서 동작.
@@ -25,41 +23,19 @@ public:
 	void Update(const float delta_time);
 
 
-
-
-
-
-
 	// getter /setter
 	void SetMonsterType(const MonsterType type) { _monsterType = type; }
 	void SetRoomId(const int room_id) { _roomId = room_id; }
 	void SetSpeed(const float speed) { _speed = speed; }
 	
-	// 내부적으로 normalize됨.
-	void NormalizeAndSetDir(const Vec2f& dir);
-
-	Vec2f GetPos() const { return _pos; }
 	int GetRoomId() const { return _roomId; }
-	Vec2f GetDir() const { return _dir; }
-
-
-	
 
 private:
-	Vec2f	_pos{};
-	float&	_x{ _pos.x };
-	float&	_y{ _pos.y };
-
-	// normalize해야 함.
-	Vec2f	_dir{};
-
 	int		_roomId{ -1 };
-
 	float	_speed{ 0.f };
 
 
 	std::atomic_bool _isRunning{ false };
-
 	MonsterType _monsterType{ MonsterType::None };
 };
 

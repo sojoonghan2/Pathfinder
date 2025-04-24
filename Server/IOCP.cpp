@@ -143,7 +143,7 @@ void IOCP::Worker()
 		// 어떤 operation으로 완료되었는지 확인. 
 		switch (curr_over_ex->operation) {
 
-			/**
+			/**G
 			* ACCEPT: AcceptEx() 작업 완료
 			*/
 		case IOOperation::ACCEPT:
@@ -357,6 +357,9 @@ void IOCP::ProcessPacket(int key, char* p)
 		// TODO:
 		// 최적화 할 것: 매치매이킹 패킷이 여러개 들어오면 짤라야 한다.
 		// atomic한 STATE 변수가 필요할 예정
+		
+		// 메치메이킹 이럴거면 그냥 락쓰자.. 그게 낫겠다
+	
 
 		// 일단 아이디를 넣는다.
 		_matchmakingQueue.push(key);
