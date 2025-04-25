@@ -178,7 +178,7 @@ void Mesh::Render(uint32 instanceCount, uint32 idx)
 
 	GEngine->GetGraphicsDescHeap()->CommitTable();
 
-	/*
+	
 	/////////////////////////////// VRS /////////////////////////////////////
 	if (_supportsVRS && _shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2 && _shadingRateImage)
 	{
@@ -207,9 +207,9 @@ void Mesh::Render(uint32 instanceCount, uint32 idx)
 		}
 	}
 	/////////////////////////////// VRS /////////////////////////////////////
-	*/
+	
 	// 두 번째 드로우 호출 (VRS 해제된 상태)
-	GRAPHICS_CMD_LIST->DrawIndexedInstanced(_vecIndexInfo[idx].count, instanceCount, 0, 0, 0);
+	//GRAPHICS_CMD_LIST->DrawIndexedInstanced(_vecIndexInfo[idx].count, instanceCount, 0, 0, 0);
 	
 }
 
