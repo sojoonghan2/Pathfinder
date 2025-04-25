@@ -180,7 +180,10 @@ RuinsScene::RuinsScene()
 			material->SetTexture(2, floorTexture);
 			material->SetTexture(1, topTexture);
 			meshRenderer->SetMaterial(material);
+			meshRenderer->GetMesh()->SetVrs(true);
+			meshRenderer->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 		}
+
 		terraincube->AddComponent(meshRenderer);
 
 		// 4. Scene에 추가
@@ -290,7 +293,8 @@ RuinsScene::RuinsScene()
 			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Water");
 			meshRenderer->SetMaterial(material);
 		}
-
+		meshRenderer->GetMesh()->SetVrs(true);
+		meshRenderer->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 		water->AddComponent(meshRenderer);
 		activeScene->AddGameObject(water);
 	}
@@ -337,6 +341,8 @@ RuinsScene::RuinsScene()
 
 			gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i + 1));
 			gameObjects[0]->SetCheckFrustum(true);
+			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
+			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 			gameObjects[0]->AddComponent(make_shared<CrapScript>());
 			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
 			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
@@ -392,6 +398,8 @@ RuinsScene::RuinsScene()
 				gameObjects[0]->SetName(L"Stone" + std::to_wstring(i + j + 2));
 				gameObjects[0]->SetCheckFrustum(false);
 				gameObjects[0]->SetStatic(false);
+				gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
+				gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 				gameObjects[0]->AddComponent(make_shared<Transform>());
 				gameObjects[0]->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 				gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f + i * 4000, 40.f, 0.0f + j * 4000));
@@ -418,7 +426,7 @@ RuinsScene::RuinsScene()
 		// 2-2. 스팟 라이트 방향 설정
 		light->GetLight()->SetLightDirection(Vec3(0.f, -1.f, 0.f));
 
-		float lightpower = 0.5f;
+		float lightpower = 1.0f;
 		// 3. 조명 색상 및 강도 조정 (따뜻한 황금빛)
 		light->GetLight()->SetDiffuse(Vec3(1.0f, 0.85f, 0.6f) * lightpower);
 		light->GetLight()->SetAmbient(Vec3(0.25f, 0.2f, 0.25f) * lightpower);

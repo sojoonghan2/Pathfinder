@@ -47,9 +47,29 @@ void Mesh::CreateVRSImage(UINT width, UINT height)
 
 void Mesh::CreateVRSUploadBuffer(UINT width, UINT height)
 {
+	// 먼저 기본 VRS 지원 여부 확인
 	if (!_supportsVRS)
 		return;
 
+	// GPU가 Tier 2 VRS를 지원하는지 런타임에 확인
+	D3D12_FEATURE_DATA_D3D12_OPTIONS6 options6 = {};
+	if (FAILED(DEVICE->CheckFeatureSupport(
+		D3D12_FEATURE_D3D12_OPTIONS6,
+		&options6,
+		sizeof(options6))))
+	{
+		cout << "qurry failed" << endl;
+		// 쿼리 실패 시 업로드 버퍼 생성하지 않음
+		return;
+	}
+	if (options6.VariableShadingRateTier < D3D12_VARIABLE_SHADING_RATE_TIER_2)
+	{
+		cout << "Not supported" << endl;
+		// Tier 2 미지원 시 업로드 버퍼 생성하지 않음
+		return;
+	}
+
+	// tileWidth, tileHeight 단위로 버퍼 크기 계산
 	UINT bufferSize = width * height * sizeof(UINT8);
 
 	D3D12_HEAP_PROPERTIES uploadHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
@@ -66,7 +86,7 @@ void Mesh::CreateVRSUploadBuffer(UINT width, UINT height)
 
 	if (FAILED(hr))
 	{
-		printf("VRS 업로드 버퍼 생성 실패!\n");
+		printf("VRS 업로드 버퍼 생성 실패! HRESULT=0x%08X\n", hr);
 	}
 }
 
@@ -86,9 +106,9 @@ void Mesh::UploadVRSData()
 		for (UINT x = 0; x < width; x++)
 		{
 			if (x < width / 2)
-				vrsData[y * width + x] = D3D12_SHADING_RATE_1X1;  // 기본 셰이딩 레이트
+				vrsData[y * width + x] = D3D12_SHADING_RATE_4X4;  // 기본 셰이딩 레이트
 			else
-				vrsData[y * width + x] = D3D12_SHADING_RATE_2X2;  // 2x2 블록
+				vrsData[y * width + x] = D3D12_SHADING_RATE_4X4;  // 2x2 블록
 		}
 	}
 
@@ -139,6 +159,15 @@ void Mesh::Create(const vector<Vertex>& vertexBuffer, const vector<uint32>& inde
 {
 	CreateVertexBuffer(vertexBuffer);
 	CreateIndexBuffer(indexBuffer);
+	if (_supportsVRS && _shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2)
+	{
+		// 보통 여기에 GEngine->GetWindowSize() 같은 걸로 화면 크기 받아올 수 있어야 해
+		UINT width = static_cast<float>(GEngine->GetWindow().width);
+		UINT height = static_cast<float>(GEngine->GetWindow().height);
+		CreateVRSImage(width, height);
+		CreateVRSUploadBuffer(width / 16, height / 16);
+		UploadVRSData();  // 셰이딩 레이트 맵 초기화
+	}
 }
 
 void Mesh::Render(uint32 instanceCount, uint32 idx)
@@ -149,6 +178,7 @@ void Mesh::Render(uint32 instanceCount, uint32 idx)
 
 	GEngine->GetGraphicsDescHeap()->CommitTable();
 
+	/*
 	/////////////////////////////// VRS /////////////////////////////////////
 	if (_supportsVRS && _shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2 && _shadingRateImage)
 	{
@@ -177,9 +207,10 @@ void Mesh::Render(uint32 instanceCount, uint32 idx)
 		}
 	}
 	/////////////////////////////// VRS /////////////////////////////////////
-
+	*/
 	// 두 번째 드로우 호출 (VRS 해제된 상태)
 	GRAPHICS_CMD_LIST->DrawIndexedInstanced(_vecIndexInfo[idx].count, instanceCount, 0, 0, 0);
+	
 }
 
 void Mesh::Render(shared_ptr<InstancingBuffer>& buffer, uint32 idx)
