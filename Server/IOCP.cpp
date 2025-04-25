@@ -248,21 +248,23 @@ void IOCP::TimerWorker()
 			send_timer.updateDeltaTime();
 
 
-
+			// Todo:
+			// 근데 이거는 Game쪽에서 해결하는게 맞지 않나?
 			// 현재 방이 활성화 되어있는지 확인
 			// 일단 킵
 			for (int i = 0; i < MAX_MONSTER; ++i) {
 				const auto& monster{ GET_SINGLE(Game)->GetMonster(i) };
-				auto room_id{ monster.GetRoomId() };
+				auto room_id{ monster->GetRoomId() };
 				if (-1 == room_id) {
 					continue;
 				}
-				if (GET_SINGLE(Game)->GetRoom(monster.GetRoomId()).GetRoomStatus() != RoomStatus::Running) {
+				if (GET_SINGLE(Game)->GetRoom(monster->GetRoomId())->GetRoomStatus()
+					!= RoomStatus::Running) {
 					continue;
 				}
 
-				auto monster_pos = monster.GetPos();
-				auto monster_dir = monster.GetDir();
+				auto monster_pos = monster->GetPos();
+				auto monster_dir = monster->GetDir();
 
 				// 패킷 생성
 				// 일단 임시로 MAX_PLAYER를 더한 아이디를 준다.
@@ -274,8 +276,9 @@ void IOCP::TimerWorker()
 					monster_dir.x,
 					monster_dir.y
 				};
+
 				// 방에 있는 플레이어에게 전송
-				auto list{ _roomInfoList[monster.GetRoomId()].GetClientIdList() };
+				auto list{ _roomInfoList[monster->GetRoomId()].GetClientIdList() };
 				for (auto id : list) {
 					if (id == -1) {
 						continue;
@@ -359,6 +362,7 @@ void IOCP::ProcessPacket(int key, char* p)
 		// atomic한 STATE 변수가 필요할 예정
 		
 		// 메치메이킹 이럴거면 그냥 락쓰자.. 그게 낫겠다
+		// 락 쓰지 말고 한 쓰레드에서만 담당하자. timerThread쪽에서 처리하는 것이 더 좋을듯.
 	
 
 		// 일단 아이디를 넣는다.
@@ -474,7 +478,7 @@ void IOCP::ProcessPacket(int key, char* p)
 		}
 
 		// SC_MATCHMAKING 매칭 완료 알림 및 로드할 방의 타입을 줌.
-		auto room_type{ GET_SINGLE(Game)->GetRoom(room_id).GetRoomType() };
+		auto room_type{ GET_SINGLE(Game)->GetRoom(room_id)->GetRoomType() };
 		
 		// 클라이언트 로딩 시작
 		for (int i = 0; i < 3; ++i) {
@@ -537,9 +541,9 @@ void IOCP::ProcessPacket(int key, char* p)
 		// 방에 있는 플레이어들에게 위치를 보냄
 		for (int i{}; i < 3; ++i) {
 
-			auto& player = GET_SINGLE(Game)->GetPlayer(player_ids[i]);
-			auto pos = player.GetPos();
-			auto dir = player.GetDir();
+			auto player = GET_SINGLE(Game)->GetPlayer(player_ids[i]);
+			auto pos = player->GetPos();
+			auto dir = player->GetDir();
 
 			packet::SCGameStart sc_game_start{};
 			DoSend(client_ids[i], &sc_game_start);
@@ -552,7 +556,7 @@ void IOCP::ProcessPacket(int key, char* p)
 		}
 
 		// 게임 시작. 방 상태를 Running으로.
-		GET_SINGLE(Game)->GetRoom(room_id).SetRoomStatus(RoomStatus::Running);
+		GET_SINGLE(Game)->GetRoom(room_id)->SetRoomStatus(RoomStatus::Running);
 				
 
 	}
@@ -568,12 +572,12 @@ void IOCP::ProcessPacket(int key, char* p)
 		auto& id_info{ _clientInfoHash[key].clientIdInfo };
 
 		// 받은 위치를 저장
-		auto& player = GET_SINGLE(Game)->GetPlayer(id_info.playerId);
-		player.SetDir(Vec2f{ packet->dirX, packet->dirY });
-		player.Move(packet->x, packet->y);
+		auto player = GET_SINGLE(Game)->GetPlayer(id_info.playerId);
+		player->SetDir(Vec2f{ packet->dirX, packet->dirY });
+		player->Move(packet->x, packet->y);
 
-		auto pos = player.GetPos();
-		auto dir = player.GetDir();
+		auto pos = player->GetPos();
+		auto dir = player->GetDir();
 
 		// 다른 플레이어에게 전송
 		packet::SCMovePlayer send_packet{ key, pos.x, pos.y, dir.x, dir.y };

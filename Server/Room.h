@@ -23,16 +23,16 @@ public:
 
 	void Update(const float delta_time);
 	void ClearMonsterPtrList() { _monsterPtrList.clear(); }
-	void AddMonsterPtr(Monster* monster_ptr) { _monsterPtrList.push_back(monster_ptr); }
+	void AddMonsterPtr(std::shared_ptr<Monster>& monster_ptr) { _monsterPtrList.push_back(monster_ptr); }
 
 	// getter and setter
 
-	void SetPlayerPtrList(const int id, Player* player_ptr);
+	void SetPlayerPtrList(const int id, std::shared_ptr<Player>& player_ptr);
 	void SetRoomType(const RoomType room_type) { _roomType = room_type; }
 	void SetRoomStatus(const RoomStatus room_status) { _roomStatus = room_status; }
 
 	// 이게 맞음?
-	std::vector<Monster*>& GetMonsterPtrList() { return _monsterPtrList; }
+	std::vector<std::shared_ptr<Monster>>& GetMonsterPtrList() { return _monsterPtrList; }
 
 	RoomStatus GetRoomStatus() const { return _roomStatus; }
 	RoomType GetRoomType() const { return _roomType; }
@@ -40,8 +40,8 @@ public:
 private:
 	
 	// TODO: 여기를 shared_ptr로
-	std::array<Player*, 3>	_playerPtrList{};
-	std::vector<Monster*>	_monsterPtrList{};
+	std::array<std::shared_ptr<Player>, 3>	_playerPtrList{};
+	std::vector<std::shared_ptr<Monster>>	_monsterPtrList{};
 
 	RoomType			_roomType{ RoomType::None };
 	RoomStatus			_roomStatus{ RoomStatus::Waiting };

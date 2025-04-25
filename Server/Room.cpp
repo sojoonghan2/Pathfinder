@@ -9,10 +9,10 @@ void Room::Update(const float delta_time)
 		return;
 	}
 
-	for (auto monster : _monsterPtrList) {
+	for (auto& monster : _monsterPtrList) {
 		// 여기서 몬스터의 방향을 정해주자.
 
-		Player* player = nullptr;
+		std::shared_ptr<Player> player = nullptr;
 		float min_distance{ std::numeric_limits<float>::max() };
 		auto monster_pos{ monster->GetPos() };
 		
@@ -42,7 +42,7 @@ void Room::Update(const float delta_time)
 
 
 
-void Room::SetPlayerPtrList(const int id, Player* player_ptr)
+void Room::SetPlayerPtrList(const int id, std::shared_ptr<Player>& player_ptr)
 {
 	_playerPtrList[id] = player_ptr;
 }

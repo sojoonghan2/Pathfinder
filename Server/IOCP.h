@@ -44,6 +44,7 @@ private:
 	concurrency::concurrent_unordered_map<int, ClientInfo> _clientInfoHash;
 	
 	std::array<RoomInfo, MAX_ROOM>		_roomInfoList{};
+
 	concurrency::concurrent_queue<int>	_matchmakingQueue{};
 
 };
