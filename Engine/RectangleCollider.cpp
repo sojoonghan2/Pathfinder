@@ -13,12 +13,12 @@ RectangleCollider::~RectangleCollider()
 
 void RectangleCollider::FinalUpdate()
 {
-    Vec3 worldCenter = GetGameObject()->GetTransform()->GetLocalPosition();
-    Vec3 scale = GetGameObject()->GetTransform()->GetLocalScale();
+	Vec3 worldCenter = GetGameObject()->GetTransform()->GetLocalPosition();
+	Vec3 scale = GetGameObject()->GetTransform()->GetLocalScale();
 
-    // AABB 업데이트
-    _boundingBox.Center = worldCenter;
-    _boundingBox.Extents = scale;
+	// AABB 업데이트
+	_boundingBox.Center = worldCenter;
+	_boundingBox.Extents = scale;
 }
 
 bool RectangleCollider::Intersects(Vec4 rayOrigin, Vec4 rayDir, OUT float& distance)

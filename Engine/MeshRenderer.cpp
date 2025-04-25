@@ -9,12 +9,10 @@
 
 MeshRenderer::MeshRenderer() : Component(COMPONENT_TYPE::MESH_RENDERER)
 {
-
 }
 
 MeshRenderer::~MeshRenderer()
 {
-
 }
 
 void MeshRenderer::SetMaterial(shared_ptr<Material> material, uint32 idx)

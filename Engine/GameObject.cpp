@@ -11,12 +11,10 @@
 
 GameObject::GameObject() : Object(OBJECT_TYPE::GAMEOBJECT)
 {
-
 }
 
 GameObject::~GameObject()
 {
-
 }
 
 void GameObject::Awake()
@@ -120,7 +118,6 @@ shared_ptr<ParticleSystem> GameObject::GetParticleSystem()
 	shared_ptr<Component> component = GetFixedComponent(COMPONENT_TYPE::PARTICLE_SYSTEM);
 	return static_pointer_cast<ParticleSystem>(component);
 }
-
 
 shared_ptr<BaseCollider> GameObject::GetCollider()
 {

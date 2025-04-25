@@ -66,4 +66,3 @@ private:
 	D3D12_RESOURCE_BARRIER			_targetToResource[8];
 	D3D12_RESOURCE_BARRIER			_resourceToTarget[8];
 };
-

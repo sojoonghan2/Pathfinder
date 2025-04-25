@@ -4,12 +4,10 @@
 
 Material::Material() : Object(OBJECT_TYPE::MATERIAL)
 {
-
 }
 
 Material::~Material()
 {
-
 }
 
 void Material::PushGraphicsData()

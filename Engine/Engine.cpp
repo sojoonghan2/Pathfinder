@@ -9,10 +9,11 @@
 #include "Resources.h"
 #include "InstancingManager.h"
 #include "SocketIO.h"
+#include "DebugRenderer.h"
 
 void Engine::Init(const WindowInfo& info)
 {
-	_window = info;	
+	_window = info;
 
 	// 그려질 화면 크기를 설정
 	_viewport = { 0, 0, static_cast<FLOAT>(info.width), static_cast<FLOAT>(info.height), 0.0f, 1.0f };
@@ -43,6 +44,7 @@ void Engine::Init(const WindowInfo& info)
 	GET_SINGLE(Input)->Init(info.hwnd);
 	GET_SINGLE(Timer)->Init();
 	GET_SINGLE(Resources)->Init();
+	//GET_SINGLE(DebugRenderer)->Init();
 	GET_SINGLE(SceneManager)->Init();
 }
 
@@ -55,7 +57,6 @@ void Engine::Update()
 	GET_SINGLE(SocketIO)->Update();
 #endif
 
-	
 	GET_SINGLE(SceneManager)->Update();
 	GET_SINGLE(InstancingManager)->ClearBuffer();
 
@@ -112,7 +113,6 @@ void Engine::CreateConstantBuffer(CBV_REGISTER reg, uint32 bufferSize, uint32 co
 	buffer->Init(reg, bufferSize, count);
 	_constantBuffers.push_back(buffer);
 }
-
 
 void Engine::CreateRenderTargetGroups()
 {

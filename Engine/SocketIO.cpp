@@ -4,16 +4,8 @@
 #include "Input.h"
 #include "Timer.h"
 #include "MessageManager.h"
+#include "SceneManager.h"
 
-
-
-// 플레이어 이동속도, 단위 m/s
-constexpr float PLAYER_SPEED_MPS{ 5.f };
-constexpr float PLAYER_SPEED_MPMS{ PLAYER_SPEED_MPS / 1000.f };
-
-// 단위 m
-constexpr float MAP_SIZE_M{ 50.f };
-constexpr float PLAYER_SIZE_M{ 0.5f };
 
 void SocketIO::Init()
 {
@@ -25,8 +17,8 @@ void SocketIO::Init()
 	}
 
 	// 소켓 생성
-	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-	if (serverSocket == INVALID_SOCKET) {
+	_serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+	if (_serverSocket == INVALID_SOCKET) {
 		util::DisplayQuitError();
 	}
 
@@ -43,7 +35,7 @@ void SocketIO::Init()
 	}
 
 	// connect
-	ret = connect(serverSocket, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
+	ret = connect(_serverSocket, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 	if (SOCKET_ERROR == ret) {
 		util::DisplayQuitError();
 	}
@@ -51,7 +43,7 @@ void SocketIO::Init()
 	std::println("Connected to server successfully.");
 
 	// 스레드 생성
-	recvThread = std::thread{ [this]() { Worker(); } };
+	_recvThread = std::thread{ [this]() { Worker(); } };
 
 	// 로그인 알림
 	DoSend<packet::CSLogin>();
@@ -61,36 +53,11 @@ void SocketIO::Update()
 {
 	ProcessPacket();
 
-	if (-1 != myId) {
-		if (INPUT->GetButton(KEY_TYPE::UP)) {
-			players[myId].y += PLAYER_SPEED_MPS * DELTA_TIME;
-			players[myId].y = min(players[myId].y, (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
-		}
-		if (INPUT->GetButton(KEY_TYPE::DOWN)) {
-			players[myId].y -= PLAYER_SPEED_MPS * DELTA_TIME;
-			players[myId].y = max(players[myId].y, -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
-		}
-		if (INPUT->GetButton(KEY_TYPE::LEFT)) {
-			players[myId].x -= PLAYER_SPEED_MPS * DELTA_TIME;
-			players[myId].x = min(players[myId].x, (MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
-		}
-		if (INPUT->GetButton(KEY_TYPE::RIGHT)) {
-			players[myId].x += PLAYER_SPEED_MPS * DELTA_TIME;
-			players[myId].x = max(players[myId].x, -(MAP_SIZE_M - PLAYER_SIZE_M) * 0.5f);
-		}
-
-		if (sendTimer.PeekDeltaTime() > 50.f) {
-			sendTimer.updateDeltaTime();
-			DoSend<packet::CSMovePlayer>(myId, players[myId].x, players[myId].y);
-		}
-	}
 }
-
 
 void SocketIO::Worker()
 {
 	while (true) {
-
 		int ret = DoRecv();
 		if (0 == ret || SOCKET_ERROR == ret) {
 			return;
@@ -98,14 +65,14 @@ void SocketIO::Worker()
 	}
 }
 
-int SocketIO::DoRecv() 
+int SocketIO::DoRecv()
 {
 	// 기존 버퍼 내용 초기화
 	BufferType buffer{};
 
 	// 고정 길이 RECV
 	int recv_len = recv(
-		serverSocket,
+		_serverSocket,
 		buffer.data(),
 		sizeof(packet::Header),
 		MSG_WAITALL);
@@ -125,10 +92,9 @@ int SocketIO::DoRecv()
 		int remain_size = p_header->size - sizeof(packet::Header);
 
 		if (remain_size > 0) {
-
 			// 가변 길이 recv
 			recv_len = recv(
-				serverSocket,
+				_serverSocket,
 				buffer.data() + sizeof(packet::Header),
 				remain_size,
 				MSG_WAITALL);
@@ -144,56 +110,102 @@ int SocketIO::DoRecv()
 		}
 	}
 
-	bufferQueue.emplace(buffer);
+	_bufferQueue.emplace(buffer);
 	return recv_len;
 }
 
 void SocketIO::ProcessPacket()
 {
-
-	while (not bufferQueue.empty()) {
-
-		auto& buffer = bufferQueue.front();
+	while (not _bufferQueue.empty()) {
+		auto& buffer = _bufferQueue.front();
 		packet::Header& header = reinterpret_cast<packet::Header&>(buffer);
 		switch (header.type) {
 		case packet::Type::SC_LOGIN:
 		{
-			packet::SCLogin packet = reinterpret_cast<packet::SCLogin&>(buffer);
-			std::println("SC_LOGIN, id : {}", packet.playerId);
-			myId = packet.playerId;
+
 		}
 		break;
+		case packet::Type::SC_GAME_START:
+		{
+			// 게임 시작 메시지를 보내자
+			// todo:
+			// 일단 임시로 ruinsScene에 보냄
+
+			auto msg{ std::make_shared<MsgStartGame>() };
+			GET_SINGLE(MessageManager)->PushMessage(ID_RUIN_SCENE, msg);
+
+		}
+		break;
+		case packet::Type::SC_MATCHMAKING:
+		{
+			packet::SCMatchmaking packet = reinterpret_cast<packet::SCMatchmaking&>(buffer);
+			std::cout << "MATCHMAKING COMPLETED, id : " << packet.clientId << std::endl;
+			_myId = packet.clientId;
+			_roomType = packet.roomType;
+
+			// todo: 예외처리 필요한가?
+			GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
+
+			// todo:
+			// 로딩 신으로 넘기라는 메시지를 보내자
+		}
+		break;
+
 		case packet::Type::SC_MOVE_PLAYER:
 		{
 			packet::SCMovePlayer packet = reinterpret_cast<packet::SCMovePlayer&>(buffer);
+			if (_idList.end() == std::find(_idList.begin(), _idList.end(), packet.clientId) &&
+				packet.clientId != _myId) {
+				_idList.push_back(packet.clientId);
+			}
+			auto msg{ std::make_shared<MsgMove>(packet.x, packet.y, packet.dirX, packet.dirY) };
+			GET_SINGLE(MessageManager)->PushMessage(packet.clientId, msg);
+		}
+		break;
 
-			GET_SINGLE(MessageManager)->InsertMessage(packet.playerId, packet.x, packet.y);
-			players[packet.playerId].x = packet.x;
-			players[packet.playerId].y = packet.y;
+		case packet::Type::SC_MOVE_MONSTER:
+		{
+			packet::SCMoveMonster packet{ reinterpret_cast<packet::SCMoveMonster&>(buffer) };
+			if (_monsterIdList.end() == std::find(_monsterIdList.begin(), _monsterIdList.end(), packet.monsterId)) {
+				_monsterIdList.push_back(packet.monsterId);
+			}
+			auto msg{ std::make_shared<MsgMove>(packet.x, packet.y, packet.dirX, packet.dirY) };
+			GET_SINGLE(MessageManager)->PushMessage(packet.monsterId, msg);
+
 		}
 		break;
 		default:
 		{
-			std::println("Packet Error.");
+			std::cout << "Packet Error\n";
 		}
 		break;
 		}
-		bufferQueue.pop();
+		_bufferQueue.pop();
 	}
 }
 
 int SocketIO::GetNextId()
 {
-	if (-1 == myId) { return -1; }
-	if (nextId == myId) { ++nextId; }
-	return nextId++;
+	// TODO: 임시로 해놨음
+	if (_idList.size() <= _idCount) {
+		return -1;
+	}
+	return _idList[_idCount++];
+}
+
+int SocketIO::GetMonsterId()
+{
+	if (_monsterIdList.size() <= _monsterIdCount) {
+		return -1;
+	}
+	return _monsterIdList[_monsterIdCount++];
 }
 
 SocketIO::~SocketIO()
 {
-	if (recvThread.joinable()) {
-		recvThread.join();  // 스레드 종료 대기
+	if (_recvThread.joinable()) {
+		_recvThread.join();  // 스레드 종료 대기
 	}
-	closesocket(serverSocket);
+	closesocket(_serverSocket);
 	WSACleanup();
 }

@@ -11,7 +11,7 @@ LightPillarParticleSystem::LightPillarParticleSystem() : BaseParticleSystem()
 	SetOnceParticleNum(1);
 	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"LightPillarParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"LightPillarComputeParticle")->Clone());
 	shared_ptr<Texture> lightPillar = GET_SINGLE(Resources)->Load<Texture>(L"lightPillar", L"..\\Resources\\Texture\\Particle\\lightPillar.png");
-	
+
 	SetParticleTexture(0, lightPillar);
 }
 

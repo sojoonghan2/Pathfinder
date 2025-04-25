@@ -19,73 +19,73 @@ Animator::~Animator()
 
 void Animator::FinalUpdate()
 {
-    if (!_isPlaying) return;
-    _updateTime += DELTA_TIME;
+	if (!_isPlaying) return;
+	_updateTime += DELTA_TIME;
 
-    const AnimClipInfo& animClip = _animClips->at(_clipIndex);
+	const AnimClipInfo& animClip = _animClips->at(_clipIndex);
 
-    if (_updateTime >= animClip.duration)
-        _updateTime = 0.f;
+	if (_updateTime >= animClip.duration)
+		_updateTime = 0.f;
 
-    const int32 ratio = static_cast<int32>(animClip.frameCount / animClip.duration);
-    _frame = static_cast<int32>(_updateTime * ratio);
-    _frame = min(_frame, animClip.frameCount - 1);
-    _nextFrame = (_frame + 1) % animClip.frameCount;
+	const int32 ratio = static_cast<int32>(animClip.frameCount / animClip.duration);
+	_frame = static_cast<int32>(_updateTime * ratio);
+	_frame = min(_frame, animClip.frameCount - 1);
+	_nextFrame = (_frame + 1) % animClip.frameCount;
 
-    float currentTime = _frame / static_cast<float>(ratio);
-    float nextTime = _nextFrame / static_cast<float>(ratio);
-    _frameRatio = (_updateTime - currentTime) / (nextTime - currentTime);
-    _frameRatio = clamp(_frameRatio, 0.0f, 1.0f);
+	float currentTime = _frame / static_cast<float>(ratio);
+	float nextTime = _nextFrame / static_cast<float>(ratio);
+	_frameRatio = (_updateTime - currentTime) / (nextTime - currentTime);
+	_frameRatio = clamp(_frameRatio, 0.0f, 1.0f);
 
-    // 부모-자식 관계를 고려한 최종 트랜스폼 계산
-    vector<Matrix> finalTransforms(_bones->size());
+	// 부모-자식 관계를 고려한 최종 트랜스폼 계산
+	vector<Matrix> finalTransforms(_bones->size());
 
-    for (size_t i = 0; i < _bones->size(); ++i) {
-        const BoneInfo& bone = _bones->at(i);
+	for (size_t i = 0; i < _bones->size(); ++i) {
+		const BoneInfo& bone = _bones->at(i);
 
-        // 현재와 다음 프레임의 키프레임 데이터 가져오기
-        if (i < animClip.keyFrames.size() &&
-            _frame < animClip.keyFrames[i].size() &&
-            _nextFrame < animClip.keyFrames[i].size())
-        {
-            const KeyFrameInfo& currentKeyFrame = animClip.keyFrames[i][_frame];
-            const KeyFrameInfo& nextKeyFrame = animClip.keyFrames[i][_nextFrame];
+		// 현재와 다음 프레임의 키프레임 데이터 가져오기
+		if (i < animClip.keyFrames.size() &&
+			_frame < animClip.keyFrames[i].size() &&
+			_nextFrame < animClip.keyFrames[i].size())
+		{
+			const KeyFrameInfo& currentKeyFrame = animClip.keyFrames[i][_frame];
+			const KeyFrameInfo& nextKeyFrame = animClip.keyFrames[i][_nextFrame];
 
-            // 스케일, 회전, 이동 데이터 보간
-            Vec3 interpolatedScale = MyProject::Lerp(currentKeyFrame.scale, nextKeyFrame.scale, _frameRatio);
-            Quaternion interpolatedRotation = MyProject::QuaternionSlerp(currentKeyFrame.rotation, nextKeyFrame.rotation, _frameRatio);
-            Vec3 interpolatedTranslation = MyProject::Lerp(currentKeyFrame.translate, nextKeyFrame.translate, _frameRatio);
+			// 스케일, 회전, 이동 데이터 보간
+			Vec3 interpolatedScale = MyProject::Lerp(currentKeyFrame.scale, nextKeyFrame.scale, _frameRatio);
+			Quaternion interpolatedRotation = MyProject::QuaternionSlerp(currentKeyFrame.rotation, nextKeyFrame.rotation, _frameRatio);
+			Vec3 interpolatedTranslation = MyProject::Lerp(currentKeyFrame.translate, nextKeyFrame.translate, _frameRatio);
 
-            // 보간된 트랜스폼으로 행렬 생성
-            Matrix blendedTransform = MyProject::MatrixAffineTransformation(interpolatedScale, interpolatedRotation, interpolatedTranslation);
+			// 보간된 트랜스폼으로 행렬 생성
+			Matrix blendedTransform = MyProject::MatrixAffineTransformation(interpolatedScale, interpolatedRotation, interpolatedTranslation);
 
-            // 부모의 최종 트랜스폼 적용
-            if (bone.parentIndex >= 0) {
-                blendedTransform = finalTransforms[bone.parentIndex] * blendedTransform;
-            }
+			// 부모의 최종 트랜스폼 적용
+			if (bone.parentIndex >= 0) {
+				blendedTransform = finalTransforms[bone.parentIndex] * blendedTransform;
+			}
 
-            // 본 오프셋 적용
-            blendedTransform = blendedTransform * bone.matOffset;
+			// 본 오프셋 적용
+			blendedTransform = blendedTransform * bone.matOffset;
 
-            // 최종 트랜스폼 저장
-            finalTransforms[i] = blendedTransform;
-        }
-    }
+			// 최종 트랜스폼 저장
+			finalTransforms[i] = blendedTransform;
+		}
+	}
 
-    // GPU 데이터 업데이트 (StructuredBuffer에 업로드)
-    if (_boneFinalMatrix->GetElementCount() < finalTransforms.size()) {
-        _boneFinalMatrix->Init(sizeof(Matrix), finalTransforms.size());
-    }
-    _boneFinalMatrix->Update(finalTransforms.data(), finalTransforms.size() * sizeof(Matrix));
+	// GPU 데이터 업데이트 (StructuredBuffer에 업로드)
+	if (_boneFinalMatrix->GetElementCount() < finalTransforms.size()) {
+		_boneFinalMatrix->Init(sizeof(Matrix), finalTransforms.size());
+	}
+	_boneFinalMatrix->Update(finalTransforms.data(), finalTransforms.size() * sizeof(Matrix));
 }
 
 void Animator::SetAnimClip(const vector<AnimClipInfo>* animClips)
 {
-    if (!animClips || animClips->empty()) {  
-        std::cerr << "Error: animClips is nullptr or empty!" << std::endl;
-        return;
-    }
-    _animClips = animClips;
+	if (!animClips || animClips->empty()) {
+		std::cerr << "Error: animClips is nullptr or empty!" << std::endl;
+		return;
+	}
+	_animClips = animClips;
 }
 
 void Animator::PushData()
@@ -114,30 +114,30 @@ void Animator::PushData()
 // 플레이 수정
 void Animator::Play(uint32 idx)
 {
-    if (!_animClips || _animClips->empty()) {
-        std::cerr << "Error: _animClips is nullptr or empty!" << std::endl;
-        return;
-    }
-    if (idx >= _animClips->size()) {
-        std::cerr << "Error: idx (" << idx << ") is out of range!" << std::endl;
-        return;
-    }
+	if (!_animClips || _animClips->empty()) {
+		std::cerr << "Error: _animClips is nullptr or empty!" << std::endl;
+		return;
+	}
+	if (idx >= _animClips->size()) {
+		std::cerr << "Error: idx (" << idx << ") is out of range!" << std::endl;
+		return;
+	}
 
-    _clipIndex = idx;
-    _updateTime = 0.f;
-    _isPlaying = true;
+	_clipIndex = idx;
+	_updateTime = 0.f;
+	_isPlaying = true;
 }
 
 void Animator::Stop()
 {
-    _isPlaying = false;
+	_isPlaying = false;
 }
 
 bool Animator::IsAnimationFinished()
 {
-    if (!_animClips || _clipIndex >= _animClips->size())
-        return false;
+	if (!_animClips || _clipIndex >= _animClips->size())
+		return false;
 
-    const AnimClipInfo& animClip = _animClips->at(_clipIndex);
-    return _updateTime >= animClip.duration;
+	const AnimClipInfo& animClip = _animClips->at(_clipIndex);
+	return _updateTime >= animClip.duration;
 }

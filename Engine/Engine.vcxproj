@@ -102,6 +102,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -137,7 +138,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -178,16 +179,20 @@
     <ClInclude Include="BaseParticleSystem.h" />
     <ClInclude Include="BossScene.h" />
     <ClInclude Include="BossScript.h" />
+    <ClInclude Include="BoxCollider.h" />
+    <ClInclude Include="BulletScript.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="BINLoader.h" />
     <ClInclude Include="CataclysmParticleSystem.h" />
     <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="CrapParticleSystem.h" />
     <ClInclude Include="CrapScript.h" />
     <ClInclude Include="CrashScene.h" />
     <ClInclude Include="CrashScript.h" />
     <ClInclude Include="d3dx12.h" />
+    <ClInclude Include="DebugRenderer.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="DustParticleSystem.h" />
     <ClInclude Include="Engine.h" />
@@ -202,6 +207,8 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GeneratorScript.h" />
     <ClInclude Include="GlitterParticleSystem.h" />
+    <ClInclude Include="GunFlameParticleSystem.h" />
+    <ClInclude Include="GunScript.h" />
     <ClInclude Include="LightPillarParticleSystem.h" />
     <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="LoadingScript.h" />
@@ -218,9 +225,11 @@
     <ClInclude Include="MeshData.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="GameModule.h" />
+    <ClInclude Include="Message.h" />
     <ClInclude Include="MessageManager.h" />
     <ClInclude Include="ModuleScript.h" />
     <ClInclude Include="MonoBehaviour.h" />
+    <ClInclude Include="NetworkCrabScript.h" />
     <ClInclude Include="NetworkTimer.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="OccupationScript.h" />
@@ -229,6 +238,8 @@
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PortalFrameParticleSystem.h" />
+    <ClInclude Include="RazerParticleScript.h" />
     <ClInclude Include="RectangleCollider.h" />
     <ClInclude Include="RazerParticleSystem.h" />
     <ClInclude Include="RenderTargetGroup.h" />
@@ -247,15 +258,16 @@
     <ClInclude Include="StructuredBuffer.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="TableDescriptorHeap.h" />
-    <ClInclude Include="TestCameraScript.h" />
+    <ClInclude Include="CameraScript.h" />
     <ClInclude Include="TestDragon.h" />
     <ClInclude Include="TestGrenadeScript.h" />
     <ClInclude Include="TestHuman.h" />
-    <ClInclude Include="TestOtherPlayerScript.h" />
+    <ClInclude Include="NetworkOtherPlayerScript.h" />
     <ClInclude Include="TestParticleScript.h" />
     <ClInclude Include="TestPBRParticleSystem.h" />
     <ClInclude Include="PlayerScript.h" />
     <ClInclude Include="TestScene.h" />
+    <ClInclude Include="TestScript.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TitleScene.h" />
@@ -270,15 +282,19 @@
     <ClCompile Include="BaseParticleSystem.cpp" />
     <ClCompile Include="BossScene.cpp" />
     <ClCompile Include="BossScript.cpp" />
+    <ClCompile Include="BoxCollider.cpp" />
+    <ClCompile Include="BulletScript.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="BINLoader.cpp" />
     <ClCompile Include="CataclysmParticleSystem.cpp" />
     <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
+    <ClCompile Include="CrapParticleSystem.cpp" />
     <ClCompile Include="CrapScript.cpp" />
     <ClCompile Include="CrashScene.cpp" />
     <ClCompile Include="CrashScript.cpp" />
+    <ClCompile Include="DebugRenderer.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="DustParticleSystem.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -293,6 +309,8 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GeneratorScript.cpp" />
     <ClCompile Include="GlitterParticleSystem.cpp" />
+    <ClCompile Include="GunFlameParticleSystem.cpp" />
+    <ClCompile Include="GunScript.cpp" />
     <ClCompile Include="LightPillarParticleSystem.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="LoadingScript.cpp" />
@@ -309,9 +327,11 @@
     <ClCompile Include="MeshData.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="GameModule.cpp" />
+    <ClCompile Include="Message.cpp" />
     <ClCompile Include="MessageManager.cpp" />
     <ClCompile Include="ModuleScript.cpp" />
     <ClCompile Include="MonoBehaviour.cpp" />
+    <ClCompile Include="NetworkCrabScript.cpp" />
     <ClCompile Include="NetworkTimer.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="OccupationScript.cpp" />
@@ -325,6 +345,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PortalFrameParticleSystem.cpp" />
+    <ClCompile Include="RazerParticleScript.cpp" />
     <ClCompile Include="RectangleCollider.cpp" />
     <ClCompile Include="RazerParticleSystem.cpp" />
     <ClCompile Include="RenderTargetGroup.cpp" />
@@ -342,15 +364,16 @@
     <ClCompile Include="StructuredBuffer.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="TableDescriptorHeap.cpp" />
-    <ClCompile Include="TestCameraScript.cpp" />
+    <ClCompile Include="CameraScript.cpp" />
     <ClCompile Include="TestDragon.cpp" />
     <ClCompile Include="TestGrenadeScript.cpp" />
     <ClCompile Include="TestHuman.cpp" />
-    <ClCompile Include="TestOtherPlayerScript.cpp" />
+    <ClCompile Include="NetworkOtherPlayerScript.cpp" />
     <ClCompile Include="TestParticleScript.cpp" />
     <ClCompile Include="TestPBRParticleSystem.cpp" />
     <ClCompile Include="PlayerScript.cpp" />
     <ClCompile Include="TestScene.cpp" />
+    <ClCompile Include="TestScript.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TitleScene.cpp" />
@@ -378,6 +401,18 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="..\Resources\Shader\CrapParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\Debug.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="..\Resources\Shader\deferred.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -392,6 +427,12 @@
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\GlitterParticle.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\GunFlameParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\lighting.fx">
@@ -424,6 +465,12 @@
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\FireParticle.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\PortalFrameParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\RazerParticle.fx">

@@ -1,4 +1,5 @@
 #pragma once
+#include "Message.h"
 
 class MessageManager
 {
@@ -6,13 +7,11 @@ class MessageManager
 
 public:
 
-	using QueueType = std::queue<std::pair<float, float>>;
+	using QueueType = std::queue<std::shared_ptr<Msg>>;
 
-	// temp
-	void InsertMessage(int id, float x, float y);
-	QueueType& GetMessageQueue(int id);
+	void PushMessage(const int id, std::shared_ptr<Msg> msg);
+	QueueType& GetMessageQueue(const int id);
 
 private:
 	std::unordered_map<int, QueueType> messageMap;
 };
-

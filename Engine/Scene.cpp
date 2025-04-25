@@ -7,6 +7,7 @@
 #include "Light.h"
 #include "Engine.h"
 #include "Resources.h"
+#include "DebugRenderer.h"
 
 void Scene::Awake()
 {
@@ -60,21 +61,24 @@ void Scene::Render()
 {
 	// _light 벡터에서 모든 광원 데이터를 가져와 글로벌 상수버퍼에 저장
 	PushLightData();
-	
+
 	// 각 렌더 타겟 그룹 초기화
 	ClearRTV();
 
 	// 그림자 렌더링
-	RenderShadow(); 
-	
+	RenderShadow();
+
 	// 디퍼드 렌더링
 	RenderDeferred();
 
 	// 조명 렌더링
-	RenderLights();	
+	RenderLights();
 
 	// 최종 렌더링
 	RenderFinal();
+
+	// 디버그 렌더링
+	//DebugRenderer::Render();
 
 	// 메인 카메라와 나머지 카메라에서 전방 렌더링
 	RenderForward();

@@ -4,10 +4,10 @@
 class ExplorationScript : public MasterScript
 {
 public:
-    ExplorationScript();
-    virtual ~ExplorationScript();
+	ExplorationScript();
+	virtual ~ExplorationScript();
 
-    virtual void LateUpdate() override;
+	virtual void LateUpdate() override;
 
 private:
 };

@@ -69,4 +69,3 @@ private:
 
 	shared_ptr<GameObject> _shadowCamera;
 };
-

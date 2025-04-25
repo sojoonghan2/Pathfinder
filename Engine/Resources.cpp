@@ -80,6 +80,58 @@ shared_ptr<Mesh> Resources::LoadPlanMesh()
 	return planeMesh;
 }
 
+shared_ptr<Mesh> Resources::LoadWaterMesh()
+{
+	const int resolution = 100;
+	const float width = 2.0f;
+	const float height = 2.0f;
+
+	std::vector<Vertex> vertices;
+	std::vector<uint32> indices;
+
+	for (int z = 0; z <= resolution; ++z)
+	{
+		for (int x = 0; x <= resolution; ++x)
+		{
+			float u = static_cast<float>(x) / resolution;
+			float v = static_cast<float>(z) / resolution;
+			float px = -width / 2.0f + u * width;
+			float pz = -height / 2.0f + v * height;
+
+			Vertex vertex;
+			vertex.pos = Vec3(px, 0.0f, pz);
+			vertex.uv = Vec2(u, v);
+			vertex.normal = Vec3(0, 1, 0);
+			vertex.tangent = Vec3(1, 0, 0);
+			vertices.push_back(vertex);
+		}
+	}
+
+	for (int z = 0; z < resolution; ++z)
+	{
+		for (int x = 0; x < resolution; ++x)
+		{
+			int i0 = z * (resolution + 1) + x;
+			int i1 = i0 + 1;
+			int i2 = i0 + (resolution + 1);
+			int i3 = i2 + 1;
+
+			// 두 삼각형으로 구성
+			indices.push_back(i0);
+			indices.push_back(i2);
+			indices.push_back(i1);
+
+			indices.push_back(i1);
+			indices.push_back(i2);
+			indices.push_back(i3);
+		}
+	}
+
+	shared_ptr<Mesh> planeMesh = make_shared<Mesh>();
+	planeMesh->Create(vertices, indices);
+	return planeMesh;
+}
+
 shared_ptr<Mesh> Resources::LoadCubeMesh()
 {
 	shared_ptr<Mesh> findMesh = Get<Mesh>(L"Cube");
@@ -237,14 +289,14 @@ shared_ptr<Mesh> Resources::LoadSphereMesh()
 			//  [y, x]-[y, x+1]
 			//  |		/
 			//  [y+1, x]
-			idx.push_back(1 + (y) * ringVertexCount + (x));
-			idx.push_back(1 + (y) * ringVertexCount + (x + 1));
+			idx.push_back(1 + (y)*ringVertexCount + (x));
+			idx.push_back(1 + (y)*ringVertexCount + (x + 1));
 			idx.push_back(1 + (y + 1) * ringVertexCount + (x));
 			//		 [y, x+1]
 			//		 /	  |
 			//  [y+1, x]-[y+1, x+1]
 			idx.push_back(1 + (y + 1) * ringVertexCount + (x));
-			idx.push_back(1 + (y) * ringVertexCount + (x + 1));
+			idx.push_back(1 + (y)*ringVertexCount + (x + 1));
 			idx.push_back(1 + (y + 1) * ringVertexCount + (x + 1));
 		}
 	}
@@ -656,6 +708,74 @@ void Resources::CreateDefaultShader()
 		Add<Shader>(L"IceComputeParticle", computeShader);
 	}
 
+	// CrapParticle
+	{
+		ShaderInfo info =
+		{
+			// 파티클
+			SHADER_TYPE::PARTICLE,
+			// 뒷면 제거
+			RASTERIZER_TYPE::CULL_BACK,
+			// 뎁스 버퍼에 기록 X
+			DEPTH_STENCIL_TYPE::LESS_NO_WRITE,
+			// 알파 블렌딩
+			BLEND_TYPE::ALPHA_BLEND,
+			// 기본 도형: 점
+			D3D_PRIMITIVE_TOPOLOGY_POINTLIST
+		};
+
+		ShaderArg arg =
+		{
+			"VS_Main",
+			"",
+			"",
+			"GS_Main",
+			"PS_Main"
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\CrapParticle.fx", info, arg);
+		Add<Shader>(L"CrapParticle", shader);
+
+		shared_ptr<Shader> computeShader = make_shared<Shader>();
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\CrapParticle.fx", "CS_Main", "cs_5_0");
+		Add<Shader>(L"CrapComputeParticle", computeShader);
+	}
+
+	// GunFlameParticle
+	{
+		ShaderInfo info =
+		{
+			// 파티클
+			SHADER_TYPE::PARTICLE,
+			// 뒷면 제거
+			RASTERIZER_TYPE::CULL_BACK,
+			// 뎁스 버퍼에 기록 X
+			DEPTH_STENCIL_TYPE::LESS_NO_WRITE,
+			// 알파 블렌딩
+			BLEND_TYPE::ALPHA_BLEND,
+			// 기본 도형: 점
+			D3D_PRIMITIVE_TOPOLOGY_POINTLIST
+		};
+
+		ShaderArg arg =
+		{
+			"VS_Main",
+			"",
+			"",
+			"GS_Main",
+			"PS_Main"
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\GunFlameParticle.fx", info, arg);
+		Add<Shader>(L"GunFlameParticle", shader);
+
+		shared_ptr<Shader> computeShader = make_shared<Shader>();
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\GunFlameParticle.fx", "CS_Main", "cs_5_0");
+		Add<Shader>(L"GunFlameComputeParticle", computeShader);
+	}
+
 	// FireParticle
 	{
 		ShaderInfo info =
@@ -894,6 +1014,40 @@ void Resources::CreateDefaultShader()
 		Add<Shader>(L"DustComputeParticle", computeShader);
 	}
 
+	// PortalFrameParticle
+	{
+		ShaderInfo info =
+		{
+			// 파티클
+			SHADER_TYPE::PARTICLE,
+			// 뒷면 제거
+			RASTERIZER_TYPE::CULL_BACK,
+			// 뎁스 버퍼에 기록 X
+			DEPTH_STENCIL_TYPE::LESS_NO_WRITE,
+			// 알파 블렌딩
+			BLEND_TYPE::ALPHA_BLEND,
+			// 기본 도형: 점
+			D3D_PRIMITIVE_TOPOLOGY_POINTLIST
+		};
+
+		ShaderArg arg =
+		{
+			"VS_Main",
+			"",
+			"",
+			"GS_Main",
+			"PS_Main"
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\PortalFrameParticle.fx", info, arg);
+		Add<Shader>(L"PortalFrameParticle", shader);
+
+		shared_ptr<Shader> computeShader = make_shared<Shader>();
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\PortalFrameParticle.fx", "CS_Main", "cs_5_0");
+		Add<Shader>(L"PortalFrameComputeParticle", computeShader);
+	}
+
 	// TestPBRParticle
 	{
 		ShaderInfo info =
@@ -1011,6 +1165,30 @@ void Resources::CreateDefaultShader()
 		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\water.fx", info, arg);
 		Add<Shader>(L"Water", shader);
 	}
+
+	// Debug
+	{
+		ShaderInfo info =
+		{
+			SHADER_TYPE::FORWARD,
+			RASTERIZER_TYPE::WIREFRAME,
+			DEPTH_STENCIL_TYPE::LESS,
+			BLEND_TYPE::DEFAULT
+		};
+
+		ShaderArg arg =
+		{
+			"VS_Debug",
+			"",
+			"",
+			"",
+			"PS_Debug"
+		};
+
+		std::shared_ptr<Shader> shader = std::make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\Debug.fx", info, arg);
+		Add<Shader>(L"Debug", shader);
+	}
 }
 
 // 머터리얼 정보(텍스쳐, 노멀)
@@ -1092,6 +1270,32 @@ void Resources::CreateDefaultMaterial()
 		shared_ptr<Material> computeMaterial = make_shared<Material>();
 		computeMaterial->SetShader(computShader);
 		Add<Material>(L"IceComputeParticle", computeMaterial);
+	}
+
+	// CrapParticle
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"CrapParticle");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		Add<Material>(L"CrapParticle", material);
+
+		shared_ptr<Shader> computShader = GET_SINGLE(Resources)->Get<Shader>(L"CrapComputeParticle");
+		shared_ptr<Material> computeMaterial = make_shared<Material>();
+		computeMaterial->SetShader(computShader);
+		Add<Material>(L"CrapComputeParticle", computeMaterial);
+	}
+
+	// GunFlameParticle
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"GunFlameParticle");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		Add<Material>(L"GunFlameParticle", material);
+
+		shared_ptr<Shader> computShader = GET_SINGLE(Resources)->Get<Shader>(L"GunFlameComputeParticle");
+		shared_ptr<Material> computeMaterial = make_shared<Material>();
+		computeMaterial->SetShader(computShader);
+		Add<Material>(L"GunFlameComputeParticle", computeMaterial);
 	}
 
 	// FireParticle
@@ -1185,6 +1389,19 @@ void Resources::CreateDefaultMaterial()
 		Add<Material>(L"DustComputeParticle", computeMaterial);
 	}
 
+	// PortalFrameParticle
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"PortalFrameParticle");
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		Add<Material>(L"PortalFrameParticle", material);
+
+		shared_ptr<Shader> computShader = GET_SINGLE(Resources)->Get<Shader>(L"PortalFrameComputeParticle");
+		shared_ptr<Material> computeMaterial = make_shared<Material>();
+		computeMaterial->SetShader(computShader);
+		Add<Material>(L"PortalFrameComputeParticle", computeMaterial);
+	}
+
 	// TestPBRParticle
 	{
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TestPBRParticle");
@@ -1258,5 +1475,16 @@ void Resources::CreateDefaultMaterial()
 		material->SetTexture(1, normalTexture);
 
 		Add<Material>(L"Water", material);
+	}
+
+	// Debug
+	{
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Debug");
+
+		shared_ptr<Material> material = make_shared<Material>();
+		material = std::make_shared<Material>();
+		material->SetShader(shader);
+
+		Add<Material>(L"Debug", material);
 	}
 }

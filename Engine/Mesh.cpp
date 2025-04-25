@@ -1,4 +1,3 @@
-
 #include <d3d12.h>
 
 #include "pch.h"
@@ -148,11 +147,9 @@ Mesh::Mesh() : Object(OBJECT_TYPE::MESH)
 	}
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 Mesh::~Mesh()
 {
-
 }
 
 void Mesh::Create(const vector<Vertex>& vertexBuffer, const vector<uint32>& indexBuffer)
@@ -244,7 +241,7 @@ shared_ptr<Mesh> Mesh::CreateFromFBX(const FbxMeshInfo* meshInfo, FBXLoader& loa
 
 	if (meshInfo->hasAnimation)
 		mesh->CreateBonesAndAnimations(loader);
-	
+
 	return mesh;
 }
 
@@ -257,7 +254,6 @@ shared_ptr<Mesh> Mesh::CreateFromBIN(const BINInfo* meshInfo, shared_ptr<BINLoad
 	{
 		if (buffer.empty())
 		{
-
 			vector<uint32> defaultBuffer{ 0 };
 			mesh->CreateIndexBuffer(defaultBuffer);
 		}
@@ -359,7 +355,6 @@ void Mesh::CreateIndexBuffer(const vector<uint32>& buffer)
 
 	_vecIndexInfo.push_back(info);
 }
-
 
 void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 {

@@ -12,13 +12,11 @@
 
 void TestHuman::Update()
 {
-
 	bool isMoving = false;
 	if (GetAnimator() == nullptr) {
 		cout << "엄" << endl;
-
 	}
-	//여기부터 에러 
+	//여기부터 에러
 
 	if (INPUT->GetButton(KEY_TYPE::Z))
 	{
@@ -29,14 +27,14 @@ void TestHuman::Update()
 		pos += Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
 
 		GetTransform()->SetLocalPosition(pos);
-	} 
+	}
 	else if (INPUT->GetButton(KEY_TYPE::C))
 	{
 		cout << "이동중" << endl;
 		SetAnimationState(AnimationState::Walk);
 		isMoving = true;
 		Vec3 pos = GetTransform()->GetLocalPosition();
-		pos -= Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;   
+		pos -= Normalization(GetTransform()->GetLook()) * _speed * DELTA_TIME;
 
 		GetTransform()->SetLocalPosition(pos);
 	}
@@ -45,7 +43,6 @@ void TestHuman::Update()
 		cout << "이동 없음 → Idle 상태로 변경" << endl;
 		SetAnimationState(AnimationState::Idle);
 	}
-
 }
 
 // 여기부터
@@ -72,5 +69,4 @@ void TestHuman::SetAnimationState(AnimationState state)
 		cout << "애니메이션 변경" << endl;
 		animator->Play(3);
 	}
-
 }

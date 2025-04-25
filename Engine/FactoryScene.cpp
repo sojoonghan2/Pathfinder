@@ -12,7 +12,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "ParticleSystem.h"
-#include "TestCameraScript.h"
+#include "CameraScript.h"
 #include "Resources.h"
 #include "MeshData.h"
 
@@ -28,7 +28,7 @@
 
 FactoryScene::FactoryScene()
 {
-// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
+	// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
 #pragma region ComputeShader
 	{
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"ComputeShader");
@@ -49,14 +49,14 @@ FactoryScene::FactoryScene()
 	}
 #pragma endregion
 
-// 카메라
+	// 카메라
 #pragma region Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
 		camera->SetName(L"Main_Camera");
 		camera->AddComponent(make_shared<Transform>());
 		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=3000, FOV=45도
-		camera->AddComponent(make_shared<TestCameraScript>());
+		camera->AddComponent(make_shared<CameraScript>());
 		camera->AddComponent(make_shared<FactoryScript>());
 		camera->GetCamera()->SetFar(100000.f);
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
@@ -66,7 +66,7 @@ FactoryScene::FactoryScene()
 	}
 #pragma endregion
 
-// UI 카메라
+	// UI 카메라
 #pragma region UI_Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
@@ -82,7 +82,7 @@ FactoryScene::FactoryScene()
 	}
 #pragma endregion
 
-// 플레이어
+	// 플레이어
 #pragma region Player
 	{
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
@@ -99,7 +99,7 @@ FactoryScene::FactoryScene()
 	}
 #pragma endregion
 
-// 몬스터
+	// 몬스터
 #pragma region Monster
 	{
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Monster\\Monster.fbx");
@@ -116,7 +116,7 @@ FactoryScene::FactoryScene()
 	}
 #pragma endregion
 
-// 터레인 큐브
+	// 터레인 큐브
 #pragma region TerrainCube
 	{
 		// 1. 기본 오브젝트 생성 및 설정
@@ -185,10 +185,10 @@ FactoryScene::FactoryScene()
 	}
 #pragma endregion
 
-// 전역 조명
+	// 전역 조명
 #pragma region Directional Light
 	{
-		// 1. light 오브젝트 생성 
+		// 1. light 오브젝트 생성
 		shared_ptr<GameObject> light = make_shared<GameObject>();
 		light->SetName(L"Directional_Light");
 		light->AddComponent(make_shared<Transform>());
@@ -211,7 +211,7 @@ FactoryScene::FactoryScene()
 	}
 #pragma endregion
 
-// 공급기
+	// 공급기
 #pragma region Generator
 	{
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Generator\\Generator.fbx");

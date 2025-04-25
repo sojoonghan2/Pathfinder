@@ -22,8 +22,8 @@ public:
 
 
 private:
-	SOCKET serverSocket{ INVALID_SOCKET };
-	std::thread	recvThread{};
+	SOCKET _serverSocket{ INVALID_SOCKET };
+	std::thread	_recvThread{};
 	std::array<char, BUFFER_SIZE> recvBuffer{};
 };
 
@@ -39,7 +39,7 @@ void SocketIO::DoSend(Args ...args)
 	memcpy(buffer.data(), &packet, sizeof(packet));
 
 	// º¸³»±â
-	int ret = send(serverSocket, buffer.data(), sizeof(packet), 0);
+	int ret = send(_serverSocket, buffer.data(), sizeof(packet), 0);
 	if (SOCKET_ERROR == ret) {
 		util::DisplayError();
 	}

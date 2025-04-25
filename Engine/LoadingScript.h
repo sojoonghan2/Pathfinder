@@ -4,16 +4,18 @@
 class LoadingScript : public MasterScript
 {
 public:
-    LoadingScript();
-    virtual ~LoadingScript();
+	LoadingScript();
+	virtual ~LoadingScript();
 
-    virtual void LateUpdate() override;
+	virtual void LateUpdate() override;
+	virtual void Awake() override;
 
-    void StartLoadingThread();
-    void SceneLoad();
+	void StartLoadingThread();
+	void SceneLoad();
 
 private:
-    std::thread*    loadThread;
-    bool            loadEnd = false;
-    bool            isInitialized = false;
+	std::thread*	loadThread;
+	bool            loadEnd = false;
+	bool            isInitialized = false;
+	RoomType		roomType = RoomType::None;
 };

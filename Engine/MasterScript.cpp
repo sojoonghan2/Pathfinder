@@ -24,12 +24,10 @@ void MasterScript::LateUpdate()
 
 void MasterScript::KeyboardInput()
 {
-    
 }
 
 void MasterScript::MouseInput()
 {
-	
 }
 
 void MasterScript::ApplyModuleAbillities()

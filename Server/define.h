@@ -1,5 +1,34 @@
 #pragma once
 
+
+struct Vec2f
+{
+	float x{ 0.f };
+	float y{ 0.f };
+
+	Vec2f() = default;
+	Vec2f(const float x, const float y) :
+		x{ x },
+		y{ y }
+	{}
+
+	Vec2f operator+(const Vec2f& rhs) const
+	{
+		return Vec2f{ x + rhs.x, y + rhs.y };
+	}
+
+	Vec2f operator-(const Vec2f& rhs) const
+	{
+		return Vec2f{ x - rhs.x, y - rhs.y };
+	}
+};
+
+struct ClientIdInfo
+{
+	int playerId{ -1 };
+	int roomId{ -1 };
+};
+
 enum class IOOperation
 {
 	NONE,
@@ -8,8 +37,16 @@ enum class IOOperation
 	SEND
 };
 
+enum class IOState
+{
+	NONE,
+	CONNECT,
+	INGAME,
+	DISCONNECT
+};
 
-struct OverlappedEx
+
+struct alignas(64) OverlappedEx
 {
 	WSAOVERLAPPED	over;					// overlapped IO 구조체
 	SOCKET			clientSocket{ INVALID_SOCKET }; // 클라이언트 소켓
@@ -37,14 +74,30 @@ struct OverlappedEx
 	}
 };
 
-struct Session
+struct ClientInfo
 {
-	OverlappedEx	overEx;							// RECV에 사용할 Overlapped 변수
+	OverlappedEx	overEx;								// RECV에 사용할 Overlapped 변수
 	SOCKET			clientSocket{ INVALID_SOCKET };	
 	int				currentDataSize{};					// 패킷 재조립을 위한 남은 데이터 수 
+	ClientIdInfo	clientIdInfo{};
+	IOState			ioState{ IOState::NONE };
 
-	Session()
+	ClientInfo()
 	{
 		ZeroMemory(&overEx, sizeof(overEx));
 	}
 };
+
+
+// 싱글턴
+#define DECLARE_SINGLE(type)		\
+private:							\
+	type() {}						\
+public:								\
+	static type* GetInstance()		\
+	{								\
+		static type instance;		\
+		return &instance;			\
+	}								\
+
+#define GET_SINGLE(type)	type::GetInstance()

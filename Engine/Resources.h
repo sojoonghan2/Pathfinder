@@ -29,6 +29,7 @@ public:
 	shared_ptr<Mesh> LoadPointMesh();
 	shared_ptr<Mesh> LoadRectangleMesh();
 	shared_ptr<Mesh> LoadPlanMesh();
+	shared_ptr<Mesh> LoadWaterMesh();
 	shared_ptr<Mesh> LoadCubeMesh();
 	shared_ptr<Mesh> LoadSphereMesh();
 

@@ -10,7 +10,7 @@
 #include "Camera.h"
 #include "Light.h"
 
-#include "TestCameraScript.h"
+#include "CameraScript.h"
 #include "PlayerScript.h"
 #include "Resources.h"
 #include "ParticleSystem.h"
@@ -189,6 +189,23 @@ shared_ptr<GameObject> SceneManager::Pick(int32 screenX, int32 screenY)
 	}
 
 	return picked;
+}
+
+bool SceneManager::Collition(shared_ptr<GameObject> obj1,
+	shared_ptr<GameObject> obj2)
+{
+	auto obj1Collider = obj1->GetCollider();
+	auto obj2Collider = obj2->GetCollider();
+
+	if (!obj1Collider) return 0;
+	if (!obj2Collider) return 0;
+
+	// 충돌 체크
+	if (obj1Collider->Intersects(obj2Collider))
+	{
+		return true;
+	}
+	return false;
 }
 
 shared_ptr<GameObject> SceneManager::FindObjectByName(const wstring& name)

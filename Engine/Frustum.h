@@ -21,4 +21,3 @@ public:
 private:
 	array<Vec4, PLANE_END> _planes;
 };
-

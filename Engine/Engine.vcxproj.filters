@@ -40,14 +40,23 @@
     <Filter Include="Script\SceneScript">
       <UniqueIdentifier>{358d7ced-88ac-469c-b0ef-74aa60466ec3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Script\ObjectScript">
-      <UniqueIdentifier>{eb7d48ae-19f7-451d-811d-a2770d7fbbc6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Network">
       <UniqueIdentifier>{95ae09dd-fa82-4c25-bb2c-b0d4ce4c6c49}</UniqueIdentifier>
     </Filter>
     <Filter Include="Network\Common">
       <UniqueIdentifier>{5d949c5a-61e8-4edd-b218-5dde9aee1d50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\util">
+      <UniqueIdentifier>{173b7caa-495e-4245-81fa-977da523f6b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Message">
+      <UniqueIdentifier>{7ba72e15-6d52-499a-97e3-c68695854e61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Script\ObjectScript">
+      <UniqueIdentifier>{eb7d48ae-19f7-451d-811d-a2770d7fbbc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Script\ObjectScript\NetworkScript">
+      <UniqueIdentifier>{9d114f5a-38b3-414e-a541-181bf8db5a18}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -234,7 +243,7 @@
     <ClCompile Include="ModuleScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
-    <ClCompile Include="TestCameraScript.cpp">
+    <ClCompile Include="CameraScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
     <ClCompile Include="TestDragon.cpp">
@@ -254,9 +263,6 @@
     </ClCompile>
     <ClCompile Include="RectangleCollider.cpp">
       <Filter>Object\Component\Collider</Filter>
-    </ClCompile>
-    <ClCompile Include="TestGrenadeScript.cpp">
-      <Filter>Script</Filter>
     </ClCompile>
     <ClCompile Include="BossScene.cpp">
       <Filter>Scene</Filter>
@@ -285,17 +291,8 @@
     <ClCompile Include="SocketIO.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="NetworkTimer.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="MessageManager.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\util.cpp">
       <Filter>Network\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="TestOtherPlayerScript.cpp">
-      <Filter>Script\ObjectScript</Filter>
     </ClCompile>
     <ClCompile Include="GeneratorScript.cpp">
       <Filter>Script\ObjectScript</Filter>
@@ -314,6 +311,51 @@
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Object\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="RazerParticleScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="TestGrenadeScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="PortalFrameParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugRenderer.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="GunScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkTimer.cpp">
+      <Filter>Network\util</Filter>
+    </ClCompile>
+    <ClCompile Include="TestScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageManager.cpp">
+      <Filter>Network\Message</Filter>
+    </ClCompile>
+    <ClCompile Include="Message.cpp">
+      <Filter>Network\Message</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkCrabScript.cpp">
+      <Filter>Script\ObjectScript\NetworkScript</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkOtherPlayerScript.cpp">
+      <Filter>Script\ObjectScript\NetworkScript</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>Object\Component\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="CrapParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GunFlameParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -506,7 +548,7 @@
     <ClInclude Include="ModuleScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
-    <ClInclude Include="TestCameraScript.h">
+    <ClInclude Include="CameraScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
     <ClInclude Include="TestDragon.h">
@@ -526,9 +568,6 @@
     </ClInclude>
     <ClInclude Include="RectangleCollider.h">
       <Filter>Object\Component\Collider</Filter>
-    </ClInclude>
-    <ClInclude Include="TestGrenadeScript.h">
-      <Filter>Script</Filter>
     </ClInclude>
     <ClInclude Include="BossScene.h">
       <Filter>Scene</Filter>
@@ -554,20 +593,11 @@
     <ClInclude Include="SocketIO.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkTimer.h">
-      <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="MessageManager.h">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\util.h">
       <Filter>Network\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\protocol.h">
       <Filter>Network\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="TestOtherPlayerScript.h">
-      <Filter>Script\ObjectScript</Filter>
     </ClInclude>
     <ClInclude Include="GeneratorScript.h">
       <Filter>Script\ObjectScript</Filter>
@@ -587,7 +617,52 @@
     <ClInclude Include="Player.h">
       <Filter>Object\Component</Filter>
     </ClInclude>
+    <ClInclude Include="RazerParticleScript.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletScript.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="TestGrenadeScript.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkTimer.h">
+      <Filter>Network\util</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugRenderer.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="GunScript.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="PortalFrameParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="TestScript.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageManager.h">
+      <Filter>Network\Message</Filter>
+    </ClInclude>
+    <ClInclude Include="Message.h">
+      <Filter>Network\Message</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkCrabScript.h">
+      <Filter>Script\ObjectScript\NetworkScript</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkOtherPlayerScript.h">
+      <Filter>Script\ObjectScript\NetworkScript</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>Object\Component\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="CrapParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="GunFlameParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -668,6 +743,18 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\LightPillarParticle.fx">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\PortalFrameParticle.fx">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\Debug.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\CrapParticle.fx">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\GunFlameParticle.fx">
       <Filter>Shader\Particle</Filter>
     </FxCompile>
   </ItemGroup>

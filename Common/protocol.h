@@ -1,96 +1,234 @@
 #pragma once
 
-#define NETWORK_START	namespace network {
-#define NETWORK_END		}
+// 상수 정의
+
+// MAP 
+constexpr float MAP_SIZE_M{ 50.f };
+
+
+// PLAYER
+constexpr float PLAYER_SIZE_M{ 0.5f };
+constexpr float PLAYER_SPEED_MPS{ 5.f };
+
+constexpr float SKILL_DASH_SPEED_MPS{ 50.f };
+constexpr float SKILL_DASH_COOLDOWN_S{ 1.f };
+constexpr float SKILL_GRENADE_COOLDOWN_S{ 10.f };
+constexpr float SKILL_RAZER_COOLDOWN_S{ 10.f };
+
+// MONSTER
+constexpr float MONSTER_CRAB_SIZE_M{ 0.5f };
+constexpr float MONSTER_CRAB_SPEED_MPS{ 2.f };
+
+// NETWORK
+constexpr int PORT_NUMBER{ 4000 };
+constexpr int BUFFER_SIZE{ 200 };
+
+constexpr const char* SERVER_IP{ "127.0.0.1" };
+
+constexpr float MOVE_PACKET_TIME_MS{ 75.f }; // 초당 13.3회
+constexpr float MAX_NETWORK_DELAY_MS{ 200.f }; // 최대 네트워크 딜레이
+
+constexpr int MAX_PLAYER{ 10000 };
+constexpr int MAX_ROOM{ MAX_PLAYER / 3 + 1 };
+constexpr int MAX_MONSTER{ MAX_ROOM * 10 };
+
+enum class RoomType : unsigned char
+{
+	None = 0,
+	Ruin,
+	Factory,
+	Ristrict,
+	Falling,
+	Lucky
+};
 
 #define PACKET_START	namespace packet {
 #define PACKET_END		}
-
-constexpr int PORT_NUMBER = 4000;
-constexpr int BUFFER_SIZE = 200;
-
-constexpr const char* SERVER_IP = "127.0.0.1";
 
 PACKET_START
 enum class Type : unsigned char
 {
 	NONE,
-	CS_LOGIN,
+
+	// prepare
 	SC_LOGIN,
+	CS_LOGIN,
+	SC_MATCHMAKING,
+	CS_MATCHMAKING,
+	CS_LOAD_COMPLETE,	// todo
+	SC_GAME_START,		// todo
+
+	// move
 	SC_MOVE_PLAYER,
 	CS_MOVE_PLAYER,
+	SC_MOVE_MONSTER,
+
+	// other
+	SC_CHECK_DELAY,
+	CS_CHECK_DELAY,
 };
 
 #pragma pack(push, 1)
 struct Header
 {
-	unsigned short	size{ sizeof(Header) };
+	unsigned char	size{ sizeof(Header) };
 	Type			type{ Type::NONE };
+
+	Header() = default;
+	Header(const unsigned char size, const Type type) :
+		size{ size },
+		type{ type }
+	{}
+};
+
+
+// NO Param
+struct SCLogin : Header
+{
+	SCLogin() :
+		Header{ sizeof(SCLogin), Type::SC_LOGIN }
+	{}
 };
 
 // No Param
 struct CSLogin : Header
 {
-	CSLogin()
-	{
-		size = sizeof(CSLogin);
-		type = Type::CS_LOGIN;
-	}
+	CSLogin() :
+		Header{ sizeof(CSLogin), Type::CS_LOGIN }
+	{}
 };
 
 // Param
 //	int playerId: 클라이언트의 플레이어 아이디
-struct SCLogin : Header
+//  roomType
+struct SCMatchmaking : Header
 {
-	int playerId{ -1 };
+	int clientId{ -1 };
+	RoomType roomType{ RoomType::None };
 
-	SCLogin(int playerId) :
-		playerId{playerId}
-	{
-		size = sizeof(SCLogin);
-		type = Type::SC_LOGIN;
-	}
+	SCMatchmaking(const int client_id, const RoomType room_type) :
+		Header{ sizeof(SCMatchmaking), Type::SC_MATCHMAKING },
+		clientId{ client_id },
+		roomType{ room_type }
+	{}
+};
+
+// No Param
+struct CSMatchmaking : Header
+{
+	CSMatchmaking() :
+		Header{ sizeof(CSMatchmaking), Type::CS_MATCHMAKING }
+	{}
+};
+
+// RoomType room_type
+//struct SCLoad : Header
+//{
+//	RoomType room_type{ RoomType::None };
+//
+//	SCLoad(const RoomType room_type) :
+//		Header{ sizeof(SCMatchmaking), Type::SC_MATCHMAKING },
+//		room_type{ room_type }
+//	{}
+//};
+
+// No Param
+struct CSLoadComplete : Header
+{
+	CSLoadComplete() :
+		Header{ sizeof(CSLoadComplete), Type::CS_LOAD_COMPLETE }
+	{}
+};
+
+// No Param
+struct SCGameStart : Header
+{
+	SCGameStart() :
+		Header{ sizeof(SCGameStart), Type::SC_GAME_START }
+	{}
 };
 
 // Param:
-//	int playerId
+//	int clientId
 //	float x
 //	float y
+//	float dirX
+//	float dirY
 struct SCMovePlayer : Header
 {
-	int playerId{ -1 };
+	int clientId{ -1 };
 	float x{ 0.f };
 	float y{ 0.f };
+	float dirX{ 0.f };
+	float dirY{ 0.f };
 
-	SCMovePlayer(const int playerId, const float x, const float y) :
-		playerId{playerId},
-		x{x},
-		y{y}
-	{
-		size = sizeof(SCMovePlayer);
-		type = Type::SC_MOVE_PLAYER;
-	}
+
+	SCMovePlayer(const int client_id, const float x, const float y, const float dirX, const float dirY) :
+		Header{ sizeof(SCMovePlayer), Type::SC_MOVE_PLAYER },
+		clientId{ client_id },
+		x{ x }, y{ y },
+		dirX{ dirX }, dirY{ dirY }
+	{}
 };
 
 // Param:
-//	int playerId
 //	float x
 //	float y
+//	float dirX
+//	float dirY
 struct CSMovePlayer : Header
 {
-	int playerId{ -1 };
 	float x{ 0.f };
 	float y{ 0.f };
+	float dirX{ 0.f };
+	float dirY{ 0.f };
 
-	CSMovePlayer(const int playerId, const float x, const float y) :
-		playerId{ playerId },
-		x{ x },
-		y{ y }
-	{
-		size = sizeof(CSMovePlayer);
-		type = Type::CS_MOVE_PLAYER;
-	}
+
+	CSMovePlayer(const float x, const float y, const float dirX, const float dirY) :
+		Header{ sizeof(CSMovePlayer), Type::CS_MOVE_PLAYER },
+		x{ x }, y{ y },
+		dirX{ dirX }, dirY{ dirY }
+	{}
 };
+
+// Param:
+//	int monsterId
+//	float x
+//	float y
+//	float dirX
+//	float dirY
+struct SCMoveMonster : Header
+{
+	int monsterId{ -1 };
+	float x{ 0.f };
+	float y{ 0.f };
+	float dirX{ 0.f };
+	float dirY{ 0.f };
+
+	SCMoveMonster(const int monster_id, const float x, const float y, const float dirX, const float dirY) :
+		Header{ sizeof(SCMoveMonster), Type::SC_MOVE_MONSTER },
+		monsterId{ monster_id },
+		x{ x }, y{ y },
+		dirX{ dirX }, dirY{ dirY }
+	{}
+};
+
+// No Param
+struct SCCheckDelayPacket : Header
+{
+	SCCheckDelayPacket() :
+		Header{ sizeof(SCCheckDelayPacket), Type::SC_CHECK_DELAY }
+	{}
+};
+
+// No Param
+struct CSCheckDelayPacket : Header
+{
+	CSCheckDelayPacket() :
+		Header{ sizeof(CSCheckDelayPacket), Type::CS_CHECK_DELAY }
+	{}
+};
+
 
 #pragma pack(pop)
 PACKET_END

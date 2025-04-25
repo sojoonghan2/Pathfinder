@@ -43,4 +43,3 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE		_srvHeapBegin = {};
 	D3D12_CPU_DESCRIPTOR_HANDLE		_uavHeapBegin = {};
 };
-

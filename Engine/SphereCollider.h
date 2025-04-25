@@ -9,9 +9,18 @@ public:
 
 	virtual void FinalUpdate() override;
 	virtual bool Intersects(Vec4 rayOrigin, Vec4 rayDir, OUT float& distance) override;
+	virtual bool Intersects(shared_ptr<BaseCollider> otherCollider) override;
 
 	void SetRadius(float radius) { _radius = radius; }
 	void SetCenter(Vec3 center) { _center = center; }
+
+	float GetRadius() const { return _boundingSphere.Radius; }
+	virtual Vec3 GetCenter() const override { return _boundingSphere.Center; }
+
+	BoundingSphere GetBoundingSphere() { return _boundingSphere; }
+
+	virtual Vec3 GetMin() override { return _center - Vec3(_radius, _radius, _radius); }
+	virtual Vec3 GetMax() override { return _center + Vec3(_radius, _radius, _radius); }
 
 private:
 	// Local ±‚¡ÿ
@@ -20,4 +29,3 @@ private:
 
 	BoundingSphere _boundingSphere;
 };
-

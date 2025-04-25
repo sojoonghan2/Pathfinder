@@ -12,7 +12,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "ParticleSystem.h"
-#include "TestCameraScript.h"
+#include "CameraScript.h"
 #include "Resources.h"
 #include "MeshData.h"
 
@@ -26,7 +26,7 @@
 
 ExplorationScene::ExplorationScene()
 {
-// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
+	// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
 #pragma region ComputeShader
 	{
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"ComputeShader");
@@ -47,14 +47,14 @@ ExplorationScene::ExplorationScene()
 	}
 #pragma endregion
 
-// 카메라
+	// 카메라
 #pragma region Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
 		camera->SetName(L"Main_Camera");
 		camera->AddComponent(make_shared<Transform>());
 		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=3000, FOV=45도
-		camera->AddComponent(make_shared<TestCameraScript>());
+		camera->AddComponent(make_shared<CameraScript>());
 		camera->AddComponent(make_shared<ExplorationScript>());
 		camera->GetCamera()->SetFar(100000.f);
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
@@ -64,7 +64,7 @@ ExplorationScene::ExplorationScene()
 	}
 #pragma endregion
 
-// UI 카메라
+	// UI 카메라
 #pragma region UI_Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
@@ -80,7 +80,7 @@ ExplorationScene::ExplorationScene()
 	}
 #pragma endregion
 
-// 플레이어
+	// 플레이어
 #pragma region Player
 	{
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
@@ -117,8 +117,8 @@ ExplorationScene::ExplorationScene()
 		obj->AddComponent(meshRenderer);
 		obj->SetRenderOff();
 		activeScene->AddGameObject(obj);
-		
-		// 1. light 오브젝트 생성 
+
+		// 1. light 오브젝트 생성
 		shared_ptr<GameObject> light = make_shared<GameObject>();
 		light->SetName(L"Point_Light");
 		light->AddComponent(make_shared<Transform>());
@@ -141,7 +141,7 @@ ExplorationScene::ExplorationScene()
 	}
 #pragma endregion
 
-// 스카이 박스
+	// 스카이 박스
 #pragma region SkyBox
 	{
 		shared_ptr<GameObject> skybox = make_shared<GameObject>();
@@ -165,7 +165,7 @@ ExplorationScene::ExplorationScene()
 	}
 #pragma endregion
 
-// 터레인 큐브
+	// 터레인 큐브
 #pragma region TerrainCube
 	{
 		// 1. 기본 오브젝트 생성 및 설정
@@ -206,15 +206,15 @@ ExplorationScene::ExplorationScene()
 	}
 #pragma endregion
 
-// *********************************************
-// UI 테스트
-// 0. 월드 공간 위치 정보
-// 1. 노말 벡터 정보
-// 2. 색상 정보
-// 3. 분산광 결과
-// 4. 반사광 결과
-// 5. 그림자
-// *********************************************
+	// *********************************************
+	// UI 테스트
+	// 0. 월드 공간 위치 정보
+	// 1. 노말 벡터 정보
+	// 2. 색상 정보
+	// 3. 분산광 결과
+	// 4. 반사광 결과
+	// 5. 그림자
+	// *********************************************
 #pragma region UI_Test
 	shared_ptr<GameObject> obj = make_shared<GameObject>();
 	obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
@@ -240,10 +240,10 @@ ExplorationScene::ExplorationScene()
 	activeScene->AddGameObject(obj);
 #pragma endregion
 
-// 전역 조명(삭제 예정)
+	// 전역 조명(삭제 예정)
 #pragma region Directional Light
 	{
-		// 1. light 오브젝트 생성 
+		// 1. light 오브젝트 생성
 		shared_ptr<GameObject> light = make_shared<GameObject>();
 		light->SetName(L"Directional_Light");
 		light->AddComponent(make_shared<Transform>());
@@ -266,7 +266,7 @@ ExplorationScene::ExplorationScene()
 	}
 #pragma endregion
 
-// 로봇
+	// 로봇
 #pragma region SELFDESTRUCTIONROBOT
 	{
 		std::random_device rd;

@@ -1,13 +1,9 @@
 #pragma once
-#pragma once
-
-
-class NetworkTimer
-{
+class NetworkTimer {
 private:
-	using Clock = std::chrono::high_resolution_clock;
+	using Clock = std::chrono::steady_clock;
 	using TimePoint = std::chrono::time_point<Clock>;
-	using MilliSeconds = std::chrono::duration<float, std::milli>;
+	using MilliSeconds = std::chrono::duration<float, std::milli>; // 밀리초 단위로 변경
 
 	TimePoint lastFrame;
 	float deltaTimeMS; // 밀리초 단위의 델타타임
@@ -22,4 +18,3 @@ public:
 
 	float PeekDeltaTime() const;
 };
-

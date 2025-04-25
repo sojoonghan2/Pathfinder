@@ -4,10 +4,10 @@
 class FactoryScript : public MasterScript
 {
 public:
-    FactoryScript();
-    virtual ~FactoryScript();
+	FactoryScript();
+	virtual ~FactoryScript();
 
-    virtual void LateUpdate() override;
+	virtual void LateUpdate() override;
 
 private:
 };

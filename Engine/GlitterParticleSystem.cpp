@@ -11,9 +11,8 @@ GlitterParticleSystem::GlitterParticleSystem() : BaseParticleSystem()
 	SetOnceParticleNum(1);
 	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"GlitterParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"GlitterComputeParticle")->Clone());
 	shared_ptr<Texture> sparkle = GET_SINGLE(Resources)->Load<Texture>(L"Sparkle", L"..\\Resources\\Texture\\Particle\\sparkle.png");
-	
+
 	SetParticleTexture(0, sparkle);
-	
 }
 
 void GlitterParticleSystem::FinalUpdate()

@@ -4,10 +4,13 @@
 class TitleScript : public MasterScript
 {
 public:
-    TitleScript();
-    virtual ~TitleScript();
+	TitleScript();
+	virtual ~TitleScript();
 
-    virtual void LateUpdate() override;
+	virtual void LateUpdate() override;
+
+	void MatchMaking();
 
 private:
+	bool	_isMatch = false;
 };

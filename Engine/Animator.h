@@ -17,7 +17,7 @@ public:
 	void SetAnimClip(const vector<AnimClipInfo>* animClips);
 	void PushData();
 
-	int32 GetAnimCount() { return static_cast<uint32>( _animClips->size()); }
+	int32 GetAnimCount() { return static_cast<uint32>(_animClips->size()); }
 	int32 GetCurrentClipIndex() { return _clipIndex; }
 	void Play(uint32 idx);
 	void Stop();
