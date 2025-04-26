@@ -804,7 +804,7 @@ RuinsScene::RuinsScene()
 		vector<Vec3> positions;
 		float minDistance = 300.0f;
 
-		for (int i = 0; i < 10; ++i)
+		for (int i = 0; i < 1; ++i)
 		{
 			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
 			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();

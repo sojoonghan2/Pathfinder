@@ -30,6 +30,28 @@ CrapScript::CrapScript()
 
 void CrapScript::LateUpdate()
 {
+	if (_isDying)
+	{
+		const float duration = 0.5f;
+		_deathAnimTime += DELTA_TIME;
+
+		float t = min(_deathAnimTime / duration, 1.0f);
+		Vec3 currentRot = Vector3::Lerp(_startRot, _targetRot, t);
+		GetTransform()->SetLocalRotation(currentRot);
+
+		if (t >= 1.0f)
+			_isDying = false;
+
+		return;
+	}
+
+	if (!_isAlive)
+	{
+		if (!_deathHandled)
+			DeadAnimation();
+		return;
+	}
+
 	_elapsedTime += DELTA_TIME;
 
 	// 이동 상태일 때는 일정 시간 후 정지
@@ -64,7 +86,7 @@ void CrapScript::LateUpdate()
 		GetAnimator()->Play(index);
 	}
 
-	if (_isMoving)
+	if (_isMoving && _isAlive)
 	{
 		MoveRandomly();
 		CheckBoundary();
@@ -106,10 +128,10 @@ void CrapScript::CheckBoundary()
 {
 	Vec3 pos = GetTransform()->GetLocalPosition();
 
-	float mapMinX = -4900.f;
-	float mapMaxX = 4900.f;
-	float mapMinZ = -4900.f;
-	float mapMaxZ = 4900.f;
+	float mapMinX = -4000.f;
+	float mapMaxX = 4000.f;
+	float mapMinZ = -4000.f;
+	float mapMaxZ = 4000.f;
 
 	if (pos.x <= mapMinX || pos.x >= mapMaxX)
 	{
@@ -158,12 +180,31 @@ void CrapScript::CheckBulletHits()
 				_hpTransform->SetLocalPosition(hpPos);
 			}
 
-			if ((hpScale.x - delta) <= 0.f)
+			if ((hpScale.x - delta) < 0.f)
 			{
-				cout << "응애 거미 사망\n";
+				DeadAnimation();
 			}
-
 			break;
 		}
+	}
+}
+
+void CrapScript::DeadAnimation()
+{
+	cout << "응애 거미 사망\n";
+	_isAlive = false;
+
+	if (!_deathHandled)
+	{
+		_deathHandled = true;
+
+		if (GetAnimator())
+			GetAnimator()->Stop();
+
+		// 현재 회전값 저장
+		_startRot = GetTransform()->GetLocalRotation();
+		_targetRot = Vec3(180.0f * (PI / 180.0f), _startRot.y, _startRot.z);
+		_deathAnimTime = 0.f;
+		_isDying = true;
 	}
 }

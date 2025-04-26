@@ -12,6 +12,8 @@ public:
 	void CheckBoundary();
 	void CheckBulletHits();
 
+	void DeadAnimation();
+
 private:
 	float _speed = 1000.f;
 	Vec3 _direction;
@@ -28,4 +30,12 @@ private:
 	shared_ptr<Transform>			_hpTransform;
 
 	int32							_index = -1;
+	bool							_isAlive = true;
+	bool							_deathHandled = false;
+
+	Vec3							_startRot = {};
+	Vec3							_targetRot = {};
+	float							_deathAnimTime = 0.f;
+	bool							_isDying = false;
+
 };
