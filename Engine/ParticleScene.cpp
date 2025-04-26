@@ -105,30 +105,6 @@ ParticleScene::ParticleScene()
 	}
 #pragma endregion
 
-	// 스카이 박스
-#pragma region SkyBox
-	{
-		shared_ptr<GameObject> skybox = make_shared<GameObject>();
-		skybox->AddComponent(make_shared<Transform>());
-		skybox->SetCheckFrustum(true);
-		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-		{
-			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
-			meshRenderer->SetMesh(sphereMesh);
-		}
-		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Skybox");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Sky01", L"..\\Resources\\Texture\\Sky01.jpg");
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, texture);
-			meshRenderer->SetMaterial(material);
-		}
-		skybox->AddComponent(meshRenderer);
-		activeScene->AddGameObject(skybox);
-	}
-#pragma endregion
-
 	// 터레인 큐브
 #pragma region TerrainCube
 	{
@@ -409,110 +385,6 @@ ParticleScene::ParticleScene()
 	}
 #pragma endregion
 
-	// 로봇
-#pragma region SELFDESTRUCTIONROBOT
-#ifndef NETWORK_ENABLE
-	{
-		std::random_device rd;
-		std::mt19937 gen(rd());
-		std::uniform_real_distribution<float> disX(-4000.0f, 4000.0f);
-		std::uniform_real_distribution<float> disZ(-4000.0f, 4000.0f);
-
-		vector<Vec3> positions;
-		float minDistance = 300.0f;
-
-		for (int i = 0; i < 10; ++i)
-		{
-			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
-			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
-
-			// 겹치지 않는 랜덤 위치 생성
-			Vec3 randomPos;
-			bool validPosition = false;
-			int maxAttempts = 100;
-
-			while (!validPosition && maxAttempts > 0)
-			{
-				randomPos = Vec3(disX(gen), 0.0f, disZ(gen));
-				validPosition = true;
-
-				for (const Vec3& pos : positions)
-				{
-					if ((randomPos - pos).Length() < minDistance)
-					{
-						validPosition = false;
-						break;
-					}
-				}
-				maxAttempts--;
-			}
-
-			positions.push_back(randomPos);
-
-			gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i));
-			gameObjects[0]->SetCheckFrustum(true);
-			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
-			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
-			gameObjects[0]->AddComponent(make_shared<CrapScript>());
-			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
-			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(700.f, 700.f, 700.f));
-
-			gameObjects[0]->AddComponent(make_shared<SphereCollider>());
-			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
-			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
-
-			activeScene->AddGameObject(gameObjects[0]);
-
-			// hp
-			shared_ptr<GameObject> hpBase = make_shared<GameObject>();
-			hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
-			hpBase->AddComponent(make_shared<Transform>());
-			hpBase->SetName(L"CrapHPBase" + std::to_wstring(i));
-			hpBase->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
-			hpBase->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
-			shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
-			{
-				shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-				hpBasemeshRenderer->SetMesh(mesh);
-			}
-			{
-				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
-				shared_ptr<Texture> texture{};
-				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrapHPBase", L"..\\Resources\\Texture\\CrapHPBase.png");
-				shared_ptr<Material> material = make_shared<Material>();
-				material->SetShader(shader);
-				material->SetTexture(0, texture);
-				hpBasemeshRenderer->SetMaterial(material);
-			}
-			hpBase->AddComponent(hpBasemeshRenderer);
-			activeScene->AddGameObject(hpBase);
-
-			shared_ptr<GameObject> hp = make_shared<GameObject>();
-			hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
-			hp->AddComponent(make_shared<Transform>());
-			hp->SetName(L"CrapHP");
-			hp->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
-			hp->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
-			shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
-			{
-				shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-				hpmeshRenderer->SetMesh(mesh);
-			}
-			{
-				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
-				shared_ptr<Texture> texture{};
-				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrapHP", L"..\\Resources\\Texture\\CrapHP.png");
-				shared_ptr<Material> material = make_shared<Material>();
-				material->SetShader(shader);
-				material->SetTexture(0, texture);
-				hpmeshRenderer->SetMaterial(material);
-			}
-			hp->AddComponent(hpmeshRenderer);
-			activeScene->AddGameObject(hp);
-		}
-	}
-#endif // !NETWORK_ENABLE
-#pragma endregion
 
 	// 모듈
 #pragma region Module
@@ -770,5 +642,110 @@ void ParticleScene::LoadDebugParticle()
 
 		activeScene->AddGameObject(portalFrameParticle);
 	}
+#pragma endregion
+
+	// 로봇
+#pragma region SELFDESTRUCTIONROBOT
+#ifndef NETWORK_ENABLE
+	{
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<float> disX(-4000.0f, 4000.0f);
+		std::uniform_real_distribution<float> disZ(-4000.0f, 4000.0f);
+
+		vector<Vec3> positions;
+		float minDistance = 300.0f;
+
+		for (int i = 0; i < 10; ++i)
+		{
+			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
+			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+			// 겹치지 않는 랜덤 위치 생성
+			Vec3 randomPos;
+			bool validPosition = false;
+			int maxAttempts = 100;
+
+			while (!validPosition && maxAttempts > 0)
+			{
+				randomPos = Vec3(disX(gen), 0.0f, disZ(gen));
+				validPosition = true;
+
+				for (const Vec3& pos : positions)
+				{
+					if ((randomPos - pos).Length() < minDistance)
+					{
+						validPosition = false;
+						break;
+					}
+				}
+				maxAttempts--;
+			}
+
+			positions.push_back(randomPos);
+
+			gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i));
+			gameObjects[0]->SetCheckFrustum(true);
+			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
+			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
+			gameObjects[0]->AddComponent(make_shared<CrapScript>());
+			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
+			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(700.f, 700.f, 700.f));
+
+			gameObjects[0]->AddComponent(make_shared<SphereCollider>());
+			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
+			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
+
+			activeScene->AddGameObject(gameObjects[0]);
+
+			// hp
+			shared_ptr<GameObject> hpBase = make_shared<GameObject>();
+			hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+			hpBase->AddComponent(make_shared<Transform>());
+			hpBase->SetName(L"CrapHPBase" + std::to_wstring(i));
+			hpBase->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
+			hpBase->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
+			shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+				hpBasemeshRenderer->SetMesh(mesh);
+			}
+			{
+				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+				shared_ptr<Texture> texture{};
+				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrapHPBase", L"..\\Resources\\Texture\\CrapHPBase.png");
+				shared_ptr<Material> material = make_shared<Material>();
+				material->SetShader(shader);
+				material->SetTexture(0, texture);
+				hpBasemeshRenderer->SetMaterial(material);
+			}
+			hpBase->AddComponent(hpBasemeshRenderer);
+			activeScene->AddGameObject(hpBase);
+
+			shared_ptr<GameObject> hp = make_shared<GameObject>();
+			hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+			hp->AddComponent(make_shared<Transform>());
+			hp->SetName(L"CrapHP");
+			hp->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
+			hp->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
+			shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+				hpmeshRenderer->SetMesh(mesh);
+			}
+			{
+				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+				shared_ptr<Texture> texture{};
+				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrapHP", L"..\\Resources\\Texture\\CrapHP.png");
+				shared_ptr<Material> material = make_shared<Material>();
+				material->SetShader(shader);
+				material->SetTexture(0, texture);
+				hpmeshRenderer->SetMaterial(material);
+			}
+			hp->AddComponent(hpmeshRenderer);
+			activeScene->AddGameObject(hp);
+		}
+	}
+#endif // !NETWORK_ENABLE
 #pragma endregion
 }

@@ -184,7 +184,7 @@ void PlayerScript::Move()
 
 	float mapMinX = -4950.f, mapMaxX = 4950.f;
 	float mapMinZ = -4950.f, mapMaxZ = 4950.f;
-	float minY = 0.f, maxY = 9500.f;
+	float minY = -100.f, maxY = 9500.f;
 
 	pos.x = max(mapMinX, min(pos.x, mapMaxX));
 	pos.y = max(minY, min(pos.y, maxY));

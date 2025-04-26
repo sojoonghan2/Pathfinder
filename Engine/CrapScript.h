@@ -24,6 +24,8 @@ private:
 	bool _initialized = false;
 
 private:
-	vector<shared_ptr<GameObject>> _bullets;
-	shared_ptr<Transform> _hpTransform;
+	vector<shared_ptr<GameObject>>	_bullets;
+	shared_ptr<Transform>			_hpTransform;
+
+	int32							_index = -1;
 };

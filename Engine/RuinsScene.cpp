@@ -212,10 +212,6 @@ RuinsScene::RuinsScene()
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetRadius(10.f);
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 
-			shared_ptr<CrapParticleSystem> gunFlameParticleSystem = make_shared<CrapParticleSystem>();
-			gunFlameParticleSystem->SetParticleScale(50.f, 50.f);
-			bullet->AddComponent(gunFlameParticleSystem);
-
 			bullet->AddComponent(meshRenderer);
 
 			activeScene->AddGameObject(bullet);
@@ -451,9 +447,9 @@ RuinsScene::RuinsScene()
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
-			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsFloor", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
-			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\myRuins.png");
+			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsFloor", L"..\\Resources\\Texture\\TerrainCube\\RuinsFloor.jpg");
+			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\myRuins.png");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
@@ -797,7 +793,7 @@ RuinsScene::RuinsScene()
 #pragma endregion
 
 	// ·Îº¿
-#pragma region SELFDESTRUCTIONROBOT
+#pragma region Cyber Crab
 #ifndef NETWORK_ENABLE
 	{	
 		std::random_device rd;
@@ -808,7 +804,7 @@ RuinsScene::RuinsScene()
 		vector<Vec3> positions;
 		float minDistance = 300.0f;
 
-		for (int i = 0; i < 1; ++i)
+		for (int i = 0; i < 10; ++i)
 		{
 			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
 			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
@@ -820,7 +816,7 @@ RuinsScene::RuinsScene()
 
 			while (!validPosition && maxAttempts > 0)
 			{
-				randomPos = Vec3(disX(gen), 0.0f, disZ(gen));
+				randomPos = Vec3(disX(gen), 100.0f, disZ(gen));
 				validPosition = true;
 
 				for (const Vec3& pos : positions)
@@ -847,6 +843,10 @@ RuinsScene::RuinsScene()
 			gameObjects[0]->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
+
+			shared_ptr<CrapParticleSystem> crapParticleSystem = make_shared<CrapParticleSystem>();
+			crapParticleSystem->SetParticleScale(50.f, 50.f);
+			gameObjects[0]->AddComponent(crapParticleSystem);
 
 			activeScene->AddGameObject(gameObjects[0]);
 
@@ -877,7 +877,7 @@ RuinsScene::RuinsScene()
 			shared_ptr<GameObject> hp = make_shared<GameObject>();
 			hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 			hp->AddComponent(make_shared<Transform>());
-			hp->SetName(L"CrapHP");
+			hp->SetName(L"CrapHP" + std::to_wstring(i));
 			hp->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
 			hp->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
 			shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();

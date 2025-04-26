@@ -50,7 +50,7 @@ void RuinsScript::LateUpdate() {
 		GET_SINGLE(SceneManager)->FindObjectByName(L"WaitUI")->SetRenderOff();
 	}
 
-	if(_isStart) Occupation();
+	//if(_isStart) Occupation();
 }
 
 void RuinsScript::Start()

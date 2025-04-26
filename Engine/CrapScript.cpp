@@ -82,11 +82,18 @@ void CrapScript::Start()
 		_bullets[i] = GET_SINGLE(SceneManager)->FindObjectByName(name);
 	}
 
-	auto hpObj = GET_SINGLE(SceneManager)->FindObjectByName(L"CrapHP");
+	wstring myName = GetGameObject()->GetName();
+	size_t numberPos = myName.find_first_of(L"0123456789");
+	if (numberPos != wstring::npos)
+	{
+		_index = stoi(myName.substr(numberPos));
+	}
+
+	wstring hpName = L"CrapHP" + to_wstring(_index);
+	auto hpObj = GET_SINGLE(SceneManager)->FindObjectByName(hpName);
 	if (hpObj)
 		_hpTransform = hpObj->GetTransform();
 }
-
 
 void CrapScript::MoveRandomly()
 {
