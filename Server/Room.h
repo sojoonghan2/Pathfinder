@@ -22,26 +22,34 @@ class Room
 public:
 
 	void Update(const float delta_time);
-	void ClearMonsterPtrList() { _monsterPtrList.clear(); }
-	void AddMonsterPtr(std::shared_ptr<Monster>& monster_ptr) { _monsterPtrList.push_back(monster_ptr); }
+	//void ClearMonsterPtrList() { _monsterPtrList.clear(); }
+	//void AddMonsterPtr(std::shared_ptr<Monster>& monster_ptr) { _monsterPtrList.push_back(monster_ptr); }
+
+	void ClearObjects();
+	void AddObject(std::shared_ptr<Object> object);
+	void InsertPlayers(const int idx, std::shared_ptr<Player>& players);
+
+	void SyncObjects();
 
 	// getter and setter
 
-	void SetPlayerPtrList(const int id, std::shared_ptr<Player>& player_ptr);
+	// void SetPlayerPtrList(const int id, std::shared_ptr<Player>& player_ptr);
 	void SetRoomType(const RoomType room_type) { _roomType = room_type; }
 	void SetRoomStatus(const RoomStatus room_status) { _roomStatus = room_status; }
 
-	// 이게 맞음?
-	std::vector<std::shared_ptr<Monster>>& GetMonsterPtrList() { return _monsterPtrList; }
+	//std::vector<std::shared_ptr<Monster>>& GetMonsterPtrList() { return _monsterPtrList; }
 
 	RoomStatus GetRoomStatus() const { return _roomStatus; }
 	RoomType GetRoomType() const { return _roomType; }
 
 private:
 	
-	// TODO: 여기를 shared_ptr로
-	std::array<std::shared_ptr<Player>, 3>	_playerPtrList{};
-	std::vector<std::shared_ptr<Monster>>	_monsterPtrList{};
+	// 플레이어는 3명 고정이니까 monster 연산에 편하도록 array에도 저장
+	std::array<std::shared_ptr<Player>, 3>	_playerList{};
+
+	concurrency::concurrent_unordered_set<std::shared_ptr<Object>> _writerObjects;
+	concurrency::concurrent_unordered_set<std::shared_ptr<Object>> _readerObjects;
+
 
 	RoomType			_roomType{ RoomType::None };
 	RoomStatus			_roomStatus{ RoomStatus::Waiting };

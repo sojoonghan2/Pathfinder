@@ -2,18 +2,25 @@
 #include "Object.h"
 
 
-void Object::Move(const Vec2f& pos)
+void Object::SetPos(const Vec2f& pos)
 {
 	_pos = pos;
 }
 
-void Object::Move(const float x, const float y)
+void Object::SetPos(const float x, const float y)
 {
 	_pos.x = x;
 	_pos.y = y;
 }
 
-void Object::MoveByDelta(const float x, const float y)
+
+void Object::Move(const float delta_time)
 {
-	Move(_pos.x + x, _pos.y + y);
+	_dir.Normalize();
+	_pos.x += _dir.x * _speed * delta_time;
+	_pos.y += _dir.y * _speed* delta_time;
 }
+
+Object::Object(const ObjectType object_type)
+	:_objectType(object_type)
+{}

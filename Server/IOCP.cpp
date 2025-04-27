@@ -5,10 +5,6 @@
 #include "Game.h"
 #include "Timer.h"
 
-std::random_device rd;
-std::default_random_engine dre{ rd() };
-std::uniform_real_distribution<float> timeDist{ 2.f, 4.f };
-
 bool IOCP::Init()
 {
 	// 윈도우 초기화
@@ -250,8 +246,6 @@ void IOCP::TimerWorker()
 
 			// Todo:
 			// 근데 이거는 Game쪽에서 해결하는게 맞지 않나?
-			// 현재 방이 활성화 되어있는지 확인
-			// 일단 킵
 			for (int i = 0; i < MAX_MONSTER; ++i) {
 				const auto& monster{ GET_SINGLE(Game)->GetMonster(i) };
 				auto room_id{ monster->GetRoomId() };
@@ -344,84 +338,31 @@ void IOCP::ProcessPacket(int key, char* p)
 
 	case packet::Type::CS_MATCHMAKING:
 	{
-		// 클라이언트에 매치메이킹 패킷이 도착하였을 경우
-		// 클라이언트 아이디를 큐에 넣고 사이즈 검사
-		// 사이즈가 3이상이면 클라이언트 3개를 뽑아냄.
 
-		// 만약 클라이언트 3개를 뽑는데 실패한다면
-		// 여태 뽑은 클라이언트 id를 우선순위를 높혀서 다시 매치메이킹 큐에 저장
+		// TODO: 나중에는 역할군 선택 기능도 지원해야 함.
 
-		// 번호 3개를 뽑는데 성공한다면 
-		// 플레이어 번호를 3개 플레이어 큐에서 꺼냄.
-		// 꺼낸 번호 3개를 각각 클라이언트에 부여
-		// 방 번호 큐에서 번호를 하나를 꺼내와
-		// 그 번호의 방에 플레이어 아이디를 저장.
 
-		// TODO:
-		// 최적화 할 것: 매치매이킹 패킷이 여러개 들어오면 짤라야 한다.
-		// atomic한 STATE 변수가 필요할 예정
-		
-		// 메치메이킹 이럴거면 그냥 락쓰자.. 그게 낫겠다
-		// 락 쓰지 말고 한 쓰레드에서만 담당하자. timerThread쪽에서 처리하는 것이 더 좋을듯.
-	
-
-		// 일단 아이디를 넣는다.
 		_matchmakingQueue.push(key);
-
-		// 3 미만이면 그냥 나가기
-		if (_matchmakingQueue.unsafe_size() < 3) {
-			break;
-		}
-
-
-		// 현재 클라이언트가 3 이상이면 다음과 같은 매치메이킹을 실행
-		// 매칭 실패시 대기할 시간
-		float waiting_time = timeDist(dre);
 
 		// 큐에서 뽑아낼 3명의 클라이언트 아이디를 저장할 배열
 		std::array<int, 3> client_ids{};
 		client_ids.fill(-1);
 
-		bool loop{ false };
-		bool match{ false };
-		Timer pop_timer;
-		int count{ 1 };
-
-		// 매치메이킹 알고리즘
-		do {
-			loop = false;
-
-			// 매치메이킹 큐에 세명이 찰 경우 3명을 뽑음
-			if (_matchmakingQueue.unsafe_size() >= 3) {
-				for (auto& id : client_ids) {
-					if (not _matchmakingQueue.try_pop(id)) {
-						loop = true;
-						break;
-					}
-				}
-				match = true;
+		_matchmakingLock.lock();
+		// 매치메이킹 큐에 세명이 찰 경우 3명을 뽑음
+		if (_matchmakingQueue.unsafe_size() >= 3) {
+			for (auto& id : client_ids) {
+				// lock으로 보호하므로 절대 실패하지 않음.
+				_matchmakingQueue.try_pop(id);
 			}
-
-			// 실패하면 다시 넣고 대기시간을 점점 더 늘려가면서 재시도
-			if (loop) {
-
-				// 다시 넣음
-				for (auto& id : client_ids) {
-					if (-1 != id) {
-						_matchmakingQueue.push(id);
-					}
-				}
-
-				// 재시도
-				pop_timer.updateDeltaTime();
-				while (pop_timer.PeekDeltaTime() < waiting_time) {
-					std::this_thread::yield();
-				}
-				waiting_time += timeDist(dre) * count++;
-			}
-		} while (loop);
+		}
+		_matchmakingLock.unlock();
 
 
+		// 3명 이하임.
+		if (-1 == client_ids[0]) {
+			break;
+		}
 
 		// -- 클라이언트 세명 매칭 완료 --
 
@@ -574,7 +515,7 @@ void IOCP::ProcessPacket(int key, char* p)
 		// 받은 위치를 저장
 		auto player = GET_SINGLE(Game)->GetPlayer(id_info.playerId);
 		player->SetDir(Vec2f{ packet->dirX, packet->dirY });
-		player->Move(packet->x, packet->y);
+		player->SetPos(packet->x, packet->y);
 
 		auto pos = player->GetPos();
 		auto dir = player->GetDir();

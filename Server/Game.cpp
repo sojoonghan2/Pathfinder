@@ -15,7 +15,7 @@ void Game::InitRoom(int room_id)
 
 	// 방 설정
 	_roomList[room_id]->SetRoomStatus(RoomStatus::Preparing);
-	_roomList[room_id]->ClearMonsterPtrList();
+	_roomList[room_id]->ClearObjects();
 
 	// TODO:
 	// 여기를 랜덤으로 받게끔 설정.
@@ -23,10 +23,9 @@ void Game::InitRoom(int room_id)
 
 	// 플레이어 설정
 	for (int i = 0; i < 3; ++i) {
-		_roomList[room_id]->SetPlayerPtrList(
-			i, _playerList[room_id * 3 + i]);
+		_roomList[room_id]->InsertPlayers(i, _playerList[room_id * 3 + i]);
 		_playerList[room_id * 3 + i]->SetPlayerType(PlayerType::Dealer);
-		_playerList[room_id * 3 + i]->Move(posDist(dre_game), posDist(dre_game));
+		_playerList[room_id * 3 + i]->SetPos(posDist(dre_game), posDist(dre_game));
 	}
 
 
@@ -57,7 +56,7 @@ void Game::InitRoom(int room_id)
 
 	// 몬스터 추가
 	for (auto id : monster_ids) {
-		_monsterList[id]->Move(posDist(dre_game), posDist(dre_game));
+		_monsterList[id]->SetPos(posDist(dre_game), posDist(dre_game));
 
 		// TODO: 
 		// 몬스터 타입을 입력하면 자동으로 내부 설정이 가능하도록.
@@ -65,7 +64,7 @@ void Game::InitRoom(int room_id)
 		_monsterList[id]->SetMonsterType(MonsterType::Crab);
 		_monsterList[id]->SetRoomId(room_id);
 		_monsterList[id]->SetSpeed(speedDist(dre_game));
-		_roomList[room_id]->AddMonsterPtr(_monsterList[id]);
+		_roomList[room_id]->AddObject(_monsterList[id]);
 	}
 
 }
@@ -73,9 +72,8 @@ void Game::InitRoom(int room_id)
 void Game::Update(const float delta_time)
 {
 	
-	// 일단 몬스터만 업데이트
 
-	// 몬스터 업데이트
+	// 방 업데이트
 	for (auto& room : _roomList) {
 		room->Update(delta_time);
 	}

@@ -182,6 +182,10 @@ bool IOCP::ProcessPacket(int key, char* p)
 	{
 		players[key].ioState = IOState::INGAME;
 		++currentClient;
+
+		packet::CSLoadComplete lc_packet{};
+		DoSend(players[key], &lc_packet);
+
 	}
 	break;
 
@@ -211,8 +215,6 @@ bool IOCP::ProcessPacket(int key, char* p)
 	break;
 	default:
 	{
-		std::println("packet Error. disconnect Client {}", key);
-		return false;
 	}
 	}
 	return true;

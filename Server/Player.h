@@ -16,6 +16,9 @@ public:
 	// getter and setter
 	void SetPlayerType(const PlayerType& type) { _type = type; }
 
+
+	Player() : Object{ ObjectType::Player } {}
+
 private:
 	// Todo:: Dealer로 변경하기
 	PlayerType	_type{ PlayerType::None };

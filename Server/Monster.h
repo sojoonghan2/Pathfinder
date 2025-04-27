@@ -26,13 +26,13 @@ public:
 	// getter /setter
 	void SetMonsterType(const MonsterType type) { _monsterType = type; }
 	void SetRoomId(const int room_id) { _roomId = room_id; }
-	void SetSpeed(const float speed) { _speed = speed; }
 	
 	int GetRoomId() const { return _roomId; }
 
+	Monster() : Object{ ObjectType::Monster } {}
+
 private:
 	int		_roomId{ -1 };
-	float	_speed{ 0.f };
 
 
 	std::atomic_bool _isRunning{ false };

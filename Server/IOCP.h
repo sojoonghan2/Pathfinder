@@ -46,6 +46,7 @@ private:
 	std::array<RoomInfo, MAX_ROOM>		_roomInfoList{};
 
 	concurrency::concurrent_queue<int>	_matchmakingQueue{};
+	std::mutex _matchmakingLock;
 
 };
 
