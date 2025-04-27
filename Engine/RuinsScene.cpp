@@ -1052,7 +1052,9 @@ RuinsScene::RuinsScene()
 		activeScene->AddGameObject(portalFrameParticle);
 	}
 #pragma endregion
-#pragma region Spot Light
+
+	// 전역 조명
+#pragma region Directional Light
 	{
 		// 1. Light 오브젝트 생성 
 		shared_ptr<GameObject> light = make_shared<GameObject>();
