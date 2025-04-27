@@ -285,9 +285,6 @@
     <ClCompile Include="OccupationScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
-    <ClCompile Include="CrapScript.cpp">
-      <Filter>Script\ObjectScript</Filter>
-    </ClCompile>
     <ClCompile Include="SocketIO.cpp">
       <Filter>Network</Filter>
     </ClCompile>
@@ -351,12 +348,11 @@
     <ClCompile Include="BoxCollider.cpp">
       <Filter>Object\Component\Collider</Filter>
     </ClCompile>
-    <ClCompile Include="CrapParticleSystem.cpp">
-      <Filter>Object\Component\ParticleSystem</Filter>
-    </ClCompile>
     <ClCompile Include="GunFlameParticleSystem.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
+    <ClCompile Include="CrabParticleSystem.cpp" />
+    <ClCompile Include="CrabScript.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -587,9 +583,6 @@
     <ClInclude Include="OccupationScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
-    <ClInclude Include="CrapScript.h">
-      <Filter>Script\ObjectScript</Filter>
-    </ClInclude>
     <ClInclude Include="SocketIO.h">
       <Filter>Network</Filter>
     </ClInclude>
@@ -656,13 +649,12 @@
     <ClInclude Include="BoxCollider.h">
       <Filter>Object\Component\Collider</Filter>
     </ClInclude>
-    <ClInclude Include="CrapParticleSystem.h">
-      <Filter>Object\Component\ParticleSystem</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h" />
     <ClInclude Include="GunFlameParticleSystem.h">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClInclude>
+    <ClInclude Include="CrabParticleSystem.h" />
+    <ClInclude Include="CrabScript.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -751,12 +743,10 @@
     <FxCompile Include="..\Resources\Shader\Debug.fx">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\CrapParticle.fx">
-      <Filter>Shader\Particle</Filter>
-    </FxCompile>
     <FxCompile Include="..\Resources\Shader\GunFlameParticle.fx">
       <Filter>Shader\Particle</Filter>
     </FxCompile>
+    <FxCompile Include="..\Resources\Shader\CrabParticle.fx" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc" />

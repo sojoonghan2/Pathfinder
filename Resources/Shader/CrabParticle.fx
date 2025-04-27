@@ -1,5 +1,5 @@
-#ifndef _CRAPPARTICLE_FX_
-#define _CRAPPARTICLE_FX_
+#ifndef _CRABPARTICLE_FX_
+#define _CRABPARTICLE_FX_
 
 #include "params.fx"
 #include "utils.fx"

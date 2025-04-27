@@ -59,7 +59,7 @@ void RuinsScript::Start()
 	_portalParticle = GET_SINGLE(SceneManager)->FindObjectByName(L"potalParticle");
 	_portalFrameParticle = GET_SINGLE(SceneManager)->FindObjectByName(L"portalFrameParticle");
 	_water = GET_SINGLE(SceneManager)->FindObjectByName(L"Water");
-	_player = GET_SINGLE(SceneManager)->FindObjectByName(L"OBJ");
+	_player = GET_SINGLE(SceneManager)->FindObjectByName(L"Player");
 	_occupationUI = GET_SINGLE(SceneManager)->FindObjectByName(L"OccupationUI");
 }
 

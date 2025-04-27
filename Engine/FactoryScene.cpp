@@ -88,7 +88,7 @@ FactoryScene::FactoryScene()
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
-		gameObjects[0]->SetName(L"OBJ");
+		gameObjects[0]->SetName(L"Player");
 		gameObjects[0]->SetCheckFrustum(false);
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));

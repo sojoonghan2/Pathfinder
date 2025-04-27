@@ -708,7 +708,7 @@ void Resources::CreateDefaultShader()
 		Add<Shader>(L"IceComputeParticle", computeShader);
 	}
 
-	// CrapParticle
+	// CrabParticle
 	{
 		ShaderInfo info =
 		{
@@ -734,12 +734,12 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\CrapParticle.fx", info, arg);
-		Add<Shader>(L"CrapParticle", shader);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\CrabParticle.fx", info, arg);
+		Add<Shader>(L"CrabParticle", shader);
 
 		shared_ptr<Shader> computeShader = make_shared<Shader>();
-		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\CrapParticle.fx", "CS_Main", "cs_5_0");
-		Add<Shader>(L"CrapComputeParticle", computeShader);
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\CrabParticle.fx", "CS_Main", "cs_5_0");
+		Add<Shader>(L"CrabComputeParticle", computeShader);
 	}
 
 	// GunFlameParticle
@@ -1272,17 +1272,17 @@ void Resources::CreateDefaultMaterial()
 		Add<Material>(L"IceComputeParticle", computeMaterial);
 	}
 
-	// CrapParticle
+	// CrabParticle
 	{
-		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"CrapParticle");
+		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"CrabParticle");
 		shared_ptr<Material> material = make_shared<Material>();
 		material->SetShader(shader);
-		Add<Material>(L"CrapParticle", material);
+		Add<Material>(L"CrabParticle", material);
 
-		shared_ptr<Shader> computShader = GET_SINGLE(Resources)->Get<Shader>(L"CrapComputeParticle");
+		shared_ptr<Shader> computShader = GET_SINGLE(Resources)->Get<Shader>(L"CrabComputeParticle");
 		shared_ptr<Material> computeMaterial = make_shared<Material>();
 		computeMaterial->SetShader(computShader);
-		Add<Material>(L"CrapComputeParticle", computeMaterial);
+		Add<Material>(L"CrabComputeParticle", computeMaterial);
 	}
 
 	// GunFlameParticle

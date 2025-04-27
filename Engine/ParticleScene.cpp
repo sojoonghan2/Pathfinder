@@ -38,7 +38,7 @@
 #include "RazerParticleScript.h"
 #include "BulletScript.h"
 #include "GunScript.h"
-#include "CrapScript.h"
+#include "CrabScript.h"
 
 #include "SphereCollider.h"
 #include "RectangleCollider.h"
@@ -183,7 +183,7 @@ ParticleScene::ParticleScene()
 
 		for (auto gameObject : gameObjects)
 		{
-			gameObject->SetName(L"OBJ");
+			gameObject->SetName(L"Player");
 			gameObject->SetCheckFrustum(false);
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
@@ -684,11 +684,11 @@ void ParticleScene::LoadDebugParticle()
 
 			positions.push_back(randomPos);
 
-			gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i));
+			gameObjects[0]->SetName(L"CyberCrabs" + std::to_wstring(i));
 			gameObjects[0]->SetCheckFrustum(true);
 			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
 			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
-			gameObjects[0]->AddComponent(make_shared<CrapScript>());
+			gameObjects[0]->AddComponent(make_shared<CrabScript>());
 			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
 			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(700.f, 700.f, 700.f));
 
@@ -702,7 +702,7 @@ void ParticleScene::LoadDebugParticle()
 			shared_ptr<GameObject> hpBase = make_shared<GameObject>();
 			hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 			hpBase->AddComponent(make_shared<Transform>());
-			hpBase->SetName(L"CrapHPBase" + std::to_wstring(i));
+			hpBase->SetName(L"CrabHPBase" + std::to_wstring(i));
 			hpBase->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
 			hpBase->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
 			shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
@@ -713,7 +713,7 @@ void ParticleScene::LoadDebugParticle()
 			{
 				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
 				shared_ptr<Texture> texture{};
-				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrapHPBase", L"..\\Resources\\Texture\\CrapHPBase.png");
+				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrabHPBase", L"..\\Resources\\Texture\\CrabHPBase.png");
 				shared_ptr<Material> material = make_shared<Material>();
 				material->SetShader(shader);
 				material->SetTexture(0, texture);
@@ -725,7 +725,7 @@ void ParticleScene::LoadDebugParticle()
 			shared_ptr<GameObject> hp = make_shared<GameObject>();
 			hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 			hp->AddComponent(make_shared<Transform>());
-			hp->SetName(L"CrapHP");
+			hp->SetName(L"CrabHP");
 			hp->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
 			hp->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
 			shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
@@ -736,7 +736,7 @@ void ParticleScene::LoadDebugParticle()
 			{
 				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
 				shared_ptr<Texture> texture{};
-				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrapHP", L"..\\Resources\\Texture\\CrapHP.png");
+				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrabHP", L"..\\Resources\\Texture\\CrabHP.png");
 				shared_ptr<Material> material = make_shared<Material>();
 				material->SetShader(shader);
 				material->SetTexture(0, texture);

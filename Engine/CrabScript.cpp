@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "CrapScript.h"
+#include "CrabScript.h"
 #include "Input.h"
 #include "Timer.h"
 #include "Animator.h"
@@ -11,12 +11,12 @@
 #include "Transform.h"
 #include "ParticleSystem.h"
 
-CrapScript::CrapScript()
+CrabScript::CrabScript()
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<float> angleDis(0.0f, 360.0f);
-	std::uniform_real_distribution<float> pauseDis(1.0f, 5.0f); // 정지 시간 범위: 1초 ~ 5초
+	std::uniform_real_distribution<float> pauseDis(1.0f, 5.0f);
 
 	float angle = angleDis(gen) * (3.141592f / 180.0f);
 	_direction.x = cos(angle);
@@ -25,22 +25,27 @@ CrapScript::CrapScript()
 
 	_isMoving = false;
 	_elapsedTime = 0.0f;
-	_pauseDuration = pauseDis(gen); // 처음 정지 상태의 랜덤 시간 설정
+	_pauseDuration = pauseDis(gen);
 }
 
-void CrapScript::LateUpdate()
+void CrabScript::LateUpdate()
 {
 	if (_isDying)
 	{
-		const float duration = 0.5f;
+		const float duration = 0.3f;
 		_deathAnimTime += DELTA_TIME;
 
 		float t = min(_deathAnimTime / duration, 1.0f);
-		Vec3 currentRot = Vector3::Lerp(_startRot, _targetRot, t);
-		GetTransform()->SetLocalRotation(currentRot);
 
-		if (t >= 1.0f)
-			_isDying = false;
+		float logT = log(1 + 30 * t) / log(10); // 1: N배
+
+		Vec3 currentRot = Vector3::Lerp(_startRot, _targetRot, logT);
+		Vec3 currentPos = Vector3::Lerp(_startPos, _targetPos, logT);
+
+		GetTransform()->SetLocalRotation(currentRot);
+		GetTransform()->SetLocalPosition(currentPos);
+
+		if (t >= 1.0f) _isDying = false;
 
 		return;
 	}
@@ -54,32 +59,27 @@ void CrapScript::LateUpdate()
 
 	_elapsedTime += DELTA_TIME;
 
-	// 이동 상태일 때는 일정 시간 후 정지
-	if (_isMoving && _elapsedTime >= 3.0f) // 이동 시간 고정 3초
+	if (_isMoving && _elapsedTime >= 3.0f)
 	{
 		_isMoving = false;
 		_elapsedTime = 0.0f;
 
-		// 정지 상태 지속 시간 랜덤 설정 (1~5초)
 		std::random_device rd;
 		std::mt19937 gen(rd());
 		std::uniform_real_distribution<float> pauseDis(1.0f, 5.0f);
 		_pauseDuration = pauseDis(gen);
 
-		// 애니메이션을 IDLE로 변경
 		int32 count = GetAnimator()->GetAnimCount();
 		int32 currentIndex = GetAnimator()->GetCurrentClipIndex();
 		int32 index = (currentIndex + 1) % count;
 		GetAnimator()->Play(index);
 	}
 
-	// 정지 상태일 때는 랜덤한 시간 후 이동
 	if (!_isMoving && _elapsedTime >= _pauseDuration)
 	{
 		_isMoving = true;
 		_elapsedTime = 0.0f;
 
-		// 애니메이션을 WALK로 변경
 		int32 count = GetAnimator()->GetAnimCount();
 		int32 currentIndex = GetAnimator()->GetCurrentClipIndex();
 		int32 index = (currentIndex + 1) % count;
@@ -95,8 +95,10 @@ void CrapScript::LateUpdate()
 	CheckBulletHits();
 }
 
-void CrapScript::Start()
+void CrabScript::Start()
 {
+	_player = GET_SINGLE(SceneManager)->FindObjectByName(L"Player");
+
 	_bullets.resize(50);
 	for (int i = 0; i < 50; ++i)
 	{
@@ -111,20 +113,20 @@ void CrapScript::Start()
 		_index = stoi(myName.substr(numberPos));
 	}
 
-	wstring hpName = L"CrapHP" + to_wstring(_index);
+	wstring hpName = L"CrabHP" + to_wstring(_index);
 	auto hpObj = GET_SINGLE(SceneManager)->FindObjectByName(hpName);
 	if (hpObj)
 		_hpTransform = hpObj->GetTransform();
 }
 
-void CrapScript::MoveRandomly()
+void CrabScript::MoveRandomly()
 {
 	Vec3 pos = GetTransform()->GetLocalPosition();
 	pos += _direction * _speed * DELTA_TIME;
 	GetTransform()->SetLocalPosition(pos);
 }
 
-void CrapScript::CheckBoundary()
+void CrabScript::CheckBoundary()
 {
 	Vec3 pos = GetTransform()->GetLocalPosition();
 
@@ -148,7 +150,7 @@ void CrapScript::CheckBoundary()
 	GetTransform()->SetLocalPosition(pos);
 }
 
-void CrapScript::CheckBulletHits()
+void CrabScript::CheckBulletHits()
 {
 	if (!_hpTransform) return;
 
@@ -189,21 +191,26 @@ void CrapScript::CheckBulletHits()
 	}
 }
 
-void CrapScript::DeadAnimation()
+void CrabScript::DeadAnimation()
 {
-	cout << "응애 거미 사망\n";
-	_isAlive = false;
-
 	if (!_deathHandled)
 	{
+		_isAlive = false;
 		_deathHandled = true;
 
 		if (GetAnimator())
 			GetAnimator()->Stop();
 
-		// 현재 회전값 저장
+		_startPos = GetTransform()->GetLocalPosition();
 		_startRot = GetTransform()->GetLocalRotation();
+
+		Vec3 playerUp = _player->GetTransform()->GetUp();
+		Vec3 backward = playerUp;
+
+		_targetPos = _startPos + backward * 1000.f;
+
 		_targetRot = Vec3(180.0f * (PI / 180.0f), _startRot.y, _startRot.z);
+
 		_deathAnimTime = 0.f;
 		_isDying = true;
 	}
