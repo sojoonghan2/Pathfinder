@@ -351,8 +351,12 @@
     <ClCompile Include="GunFlameParticleSystem.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
-    <ClCompile Include="CrabParticleSystem.cpp" />
-    <ClCompile Include="CrabScript.cpp" />
+    <ClCompile Include="CrabParticleSystem.cpp">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CrabScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -653,8 +657,12 @@
     <ClInclude Include="GunFlameParticleSystem.h">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClInclude>
-    <ClInclude Include="CrabParticleSystem.h" />
-    <ClInclude Include="CrabScript.h" />
+    <ClInclude Include="CrabParticleSystem.h">
+      <Filter>Object\Component\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CrabScript.h">
+      <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -746,7 +754,9 @@
     <FxCompile Include="..\Resources\Shader\GunFlameParticle.fx">
       <Filter>Shader\Particle</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\CrabParticle.fx" />
+    <FxCompile Include="..\Resources\Shader\CrabParticle.fx">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc" />

@@ -176,7 +176,7 @@ void CrabScript::CheckBulletHits()
 			if (hpScale.x - delta >= 0.f)
 			{
 				hpScale.x -= delta;
-				hpPos.x -= delta * 0.41f;
+				hpPos.x -= delta * 0.5f;
 
 				_hpTransform->SetLocalScale(hpScale);
 				_hpTransform->SetLocalPosition(hpPos);
