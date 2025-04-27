@@ -34,7 +34,7 @@ void CameraScript::LateUpdate() {
 	MouseInput();
 
 	if (_playerCamera) {
-		_target = GET_SINGLE(SceneManager)->FindObjectByName(L"OBJ");
+		_target = GET_SINGLE(SceneManager)->FindObjectByName(L"Player");
 		if (_target == nullptr) return;
 
 		Vec3 targetPos = _target->GetTransform()->GetLocalPosition();

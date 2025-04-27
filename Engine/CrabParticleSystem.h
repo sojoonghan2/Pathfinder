@@ -2,10 +2,10 @@
 #include "BaseParticleSystem.h"
 #include "Resources.h"
 
-class CrapParticleSystem : public BaseParticleSystem
+class CrabParticleSystem : public BaseParticleSystem
 {
 public:
-	CrapParticleSystem();
+	CrabParticleSystem();
 
 	virtual void FinalUpdate() override;
 };

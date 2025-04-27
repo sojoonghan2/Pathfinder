@@ -187,8 +187,8 @@
     <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ConstantBuffer.h" />
-    <ClInclude Include="CrapParticleSystem.h" />
-    <ClInclude Include="CrapScript.h" />
+    <ClInclude Include="CrabParticleSystem.h" />
+    <ClInclude Include="CrabScript.h" />
     <ClInclude Include="CrashScene.h" />
     <ClInclude Include="CrashScript.h" />
     <ClInclude Include="d3dx12.h" />
@@ -290,8 +290,8 @@
     <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
-    <ClCompile Include="CrapParticleSystem.cpp" />
-    <ClCompile Include="CrapScript.cpp" />
+    <ClCompile Include="CrabParticleSystem.cpp" />
+    <ClCompile Include="CrabScript.cpp" />
     <ClCompile Include="CrashScene.cpp" />
     <ClCompile Include="CrashScript.cpp" />
     <ClCompile Include="DebugRenderer.cpp" />
@@ -401,7 +401,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\CrapParticle.fx">
+    <FxCompile Include="..\Resources\Shader\CrabParticle.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -465,6 +465,10 @@
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\FireParticle.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\PNG.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\PortalFrameParticle.fx">

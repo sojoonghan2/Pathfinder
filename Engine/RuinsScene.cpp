@@ -21,7 +21,7 @@
 #include "WaterScript.h"
 #include "OccupationScript.h"
 #include "RuinsScript.h"
-#include "CrapScript.h"
+#include "CrabScript.h"
 #include "RazerParticleScript.h"
 #include "BulletScript.h"
 #include "GunScript.h"
@@ -38,7 +38,7 @@
 #include "FireParticleSystem.h"
 #include "IceParticleSystem.h"
 #include "RazerParticleSystem.h"
-#include "CrapParticleSystem.h"
+#include "CrabParticleSystem.h"
 #include "TestPBRParticleSystem.h"
 #include "PortalFrameParticleSystem.h"
 #include "NetworkOtherPlayerScript.h"
@@ -112,7 +112,7 @@ RuinsScene::RuinsScene()
 
 		for (auto gameObject : gameObjects)
 		{
-			gameObject->SetName(L"OBJ");
+			gameObject->SetName(L"Player");
 			gameObject->SetCheckFrustum(false);
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
@@ -211,10 +211,6 @@ RuinsScene::RuinsScene()
 			bullet->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetRadius(10.f);
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
-
-			shared_ptr<CrapParticleSystem> gunFlameParticleSystem = make_shared<CrapParticleSystem>();
-			gunFlameParticleSystem->SetParticleScale(50.f, 50.f);
-			bullet->AddComponent(gunFlameParticleSystem);
 
 			bullet->AddComponent(meshRenderer);
 
@@ -329,13 +325,36 @@ RuinsScene::RuinsScene()
 		obj->SetRenderOff();
 		activeScene->AddGameObject(obj);
 
+		shared_ptr<GameObject> playerFace = make_shared<GameObject>();
+		playerFace->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		playerFace->AddComponent(make_shared<Transform>());
+		playerFace->SetName(L"playerFace");
+		playerFace->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+		playerFace->GetTransform()->SetLocalPosition(Vec3(-530.f, -300.f, 1.f));
+		shared_ptr<MeshRenderer> playerFacemeshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			playerFacemeshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+			shared_ptr<Texture> texture{};
+			texture = GET_SINGLE(Resources)->Load<Texture>(L"playerFace", L"..\\Resources\\Texture\\playerFace.PNG");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			playerFacemeshRenderer->SetMaterial(material);
+		}
+		playerFace->AddComponent(playerFacemeshRenderer);
+		activeScene->AddGameObject(playerFace);
+
 		// hp
 		shared_ptr<GameObject> hpBase = make_shared<GameObject>();
 		hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 		hpBase->AddComponent(make_shared<Transform>());
 		hpBase->SetName(L"HPBase");
 		hpBase->GetTransform()->SetLocalScale(Vec3(200.f, 100.f, 100.f));
-		hpBase->GetTransform()->SetLocalPosition(Vec3(-450.f, -300.f, 1.f));
+		hpBase->GetTransform()->SetLocalPosition(Vec3(-350.f, -300.f, 1.f));
 		shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
@@ -357,8 +376,8 @@ RuinsScene::RuinsScene()
 		hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 		hp->AddComponent(make_shared<Transform>());
 		hp->SetName(L"HP");
-		hp->GetTransform()->SetLocalScale(Vec3(200.f, 100.f, 100.f));
-		hp->GetTransform()->SetLocalPosition(Vec3(-450.f, -300.f, 1.f));
+		hp->GetTransform()->SetLocalScale(Vec3(180.f, 85.f, 100.f));
+		hp->GetTransform()->SetLocalPosition(Vec3(-350.f, -300.f, 1.f));
 		shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
@@ -451,9 +470,9 @@ RuinsScene::RuinsScene()
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
-			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsFloor", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
-			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\New_ruins_floor.jpg");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\myRuins.png");
+			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsFloor", L"..\\Resources\\Texture\\TerrainCube\\RuinsFloor.jpg");
+			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\myRuins.png");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
@@ -461,7 +480,10 @@ RuinsScene::RuinsScene()
 			material->SetTexture(2, floorTexture);
 			material->SetTexture(1, topTexture);
 			meshRenderer->SetMaterial(material);
+			meshRenderer->GetMesh()->SetVrs(true);
+			meshRenderer->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 		}
+
 		terraincube->AddComponent(meshRenderer);
 
 		// 4. Scene에 추가
@@ -471,15 +493,14 @@ RuinsScene::RuinsScene()
 
 
 // 점령 중 UI
-
 #pragma region UI
 	{
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
 		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 		obj->AddComponent(make_shared<Transform>());
 		obj->SetName(L"OccupationUI");
-		obj->GetTransform()->SetLocalScale(Vec3(1500.f, 1000.f, 100.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(0.f, 250.f, 500.f));
+		obj->GetTransform()->SetLocalScale(Vec3(1000.f, 800.f, 100.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(0.f, 230.f, 500.f));
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
@@ -501,99 +522,6 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-	// 다른 플레이어 대기 UI
-#pragma region WaitUI
-	{
-		shared_ptr<GameObject> obj = make_shared<GameObject>();
-		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
-		obj->AddComponent(make_shared<Transform>());
-		obj->SetName(L"WaitUI");
-		obj->GetTransform()->SetLocalScale(Vec3(1500.f, 1000.f, 100.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(0.f, 250.f, 500.f));
-		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-		{
-			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-			meshRenderer->SetMesh(mesh);
-		}
-		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
-
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"WaitUI", L"..\\Resources\\Texture\\WaitUI.png");
-
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, texture);
-			meshRenderer->SetMaterial(material);
-		}
-		obj->AddComponent(meshRenderer);
-		activeScene->AddGameObject(obj);
-	}
-#pragma endregion
-
-	// 천장에서 빛이 새어나오는 유적지 조명
-	/*
-#pragma region Spot Light
-	{
-		shared_ptr<GameObject> obj = make_shared<GameObject>();
-		obj->SetName(L"OBJ");
-		obj->SetCheckFrustum(true);
-		obj->SetStatic(false);
-
-		obj->AddComponent(make_shared<Transform>());
-		obj->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-		{
-			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
-			meshRenderer->SetMesh(sphereMesh);
-		}
-		{
-			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"GameObject");
-			meshRenderer->SetMaterial(material->Clone());
-		}
-		obj->AddComponent(meshRenderer);
-		obj->SetRenderOff();
-		activeScene->AddGameObject(obj);
-
-		// 1. Light 오브젝트 생성
-		shared_ptr<GameObject> light = make_shared<GameObject>();
-		light->SetName(L"Ancient_Ruin_Light");
-		light->AddComponent(make_shared<Transform>());
-		light->GetTransform()->SetLocalPosition(Vec3(0.f, 10000.f, 0.f));
-
-		// 2-1. Light 컴포넌트 추가 및 속성 설정
-		light->AddComponent(make_shared<Light>());
-		light->GetLight()->SetLightType(LIGHT_TYPE::SPOT_LIGHT);
-
-		// 2-2. 스팟 라이트 방향 설정
-		light->GetLight()->SetLightDirection(Vec3(0.f, -1.f, 0.f));
-
-		// 2-3. 스팟 라이트 원뿔 각도 설정
-		light->GetLight()->SetLightAngle(10.f);
-
-		// 2-4. 빛의 도달 범위 증가
-		light->GetLight()->SetLightRange(11000.f);
-
-		// 3. 조명 색상 및 강도 조정 (따뜻한 황금빛)
-		light->GetLight()->SetDiffuse(Vec3(1.0f, 0.85f, 0.6f));
-		light->GetLight()->SetAmbient(Vec3(0.25f, 0.2f, 0.25f));
-		light->GetLight()->SetSpecular(Vec3(0.9f, 0.8f, 0.6f));
-
-		// 4. Scene에 추가
-		activeScene->AddGameObject(light);
-
-		// 5. 환경광 추가 (더 따뜻한 분위기 연출)
-		shared_ptr<GameObject> ambientLight = make_shared<GameObject>();
-		ambientLight->SetName(L"Ancient_Ambient_Light");
-		ambientLight->AddComponent(make_shared<Transform>());
-		ambientLight->AddComponent(make_shared<Light>());
-		ambientLight->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
-		ambientLight->GetLight()->SetDiffuse(Vec3(0.4f, 0.4f, 0.4f));
-		ambientLight->GetLight()->SetAmbient(Vec3(0.4f, 0.2f, 0.25f));
-		ambientLight->GetLight()->SetSpecular(Vec3(0.1f, 0.1f, 0.1f));
-		activeScene->AddGameObject(ambientLight);
-	}
-#pragma endregion
-*/
 	// 먼지 파티클
 #pragma region DustParticle
 	{
@@ -662,8 +590,9 @@ RuinsScene::RuinsScene()
 			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Water");
 			meshRenderer->SetMaterial(material);
 		}
-
-		water->AddComponent(meshRenderer);
+		meshRenderer->GetMesh()->SetVrs(true);
+		meshRenderer->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
+		//water->AddComponent(meshRenderer);
 		activeScene->AddGameObject(water);
 	}
 #pragma endregion
@@ -793,7 +722,7 @@ RuinsScene::RuinsScene()
 #pragma endregion
 
 	// 로봇
-#pragma region SELFDESTRUCTIONROBOT
+#pragma region Cyber Crab
 #ifndef NETWORK_ENABLE
 	{	
 		std::random_device rd;
@@ -816,7 +745,7 @@ RuinsScene::RuinsScene()
 
 			while (!validPosition && maxAttempts > 0)
 			{
-				randomPos = Vec3(disX(gen), 0.0f, disZ(gen));
+				randomPos = Vec3(disX(gen), 100.0f, disZ(gen));
 				validPosition = true;
 
 				for (const Vec3& pos : positions)
@@ -832,9 +761,11 @@ RuinsScene::RuinsScene()
 
 			positions.push_back(randomPos);
 
-			gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i));
+			gameObjects[0]->SetName(L"CyberCrabs" + std::to_wstring(i));
 			gameObjects[0]->SetCheckFrustum(true);
-			gameObjects[0]->AddComponent(make_shared<CrapScript>());
+			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
+			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
+			gameObjects[0]->AddComponent(make_shared<CrabScript>());
 			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
 			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(700.f, 700.f, 700.f));
 
@@ -842,13 +773,17 @@ RuinsScene::RuinsScene()
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
+			shared_ptr<CrabParticleSystem> crapParticleSystem = make_shared<CrabParticleSystem>();
+			crapParticleSystem->SetParticleScale(50.f, 50.f);
+			gameObjects[0]->AddComponent(crapParticleSystem);
+
 			activeScene->AddGameObject(gameObjects[0]);
 
 			// hp
 			shared_ptr<GameObject> hpBase = make_shared<GameObject>();
 			hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 			hpBase->AddComponent(make_shared<Transform>());
-			hpBase->SetName(L"CrapHPBase" + std::to_wstring(i));
+			hpBase->SetName(L"CrabHPBase" + std::to_wstring(i));
 			hpBase->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
 			hpBase->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
 			shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
@@ -859,7 +794,7 @@ RuinsScene::RuinsScene()
 			{
 				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
 				shared_ptr<Texture> texture{};
-				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrapHPBase", L"..\\Resources\\Texture\\CrapHPBase.png");
+				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrabHPBase", L"..\\Resources\\Texture\\CrabHPBase.png");
 				shared_ptr<Material> material = make_shared<Material>();
 				material->SetShader(shader);
 				material->SetTexture(0, texture);
@@ -871,8 +806,8 @@ RuinsScene::RuinsScene()
 			shared_ptr<GameObject> hp = make_shared<GameObject>();
 			hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 			hp->AddComponent(make_shared<Transform>());
-			hp->SetName(L"CrapHP");
-			hp->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
+			hp->SetName(L"CrabHP" + std::to_wstring(i));
+			hp->GetTransform()->SetLocalScale(Vec3(480.f, 35.f, 100.f));
 			hp->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
 			shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
 			{
@@ -882,7 +817,7 @@ RuinsScene::RuinsScene()
 			{
 				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
 				shared_ptr<Texture> texture{};
-				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrapHP", L"..\\Resources\\Texture\\CrapHP.png");
+				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrabHP", L"..\\Resources\\Texture\\CrabHP.png");
 				shared_ptr<Material> material = make_shared<Material>();
 				material->SetShader(shader);
 				material->SetTexture(0, texture);
@@ -905,7 +840,7 @@ RuinsScene::RuinsScene()
 			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
 
-			gameObjects[0]->SetName(L"CyberCraps" + std::to_wstring(i + 1));
+			gameObjects[0]->SetName(L"CyberCrabs" + std::to_wstring(i + 1));
 			gameObjects[0]->SetCheckFrustum(true);
 			gameObjects[0]->AddComponent(make_shared<NetworkCrabScript>());
 			gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(100000.f, 0.f, 100000.f));
@@ -921,7 +856,7 @@ RuinsScene::RuinsScene()
 			shared_ptr<GameObject> hpBase = make_shared<GameObject>();
 			hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 			hpBase->AddComponent(make_shared<Transform>());
-			hpBase->SetName(L"CrapHPBase" + std::to_wstring(i));
+			hpBase->SetName(L"CrabHPBase" + std::to_wstring(i));
 			hpBase->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
 			hpBase->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
 			shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
@@ -932,7 +867,7 @@ RuinsScene::RuinsScene()
 			{
 				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
 				shared_ptr<Texture> texture{};
-				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrapHPBase", L"..\\Resources\\Texture\\CrapHPBase.png");
+				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrabHPBase", L"..\\Resources\\Texture\\CrabHPBase.png");
 				shared_ptr<Material> material = make_shared<Material>();
 				material->SetShader(shader);
 				material->SetTexture(0, texture);
@@ -944,7 +879,7 @@ RuinsScene::RuinsScene()
 			shared_ptr<GameObject> hp = make_shared<GameObject>();
 			hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 			hp->AddComponent(make_shared<Transform>());
-			hp->SetName(L"CrapHP");
+			hp->SetName(L"CrabHP");
 			hp->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
 			hp->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
 			shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
@@ -955,7 +890,7 @@ RuinsScene::RuinsScene()
 			{
 				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
 				shared_ptr<Texture> texture{};
-				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrapHP", L"..\\Resources\\Texture\\CrapHP.png");
+				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrabHP", L"..\\Resources\\Texture\\CrabHP.png");
 				shared_ptr<Material> material = make_shared<Material>();
 				material->SetShader(shader);
 				material->SetTexture(0, texture);
@@ -1049,8 +984,8 @@ RuinsScene::RuinsScene()
 		if (i == 0) obj->SetName(L"DashUI");
 		else if (i == 1) obj->SetName(L"GrenadeUI");
 		else if (i == 2) obj->SetName(L"RazerUI");
-		obj->GetTransform()->SetLocalScale(Vec3(80.f, 80.f, 80.f));
-		obj->GetTransform()->SetLocalPosition(Vec3(350.f + i * 90, -300.f, 1.f));
+		obj->GetTransform()->SetLocalScale(Vec3(130.f, 130.f, 130.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(270.f + i * 140, -300.f, 1.f));
 		shared_ptr<MeshRenderer> CrosshairmeshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
@@ -1132,7 +1067,7 @@ RuinsScene::RuinsScene()
 		// 2-2. 스팟 라이트 방향 설정
 		light->GetLight()->SetLightDirection(Vec3(0.f, -1.f, 0.f));
 
-		float lightpower = 0.5f;
+		float lightpower = 1.0f;
 		// 3. 조명 색상 및 강도 조정 (따뜻한 황금빛)
 		light->GetLight()->SetDiffuse(Vec3(1.0f, 0.85f, 0.6f) * lightpower);
 		light->GetLight()->SetAmbient(Vec3(0.25f, 0.2f, 0.25f) * lightpower);
@@ -1141,6 +1076,35 @@ RuinsScene::RuinsScene()
 		// 4. Scene에 추가
 		activeScene->AddGameObject(light);
 
+	}
+#pragma endregion
+
+	// 다른 플레이어 대기 UI
+#pragma region WaitUI
+	{
+		shared_ptr<GameObject> obj = make_shared<GameObject>();
+		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		obj->AddComponent(make_shared<Transform>());
+		obj->SetName(L"WaitUI");
+		obj->GetTransform()->SetLocalScale(Vec3(1000.f, 800.f, 100.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(0.f, 150.f, 500.f));
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			meshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"WaitUI", L"..\\Resources\\Texture\\WaitUI.png");
+
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			meshRenderer->SetMaterial(material);
+		}
+		obj->AddComponent(meshRenderer);
+		activeScene->AddGameObject(obj);
 	}
 #pragma endregion
 }

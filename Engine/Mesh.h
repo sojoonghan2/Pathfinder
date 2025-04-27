@@ -80,6 +80,8 @@ public:
 	shared_ptr<StructuredBuffer>	GetBoneFrameDataBuffer(int32 index = 0) { return _frameBuffer[index]; } // 전체 본 프레임 정보
 	shared_ptr<StructuredBuffer>	GetBoneOffsetBuffer() { return  _offsetBuffer; }
 
+	void SetVrs(bool _vrs) { _supportsVRS = _vrs; }
+	void SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER rating_tier) { _shadingRateTier = rating_tier; }
 	bool IsValid() const { return (_vertexBuffer != nullptr); }
 
 private:
