@@ -524,6 +524,30 @@ void Resources::CreateDefaultShader()
 		Add<Shader>(L"Occupation", shader);
 	}
 
+	// PNG(Forward)
+	{
+		ShaderInfo info =
+		{
+			SHADER_TYPE::FORWARD,
+			RASTERIZER_TYPE::CULL_NONE,
+			DEPTH_STENCIL_TYPE::NO_DEPTH_TEST_NO_WRITE,
+			BLEND_TYPE::ALPHA_BLEND
+		};
+
+		ShaderArg arg =
+		{
+			"VS_Tex",
+			"",
+			"",
+			"",
+			"PS_Tex"
+		};
+
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\PNG.fx", info, arg);
+		Add<Shader>(L"PNG", shader);
+	}
+
 	// Billboard
 	{
 		ShaderInfo info =

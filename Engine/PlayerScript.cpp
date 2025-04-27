@@ -95,7 +95,7 @@ void PlayerScript::LateUpdate()
 		if (scale.x - delta >= 0.f)
 		{
 			scale.x -= delta;
-			pos.x -= delta * 0.41f;
+			pos.x -= delta * 0.5f;
 			_hpTransform->SetLocalScale(scale);
 			_hpTransform->SetLocalPosition(pos);
 		}
