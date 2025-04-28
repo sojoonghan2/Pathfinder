@@ -36,7 +36,11 @@
 #include "PortalFrameParticleSystem.h"
 #include "TestPBRParticleSystem.h"
 
-FactoryScene::FactoryScene()
+FactoryScene::FactoryScene() {}
+
+FactoryScene::~FactoryScene() {}
+
+void FactoryScene::Init()
 {
 	// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
 #pragma region ComputeShader
@@ -465,12 +469,12 @@ FactoryScene::FactoryScene()
 	// 로봇
 #pragma region FactoryMonster
 	{
-		
+
 
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Monster\\Monster.fbx");
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
-		
+
 		gameObjects[0]->SetName(L"FactoryMonster");
 		gameObjects[0]->SetCheckFrustum(true);
 		gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
@@ -634,5 +638,3 @@ FactoryScene::FactoryScene()
 	}
 #pragma endregion
 }
-
-FactoryScene::~FactoryScene() {}

@@ -51,11 +51,6 @@ RuinsScene::~RuinsScene() {}
 
 void RuinsScene::Init()
 {
-	if (_initialized)
-		return;
-
-	_initialized = true;
-
 	// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
 #pragma region ComputeShader
 	{

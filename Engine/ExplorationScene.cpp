@@ -24,7 +24,11 @@
 
 #include "SphereCollider.h"
 
-ExplorationScene::ExplorationScene()
+ExplorationScene::ExplorationScene() {}
+
+ExplorationScene::~ExplorationScene() {}
+
+void ExplorationScene::Init()
 {
 	// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
 #pragma region ComputeShader
@@ -316,5 +320,3 @@ ExplorationScene::ExplorationScene()
 	}
 #pragma endregion
 }
-
-ExplorationScene::~ExplorationScene() {}

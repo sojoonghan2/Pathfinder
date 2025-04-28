@@ -17,7 +17,11 @@
 #include "SphereCollider.h"
 #include "MeshRenderer.h"
 
-TitleScene::TitleScene()
+TitleScene::TitleScene() {}
+
+TitleScene::~TitleScene() {}
+
+void TitleScene::Init()
 {
 #pragma region Camera
 	{
@@ -141,5 +145,3 @@ TitleScene::TitleScene()
 	}
 #pragma endregion
 }
-
-TitleScene::~TitleScene() {}
