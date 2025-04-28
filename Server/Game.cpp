@@ -16,6 +16,7 @@ void Game::InitRoom(int room_id)
 	// 방 설정
 	_roomList[room_id]->SetRoomStatus(RoomStatus::Preparing);
 	_roomList[room_id]->ClearObjects();
+	_roomList[room_id]->SetRoomId(room_id);
 
 	// TODO:
 	// 여기를 랜덤으로 받게끔 설정.
@@ -69,13 +70,29 @@ void Game::InitRoom(int room_id)
 
 }
 
-void Game::Update(const float delta_time)
+std::shared_ptr<Player> Game::GetPlayer(const ClientIdInfo& id_info)
 {
-	
+	return _playerList.at(id_info.roomId * 3 + id_info.playerId);
+}
 
+void Game::Update()
+{
 	// 방 업데이트
+	_deltaTimer.updateDeltaTime();
+	auto delta = _deltaTimer.getDeltaTimeSeconds();
 	for (auto& room : _roomList) {
-		room->Update(delta_time);
+		room->Update(delta);
+	}
+
+
+	if (_sendTimer.PeekDeltaTime() > MOVE_PACKET_TIME_MS) {
+		_sendTimer.updateDeltaTime();
+		// 플레이어에게 send
+
+
+		for (auto& room : _roomList) {
+			room->SendObjectsToClient();
+		}
 	}
 }
 

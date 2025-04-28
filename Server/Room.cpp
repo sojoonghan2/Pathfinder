@@ -1,18 +1,19 @@
 #include "pch.h"
 #include "Room.h"
+#include "IOCP.h"
 
-void Room::Update(const float delta_time)
+void Room::Update(const float delta)
 {
 	// 활성화 되어 있는 방만 update한다.
 	if (RoomType::None == _roomType ||
 		RoomStatus::Running != _roomStatus) {
 		return;
 	}
-
-	SyncObjects();
-	// 충돌 확인
 	
+	// 순회 중간에 객체가 들어오는 현상 방지
+	SyncObjects();
 
+	// TODO: 충돌 확인
 
 
 	for (auto& [id, object] : _readerObjects) {
@@ -46,7 +47,7 @@ void Room::Update(const float delta_time)
 
 
 			// 일단 몬스터만 움직이게.
-			object->Move(delta_time);
+			object->Move(delta);
 		}
 	}
 }
@@ -66,6 +67,32 @@ void Room::InsertPlayers(const int idx, std::shared_ptr<Player>& player)
 {
 	_playerList[idx] = player;
 	_writerObjects[_idCount++] = player;
+}
+
+void Room::SendObjectsToClient()
+{
+	if (RoomType::None == _roomType ||
+		RoomStatus::Running != _roomStatus) {
+		return;
+	}
+
+
+	// update와 동시에 이루어지지 않으므로 thread-safe
+	const auto& client_ids{ GET_SINGLE(IOCP)->GetClients(_roomId) };
+	for (auto& [id, object] : _readerObjects) {
+		if (ObjectType::None == object->GetObjectType()) {
+			continue;
+		}
+		
+		auto pos{ object->GetPos() };
+		auto dir{ object->GetDir() };
+		packet::SCMoveObject move_packet{ id, object->GetObjectType(), 
+			pos.x, pos.y, dir.x, dir.y};
+
+		for (auto id : client_ids) {
+			GET_SINGLE(IOCP)->DoSend(id, &move_packet);
+		}
+	}
 }
 
 

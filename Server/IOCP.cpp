@@ -96,7 +96,7 @@ bool IOCP::Start()
 	// worker_thread 따로 멤버변수로 뺴기
 
 	int thread_number = std::thread::hardware_concurrency();
-	for (int i = 0; i < 2; ++i) {
+	for (int i = 0; i < thread_number; ++i) {
 		_workers.emplace_back([this]() { Worker(); });
 	}
 	_workers.emplace_back([this]() { TimerWorker(); });
@@ -230,61 +230,62 @@ void IOCP::Worker()
 void IOCP::TimerWorker()
 {
 	using namespace std::chrono_literals;
-	Timer update_timer;
-	Timer send_timer;
+	//Timer update_timer;
+	//Timer send_timer;
 	while (true) {
 
-		update_timer.updateDeltaTime();
-		auto delta = update_timer.getDeltaTimeSeconds();
-		GET_SINGLE(Game)->Update(delta);
+		//update_timer.updateDeltaTime();
+		//auto delta = update_timer.getDeltaTimeSeconds();
+		GET_SINGLE(Game)->Update();
 
 
 		// 몬스터의 위치를 플레이어한테 전송
-		if (send_timer.PeekDeltaTime() > MOVE_PACKET_TIME_MS) {
-			send_timer.updateDeltaTime();
+		//if (send_timer.PeekDeltaTime() > MOVE_PACKET_TIME_MS) {
+		//	send_timer.updateDeltaTime();
 
 
 			// Todo:
 			// 근데 이거는 Game쪽에서 해결하는게 맞지 않나?
-			for (int i = 0; i < MAX_MONSTER; ++i) {
-				const auto& monster{ GET_SINGLE(Game)->GetMonster(i) };
-				auto room_id{ monster->GetRoomId() };
-				if (-1 == room_id) {
-					continue;
-				}
-				if (GET_SINGLE(Game)->GetRoom(monster->GetRoomId())->GetRoomStatus()
-					!= RoomStatus::Running) {
-					continue;
-				}
+			//for (int i = 0; i < MAX_MONSTER; ++i) {
+			//	const auto& monster{ GET_SINGLE(Game)->GetMonster(i) };
+			//	auto room_id{ monster->GetRoomId() };
+			//	if (-1 == room_id) {
+			//		continue;
+			//	}
+			//	if (GET_SINGLE(Game)->GetRoom(monster->GetRoomId())->GetRoomStatus()
+			//		!= RoomStatus::Running) {
+			//		continue;
+			//	}
 
-				auto monster_pos = monster->GetPos();
-				auto monster_dir = monster->GetDir();
+			//	auto monster_pos = monster->GetPos();
+			//	auto monster_dir = monster->GetDir();
 
-				// 패킷 생성
-				// 일단 임시로 MAX_PLAYER를 더한 아이디를 준다.
-				// TODO: 오브젝트를 한 자료구조에(shared_ptr) 저장하게 되면 id만을 보낼 것.
-				packet::SCMoveMonster sc_monster_move{
-					MAX_PLAYER + i,
-					monster_pos.x,
-					monster_pos.y,
-					monster_dir.x,
-					monster_dir.y
-				};
+			//	// 패킷 생성
+			//	// 일단 임시로 MAX_PLAYER를 더한 아이디를 준다.
+			//	// TODO: 오브젝트를 한 자료구조에(shared_ptr) 저장하게 되면 id만을 보낼 것.
+			//	packet::SCMoveMonster sc_monster_move{
+			//		MAX_PLAYER + i,
+			//		monster_pos.x,
+			//		monster_pos.y,
+			//		monster_dir.x,
+			//		monster_dir.y
+			//	};
 
-				// 방에 있는 플레이어에게 전송
-				auto list{ _roomInfoList[monster->GetRoomId()].GetClientIdList() };
-				for (auto id : list) {
-					if (id == -1) {
-						continue;
-					}
-					if (_clientInfoHash[id].ioState != IOState::INGAME) {
-						continue;
-					}
-					DoSend(id, &sc_monster_move);
-				}
+			//	// 방에 있는 플레이어에게 전송
+			//	auto list{ _roomInfoList[monster->GetRoomId()].GetClientIdList() };
+			//	for (auto id : list) {
+			//		if (id == -1) {
+			//			continue;
+			//		}
+			//		if (_clientInfoHash[id].ioState != IOState::INGAME) {
+			//			continue;
+			//		}
+			//		DoSend(id, &sc_monster_move);
+			//	}
 
-			}
-		}
+			//}
+
+		//}
 	}
 }
 
@@ -391,13 +392,6 @@ void IOCP::ProcessPacket(int key, char* p)
 			break;
 		}
 
-		// 플레이어 아이디는 방 번호에 따라 고정.
-		std::array<int, 3> player_ids{
-			room_id * 3,
-			room_id * 3 + 1,
-			room_id * 3 + 2
-		};
-
 		// -- 방 번호와 플레이어 번호를 얻어왔음. -- 
 		// 이제 게임을 시작히기 위해
 		// Room, RoomInfo, Player에다가 정보를 저장
@@ -414,7 +408,7 @@ void IOCP::ProcessPacket(int key, char* p)
 
 			// ClientInfoHash에 정보를 넣음
 			_clientInfoHash[client_ids[i]].clientIdInfo.roomId = room_id;
-			_clientInfoHash[client_ids[i]].clientIdInfo.playerId = player_ids[i];
+			_clientInfoHash[client_ids[i]].clientIdInfo.playerId = i;
 			_clientInfoHash[client_ids[i]].ioState = IOState::INGAME;
 		}
 
@@ -423,7 +417,9 @@ void IOCP::ProcessPacket(int key, char* p)
 		
 		// 클라이언트 로딩 시작
 		for (int i = 0; i < 3; ++i) {
-			packet::SCMatchmaking matchmaking_packet{ client_ids[i], room_type };
+
+			// 플레이어 아이디 전송
+			packet::SCMatchmaking matchmaking_packet{ i, room_type };
 			DoSend(client_ids[i], &matchmaking_packet);
 		}
 
@@ -436,6 +432,7 @@ void IOCP::ProcessPacket(int key, char* p)
 	{
 		// TODO:
 		// 예외 처리 고고
+		// 여러 번 들어왔을 떄 처리가 필요함.
 
 		// 대기 완료 플레이어 수를 조정
 		auto room_id{ _clientInfoHash[key].clientIdInfo.roomId };
@@ -472,24 +469,18 @@ void IOCP::ProcessPacket(int key, char* p)
 
 		// 클라이언트 아이디와 플레이어 아이디를 가져온다.
 		auto client_ids{ _roomInfoList[room_id].GetClientIdList() };
-		std::array<int, 3> player_ids{
-			room_id * 3,
-			room_id * 3 + 1,
-			room_id * 3 + 2
-		};
-
 
 		// 방에 있는 플레이어들에게 위치를 보냄
 		for (int i{}; i < 3; ++i) {
 
-			auto player = GET_SINGLE(Game)->GetPlayer(player_ids[i]);
+			auto player = GET_SINGLE(Game)->GetPlayer(room_id * 3 + i);
 			auto pos = player->GetPos();
 			auto dir = player->GetDir();
 
 			packet::SCGameStart sc_game_start{};
 			DoSend(client_ids[i], &sc_game_start);
 
-			packet::SCMovePlayer sc_move_player{ client_ids[i], pos.x, pos.y, dir.x, dir.y };
+			packet::SCMoveObject sc_move_player{ i, ObjectType::Player, pos.x, pos.y, dir.x, dir.y };
 
 			for (auto other_id : client_ids) {
 				DoSend(other_id, &sc_move_player);
@@ -510,13 +501,14 @@ void IOCP::ProcessPacket(int key, char* p)
 			break;
 		}
 
+		// 방이 실행중이 아니면 나가기
 		auto& id_info{ _clientInfoHash[key].clientIdInfo };
 		if (RoomStatus::Running != GET_SINGLE(Game)->GetRoom(id_info.roomId)->GetRoomStatus()) {
 			break;
 		}
 
 		// 받은 위치를 저장
-		auto player = GET_SINGLE(Game)->GetPlayer(id_info.playerId);
+		auto player = GET_SINGLE(Game)->GetPlayer(id_info);
 		player->SetDir(Vec2f{ packet->dirX, packet->dirY });
 		player->SetPos(packet->x, packet->y);
 
@@ -524,7 +516,7 @@ void IOCP::ProcessPacket(int key, char* p)
 		auto dir = player->GetDir();
 
 		// 다른 플레이어에게 전송
-		packet::SCMovePlayer send_packet{ key, pos.x, pos.y, dir.x, dir.y };
+		packet::SCMoveObject send_packet{ id_info.playerId, ObjectType::Player, pos.x, pos.y, dir.x, dir.y };
 		auto other_clients{ _roomInfoList[id_info.roomId].GetClientIdList() };
 
 		for (auto other : other_clients) {
@@ -562,23 +554,6 @@ void IOCP::ProcessPacket(int key, char* p)
 	}
 
 
-}
-
-void IOCP::DoBroadcast(void* packet)
-{
-	// todo: 수정
-	for (int i = 0; i < _sessionCnt; ++i) {
-		DoSend(_clientInfoHash[i], packet);
-	}
-}
-
-void IOCP::DoBroadcast(int key, void* packet)
-{
-	// todo: 수정
-	for (int i = 0; i < _sessionCnt; ++i) {
-		if (key == i) continue;
-		DoSend(_clientInfoHash[i], packet);
-	}
 }
 
 void IOCP::Disconnect(int client_id)

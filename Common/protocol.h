@@ -42,6 +42,14 @@ enum class RoomType : unsigned char
 	Lucky
 };
 
+enum class ObjectType : unsigned char
+{
+	None = 0,
+	Player,
+	Monster,
+	Bullet,
+};
+
 #define PACKET_START	namespace packet {
 #define PACKET_END		}
 
@@ -59,9 +67,8 @@ enum class Type : unsigned char
 	SC_GAME_START,		// todo
 
 	// move
-	SC_MOVE_PLAYER,
+	SC_MOVE_OBJECT,
 	CS_MOVE_PLAYER,
-	SC_MOVE_MONSTER,
 
 	// other
 	SC_CHECK_DELAY,
@@ -106,12 +113,12 @@ struct CSLogin : Header
 //  roomType
 struct SCMatchmaking : Header
 {
-	int clientId{ -1 };
+	int playerId{ -1 };
 	RoomType roomType{ RoomType::None };
 
-	SCMatchmaking(const int client_id, const RoomType room_type) :
+	SCMatchmaking(const int player_id, const RoomType room_type) :
 		Header{ sizeof(SCMatchmaking), Type::SC_MATCHMAKING },
-		clientId{ client_id },
+		playerId{ player_id },
 		roomType{ room_type }
 	{}
 };
@@ -124,16 +131,6 @@ struct CSMatchmaking : Header
 	{}
 };
 
-// RoomType room_type
-//struct SCLoad : Header
-//{
-//	RoomType room_type{ RoomType::None };
-//
-//	SCLoad(const RoomType room_type) :
-//		Header{ sizeof(SCMatchmaking), Type::SC_MATCHMAKING },
-//		room_type{ room_type }
-//	{}
-//};
 
 // No Param
 struct CSLoadComplete : Header
@@ -155,23 +152,25 @@ struct SCGameStart : Header
 // CSMovePlayer는 그대로 두자.
 
 // Param:
-//	int clientId
+//	int monsterId
 //	float x
 //	float y
 //	float dirX
 //	float dirY
-struct SCMovePlayer : Header
+struct SCMoveObject : Header
 {
-	int clientId{ -1 };
+	int objectId{ -1 };
+	ObjectType objectType{ ObjectType::None };
 	float x{ 0.f };
 	float y{ 0.f };
 	float dirX{ 0.f };
 	float dirY{ 0.f };
 
-
-	SCMovePlayer(const int client_id, const float x, const float y, const float dirX, const float dirY) :
-		Header{ sizeof(SCMovePlayer), Type::SC_MOVE_PLAYER },
-		clientId{ client_id },
+	SCMoveObject(const int object_id, const ObjectType object_type,
+		const float x, const float y, const float dirX, const float dirY) :
+		Header{ sizeof(SCMoveObject), Type::SC_MOVE_OBJECT },
+		objectId{ object_id },
+		objectType{ object_type },
 		x{ x }, y{ y },
 		dirX{ dirX }, dirY{ dirY }
 	{}
@@ -192,28 +191,6 @@ struct CSMovePlayer : Header
 
 	CSMovePlayer(const float x, const float y, const float dirX, const float dirY) :
 		Header{ sizeof(CSMovePlayer), Type::CS_MOVE_PLAYER },
-		x{ x }, y{ y },
-		dirX{ dirX }, dirY{ dirY }
-	{}
-};
-
-// Param:
-//	int monsterId
-//	float x
-//	float y
-//	float dirX
-//	float dirY
-struct SCMoveMonster : Header
-{
-	int monsterId{ -1 };
-	float x{ 0.f };
-	float y{ 0.f };
-	float dirX{ 0.f };
-	float dirY{ 0.f };
-
-	SCMoveMonster(const int monster_id, const float x, const float y, const float dirX, const float dirY) :
-		Header{ sizeof(SCMoveMonster), Type::SC_MOVE_MONSTER },
-		monsterId{ monster_id },
 		x{ x }, y{ y },
 		dirX{ dirX }, dirY{ dirY }
 	{}

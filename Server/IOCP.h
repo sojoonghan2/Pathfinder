@@ -12,6 +12,14 @@ public:
 	bool Start();
 
 
+	void DoSend(int client_id, void* packet);
+
+	const std::array<int, 3>& GetClients(const int _id) const
+	{
+		return _roomInfoList[_id].GetClientIdList();
+	}
+
+
 public:
 	~IOCP();
 
@@ -21,12 +29,7 @@ private:
 	void TimerWorker();
 	void DoRecv(ClientInfo& client_info) const;
 	void ProcessPacket(int key, char* p);
-
-	void DoBroadcast(void* packet);
-	void DoBroadcast(int kcey, void* packet);
 	void Disconnect(int client_id);
-
-	void DoSend(int client_id, void* packet);
 	void DoSend(ClientInfo& client_info, void* packet);
 
 private:
@@ -43,6 +46,7 @@ private:
 	// 일단 기본으로 사용 나중에 atomic_shared_ptr로 바꿔야함
 	concurrency::concurrent_unordered_map<int, ClientInfo> _clientInfoHash;
 	
+
 	std::array<RoomInfo, MAX_ROOM>		_roomInfoList{};
 
 	concurrency::concurrent_queue<int>	_matchmakingQueue{};

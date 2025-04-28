@@ -1,6 +1,5 @@
 #pragma once
 #include "Player.h"
-#include "Monster.h"
 
 enum class RoomStatus : unsigned char
 {
@@ -21,7 +20,7 @@ class Room
 {
 public:
 
-	void Update(const float delta_time);
+	void Update(const float delta);
 	//void ClearMonsterPtrList() { _monsterPtrList.clear(); }
 	//void AddMonsterPtr(std::shared_ptr<Monster>& monster_ptr) { _monsterPtrList.push_back(monster_ptr); }
 
@@ -29,20 +28,29 @@ public:
 	void AddObject(std::shared_ptr<Object> object);
 	void InsertPlayers(const int idx, std::shared_ptr<Player>& players);
 
+
+	// client들에게 object의 위치를 보냄.
+	void SendObjectsToClient();
+
 	void SyncObjects();
 
 	// getter and setter
 
 	// void SetPlayerPtrList(const int id, std::shared_ptr<Player>& player_ptr);
 	void SetRoomType(const RoomType room_type) { _roomType = room_type; }
-	void SetRoomStatus(const RoomStatus room_status) { _roomStatus = room_status; }
-
-	//std::vector<std::shared_ptr<Monster>>& GetMonsterPtrList() { return _monsterPtrList; }
-
-	RoomStatus GetRoomStatus() const { return _roomStatus; }
 	RoomType GetRoomType() const { return _roomType; }
 
+
+	void SetRoomStatus(const RoomStatus room_status) { _roomStatus = room_status; }
+	RoomStatus GetRoomStatus() const { return _roomStatus; }
+
+	void SetRoomId(const int id) { _roomId = id; }
+
 private:
+
+	// TODO:
+	// 일단 임시. 나중에 여기에 client_id를 저장하도록 변경
+	int _roomId{-1};
 	
 	// 플레이어는 3명 고정이니까 monster 연산에 편하도록 array에도 저장
 	std::array<std::shared_ptr<Player>, 3>	_playerList{};
@@ -56,4 +64,5 @@ private:
 
 	RoomType			_roomType{ RoomType::None };
 	RoomStatus			_roomStatus{ RoomStatus::Waiting };
+
 };

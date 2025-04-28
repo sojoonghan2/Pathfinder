@@ -1,14 +1,6 @@
 #pragma once
 #include "Collider.h"
 
-enum class ObjectType : unsigned char
-{
-	None,
-	Player,
-	Monster,
-	Bullet,
-};
-
 class Object
 {
 public:
