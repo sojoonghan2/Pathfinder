@@ -370,10 +370,10 @@ int main() {
 			case packet::Type::SC_MATCHMAKING:
 			{
 				packet::SCMatchmaking packet = reinterpret_cast<packet::SCMatchmaking&>(buffer);
-				players[packet.clientId].SetFillColor(sf::Color::Red);
-				players[packet.clientId].SetShow(true);
-				players[packet.clientId].SetCtrl(true);
-				my_id = packet.clientId;
+				players[packet.playerId].SetFillColor(sf::Color::Red);
+				players[packet.playerId].SetShow(true);
+				players[packet.playerId].SetCtrl(true);
+				my_id = packet.playerId;
 				// TODO: 방 타입 받아와서 설정하기. 지금은 ruins 고정
 				// packet.roomType;
 
@@ -381,26 +381,51 @@ int main() {
 			}
 
 			break;
-			case packet::Type::SC_MOVE_PLAYER:
+			case packet::Type::SC_MOVE_OBJECT:
 			{
-				packet::SCMovePlayer packet = reinterpret_cast<packet::SCMovePlayer&>(buffer);
-				if (not players.contains(packet.clientId)) {
-					players[packet.clientId].SetFillColor(sf::Color::Black);
-					players[packet.clientId].SetShow(true);
+				packet::SCMoveObject packet = reinterpret_cast<packet::SCMoveObject&>(buffer);
+
+				switch (packet.objectType)
+				{
+				case ObjectType::Player:
+				{
+					if (packet.objectId == my_id) {
+						auto pos1{ players[my_id].GetPosition() };
+						Vec2f pos2{ packet.x, packet.y };
+
+						float dx{ pos1.x - pos2.x };
+						float dy{ pos2.y - pos2.y };
+						float distance{ std::sqrt(dx * dx + dy * dy) };
+
+						if (distance > 0.5f) {
+							players[my_id].SetPosition(pos2);
+						}
+					}
+
+					else {
+						if (not players.contains(packet.objectId)) {
+							players[packet.objectId].SetFillColor(sf::Color::Black);
+							players[packet.objectId].SetShow(true);
+						}
+						players[packet.objectId].SetDir(packet.dirX, packet.dirY);
+						players[packet.objectId].SetPosition(packet.x, packet.y);
+					}
 				}
-				players[packet.clientId].SetDir(packet.dirX, packet.dirY);
-				players[packet.clientId].SetPosition(packet.x, packet.y);
-			}
-			break;
-			case packet::Type::SC_MOVE_MONSTER:
-			{
-				packet::SCMoveMonster packet = reinterpret_cast<packet::SCMoveMonster&>(buffer);
-				if (not monsters.contains(packet.monsterId)) {
-					monsters[packet.monsterId].SetFillColor(sf::Color::Green);
-					monsters[packet.monsterId].SetShow(true);
+				break;
+
+				case ObjectType::Monster:
+				{
+					if (not monsters.contains(packet.objectId)) {
+						monsters[packet.objectId].SetFillColor(sf::Color::Green);
+						monsters[packet.objectId].SetShow(true);
+					}
+					monsters[packet.objectId].SetDir(packet.dirX, packet.dirY);
+					monsters[packet.objectId].SetPosition(packet.x, packet.y);
 				}
-				monsters[packet.monsterId].SetDir(packet.dirX, packet.dirY);
-				monsters[packet.monsterId].SetPosition(packet.x, packet.y);
+				break;
+				default:
+					break;
+				}
 			}
 			break;
 			default:

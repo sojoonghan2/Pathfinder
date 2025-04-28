@@ -89,8 +89,11 @@ void Room::SendObjectsToClient()
 		packet::SCMoveObject move_packet{ id, object->GetObjectType(), 
 			pos.x, pos.y, dir.x, dir.y};
 
-		for (auto id : client_ids) {
-			GET_SINGLE(IOCP)->DoSend(id, &move_packet);
+		for (int i = 0; i < 3; ++i) {
+			if (i == id) {
+				continue;
+			}
+			GET_SINGLE(IOCP)->DoSend(client_ids[i], &move_packet);
 		}
 	}
 }
