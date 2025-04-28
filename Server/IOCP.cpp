@@ -511,6 +511,9 @@ void IOCP::ProcessPacket(int key, char* p)
 		}
 
 		auto& id_info{ _clientInfoHash[key].clientIdInfo };
+		if (RoomStatus::Running != GET_SINGLE(Game)->GetRoom(id_info.roomId)->GetRoomStatus()) {
+			break;
+		}
 
 		// 받은 위치를 저장
 		auto player = GET_SINGLE(Game)->GetPlayer(id_info.playerId);

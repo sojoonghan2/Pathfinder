@@ -24,12 +24,12 @@ public:
 
 
 	// getter /setter
+	ObjectType GetObjectType() const override { return ObjectType::Monster; }
+
 	void SetMonsterType(const MonsterType type) { _monsterType = type; }
 	void SetRoomId(const int room_id) { _roomId = room_id; }
 	
 	int GetRoomId() const { return _roomId; }
-
-	Monster() : Object{ ObjectType::Monster } {}
 
 private:
 	int		_roomId{ -1 };

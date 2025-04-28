@@ -23,6 +23,9 @@
     <Filter Include="utils">
       <UniqueIdentifier>{3fedd4f5-3b36-41ef-a323-907d32764f14}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Collider">
+      <UniqueIdentifier>{f39b3d40-7deb-4a04-ae05-1ad6ac662495}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -52,6 +55,12 @@
     </ClCompile>
     <ClCompile Include="Object.cpp">
       <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="AABBCollider.cpp">
+      <Filter>Collider</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -90,6 +99,12 @@
     </ClInclude>
     <ClInclude Include="Object.h">
       <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="AABBCollider.h">
+      <Filter>Collider</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

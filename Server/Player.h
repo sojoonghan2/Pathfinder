@@ -14,10 +14,9 @@ class Player : public Object
 {
 public:
 	// getter and setter
+	ObjectType GetObjectType() const override { return ObjectType::Player; }
+
 	void SetPlayerType(const PlayerType& type) { _type = type; }
-
-
-	Player() : Object{ ObjectType::Player } {}
 
 private:
 	// Todo:: Dealer로 변경하기

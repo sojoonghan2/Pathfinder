@@ -20,7 +20,3 @@ void Object::Move(const float delta_time)
 	_pos.x += _dir.x * _speed * delta_time;
 	_pos.y += _dir.y * _speed* delta_time;
 }
-
-Object::Object(const ObjectType object_type)
-	:_objectType(object_type)
-{}
