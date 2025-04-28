@@ -285,7 +285,7 @@ void PlayerScript::ThrowGrenade()
 	{
 		RotateToCameraLook();
 		_isGrenade = true;
-		_grenadeAniDurationTimer = 3.0f;
+		_grenadeAniDurationTimer = 1.0f;
 		GET_SINGLE(SceneManager)->FindObjectByName(L"GrenadeUI")->SetRenderOff();
 	}
 }
@@ -317,7 +317,7 @@ void PlayerScript::ShootRazer()
 	{
 		RotateToCameraLook();
 		_isRazer = true;
-		_razerAniDurationTimer = 7.5f;
+		_razerAniDurationTimer = 1.7f;
 		GET_SINGLE(SceneManager)->FindObjectByName(L"RazerUI")->SetRenderOff();
 	}
 }
