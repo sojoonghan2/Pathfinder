@@ -15,7 +15,7 @@ void Room::Update(const float delta_time)
 
 
 
-	for (auto& object : _readerObjects) {
+	for (auto& [id, object] : _readerObjects) {
 
 		// ¸ó½ºÅÍ
 		if (ObjectType::Monster == object->GetObjectType()) {
@@ -59,13 +59,13 @@ void Room::ClearObjects()
 
 void Room::AddObject(std::shared_ptr<Object> object)
 {
-	_writerObjects.insert(object);
+	_writerObjects[_idCount++] = object;
 }
 
 void Room::InsertPlayers(const int idx, std::shared_ptr<Player>& player)
 {
 	_playerList[idx] = player;
-	_writerObjects.insert(player);
+	_writerObjects[_idCount++] = player;
 }
 
 

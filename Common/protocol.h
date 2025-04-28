@@ -98,6 +98,9 @@ struct CSLogin : Header
 	{}
 };
 
+
+// TODO: 여기서 본인의 클라이언트 아이디가 아닌 플레이어 아이디를 줘야 함.
+
 // Param
 //	int playerId: 클라이언트의 플레이어 아이디
 //  roomType
@@ -147,6 +150,9 @@ struct SCGameStart : Header
 		Header{ sizeof(SCGameStart), Type::SC_GAME_START }
 	{}
 };
+
+// TODO: SCMoveObject로 통일.
+// CSMovePlayer는 그대로 두자.
 
 // Param:
 //	int clientId

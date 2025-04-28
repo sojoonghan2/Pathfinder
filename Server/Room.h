@@ -47,8 +47,11 @@ private:
 	// 플레이어는 3명 고정이니까 monster 연산에 편하도록 array에도 저장
 	std::array<std::shared_ptr<Player>, 3>	_playerList{};
 
-	concurrency::concurrent_unordered_set<std::shared_ptr<Object>> _writerObjects;
-	concurrency::concurrent_unordered_set<std::shared_ptr<Object>> _readerObjects;
+
+	// 객체가 id를 가져야 함.
+	std::atomic_int _idCount{ 0 };
+	concurrency::concurrent_unordered_map<int, std::shared_ptr<Object>> _writerObjects;
+	concurrency::concurrent_unordered_map<int, std::shared_ptr<Object>> _readerObjects;
 
 
 	RoomType			_roomType{ RoomType::None };
