@@ -1,5 +1,6 @@
 #pragma once
 #include "Object.h"
+#include "AABBCollider.h"
 
 enum class PlayerType : unsigned char
 {
@@ -17,6 +18,11 @@ public:
 	ObjectType GetObjectType() const override { return ObjectType::Player; }
 
 	void SetPlayerType(const PlayerType& type) { _type = type; }
+
+	Player()
+	{
+		SetCollider(std::make_shared<AABBCollider>(GetPosRef(), PLAYER_SIZE_M, PLAYER_SIZE_M));
+	}
 
 private:
 	// Todo:: Dealer로 변경하기

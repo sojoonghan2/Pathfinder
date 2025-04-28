@@ -1,4 +1,5 @@
 #pragma once
+#include "Collider.h"
 
 enum class ObjectType : unsigned char
 {
@@ -27,10 +28,24 @@ public:
 	void SetSpeed(const float speed) { _speed = speed; }
 	float GetSpeed() const { return _speed; }
 
+	void SetCollider(std::shared_ptr<Collider>&& collider)
+		{ _collider = std::move(collider); }
 
-private:
+	// collider 생성을 위한 레퍼런스 getter
+	const Vec2f& GetPosRef() const { return _pos; }
+
+	Object() = default;
+
+	// 복사 금지.
+	Object(const Object& other) = delete;
+	Object& operator=(const Object& other) = delete;
+	
+
+public:
 	Vec2f		_pos{};
 	Vec2f		_dir{};
 	float		_speed{ 0.f };
+	std::shared_ptr<Collider> _collider{ nullptr };
+
 };
 

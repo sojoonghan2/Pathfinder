@@ -10,8 +10,13 @@ void Room::Update(const float delta_time)
 	}
 
 	SyncObjects();
+	// 충돌 확인
+	
+
+
+
 	for (auto& object : _readerObjects) {
-		
+
 		// 몬스터
 		if (ObjectType::Monster == object->GetObjectType()) {
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "Object.h"
+#include "AABBCollider.h"
 
 
 enum class MonsterType : unsigned char
@@ -31,11 +32,16 @@ public:
 	
 	int GetRoomId() const { return _roomId; }
 
+	// 자동적으로 Collider 생성.
+	Monster()
+	{
+		SetCollider(std::make_shared<AABBCollider>(GetPosRef(), 1.f, 1.f));
+	}
+
 private:
 	int		_roomId{ -1 };
 
-
-	std::atomic_bool _isRunning{ false };
-	MonsterType _monsterType{ MonsterType::None };
+	std::atomic_bool	_isRunning{ false };
+	MonsterType			_monsterType{ MonsterType::None };
 };
 

@@ -18,5 +18,5 @@ void Object::Move(const float delta_time)
 {
 	_dir.Normalize();
 	_pos.x += _dir.x * _speed * delta_time;
-	_pos.y += _dir.y * _speed* delta_time;
+	_pos.y += _dir.y * _speed * delta_time;
 }
