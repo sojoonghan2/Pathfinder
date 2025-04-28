@@ -6,19 +6,22 @@
 #include "GameObject.h"
 #include "Timer.h"
 #include "SocketIO.h"
-#include "Input.h"
 
 TitleScript::TitleScript() {}
-
 TitleScript::~TitleScript() {}
 
 void TitleScript::Start()
 {
 	_matchingIcon = GET_SINGLE(SceneManager)->FindObjectByName(L"MatchingIcon");
 	_loadingIcon = GET_SINGLE(SceneManager)->FindObjectByName(L"LoadingIcon");
+	_matchmakingIng = GET_SINGLE(SceneManager)->FindObjectByName(L"Matchmaking_ing");
+
+	if (_matchingIcon)
+		_currentScale = _matchingIcon->GetTransform()->GetLocalScale();
 }
 
-void TitleScript::LateUpdate() {
+void TitleScript::LateUpdate()
+{
 	const POINT& pos = INPUT->GetMousePos();
 
 	bool isMouseOnButton = (pos.x >= 850 && pos.x <= 1200 &&
@@ -36,19 +39,14 @@ void TitleScript::LateUpdate() {
 		}
 		if (INPUT->GetButton(KEY_TYPE::M))
 		{
-			cout << "m\n";
 			GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
 		}
 	}
 
 	if (isMouseOnButton)
-	{
 		HoveredAnimation();
-	}
 	else
-	{
 		ResetScale();
-	}
 
 	if (_matchingIcon)
 	{
@@ -57,23 +55,20 @@ void TitleScript::LateUpdate() {
 		_matchingIcon->GetTransform()->SetLocalScale(_currentScale);
 	}
 
-	if (_isMatch) MatchMaking();
+	if (_isMatch)
+		MatchMaking();
 }
 
 void TitleScript::HoveredAnimation()
 {
 	if (_matchingIcon)
-	{
 		_targetScale = Vec3(500.f, 500.f, 1.f);
-	}
 }
 
 void TitleScript::ResetScale()
 {
 	if (_matchingIcon)
-	{
 		_targetScale = Vec3(450.f, 450.f, 1.f);
-	}
 }
 
 void TitleScript::MatchMaking()
@@ -81,10 +76,15 @@ void TitleScript::MatchMaking()
 	if (_loadingIcon)
 	{
 		_loadingIcon->SetRenderOn();
+	}
 
-		auto matchmakingIng = GET_SINGLE(SceneManager)->FindObjectByName(L"Matchmaking_ing");
-		matchmakingIng->SetRenderOn();
+	if (_matchmakingIng)
+	{
+		_matchmakingIng->SetRenderOn();
+	}
 
+	if (_loadingIcon)
+	{
 		Vec3 rotation = _loadingIcon->GetTransform()->GetLocalRotation();
 		rotation.z += DELTA_TIME * 3.f;
 		_loadingIcon->GetTransform()->SetLocalRotation(rotation);

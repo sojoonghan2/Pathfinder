@@ -20,6 +20,7 @@ private:
 
 	shared_ptr<GameObject>		_matchingIcon;
 	shared_ptr<GameObject>		_loadingIcon;
+	shared_ptr<GameObject>		_matchmakingIng;
 
 	Vec3 _currentScale = Vec3(450.f, 450.f, 1.f);
 	Vec3 _targetScale = Vec3(450.f, 450.f, 1.f);
