@@ -7,8 +7,11 @@ public:
 
 	shared_ptr<Scene> GetScene() { return activeScene; }
 
+	void Init();
+
 private:
 	shared_ptr<Scene> activeScene = make_shared<Scene>();
 
 	bool stageClear;
+	bool _initialized = false;
 };

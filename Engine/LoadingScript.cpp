@@ -127,6 +127,7 @@ void LoadingScript::SceneLoad()
 		{
 			shared_ptr<RuinsScene> ruinsScene = make_shared<RuinsScene>();
 			GET_SINGLE(SceneManager)->RegisterScene(L"RuinsScene", ruinsScene->GetScene());
+			ruinsScene->Init();
 		}
 		break;
 		case RoomType::Factory:
