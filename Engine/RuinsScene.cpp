@@ -45,7 +45,11 @@
 #include "NetworkCrabScript.h"
 #include "GunFlameParticleSystem.h"
 
-RuinsScene::RuinsScene()
+RuinsScene::RuinsScene() {}
+
+RuinsScene::~RuinsScene() {}
+
+void RuinsScene::Init()
 {
 	// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
 #pragma region ComputeShader
@@ -68,7 +72,7 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 
-// 카메라
+	// 카메라
 #pragma region Camera
 	{
 		shared_ptr<GameObject> camera = make_shared<GameObject>();
@@ -200,7 +204,7 @@ RuinsScene::RuinsScene()
 			}
 			{
 				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
-				shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bullet", L"..\\Resources\\Texture\\Bullet.png");
+				shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bullet", L"..\\Resources\\Texture\\Skill\\Bullet.png");
 
 				shared_ptr<Material> material = make_shared<Material>();
 				material->SetShader(shader);
@@ -261,7 +265,7 @@ RuinsScene::RuinsScene()
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Grenade", L"..\\Resources\\Texture\\Grenade.jpg");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Grenade", L"..\\Resources\\Texture\\Skill\\Grenade.jpg");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
@@ -492,7 +496,7 @@ RuinsScene::RuinsScene()
 #pragma endregion
 
 
-// 점령 중 UI
+	// 점령 중 UI
 #pragma region UI
 	{
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
@@ -610,8 +614,8 @@ RuinsScene::RuinsScene()
 		dummyInfo.emplace_back(Vec3(735.708f, 100.f, 2300.f), 100.f);
 		dummyInfo.emplace_back(Vec3(754.53f, 100.f, 3250.f), 100.f);
 		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 100.f);
-		
-		
+
+
 		for (const auto& info : dummyInfo)
 		{
 			shared_ptr<GameObject> dummy = make_shared<GameObject>();
@@ -724,7 +728,7 @@ RuinsScene::RuinsScene()
 	// 로봇
 #pragma region Cyber Crab
 #ifndef NETWORK_ENABLE
-	{	
+	{
 		std::random_device rd;
 		std::mt19937 gen(rd());
 		std::uniform_real_distribution<float> disX(-4000.0f, 4000.0f);
@@ -903,7 +907,7 @@ RuinsScene::RuinsScene()
 #endif // NETWORK_ENABLE
 #pragma endregion
 
-		// 점령 구역
+	// 점령 구역
 #pragma region Occupation
 	for (int i{}; i < 3; ++i)
 	{
@@ -1052,7 +1056,9 @@ RuinsScene::RuinsScene()
 		activeScene->AddGameObject(portalFrameParticle);
 	}
 #pragma endregion
-#pragma region Spot Light
+
+	// 전역 조명
+#pragma region Directional Light
 	{
 		// 1. Light 오브젝트 생성 
 		shared_ptr<GameObject> light = make_shared<GameObject>();
@@ -1108,5 +1114,3 @@ RuinsScene::RuinsScene()
 	}
 #pragma endregion
 }
-
-RuinsScene::~RuinsScene() {}

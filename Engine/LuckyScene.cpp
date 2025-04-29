@@ -28,7 +28,11 @@
 #include "GlitterParticleSystem.h"
 #include "TestParticleScript.h"
 
-LuckyScene::LuckyScene()
+LuckyScene::LuckyScene() {}
+
+LuckyScene::~LuckyScene() {}
+
+void LuckyScene::Init()
 {
 	// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
 #pragma region ComputeShader
@@ -252,5 +256,3 @@ LuckyScene::LuckyScene()
 	}
 #pragma endregion
 }
-
-LuckyScene::~LuckyScene() {}

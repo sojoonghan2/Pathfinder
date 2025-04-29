@@ -8,20 +8,33 @@
 #include "SocketIO.h"
 
 TitleScript::TitleScript() {}
-
 TitleScript::~TitleScript() {}
 
-void TitleScript::LateUpdate() {
-	// 게임 윈도우가 포커스 되었을 때만 입력 처리
+void TitleScript::Start()
+{
+	_matchingIcon = GET_SINGLE(SceneManager)->FindObjectByName(L"MatchingIcon");
+	_loadingIcon = GET_SINGLE(SceneManager)->FindObjectByName(L"LoadingIcon");
+	_matchmakingIng = GET_SINGLE(SceneManager)->FindObjectByName(L"Matchmaking_ing");
+
+	if (_matchingIcon)
+		_currentScale = _matchingIcon->GetTransform()->GetLocalScale();
+}
+
+void TitleScript::LateUpdate()
+{
+	const POINT& pos = INPUT->GetMousePos();
+
+	bool isMouseOnButton = (pos.x >= 850 && pos.x <= 1200 &&
+		pos.y >= 530 && pos.y <= 700);
+
 	if (GetForegroundWindow() == GEngine->GetWindow().hwnd)
 	{
-		if (INPUT->GetButton(KEY_TYPE::N))
+		if (INPUT->GetButton(KEY_TYPE::LBUTTON) && isMouseOnButton)
 		{
 #ifdef NETWORK_ENABLE
 			if (false == _isMatch)
-			GET_SINGLE(SocketIO)->DoSend<packet::CSMatchmaking>();
-
-#endif // NETWORK_ENABLE
+				GET_SINGLE(SocketIO)->DoSend<packet::CSMatchmaking>();
+#endif
 			_isMatch = true;
 		}
 		if (INPUT->GetButton(KEY_TYPE::M))
@@ -30,18 +43,50 @@ void TitleScript::LateUpdate() {
 		}
 	}
 
-	if (_isMatch) MatchMaking();
+	if (isMouseOnButton)
+		HoveredAnimation();
+	else
+		ResetScale();
+
+	if (_matchingIcon)
+	{
+		const float speed = 10.f;
+		_currentScale = Vec3::Lerp(_currentScale, _targetScale, DELTA_TIME * speed);
+		_matchingIcon->GetTransform()->SetLocalScale(_currentScale);
+	}
+
+	if (_isMatch)
+		MatchMaking();
+}
+
+void TitleScript::HoveredAnimation()
+{
+	if (_matchingIcon)
+		_targetScale = Vec3(500.f, 500.f, 1.f);
+}
+
+void TitleScript::ResetScale()
+{
+	if (_matchingIcon)
+		_targetScale = Vec3(450.f, 450.f, 1.f);
 }
 
 void TitleScript::MatchMaking()
 {
-	auto icon = GET_SINGLE(SceneManager)->FindObjectByName(L"LoadingIcon");
-	if (icon)
+	if (_loadingIcon)
 	{
-		icon->SetRenderOn();
+		_loadingIcon->SetRenderOn();
+	}
 
-		Vec3 rotation = icon->GetTransform()->GetLocalRotation();
+	if (_matchmakingIng)
+	{
+		_matchmakingIng->SetRenderOn();
+	}
+
+	if (_loadingIcon)
+	{
+		Vec3 rotation = _loadingIcon->GetTransform()->GetLocalRotation();
 		rotation.z += DELTA_TIME * 3.f;
-		icon->GetTransform()->SetLocalRotation(rotation);
+		_loadingIcon->GetTransform()->SetLocalRotation(rotation);
 	}
 }

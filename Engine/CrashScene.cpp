@@ -23,7 +23,11 @@
 
 #include "SphereCollider.h"
 
-CrashScene::CrashScene()
+CrashScene::CrashScene() {}
+
+CrashScene::~CrashScene() {}
+
+void CrashScene::Init()
 {
 	// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
 #pragma region ComputeShader
@@ -231,5 +235,3 @@ CrashScene::CrashScene()
 	}
 #pragma endregion
 }
-
-CrashScene::~CrashScene() {}

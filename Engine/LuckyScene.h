@@ -1,9 +1,12 @@
 #pragma once
 #include "Scene.h"
-class LuckyScene {
+class LuckyScene
+{
 public:
 	LuckyScene();
 	virtual ~LuckyScene();
+
+	void Init();
 
 	shared_ptr<Scene> GetScene() { return activeScene; }
 

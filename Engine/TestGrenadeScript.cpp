@@ -81,7 +81,7 @@ void TestGrenadeScript::ThrowGrenade()
 	{
 		_throwDelay += DELTA_TIME;
 
-		if (_throwDelay >= 1.8f)
+		if (_throwDelay >= 0.3f)
 		{
 			_pendingThrow = false;
 			_throwDelay = 0.0f;
@@ -111,9 +111,9 @@ void TestGrenadeScript::ThrowGrenade()
 		pos += _velocity * DELTA_TIME;
 		GetTransform()->SetLocalPosition(pos);
 
-		if (pos.y <= 0.0f)
+		if (pos.y <= -50.0f)
 		{
-			pos.y = 0.0f;
+			pos.y = -50.0f;
 			_isThrown = false;
 
 			// 파티클 재생

@@ -1,10 +1,11 @@
 #pragma once
 #include "Scene.h"
-
-class LoadingScene {
+class LoadingScene
+{
 public:
 	LoadingScene();
 	virtual ~LoadingScene();
+
 	shared_ptr<Scene> GetScene() { return activeScene; }
 
 private:

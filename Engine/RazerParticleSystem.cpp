@@ -7,7 +7,7 @@ RazerParticleSystem::RazerParticleSystem() : BaseParticleSystem()
 	SetParticleLifeTime(1.0f, 1.0f);
 	SetParticleSpeed(7000.0f, 7000.0f);
 	SetParticleScale(200.0f, 200.0f);
-	SetDuration(3.0f);
+	SetDuration(1.0f);
 	SetOnceParticleNum(10);
 	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"RazerParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"RazerComputeParticle")->Clone());
 	shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"RazerParticleTexture", L"..\\Resources\\Texture\\Particle\\razer.png");

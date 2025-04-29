@@ -50,7 +50,9 @@
 
 #define PARTICLEDEBUG	FALSE
 
-ParticleScene::ParticleScene()
+ParticleScene::ParticleScene() {}
+
+void ParticleScene::Init()
 {
 	// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
 #pragma region ComputeShader
@@ -239,7 +241,7 @@ ParticleScene::ParticleScene()
 			}
 			{
 				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
-				shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bullet", L"..\\Resources\\Texture\\Bullet.png");
+				shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bullet", L"..\\Resources\\Texture\\Skill\\Bullet.png");
 
 				shared_ptr<Material> material = make_shared<Material>();
 				material->SetShader(shader);
@@ -295,7 +297,7 @@ ParticleScene::ParticleScene()
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Grenade", L"..\\Resources\\Texture\\Grenade.jpg");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Grenade", L"..\\Resources\\Texture\\Skill\\Grenade.jpg");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);

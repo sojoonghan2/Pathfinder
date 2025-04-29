@@ -100,6 +100,13 @@ void LoadingScript::Awake()
 {
 	// SERVER TODO:
 	// 메시지로 로딩할 씬 받아와서 로드
+
+	auto icon = GET_SINGLE(SceneManager)->FindObjectByName(L"LoadingIcon");
+	if (icon)
+	{
+		icon->SetRenderOn();
+	}
+
 	StartLoadingThread();
 }
 
@@ -121,6 +128,7 @@ void LoadingScript::SceneLoad()
 		{
 			shared_ptr<RuinsScene> ruinsScene = make_shared<RuinsScene>();
 			GET_SINGLE(SceneManager)->RegisterScene(L"RuinsScene", ruinsScene->GetScene());
+			ruinsScene->Init();
 		}
 		break;
 		case RoomType::Factory:

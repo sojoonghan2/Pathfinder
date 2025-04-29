@@ -1,9 +1,12 @@
 #pragma once
 #include "Scene.h"
-class FactoryScene {
+class FactoryScene
+{
 public:
 	FactoryScene();
 	virtual ~FactoryScene();
+
+	void Init();
 
 	shared_ptr<Scene> GetScene() { return activeScene; }
 

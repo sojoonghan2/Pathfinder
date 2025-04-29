@@ -5,6 +5,8 @@ public:
 	TitleScene();
 	virtual ~TitleScene();
 
+	void Init();
+
 	shared_ptr<Scene> GetScene() { return activeScene; }
 
 private:

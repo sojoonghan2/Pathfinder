@@ -1,9 +1,12 @@
 #pragma once
 #include "Scene.h"
-class RuinsScene {
+class RuinsScene
+{
 public:
 	RuinsScene();
 	virtual ~RuinsScene();
+
+	void Init();
 
 	shared_ptr<Scene> GetScene() { return activeScene; }
 

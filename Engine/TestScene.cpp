@@ -20,7 +20,11 @@
 #include "input.h"
 #include "SphereCollider.h"
 
-TestScene::TestScene()
+TestScene::TestScene() {}
+
+TestScene::~TestScene() {}
+
+void TestScene::Init()
 {
 	// 카메라가 없으면 오류가 난다.
 #pragma region Camera
@@ -128,5 +132,3 @@ TestScene::TestScene()
 	}
 #pragma endregion
 }
-
-TestScene::~TestScene() {}
