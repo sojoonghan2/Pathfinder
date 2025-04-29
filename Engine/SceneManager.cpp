@@ -197,8 +197,11 @@ bool SceneManager::Collition(shared_ptr<GameObject> obj1,
 	auto obj1Collider = obj1->GetCollider();
 	auto obj2Collider = obj2->GetCollider();
 
-	if (!obj1Collider) return 0;
-	if (!obj2Collider) return 0;
+	if (!obj1Collider || !obj2Collider)
+		return false;
+
+	if (!obj1Collider->IsEnabled() || !obj2Collider->IsEnabled())
+		return false;
 
 	// 충돌 체크
 	if (obj1Collider->Intersects(obj2Collider))

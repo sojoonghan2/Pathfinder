@@ -22,6 +22,12 @@ public:
 
 	virtual Vec3 GetCenter() const = 0;
 
+	void SetEnable(bool able) { _enable = able; }
+	bool IsEnabled() { return _enable; }
+
 private:
 	ColliderType _colliderType = {};
+
+protected:
+	bool		_enable = true;
 };
