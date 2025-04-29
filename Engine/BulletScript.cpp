@@ -45,6 +45,8 @@ void BulletScript::MouseInput()
 			_parentTransform = parent->GetTransform();
 			Vec3 parentPos = _parentTransform->GetLocalPosition();
 			parentPos.y += 450.f;
+			Vec3 up = _parentTransform->GetUp();
+			parentPos += up * 100.f;
 			GetTransform()->SetLocalPosition(parentPos);
 			GetTransform()->RemoveParent();
 

@@ -191,7 +191,7 @@ void RuinsScene::Init()
 			bullet->SetStatic(false);
 
 			bullet->AddComponent(make_shared<Transform>());
-			bullet->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
+			bullet->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 			bullet->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 			bullet->GetTransform()->GetTransform()->RemoveParent();
 			bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
@@ -218,6 +218,7 @@ void RuinsScene::Init()
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetEnable(false);
 
 			bullet->AddComponent(meshRenderer);
+			bullet->SetRenderOff();
 
 			activeScene->AddGameObject(bullet);
 		}
