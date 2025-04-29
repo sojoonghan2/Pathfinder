@@ -7,6 +7,7 @@
 #include "GameObject.h"
 #include "ParticleSystem.h"
 #include "Transform.h"
+#include "BaseCollider.h"
 
 TestGrenadeScript::TestGrenadeScript(shared_ptr<PlayerScript> playerScript)
 	: _playerScript(playerScript),
@@ -105,6 +106,7 @@ void TestGrenadeScript::ThrowGrenade()
 	if (_isThrown)
 	{
 		GetGameObject()->SetRenderOn();
+		GetGameObject()->GetCollider()->SetEnable(true);
 
 		Vec3 pos = GetTransform()->GetLocalPosition();
 		_velocity.y += _gravity * DELTA_TIME;
@@ -135,6 +137,7 @@ void TestGrenadeScript::ThrowGrenade()
 		if (_timeSinceLanded >= 5.0f)
 		{
 			GetGameObject()->SetRenderOff();
+			GetGameObject()->GetCollider()->SetEnable(false);
 			_timeSinceLanded = -1.0f;
 		}
 	}

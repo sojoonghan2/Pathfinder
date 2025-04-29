@@ -10,6 +10,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "ParticleSystem.h"
+#include "BaseCollider.h"
 
 CrabScript::CrabScript()
 {
@@ -93,11 +94,15 @@ void CrabScript::LateUpdate()
 	}
 
 	CheckBulletHits();
+	CheckGrenadeHits();
+	CheckRazerHits();
 }
 
 void CrabScript::Start()
 {
 	_player = GET_SINGLE(SceneManager)->FindObjectByName(L"Player");
+
+	_grenade = GET_SINGLE(SceneManager)->FindObjectByName(L"Grenade");
 
 	_bullets.resize(50);
 	for (int i = 0; i < 50; ++i)
@@ -152,11 +157,13 @@ void CrabScript::CheckBoundary()
 
 void CrabScript::CheckBulletHits()
 {
-	if (!_hpTransform) return;
+	if (!_hpTransform)
+		return;
 
 	for (const auto& bullet : _bullets)
 	{
-		if (!bullet) continue;
+		if (!bullet)
+			continue;
 
 		if (GET_SINGLE(SceneManager)->Collition(GetGameObject(), bullet))
 		{
@@ -166,12 +173,17 @@ void CrabScript::CheckBulletHits()
 				return;
 			}
 
+			bullet->GetCollider()->SetEnable(false);
+
 			if (GetGameObject()->GetParticleSystem())
 				GetGameObject()->GetParticleSystem()->ParticleStart();
 
 			Vec3 hpScale = _hpTransform->GetLocalScale();
 			Vec3 hpPos = _hpTransform->GetLocalPosition();
 			float delta = 10.f;
+
+			if (_takeGrenade)
+				delta *= 2.f;
 
 			if (hpScale.x - delta >= 0.f)
 			{
@@ -189,6 +201,28 @@ void CrabScript::CheckBulletHits()
 			break;
 		}
 	}
+}
+
+void CrabScript::CheckGrenadeHits()
+{
+	if (_grenade)
+	{
+		if (GET_SINGLE(SceneManager)->Collition(GetGameObject(), _grenade))
+		{
+			if (!_initialized)
+			{
+				_initialized = true;
+				return;
+			}
+
+			_takeGrenade = true;
+			cout << "¼ö·ùÅº ÇÇ°Ý\n";
+		}
+	}
+}
+
+void CrabScript::CheckRazerHits()
+{
 }
 
 void CrabScript::DeadAnimation()
