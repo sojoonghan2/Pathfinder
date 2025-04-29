@@ -358,7 +358,7 @@ void ParticleScene::Init()
 			CrosshairmeshRenderer->SetMaterial(material);
 		}
 		obj->AddComponent(CrosshairmeshRenderer);
-		obj->SetRenderOff();
+		obj->SetRender(false);
 		activeScene->AddGameObject(obj);
 
 		// Ã¼·Â UI

@@ -75,12 +75,12 @@ void TitleScript::MatchMaking()
 {
 	if (_loadingIcon)
 	{
-		_loadingIcon->SetRenderOn();
+		_loadingIcon->SetRender(true);
 	}
 
 	if (_matchmakingIng)
 	{
-		_matchmakingIng->SetRenderOn();
+		_matchmakingIng->SetRender(true);
 	}
 
 	if (_loadingIcon)

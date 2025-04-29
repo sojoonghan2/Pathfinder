@@ -119,7 +119,7 @@ void ExplorationScene::Init()
 			meshRenderer->SetMaterial(material->Clone());
 		}
 		obj->AddComponent(meshRenderer);
-		obj->SetRenderOff();
+		obj->SetRender(false);
 		activeScene->AddGameObject(obj);
 
 		// 1. light 오브젝트 생성

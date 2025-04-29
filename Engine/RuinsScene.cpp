@@ -218,7 +218,7 @@ void RuinsScene::Init()
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetEnable(false);
 
 			bullet->AddComponent(meshRenderer);
-			bullet->SetRenderOff();
+			bullet->SetRender(false);
 
 			activeScene->AddGameObject(bullet);
 		}
@@ -285,13 +285,12 @@ void RuinsScene::Init()
 		dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 		dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetEnable(false);
 
-		grenade->SetRenderOff();
+		grenade->SetRender(false);
 		activeScene->AddGameObject(grenade);
 
 		// 레이저 파티클
 		shared_ptr<GameObject> razerParticle = make_shared<GameObject>();
-		wstring razerParticleName = L"RazerParticle";
-		razerParticle->SetName(razerParticleName);
+		razerParticle->SetName(L"Razer");
 		razerParticle->SetCheckFrustum(true);
 		razerParticle->SetStatic(false);
 
@@ -334,7 +333,7 @@ void RuinsScene::Init()
 			CrosshairmeshRenderer->SetMaterial(material);
 		}
 		obj->AddComponent(CrosshairmeshRenderer);
-		obj->SetRenderOff();
+		obj->SetRender(false);
 		activeScene->AddGameObject(obj);
 
 		shared_ptr<GameObject> playerFace = make_shared<GameObject>();
@@ -529,7 +528,7 @@ void RuinsScene::Init()
 			meshRenderer->SetMaterial(material);
 		}
 		obj->AddComponent(meshRenderer);
-		obj->SetRenderOff();
+		obj->SetRender(false);
 		activeScene->AddGameObject(obj);
 	}
 #pragma endregion

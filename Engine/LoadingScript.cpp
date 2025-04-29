@@ -103,7 +103,7 @@ void LoadingScript::Awake()
 	auto icon = GET_SINGLE(SceneManager)->FindObjectByName(L"LoadingIcon");
 	if (icon)
 	{
-		icon->SetRenderOn();
+		icon->SetRender(true);
 	}
 
 	StartLoadingThread();

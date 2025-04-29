@@ -37,7 +37,7 @@ void BulletScript::MouseInput()
 		{
 			s_lastFireTime = 0.f;
 			s_currentBulletIndex = (s_currentBulletIndex + 1) % 50;
-			GetGameObject()->SetRenderOff();
+			GetGameObject()->SetRender(false);
 			_isFired = true;
 			_lifeTime = 3.0f;
 			GetTransform()->RestoreParent();
@@ -87,7 +87,7 @@ void BulletScript::MoveBullet()
 {
 	if (_isFired)
 	{
-		GetGameObject()->SetRenderOn();
+		GetGameObject()->SetRender(true);
 		GetGameObject()->GetCollider()->SetEnable(true);
 		Vec3 pos = GetTransform()->GetLocalPosition();
 		pos += _velocity * DELTA_TIME;
@@ -96,7 +96,7 @@ void BulletScript::MoveBullet()
 		if (_lifeTime <= 0.f)
 		{
 			_isFired = false;
-			GetGameObject()->SetRenderOff();
+			GetGameObject()->SetRender(false);
 			GetGameObject()->GetCollider()->SetEnable(false);
 		}
 	}

@@ -74,7 +74,7 @@ LoadingScene::LoadingScene() : stageClear(false)
 			meshRenderer->SetMaterial(material);
 		}
 		icon->AddComponent(meshRenderer);
-		icon->SetRenderOff();
+		icon->SetRender(false);
 		activeScene->AddGameObject(icon);
 	}
 #pragma endregion

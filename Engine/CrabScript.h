@@ -31,7 +31,7 @@ private:
 
 private:
 	vector<shared_ptr<GameObject>>	_bullets;
-	shared_ptr<Transform>			_hpTransform;
+	shared_ptr<GameObject>			_hp;
 	shared_ptr<GameObject>			_player;
 	shared_ptr<GameObject>			_grenade;
 

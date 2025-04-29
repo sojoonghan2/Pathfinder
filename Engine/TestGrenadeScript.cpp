@@ -44,7 +44,7 @@ void TestGrenadeScript::KeyboardInput()
 	{
 		if (!(_playerScript->GetIsGrenade())) return;
 
-		GetGameObject()->SetRenderOff();
+		GetGameObject()->SetRender(false);
 
 		// 대기 상태 진입
 		_pendingThrow = true;
@@ -105,7 +105,7 @@ void TestGrenadeScript::ThrowGrenade()
 
 	if (_isThrown)
 	{
-		GetGameObject()->SetRenderOn();
+		GetGameObject()->SetRender(true);
 		GetGameObject()->GetCollider()->SetEnable(true);
 
 		Vec3 pos = GetTransform()->GetLocalPosition();
@@ -136,7 +136,7 @@ void TestGrenadeScript::ThrowGrenade()
 
 		if (_timeSinceLanded >= 5.0f)
 		{
-			GetGameObject()->SetRenderOff();
+			GetGameObject()->SetRender(false);
 			GetGameObject()->GetCollider()->SetEnable(false);
 			_timeSinceLanded = -1.0f;
 		}

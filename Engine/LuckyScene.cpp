@@ -218,7 +218,7 @@ void LuckyScene::Init()
 
 			gameObject->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 0.0f, 0.0f));
-			if (index != 1) gameObject->SetRenderOff();
+			if (index != 1) gameObject->SetRender(false);
 			activeScene->AddGameObject(gameObject);
 			index++;
 		}

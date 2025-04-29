@@ -119,9 +119,7 @@ void CrabScript::Start()
 	}
 
 	wstring hpName = L"CrabHP" + to_wstring(_index);
-	auto hpObj = GET_SINGLE(SceneManager)->FindObjectByName(hpName);
-	if (hpObj)
-		_hpTransform = hpObj->GetTransform();
+	_hp = GET_SINGLE(SceneManager)->FindObjectByName(hpName);
 }
 
 void CrabScript::MoveRandomly()
@@ -157,7 +155,7 @@ void CrabScript::CheckBoundary()
 
 void CrabScript::CheckBulletHits()
 {
-	if (!_hpTransform)
+	if (!_hp)
 		return;
 
 	for (const auto& bullet : _bullets)
@@ -178,8 +176,8 @@ void CrabScript::CheckBulletHits()
 			if (GetGameObject()->GetParticleSystem())
 				GetGameObject()->GetParticleSystem()->ParticleStart();
 
-			Vec3 hpScale = _hpTransform->GetLocalScale();
-			Vec3 hpPos = _hpTransform->GetLocalPosition();
+			Vec3 hpScale = _hp->GetTransform()->GetLocalScale();
+			Vec3 hpPos = _hp->GetTransform()->GetLocalPosition();
 			float delta = 10.f;
 
 			if (_takeGrenade)
@@ -190,13 +188,14 @@ void CrabScript::CheckBulletHits()
 				hpScale.x -= delta;
 				hpPos.x -= delta * 0.5f;
 
-				_hpTransform->SetLocalScale(hpScale);
-				_hpTransform->SetLocalPosition(hpPos);
+				_hp->GetTransform()->SetLocalScale(hpScale);
+				_hp->GetTransform()->SetLocalPosition(hpPos);
 			}
 
 			if ((hpScale.x - delta) < 0.f)
 			{
 				DeadAnimation();
+				_hp->SetRender(false);
 			}
 			break;
 		}
