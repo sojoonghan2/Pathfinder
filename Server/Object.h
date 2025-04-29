@@ -6,6 +6,7 @@ class Object
 public:
 	void Move(const float delta_time);
 
+	bool CheckCollision(const std::shared_ptr<Object>& other);
 
 	// getter and setter
 	virtual ObjectType GetObjectType() const = 0;
@@ -33,7 +34,7 @@ public:
 	Object& operator=(const Object& other) = delete;
 	
 
-public:
+private:
 	Vec2f		_pos{};
 	Vec2f		_dir{};
 	float		_speed{ 0.f };

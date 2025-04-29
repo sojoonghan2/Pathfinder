@@ -9,12 +9,21 @@ void Room::Update(const float delta)
 		RoomStatus::Running != _roomStatus) {
 		return;
 	}
-	
+
 	// 순회 중간에 객체가 들어오는 현상 방지
 	SyncObjects();
 
 	// TODO: 충돌 확인
-
+	// readerObjects 간 충돌 체크
+	for (auto iter{ _readerObjects.begin() }; iter != _readerObjects.end(); ++iter) {
+		auto iter2{ iter };
+		++iter2;
+		for (; iter2 != _readerObjects.end(); ++iter2) {
+			if (((*iter).second)-> ) {
+				
+			}
+		}
+	};
 
 	for (auto& [id, object] : _readerObjects) {
 
@@ -78,6 +87,7 @@ void Room::SendObjectsToClient()
 
 
 	// update와 동시에 이루어지지 않으므로 thread-safe
+	// 업데이트 이후에 이루어진다.
 	const auto& client_ids{ GET_SINGLE(IOCP)->GetClients(_roomId) };
 	for (auto& [id, object] : _readerObjects) {
 		if (ObjectType::None == object->GetObjectType()) {

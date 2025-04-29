@@ -20,3 +20,8 @@ void Object::Move(const float delta_time)
 	_pos.x += _dir.x * _speed * delta_time;
 	_pos.y += _dir.y * _speed * delta_time;
 }
+
+bool Object::CheckCollision(const std::shared_ptr<Object>& other)
+{
+	return false;
+}

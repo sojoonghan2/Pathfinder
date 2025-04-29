@@ -59,7 +59,7 @@ private:
 	// 객체가 id를 가져야 함.
 	std::atomic_int _idCount{ 0 };
 	concurrency::concurrent_unordered_map<int, std::shared_ptr<Object>> _writerObjects;
-	concurrency::concurrent_unordered_map<int, std::shared_ptr<Object>> _readerObjects;
+	std::unordered_map<int, std::shared_ptr<Object>> _readerObjects;
 
 
 	RoomType			_roomType{ RoomType::None };
