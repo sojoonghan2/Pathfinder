@@ -125,6 +125,17 @@ void SocketIO::ProcessPacket()
 
 		}
 		break;
+		case packet::Type::SC_MATCHMAKING:
+		{
+			packet::SCMatchmaking& packet{ reinterpret_cast<packet::SCMatchmaking&>(buffer) };
+			std::cout << "MATCHMAKING COMPLETED, id : " << packet.playerId << std::endl;
+			_myId = packet.playerId;
+			_roomType = packet.roomType;
+
+			// todo: 예외처리 필요한가?
+			GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
+		}
+		break;
 		case packet::Type::SC_GAME_START:
 		{
 			// 게임 시작 메시지를 보내자
@@ -132,53 +143,23 @@ void SocketIO::ProcessPacket()
 			// 일단 임시로 ruinsScene에 보냄
 
 			auto msg{ std::make_shared<MsgStartGame>() };
-			GET_SINGLE(MessageManager)->PushMessage(ID_RUIN_SCENE, msg);
+			GET_SINGLE(MessageManager)->PushMessage(ID_RUINS_SCENE, msg);
 
 		}
 		break;
-		case packet::Type::SC_MATCHMAKING:
-		{
-			packet::SCMatchmaking packet = reinterpret_cast<packet::SCMatchmaking&>(buffer);
-			std::cout << "MATCHMAKING COMPLETED, id : " << packet.playerId << std::endl;
-			_myId = packet.playerId;
-			_roomType = packet.roomType;
-
-			// todo: 예외처리 필요한가?
-			GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
-
-			// todo:
-			// 로딩 신으로 넘기라는 메시지를 보내자
-		}
-		break;
-
 		case packet::Type::SC_MOVE_OBJECT:
 		{
-			packet::SCMoveObject packet = reinterpret_cast<packet::SCMoveObject&>(buffer);
-
-		}
-		break;
-
-		case packet::Type::SC_MOVE_PLAYER:
-		{
-			packet::SCMovePlayer packet = reinterpret_cast<packet::SCMovePlayer&>(buffer);
-			if (_idList.end() == std::find(_idList.begin(), _idList.end(), packet.clientId) &&
-				packet.clientId != _myId) {
-				_idList.push_back(packet.clientId);
+			packet::SCMoveObject& packet{ reinterpret_cast<packet::SCMoveObject&>(buffer) };
+			
+			if (not GET_SINGLE(MessageManager)->FindNetworkObject(packet.objectId)) {
+				if (ObjectType::Player == packet.objectType && packet.objectId == _myId) {
+					packet.objectType = ObjectType::MainPlayer;
+				}
+				GET_SINGLE(MessageManager)->AllocNetworkObject(packet.objectType, packet.objectId);
 			}
-			auto msg{ std::make_shared<MsgMove>(packet.x, packet.y, packet.dirX, packet.dirY) };
-			GET_SINGLE(MessageManager)->PushMessage(packet.clientId, msg);
-		}
-		break;
 
-		case packet::Type::SC_MOVE_MONSTER:
-		{
-			packet::SCMoveMonster packet{ reinterpret_cast<packet::SCMoveMonster&>(buffer) };
-			if (_monsterIdList.end() == std::find(_monsterIdList.begin(), _monsterIdList.end(), packet.monsterId)) {
-				_monsterIdList.push_back(packet.monsterId);
-			}
 			auto msg{ std::make_shared<MsgMove>(packet.x, packet.y, packet.dirX, packet.dirY) };
-			GET_SINGLE(MessageManager)->PushMessage(packet.monsterId, msg);
-
+			GET_SINGLE(MessageManager)->PushMessageByNetworkId(packet.objectId, msg);
 		}
 		break;
 		default:

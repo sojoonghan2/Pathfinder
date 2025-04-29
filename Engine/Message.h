@@ -1,10 +1,5 @@
 #pragma once
 
-enum
-{
-	ID_RUIN_SCENE = 100000,
-};
-
 enum class MsgType
 {
 	NONE = 0,

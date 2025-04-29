@@ -26,7 +26,7 @@ void RuinsScript::LateUpdate() {
 
 	// SERVER TODO: 이거를 loadingscript로.
 #ifdef NETWORK_ENABLE
-	auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(ID_RUIN_SCENE);
+	auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(ID_RUINS_SCENE);
 	while (not queue.empty()) {
 		auto& message{ queue.front() };
 		switch (message->type) {
@@ -61,6 +61,11 @@ void RuinsScript::Start()
 	_water = GET_SINGLE(SceneManager)->FindObjectByName(L"Water");
 	_player = GET_SINGLE(SceneManager)->FindObjectByName(L"Player");
 	_occupationUI = GET_SINGLE(SceneManager)->FindObjectByName(L"OccupationUI");
+}
+
+void RuinsScript::Awake()
+{
+	GET_SINGLE(MessageManager)->RegisterScene(ID_RUINS_SCENE, _id);
 }
 
 void RuinsScript::Occupation()

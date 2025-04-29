@@ -13,6 +13,7 @@
 
 NetworkOtherPlayerScript::NetworkOtherPlayerScript()
 {
+	
 }
 
 NetworkOtherPlayerScript::~NetworkOtherPlayerScript()
@@ -22,46 +23,45 @@ NetworkOtherPlayerScript::~NetworkOtherPlayerScript()
 void NetworkOtherPlayerScript::LateUpdate()
 {
 
-	if (-1 == _id) {
-		_id = GET_SINGLE(SocketIO)->GetNextId();
-	}
-
-	if (-1 != _id) {
-		auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(_id);
-		while (not queue.empty()) {
-			auto& message{ queue.front() };
-			switch (message->type) {
-			case MsgType::MOVE:
-			{
-				std::shared_ptr<MsgMove> message_move{
-					std::static_pointer_cast<MsgMove>(message) };
-				SetPosition(message_move->x, message_move->y);
-				SetDir(message_move->dirX, message_move->dirY);
-	//			std::println("ID: {} dir {} {}", _id, message_move->dirX, message_move->dirY);
-
-				// 움직임 감지
-				if (_lastX != message_move->x || _lastY != message_move->y) {
-					_isMove = true;
-				}
-
-				// 움직임 동일
-				if (_lastX == message_move->x && _lastY == message_move->y) {
-					_isMove = false;
-				}
-				_lastX = message_move->x;
-				_lastY = message_move->y;
-
+	auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(_id);
+	while (not queue.empty()) {
+		auto& message{ queue.front() };
+		switch (message->type) {
+		case MsgType::MOVE:
+		{
+			std::shared_ptr<MsgMove> message_move{
+				std::static_pointer_cast<MsgMove>(message) };
+			SetPosition(message_move->x, message_move->y);
+			SetDir(message_move->dirX, message_move->dirY);
+			
+			// 움직임 감지
+			if (_lastX != message_move->x || _lastY != message_move->y) {
+				_isMove = true;
 			}
-			break;
-			default:
-				break;
+
+			// 움직임 동일
+			if (_lastX == message_move->x && _lastY == message_move->y) {
+				_isMove = false;
 			}
-			queue.pop();
+			_lastX = message_move->x;
+			_lastY = message_move->y;
+
 		}
+		break;
+		default:
+			break;
+		}
+		queue.pop();
 	}
+
 
 	Animation();
 
+}
+
+void NetworkOtherPlayerScript::Awake()
+{
+	GET_SINGLE(MessageManager)->RegisterObject(ObjectType::Player, _id);
 }
 
 void NetworkOtherPlayerScript::SetPosition(float x, float z)

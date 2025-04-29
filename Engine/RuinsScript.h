@@ -9,6 +9,7 @@ public:
 
 	virtual void LateUpdate() override;
 	virtual void Start() override;
+	virtual void Awake() override;
 
 	void Occupation();
 	void BlinkUI();

@@ -16,6 +16,11 @@
 PlayerScript::PlayerScript() {}
 PlayerScript::~PlayerScript() {}
 
+void PlayerScript::Awake()
+{
+	GET_SINGLE(MessageManager)->RegisterObject(ObjectType::MainPlayer, _id);
+}
+
 void PlayerScript::Start()
 {
 	_dashUI = GET_SINGLE(SceneManager)->FindObjectByName(L"DashUI");
@@ -43,26 +48,24 @@ void PlayerScript::Start()
 void PlayerScript::LateUpdate()
 {
 #ifdef NETWORK_ENABLE
-	int id{ GET_SINGLE(SocketIO)->_myId};
-	if (-1 != id) {
-		auto& queue{ GET_SINGLE(MessageManager)->GetMessageQueue(id) };
-		while (not queue.empty()) {
-			auto& message{ queue.front() };
-			switch (message->type)
-			{
-			case MsgType::MOVE:
-			{
-				std::shared_ptr<MsgMove> message_move{
-					std::static_pointer_cast<MsgMove>(message) };
-				SetPosition(message_move->x, message_move->y);
-			}
-			break;
-			default:
-				break;
-			}
-			queue.pop();
+	auto& queue{ GET_SINGLE(MessageManager)->GetMessageQueue(_id) };
+	while (not queue.empty()) {
+		auto& message{ queue.front() };
+		switch (message->type)
+		{
+		case MsgType::MOVE:
+		{
+			std::shared_ptr<MsgMove> message_move{
+				std::static_pointer_cast<MsgMove>(message) };
+			SetPosition(message_move->x, message_move->y);
 		}
+		break;
+		default:
+			break;
+		}
+		queue.pop();
 	}
+	
 
 	if (_moveTimer.PeekDeltaTime() > MOVE_PACKET_TIME_MS) {
 		_moveTimer.updateDeltaTime();

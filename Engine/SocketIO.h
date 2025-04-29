@@ -28,8 +28,6 @@ public:
 	void Init();
 	void Update();
 
-	// ID get. 수정예정
-	void GetId();
 
 	RoomType GetRoomType() const { return _roomType; }
 
@@ -46,23 +44,13 @@ private:
 	void ProcessPacket();
 
 private:
-	SOCKET _serverSocket{ INVALID_SOCKET };
+
+	SOCKET		_serverSocket{ INVALID_SOCKET };
 	std::thread	_recvThread{};
 	std::queue<BufferType> _bufferQueue;
 	NetworkTimer _sendTimer;
-
-
-	//ID Queue.
-	std::unordered_map<ObjectType, std::queue<int>> _idQueue;
-
-	RoomType _roomType{ RoomType::None };
-
-
-	// temp
-public:
-	// todo:
-	// std::unordered_map<int, Player> players{};
-	int _myId{-1};
+	RoomType	_roomType{ RoomType::None };
+	int			_myId{-1};
 
 };
 

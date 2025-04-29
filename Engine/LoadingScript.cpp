@@ -29,6 +29,8 @@ LoadingScript::~LoadingScript()
 		delete loadThread;
 		loadThread = nullptr;
 	}
+
+	
 }
 
 // 스레드 시작 함수 분리
@@ -36,7 +38,6 @@ void LoadingScript::StartLoadingThread()
 {
 	if (isInitialized)
 		return;
-
 	isInitialized = true;
 	loadEnd = false;
 

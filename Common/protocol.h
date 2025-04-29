@@ -46,6 +46,7 @@ enum class ObjectType : unsigned char
 {
 	None = 0,
 	Player,
+	MainPlayer, // for client. not use in server
 	Monster,
 	Bullet,
 };

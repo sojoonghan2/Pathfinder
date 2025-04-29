@@ -28,6 +28,7 @@
 #include "LuckyScene.h"
 #include "BossScene.h"
 #include "TestScene.h"
+#include "MessageManager.h"
 
 void SceneManager::Init()
 {
@@ -105,6 +106,9 @@ void SceneManager::Render()
 
 void SceneManager::LoadScene(wstring sceneName)
 {
+	// 메시지 초기화
+	GET_SINGLE(MessageManager)->Clear();
+
 	shared_ptr<Scene> scene = make_shared<Scene>();
 
 	_activeScene = scenes.at(sceneName);
