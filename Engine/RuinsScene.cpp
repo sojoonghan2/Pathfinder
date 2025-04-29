@@ -191,7 +191,7 @@ void RuinsScene::Init()
 			bullet->SetStatic(false);
 
 			bullet->AddComponent(make_shared<Transform>());
-			bullet->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+			bullet->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 			bullet->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 			bullet->GetTransform()->GetTransform()->RemoveParent();
 			bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));

@@ -111,9 +111,9 @@ void TestGrenadeScript::ThrowGrenade()
 		pos += _velocity * DELTA_TIME;
 		GetTransform()->SetLocalPosition(pos);
 
-		if (pos.y <= -50.0f)
+		if (pos.y <= -70.0f)
 		{
-			pos.y = -50.0f;
+			pos.y = -70.0f;
 			_isThrown = false;
 
 			// 파티클 재생
