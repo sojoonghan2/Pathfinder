@@ -2,19 +2,21 @@
 
 enum class ColliderType {
 	None,
-	Circle,
 	AABB,
+	Circle,
 };
 
 
 
-
+// use double dispatcher
 class Collider
 {
 public:
 
 	virtual ColliderType GetColliderType() const = 0;
-	virtual bool CheckCollision(const Collider& other) const = 0;
+	virtual bool CheckCollision(const std::shared_ptr<const Collider>& other) const = 0;
+	virtual bool CheckCollisionWithAABB(const class AABBCollider& other) const = 0;
+	virtual bool CheckCollisionWithCircle(const class CircleCollider& other) const = 0;
 
 	Collider() = default;
 

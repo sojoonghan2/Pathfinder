@@ -22,7 +22,13 @@ public:
 	float GetSpeed() const { return _speed; }
 
 	void SetCollider(std::shared_ptr<Collider>&& collider)
-		{ _collider = std::move(collider); }
+	{
+		_collider = std::move(collider);
+	}
+	std::shared_ptr<const Collider> GetCollider() const
+	{
+		return _collider;
+	}
 
 	// collider 생성을 위한 레퍼런스 getter
 	const Vec2f& GetPosRef() const { return _pos; }

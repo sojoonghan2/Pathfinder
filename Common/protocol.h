@@ -57,15 +57,15 @@ enum class ObjectType : unsigned char
 PACKET_START
 enum class Type : unsigned char
 {
-	NONE,
+	NONE = 0,
 
 	// prepare
 	SC_LOGIN,
 	CS_LOGIN,
 	SC_MATCHMAKING,
 	CS_MATCHMAKING,
-	CS_LOAD_COMPLETE,	// todo
-	SC_GAME_START,		// todo
+	CS_LOAD_COMPLETE,
+	SC_GAME_START,	
 
 	// move
 	SC_MOVE_OBJECT,

@@ -23,5 +23,9 @@ void Object::Move(const float delta_time)
 
 bool Object::CheckCollision(const std::shared_ptr<Object>& other)
 {
-	return false;
+	if (nullptr == _collider || nullptr == other->GetCollider()) {
+		return false;
+	}
+
+	return _collider->CheckCollision(other->GetCollider());
 }

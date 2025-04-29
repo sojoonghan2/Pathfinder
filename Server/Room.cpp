@@ -19,8 +19,8 @@ void Room::Update(const float delta)
 		auto iter2{ iter };
 		++iter2;
 		for (; iter2 != _readerObjects.end(); ++iter2) {
-			if (((*iter).second)-> ) {
-				
+			if (iter->second->CheckCollision(iter2->second)) {
+				// 확인 완료
 			}
 		}
 	};

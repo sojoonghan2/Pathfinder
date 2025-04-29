@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClCompile Include="..\Common\util.cpp" />
     <ClCompile Include="AABBCollider.cpp" />
+    <ClCompile Include="CircleCollider.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="IOCP.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="..\Common\protocol.h" />
     <ClInclude Include="..\Common\util.h" />
     <ClInclude Include="AABBCollider.h" />
+    <ClInclude Include="CircleCollider.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="define.h" />
     <ClInclude Include="Game.h" />

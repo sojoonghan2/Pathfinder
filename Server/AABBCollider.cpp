@@ -1,31 +1,33 @@
 #include "pch.h"
 #include "AABBCollider.h"
+#include "CircleCollider.h"
 
-bool AABBCollider::CheckCollision(const Collider& other) const
+
+bool AABBCollider::CheckCollision(const std::shared_ptr<const Collider>& other) const
 {
-	switch (other.GetColliderType())
-	{
-	case ColliderType::AABB:
-	{
-		auto& AABB_other{ static_cast<const AABBCollider&>(other) };
-		Vec2f a_min{ GetMin() };
-		Vec2f a_max{ GetMax() };
-		Vec2f b_min{ AABB_other.GetMin() };
-		Vec2f b_max{ AABB_other.GetMax() };
+	return other->CheckCollisionWithAABB(*this);
+}
 
-		return (a_min.x <= b_max.x && a_max.x >= b_min.x) &&
-			(a_min.y <= b_max.y && a_max.y >= b_min.y);
-	}
-	break;
-	case ColliderType::Circle:
-	{
+bool AABBCollider::CheckCollisionWithAABB(const AABBCollider& other) const
+{
+	Vec2f a_min{ GetMin() };
+	Vec2f a_max{ GetMax() };
+	Vec2f b_min{ other.GetMin() };
+	Vec2f b_max{ other.GetMax() };
 
-		return false;
-	}
-	break;
-	default:
-	break;
-	}
+	return (a_min.x <= b_max.x && a_max.x >= b_min.x) &&
+		(a_min.y <= b_max.y && a_max.y >= b_min.y);
+}
 
-	return false;
+bool AABBCollider::CheckCollisionWithCircle(const CircleCollider& other) const
+{
+
+	Vec2f min{ GetMin() };
+	Vec2f max{ GetMax() };
+
+	float closest_x = std::max(min.x, std::min(other.center.x, max.x));
+	float closest_y = std::max(min.y, std::min(other.center.y, max.y));
+
+	Vec2f diff = other.center - Vec2f{closest_x, closest_y};
+	return diff.x * diff.x + diff.y * diff.y <= other.radius * other.radius;
 }

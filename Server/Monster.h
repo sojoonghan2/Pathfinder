@@ -33,9 +33,10 @@ public:
 	int GetRoomId() const { return _roomId; }
 
 	// 자동적으로 Collider 생성.
+	// TODO: MonsterType에 따라 달라지도록. 지금은 CRAB 고정.
 	Monster()
 	{
-		SetCollider(std::make_shared<AABBCollider>(GetPosRef(), 1.f, 1.f));
+		SetCollider(std::make_shared<AABBCollider>(GetPosRef(), MONSTER_CRAB_SIZE_M, MONSTER_CRAB_SIZE_M));
 	}
 
 private:
