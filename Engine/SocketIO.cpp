@@ -139,8 +139,8 @@ void SocketIO::ProcessPacket()
 		case packet::Type::SC_MATCHMAKING:
 		{
 			packet::SCMatchmaking packet = reinterpret_cast<packet::SCMatchmaking&>(buffer);
-			std::cout << "MATCHMAKING COMPLETED, id : " << packet.clientId << std::endl;
-			_myId = packet.clientId;
+			std::cout << "MATCHMAKING COMPLETED, id : " << packet.playerId << std::endl;
+			_myId = packet.playerId;
 			_roomType = packet.roomType;
 
 			// todo: 예외처리 필요한가?
@@ -148,6 +148,13 @@ void SocketIO::ProcessPacket()
 
 			// todo:
 			// 로딩 신으로 넘기라는 메시지를 보내자
+		}
+		break;
+
+		case packet::Type::SC_MOVE_OBJECT:
+		{
+			packet::SCMoveObject packet = reinterpret_cast<packet::SCMoveObject&>(buffer);
+
 		}
 		break;
 
@@ -184,22 +191,6 @@ void SocketIO::ProcessPacket()
 	}
 }
 
-int SocketIO::GetNextId()
-{
-	// TODO: 임시로 해놨음
-	if (_idList.size() <= _idCount) {
-		return -1;
-	}
-	return _idList[_idCount++];
-}
-
-int SocketIO::GetMonsterId()
-{
-	if (_monsterIdList.size() <= _monsterIdCount) {
-		return -1;
-	}
-	return _monsterIdList[_monsterIdCount++];
-}
 
 SocketIO::~SocketIO()
 {

@@ -28,9 +28,9 @@ public:
 	void Init();
 	void Update();
 
-	// Temp ID get. 수정예정
-	int GetNextId();
-	int GetMonsterId();
+	// ID get. 수정예정
+	void GetId();
+
 	RoomType GetRoomType() const { return _roomType; }
 
 	template <class Packet, class ...Args>
@@ -52,13 +52,9 @@ private:
 	NetworkTimer _sendTimer;
 
 
-	// temp ID List.
-	// TODO: 이거 애초에 할거면 큐로 해야지 왜 벡터임?
-	std::vector<int> _idList;
-	int _idCount{ 0 };
+	//ID Queue.
+	std::unordered_map<ObjectType, std::queue<int>> _idQueue;
 
-	std::vector<int> _monsterIdList;
-	int _monsterIdCount{ 0 };
 	RoomType _roomType{ RoomType::None };
 
 
