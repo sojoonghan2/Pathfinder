@@ -182,10 +182,10 @@ void FactoryScene::Init()
 			bullet->SetStatic(false);
 
 			bullet->AddComponent(make_shared<Transform>());
-			bullet->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
+			bullet->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 			bullet->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 			bullet->GetTransform()->GetTransform()->RemoveParent();
-			bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
+			bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 			bullet->AddComponent(make_shared<BulletScript>(playerScript));
 
 			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -206,8 +206,10 @@ void FactoryScene::Init()
 			bullet->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetRadius(10.f);
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetEnable(false);
 
 			bullet->AddComponent(meshRenderer);
+			bullet->SetRender(false);
 
 			activeScene->AddGameObject(bullet);
 		}
@@ -246,7 +248,7 @@ void FactoryScene::Init()
 		grenade->GetTransform()->SetLocalScale(Vec3(30.f, 30.f, 30.f));
 		grenade->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 		grenade->GetTransform()->GetTransform()->RemoveParent();
-		grenade->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
+		grenade->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		grenade->AddComponent(make_shared<TestGrenadeScript>(playerScript));
 
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -269,12 +271,17 @@ void FactoryScene::Init()
 		grenadeParticleSystem->SetParticleScale(100.f, 80.f);
 		grenade->AddComponent(grenadeParticleSystem);
 
+		grenade->AddComponent(make_shared<SphereCollider>());
+		dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetRadius(500.f);
+		dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+		dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetEnable(false);
+
+		grenade->SetRender(false);
 		activeScene->AddGameObject(grenade);
 
 		// 레이저 파티클
 		shared_ptr<GameObject> razerParticle = make_shared<GameObject>();
-		wstring razerParticleName = L"RazerParticle";
-		razerParticle->SetName(razerParticleName);
+		razerParticle->SetName(L"Razer");
 		razerParticle->SetCheckFrustum(true);
 		razerParticle->SetStatic(false);
 
@@ -436,7 +443,7 @@ void FactoryScene::Init()
 		// 2. Transform 컴포넌트 추가 및 설정
 		terraincube->AddComponent(make_shared<Transform>());
 		// 씬의 임시 크기
-		terraincube->GetTransform()->SetLocalScale(Vec3(10000.f, 10000.f, 10000.f));
+		terraincube->GetTransform()->SetLocalScale(Vec3(11000.f, 11000.f, 11000.f));
 		// 씬의 임시 좌표
 		terraincube->GetTransform()->SetLocalPosition(Vec3(0, 4900.f, 0.f));
 
@@ -563,6 +570,26 @@ void FactoryScene::Init()
 		// 4. Scene에 추가
 		activeScene->AddGameObject(light);
 
+	}
+#pragma endregion
+
+	// 팩토리 맵
+#pragma region FactoryMap
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\FactoryMap\\FactoryMap.fbx");
+
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		for (auto gameObject : gameObjects)
+		{
+			gameObject->SetName(L"FactoryMap");
+			gameObject->SetCheckFrustum(false);
+			gameObject->AddComponent(make_shared<Transform>());
+			gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, -100.f, 0.f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+			activeScene->AddGameObject(gameObject);
+		}
 	}
 #pragma endregion
 
