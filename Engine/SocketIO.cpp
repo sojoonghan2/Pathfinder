@@ -51,8 +51,19 @@ void SocketIO::Init()
 
 void SocketIO::Update()
 {
-	ProcessPacket();
+	if (not _stop) {
+		ProcessPacket();
+	}
+}
 
+
+void SocketIO::Continue()
+{
+	if (_stop) {
+		_stop = false;
+		auto msg{ std::make_shared<MsgStartGame>() };
+		GET_SINGLE(MessageManager)->PushMessageByNetworkId(ID_RUINS_SCENE, msg);
+	}
 }
 
 void SocketIO::Worker()
@@ -128,7 +139,6 @@ void SocketIO::ProcessPacket()
 		case packet::Type::SC_MATCHMAKING:
 		{
 			packet::SCMatchmaking& packet{ reinterpret_cast<packet::SCMatchmaking&>(buffer) };
-			std::cout << "MATCHMAKING COMPLETED, id : " << packet.playerId << std::endl;
 			_myId = packet.playerId;
 			_roomType = packet.roomType;
 
@@ -142,8 +152,15 @@ void SocketIO::ProcessPacket()
 			// todo:
 			// 일단 임시로 ruinsScene에 보냄
 
-			auto msg{ std::make_shared<MsgStartGame>() };
-			GET_SINGLE(MessageManager)->PushMessage(ID_RUINS_SCENE, msg);
+			// 아직 씬 전환이 완료가 안되었으면.
+			if (not GET_SINGLE(MessageManager)->FindNetworkObject(ID_RUINS_SCENE)) {
+				_stop = true;
+			}
+			else {
+				// 신 전환이 이미 완료되었음.
+				auto msg{ std::make_shared<MsgStartGame>() };
+				GET_SINGLE(MessageManager)->PushMessageByNetworkId(ID_RUINS_SCENE, msg);
+			}
 
 		}
 		break;

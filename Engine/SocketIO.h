@@ -34,6 +34,8 @@ public:
 	template <class Packet, class ...Args>
 	void DoSend(Args ...args);
 
+	void Continue();
+
 	
 private:
 	void Worker();
@@ -51,6 +53,8 @@ private:
 	NetworkTimer _sendTimer;
 	RoomType	_roomType{ RoomType::None };
 	int			_myId{-1};
+
+	bool		_stop{ false };
 
 };
 

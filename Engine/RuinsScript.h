@@ -8,8 +8,8 @@ public:
 	virtual ~RuinsScript();
 
 	virtual void LateUpdate() override;
-	virtual void Start() override;
 	virtual void Awake() override;
+	virtual void Start() override;
 
 	void Occupation();
 	void BlinkUI();

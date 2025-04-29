@@ -40,6 +40,7 @@ bool MessageManager::AllocNetworkObject(const ObjectType object_type, const int 
 	}
 
 	const auto object_id{ _objectQueueHash[object_type].front() };
+	_objectQueueHash[object_type].pop();
 	_networkToClientHash[network_id] = object_id;
 	return true;
 }

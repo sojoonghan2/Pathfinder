@@ -3,7 +3,8 @@
 
 enum
 {
-	ID_RUINS_SCENE = 100000,
+	ID_SCENE_START = 100000,
+	ID_RUINS_SCENE,
 };
 
 /*

@@ -29,6 +29,7 @@
 #include "BossScene.h"
 #include "TestScene.h"
 #include "MessageManager.h"
+#include "SocketIO.h"
 
 void SceneManager::Init()
 {
@@ -107,14 +108,16 @@ void SceneManager::Render()
 void SceneManager::LoadScene(wstring sceneName)
 {
 	// 메시지 초기화
-	GET_SINGLE(MessageManager)->Clear();
 
 	shared_ptr<Scene> scene = make_shared<Scene>();
 
 	_activeScene = scenes.at(sceneName);
 
+
+	GET_SINGLE(MessageManager)->Clear();
 	_activeScene->Awake();
 	_activeScene->Start();
+	GET_SINGLE(SocketIO)->Continue();
 }
 
 void SceneManager::ChangeScene(wstring sceneName) {
