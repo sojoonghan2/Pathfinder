@@ -6,6 +6,7 @@
 #include "SceneManager.h"
 #include "GameObject.h"
 #include "ParticleSystem.h"
+#include "MeshRenderer.h"
 #include "Transform.h"
 
 TestGrenadeScript::TestGrenadeScript(shared_ptr<PlayerScript> playerScript)
@@ -28,6 +29,7 @@ void TestGrenadeScript::LateUpdate()
 	KeyboardInput();
 	MouseInput();
 	ThrowGrenade();
+	//UpdateGrenadeUI();
 
 	if (_resetThrow)
 	{
@@ -43,7 +45,7 @@ void TestGrenadeScript::KeyboardInput()
 	{
 		if (!(_playerScript->GetIsGrenade())) return;
 
-		GetGameObject()->SetRenderOff();
+		//GetGameObject()->SetRenderOff();
 
 		// 대기 상태 진입
 		_pendingThrow = true;
@@ -74,6 +76,7 @@ void TestGrenadeScript::KeyboardInput()
 void TestGrenadeScript::MouseInput()
 {
 }
+
 
 void TestGrenadeScript::ThrowGrenade()
 {

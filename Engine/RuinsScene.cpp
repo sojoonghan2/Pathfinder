@@ -254,6 +254,7 @@ RuinsScene::RuinsScene()
 		grenade->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
 		grenade->AddComponent(make_shared<TestGrenadeScript>(playerScript));
 
+
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
@@ -967,7 +968,7 @@ RuinsScene::RuinsScene()
 			gameObjects[0]->SetCheckFrustum(false);
 			gameObjects[0]->AddComponent(make_shared<Transform>());
 			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
-			gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(100.0f + i * 4000, -50.f, -4550));
+			gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(100.0f + i * 4000, -100.f, -4550));
 			gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(0.f, PI * (i - 1), 0.f));
 			activeScene->AddGameObject(gameObjects[0]);
 		}
@@ -981,6 +982,7 @@ RuinsScene::RuinsScene()
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
 		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 		obj->AddComponent(make_shared<Transform>());
+
 		if (i == 0) obj->SetName(L"DashUI");
 		else if (i == 1) obj->SetName(L"GrenadeUI");
 		else if (i == 2) obj->SetName(L"RazerUI");
@@ -994,7 +996,9 @@ RuinsScene::RuinsScene()
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
 			shared_ptr<Texture> texture{};
-			if (i == 0) texture = GET_SINGLE(Resources)->Load<Texture>(L"DashUI", L"..\\Resources\\Texture\\Skill\\Dash.png");
+			if (i == 0) {
+				texture = GET_SINGLE(Resources)->Load<Texture>(L"DashUI", L"..\\Resources\\Texture\\Skill\\Dash.png");
+			}
 			else if (i == 1) texture = GET_SINGLE(Resources)->Load<Texture>(L"GrenadeUI", L"..\\Resources\\Texture\\Skill\\Grenade.png");
 			else if (i == 2) texture = GET_SINGLE(Resources)->Load<Texture>(L"RazerUI", L"..\\Resources\\Texture\\Skill\\Razer.png");
 			shared_ptr<Material> material = make_shared<Material>();
@@ -1067,7 +1071,7 @@ RuinsScene::RuinsScene()
 		// 2-2. 스팟 라이트 방향 설정
 		light->GetLight()->SetLightDirection(Vec3(0.f, -1.f, 0.f));
 
-		float lightpower = 1.0f;
+		float lightpower = 0.7f;
 		// 3. 조명 색상 및 강도 조정 (따뜻한 황금빛)
 		light->GetLight()->SetDiffuse(Vec3(1.0f, 0.85f, 0.6f) * lightpower);
 		light->GetLight()->SetAmbient(Vec3(0.25f, 0.2f, 0.25f) * lightpower);
@@ -1078,7 +1082,42 @@ RuinsScene::RuinsScene()
 
 	}
 #pragma endregion
+#pragma region Dot Light
+	{
+		vector<Vec3> Stone_pillar{ Vec3(-1375.2f, 1500.f, 900.f), Vec3(1542.62f, 1500.f, 900.f), Vec3(-407.447f, 1500.f, 2300.f), 
+			Vec3(735.708f, 1500.f, 2300.f),Vec3(754.53f, 1500.f, 3250.f), Vec3(-372.698f, 1500.f, 3250.f) };
+		for (int i = 0; i < 6; ++i) {
+			// 1. Light 오브젝트 생성 
+			shared_ptr<GameObject> light = make_shared<GameObject>();
+			light->SetName(L"Ancient_Ruin_Point_Light" + std::to_wstring(i + 1));
+			light->AddComponent(make_shared<Transform>());
+			light->GetTransform()->SetLocalPosition(Stone_pillar[i]);
 
+			// 2-1. Light 컴포넌트 추가 및 속성 설정
+			light->AddComponent(make_shared<Light>());
+			light->GetLight()->SetLightType(LIGHT_TYPE::POINT_LIGHT);
+
+			float lightpower = 1.0f;
+			if (i == 0 || i == 1) {
+				light->GetLight()->SetLightRange(2000.0f);
+				lightpower = 0.5f;
+			}
+			else {
+				light->GetLight()->SetLightRange(500.0f);
+				lightpower = 0.5f;
+			}
+
+			// 3. 조명 색상 및 강도 조정 (따뜻한 황금빛)
+			light->GetLight()->SetDiffuse(Vec3(1.0f, 0.4f, 0.3f) * lightpower);
+			light->GetLight()->SetAmbient(Vec3(0.3f, 0.1f, 0.1f) * lightpower);
+			light->GetLight()->SetSpecular(Vec3(1.0f, 0.5f, 0.4f) * lightpower);
+
+			// 4. Scene에 추가
+			activeScene->AddGameObject(light);
+		}
+
+	}
+#pragma endregion
 	// 다른 플레이어 대기 UI
 #pragma region WaitUI
 	{
