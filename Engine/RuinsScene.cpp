@@ -119,7 +119,7 @@ void RuinsScene::Init()
 			gameObject->SetName(L"Player");
 			gameObject->SetCheckFrustum(false);
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 			gameObject->AddComponent(playerScript);
 			gameObject->AddComponent(make_shared<TestDragon>());
@@ -423,7 +423,7 @@ void RuinsScene::Init()
 				gameObject->SetName(L"OTHER1");
 				gameObject->SetCheckFrustum(false);
 				gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -200.0f, 0.0f));
-				gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+				gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
 				gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 				gameObject->AddComponent(otherPlayerScript);
 				gameObject->AddComponent(make_shared<TestDragon>());
@@ -443,7 +443,7 @@ void RuinsScene::Init()
 				gameObject->SetName(L"OTHER2");
 				gameObject->SetCheckFrustum(false);
 				gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-				gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+				gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
 				gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 				gameObject->AddComponent(otherPlayerScript);
 				gameObject->AddComponent(make_shared<TestDragon>());
@@ -959,7 +959,7 @@ void RuinsScene::Init()
 			gameObject->AddComponent(make_shared<Transform>());
 			gameObject->GetTransform()->SetLocalScale(Vec3(50.f, 50.f, 50.f));
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 3500.0f));
-			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 1.5708f, 0.0f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI / 2, 0.0f));
 			activeScene->AddGameObject(gameObject);
 		}
 	}

@@ -110,7 +110,7 @@ void FactoryScene::Init()
 			gameObject->SetName(L"Player");
 			gameObject->SetCheckFrustum(false);
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 			gameObject->AddComponent(playerScript);
 			gameObject->AddComponent(make_shared<TestDragon>());
@@ -474,7 +474,6 @@ void FactoryScene::Init()
 #pragma endregion
 
 	// 로봇
-	/*
 #pragma region FactoryMonster
 	{
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Monster\\Monster.fbx");
@@ -485,8 +484,8 @@ void FactoryScene::Init()
 		gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
 		gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -100.0f, 2000.0f));
-		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 0.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(1.f, 1.f, 1.f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-PI / 2, 0.0f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		gameObjects[0]->AddComponent(make_shared<SphereCollider>());
 		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
@@ -542,7 +541,7 @@ void FactoryScene::Init()
 		activeScene->AddGameObject(hp);
 	}
 #pragma endregion
-	*/
+	
 
 	// 전역 조명
 #pragma region Directional Light
@@ -580,11 +579,12 @@ void FactoryScene::Init()
 		for (auto gameObject : gameObjects)
 		{
 			gameObject->SetName(L"FactoryMap");
-			gameObject->SetCheckFrustum(false);
+			gameObject->SetCheckFrustum(true);
+			gameObject->SetStatic(true);
 			gameObject->AddComponent(make_shared<Transform>());
 			gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, -100.f, 0.f));
-			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
 			activeScene->AddGameObject(gameObject);
 		}
 	}
