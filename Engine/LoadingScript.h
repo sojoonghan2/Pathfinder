@@ -1,31 +1,39 @@
+#include "MonoBehaviour.h"
 #pragma once
-#include "MasterScript.h"
-#include "Scene.h"
+
+enum class LoadingState
+{
+	Idle,
+	ReadyToInit,
+	ReadyToLoad,
+	Switching
+};
 
 class Scene;
 
 class LoadingScript : public MonoBehaviour
 {
 public:
-    LoadingScript();
-    virtual ~LoadingScript();
+	LoadingScript();
+	virtual ~LoadingScript();
 
-    virtual void Awake() override;
-    virtual void LateUpdate() override;
-
-private:
-    void StartLoadingThread();
-    void SceneLoad();
+	virtual void Awake() override;
+	virtual void LateUpdate() override;
 
 private:
-    bool loadEnd = false;
-    bool isInitialized = false;
-    bool pendingThreadJoin = false;
+	void StartLoadingThread();
+	void SceneLoad();
 
-    std::thread* loadThread = nullptr;
+private:
+	bool loadEnd = false;
+	bool isInitialized = false;
+	bool pendingThreadJoin = false;
 
-    RoomType roomType = RoomType::None;
+	std::thread* loadThread = nullptr;
 
-    shared_ptr<Scene> _sceneToInit;
-    wstring _sceneNameToLoad;
+	RoomType roomType = RoomType::None;
+	LoadingState _state = LoadingState::Idle;
+
+	shared_ptr<Scene> _sceneToInit;
+	std::wstring _sceneNameToLoad;
 };

@@ -17,7 +17,10 @@
 #include "TestScene.h"
 #include "SocketIO.h"
 
-LoadingScript::LoadingScript() : loadEnd(false), loadThread(nullptr), isInitialized(false), pendingThreadJoin(false) {}
+LoadingScript::LoadingScript()
+	: loadEnd(false), loadThread(nullptr), isInitialized(false), pendingThreadJoin(false), _state(LoadingState::Idle)
+{
+}
 
 LoadingScript::~LoadingScript()
 {
@@ -63,7 +66,7 @@ void LoadingScript::StartLoadingThread()
 
 void LoadingScript::SceneLoad()
 {
-	cout << "SceneLoad thread started" << endl;
+	cout << "SceneLoad thread started\n";
 
 	switch (roomType)
 	{
@@ -95,7 +98,7 @@ void LoadingScript::SceneLoad()
 	break;
 
 	default:
-		cout << "ERROR: Unhandled RoomType" << endl;
+		cout << "ERROR: Unhandled RoomType\n";
 		break;
 	}
 
@@ -104,6 +107,8 @@ void LoadingScript::SceneLoad()
 #endif
 
 	loadEnd = true;
+
+	_state = LoadingState::ReadyToInit;
 }
 
 void LoadingScript::LateUpdate()
@@ -120,20 +125,25 @@ void LoadingScript::LateUpdate()
 	if (!isInitialized)
 		StartLoadingThread();
 
-	// 로딩 완료 후 Init, LoadScene
-	if (loadEnd && _sceneToInit && !_sceneNameToLoad.empty())
+	if (_state == LoadingState::ReadyToInit)
 	{
-		cout << "Loading complete..." << endl;
+		cout << "ReadyToInit\n";
+		_sceneToInit->Init();
+		_state = LoadingState::ReadyToLoad;
+		return;
+	}
 
-		_sceneToInit->Init(); // 메인 스레드에서 안전하게 Init
+	if (_state == LoadingState::ReadyToLoad)
+	{
+		cout << "ReadyToLoad\n";
 		GET_SINGLE(SceneManager)->LoadScene(_sceneNameToLoad);
-
 		_sceneToInit = nullptr;
 		_sceneNameToLoad.clear();
+		_state = LoadingState::Switching;
 		pendingThreadJoin = true;
 	}
 
-	// join은 Init 이후 한 프레임 뒤에 실행
+	// 백그라운드 스레드 정리
 	if (pendingThreadJoin)
 	{
 		if (loadThread)
