@@ -27,18 +27,21 @@ CrabScript::CrabScript()
 	_isMoving = false;
 	_elapsedTime = 0.0f;
 	_pauseDuration = pauseDis(gen);
+
+	_hitTime = 100.f;
+	_hitDuration = 0.2f;
 }
 
 void CrabScript::LateUpdate()
 {
+	// 사망 애니메이션 처리
 	if (_isDying)
 	{
 		const float duration = 0.3f;
 		_deathAnimTime += DELTA_TIME;
 
 		float t = min(_deathAnimTime / duration, 1.0f);
-
-		float logT = log(1 + 30 * t) / log(10); // 1: N배
+		float logT = log(1 + 30 * t) / log(10);
 
 		Vec3 currentRot = Vector3::Lerp(_startRot, _targetRot, logT);
 		Vec3 currentPos = Vector3::Lerp(_startPos, _targetPos, logT);
@@ -47,10 +50,23 @@ void CrabScript::LateUpdate()
 		GetTransform()->SetLocalPosition(currentPos);
 
 		if (t >= 1.0f) _isDying = false;
-
 		return;
 	}
 
+	// 피격 파티클 유지 여부 체크
+	_hitTime += DELTA_TIME;
+	if (_hitTime < _hitDuration)
+	{
+		if (GetGameObject()->GetParticleSystem() && !GetGameObject()->GetParticleSystem()->IsActive())
+			GetGameObject()->GetParticleSystem()->ParticleStart();
+	}
+	else
+	{
+		if (GetGameObject()->GetParticleSystem() && GetGameObject()->GetParticleSystem()->IsActive())
+			GetGameObject()->GetParticleSystem()->ParticleStop();
+	}
+
+	// 죽었는지 체크
 	if (!_isAlive)
 	{
 		if (!_deathHandled)
@@ -101,7 +117,6 @@ void CrabScript::LateUpdate()
 void CrabScript::Start()
 {
 	_player = GET_SINGLE(SceneManager)->FindObjectByName(L"Player");
-
 	_grenade = GET_SINGLE(SceneManager)->FindObjectByName(L"Grenade");
 
 	_bullets.resize(50);
@@ -114,9 +129,7 @@ void CrabScript::Start()
 	wstring myName = GetGameObject()->GetName();
 	size_t numberPos = myName.find_first_of(L"0123456789");
 	if (numberPos != wstring::npos)
-	{
 		_index = stoi(myName.substr(numberPos));
-	}
 
 	wstring hpName = L"CrabHP" + to_wstring(_index);
 	_hp = GET_SINGLE(SceneManager)->FindObjectByName(hpName);
@@ -172,9 +185,7 @@ void CrabScript::CheckBulletHits()
 			}
 
 			bullet->GetCollider()->SetEnable(false);
-
-			if (GetGameObject()->GetParticleSystem())
-				GetGameObject()->GetParticleSystem()->ParticleStart();
+			_hitTime = 0.f; // 피격 시각 갱신
 
 			Vec3 hpScale = _hp->GetTransform()->GetLocalScale();
 			Vec3 hpPos = _hp->GetTransform()->GetLocalPosition();
@@ -213,7 +224,6 @@ void CrabScript::CheckGrenadeHits()
 				_initialized = true;
 				return;
 			}
-
 			_takeGrenade = true;
 			cout << "수류탄 피격\n";
 		}
@@ -222,6 +232,7 @@ void CrabScript::CheckGrenadeHits()
 
 void CrabScript::CheckRazerHits()
 {
+	// 구현 예정
 }
 
 void CrabScript::DeadAnimation()
@@ -239,9 +250,7 @@ void CrabScript::DeadAnimation()
 
 		Vec3 playerUp = _player->GetTransform()->GetUp();
 		Vec3 backward = playerUp;
-
 		_targetPos = _startPos + backward * 1000.f;
-
 		_targetRot = Vec3(180.0f * (PI / 180.0f), _startRot.y, _startRot.z);
 
 		_deathAnimTime = 0.f;

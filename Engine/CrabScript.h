@@ -46,4 +46,8 @@ private:
 	float							_deathAnimTime = 0.f;
 	bool							_isDying = false;
 
+	float							_hitTime = 100.f;
+	float							_hitDuration = 0.5f;
+
+
 };
