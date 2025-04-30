@@ -88,6 +88,7 @@ void Light::SetLightType(LIGHT_TYPE type)
 		_lightMaterial = GET_SINGLE(Resources)->Get<Material>(L"DirLight");
 
 		_shadowCamera->GetCamera()->SetScale(1.f);
+		_shadowCamera->GetCamera()->SetNear(0.1f);
 		_shadowCamera->GetCamera()->SetFar(10000.f);
 		_shadowCamera->GetCamera()->SetWidth(4096);
 		_shadowCamera->GetCamera()->SetHeight(4096);

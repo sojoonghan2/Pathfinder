@@ -103,6 +103,9 @@ void Camera::SortShadowObject()
 		if (IsCulled(gameObject->GetLayerIndex()))
 			continue;
 
+		if (!(gameObject->IsRender()))
+			continue;
+
 		if (gameObject->GetCheckFrustum()) {
 			if (_frustum.ContainsSphere(gameObject->GetTransform()->GetWorldPosition(), gameObject->GetTransform()->GetBoundingSphereRadius()) == false) {
 				continue;

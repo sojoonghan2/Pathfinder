@@ -28,7 +28,11 @@
 #include "GlitterParticleSystem.h"
 #include "TestParticleScript.h"
 
-LuckyScene::LuckyScene()
+LuckyScene::LuckyScene() {}
+
+LuckyScene::~LuckyScene() {}
+
+void LuckyScene::Init()
 {
 	// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
 #pragma region ComputeShader
@@ -64,7 +68,7 @@ LuckyScene::LuckyScene()
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI는 안 찍음
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -80,7 +84,7 @@ LuckyScene::LuckyScene()
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskAll(); // 다 끄고
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false); // UI만 찍음
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -104,7 +108,7 @@ LuckyScene::LuckyScene()
 			meshRenderer->SetMaterial(material);
 		}
 		skybox->AddComponent(meshRenderer);
-		activeScene->AddGameObject(skybox);
+		AddGameObject(skybox);
 	}
 #pragma endregion
 
@@ -145,7 +149,7 @@ LuckyScene::LuckyScene()
 		terraincube->AddComponent(meshRenderer);
 
 		// 4. Scene에 추가
-		activeScene->AddGameObject(terraincube);
+		AddGameObject(terraincube);
 	}
 #pragma endregion
 
@@ -159,11 +163,11 @@ LuckyScene::LuckyScene()
 		gameObjects[0]->SetCheckFrustum(false);
 		gameObjects[0]->AddComponent(make_shared<TestDragon>());
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, -500.0f));
-		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
 		gameObjects[0]->AddComponent(make_shared<PlayerScript>());
 
-		activeScene->AddGameObject(gameObjects[0]);
+		AddGameObject(gameObjects[0]);
 	}
 #pragma endregion
 
@@ -189,7 +193,7 @@ LuckyScene::LuckyScene()
 		light->GetLight()->SetSpecular(Vec3(0.05f, 0.05f, 0.05f));
 
 		// 4. Scene에 추가
-		activeScene->AddGameObject(light);
+		AddGameObject(light);
 	}
 #pragma endregion
 
@@ -213,9 +217,9 @@ LuckyScene::LuckyScene()
 			gameObject->AddComponent(glitterParticleSystem);
 
 			gameObject->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
-			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 0.0f, 0.0f));
-			if (index != 1) gameObject->SetRenderOff();
-			activeScene->AddGameObject(gameObject);
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, 0.0f, 0.0f));
+			if (index != 1) gameObject->SetRender(false);
+			AddGameObject(gameObject);
 			index++;
 		}
 	}
@@ -248,9 +252,7 @@ LuckyScene::LuckyScene()
 			meshRenderer->SetMaterial(material);
 		}
 		obj->AddComponent(meshRenderer);
-		activeScene->AddGameObject(obj);
+		AddGameObject(obj);
 	}
 #pragma endregion
 }
-
-LuckyScene::~LuckyScene() {}

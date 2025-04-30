@@ -11,7 +11,11 @@
 
 #include "LoadingScript.h"
 
-LoadingScene::LoadingScene() : stageClear(false)
+LoadingScene::LoadingScene() : stageClear(false) {}
+
+LoadingScene::~LoadingScene() {}
+
+void LoadingScene::Init()
 {
 #pragma region Camera
 	{
@@ -25,7 +29,7 @@ LoadingScene::LoadingScene() : stageClear(false)
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskAll();
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false); // UI
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 #pragma region Loading
@@ -49,7 +53,7 @@ LoadingScene::LoadingScene() : stageClear(false)
 		meshRenderer->SetMaterial(material);
 	}
 	title->AddComponent(meshRenderer);
-	activeScene->AddGameObject(title);
+	AddGameObject(title);
 #pragma endregion
 
 #pragma region LoadingIcon
@@ -74,15 +78,8 @@ LoadingScene::LoadingScene() : stageClear(false)
 			meshRenderer->SetMaterial(material);
 		}
 		icon->AddComponent(meshRenderer);
-		icon->SetRenderOff();
-		activeScene->AddGameObject(icon);
+		icon->SetRender(false);
+		AddGameObject(icon);
 	}
 #pragma endregion
-
-	// 생성자에서 초기화만 수행
-	stageClear = false;
-}
-
-LoadingScene::~LoadingScene()
-{
 }

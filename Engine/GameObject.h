@@ -44,8 +44,7 @@ public:
 	void SetStatic(bool flag) { _static = flag; }
 	bool IsStatic() { return _static; }
 
-	void SetRenderOff() { _isRender = false; }
-	void SetRenderOn() { _isRender = true; }
+	void SetRender(bool render) { _isRender = render; }
 	bool IsRender() { return _isRender; }
 
 private:

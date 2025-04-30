@@ -6,6 +6,7 @@
 #include "InstancingBuffer.h"
 #include "Resources.h"
 #include "Animator.h"
+#include "Scenemanager.h"
 
 MeshRenderer::MeshRenderer() : Component(COMPONENT_TYPE::MESH_RENDERER)
 {
@@ -69,6 +70,9 @@ void MeshRenderer::Render(shared_ptr<InstancingBuffer>& buffer)
 
 void MeshRenderer::RenderShadow()
 {
+	if (GetGameObject()->GetLayerIndex() == GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI"))
+		return;
+
 	GetTransform()->PushData();
 
 	shared_ptr<Material> shadowMaterial = GET_SINGLE(Resources)->Get<Material>(L"Shadow");

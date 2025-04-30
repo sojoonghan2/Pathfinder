@@ -8,6 +8,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "Camera.h"
+#include "BaseCollider.h"
 
 BulletScript::BulletScript(shared_ptr<PlayerScript> playerScript)
 	: _playerScript(playerScript)
@@ -36,7 +37,7 @@ void BulletScript::MouseInput()
 		{
 			s_lastFireTime = 0.f;
 			s_currentBulletIndex = (s_currentBulletIndex + 1) % 50;
-			GetGameObject()->SetRenderOff();
+			GetGameObject()->SetRender(false);
 			_isFired = true;
 			_lifeTime = 3.0f;
 			GetTransform()->RestoreParent();
@@ -44,6 +45,8 @@ void BulletScript::MouseInput()
 			_parentTransform = parent->GetTransform();
 			Vec3 parentPos = _parentTransform->GetLocalPosition();
 			parentPos.y += 450.f;
+			Vec3 up = _parentTransform->GetUp();
+			parentPos += up * 100.f;
 			GetTransform()->SetLocalPosition(parentPos);
 			GetTransform()->RemoveParent();
 
@@ -56,12 +59,18 @@ void BulletScript::MouseInput()
 				auto mainCamera = currentScene->GetMainCamera();
 				dir = mainCamera->GetTransform()->GetLook();
 				dir.y += 0.025f;
+
+				Vec3 up = _parentTransform->GetUp();
+				dir += up * 400.f;
 			}
 			// 아니면 기존처럼 부모 객체의 Look 방향을 사용
 			else
 			{
 				dir = _parentTransform->GetLook();
 				dir.y = 0.0f;
+
+				Vec3 up = _parentTransform->GetUp();
+				dir += up * 400.f;
 			}
 
 			dir.Normalize();
@@ -78,7 +87,8 @@ void BulletScript::MoveBullet()
 {
 	if (_isFired)
 	{
-		GetGameObject()->SetRenderOn();
+		GetGameObject()->SetRender(true);
+		GetGameObject()->GetCollider()->SetEnable(true);
 		Vec3 pos = GetTransform()->GetLocalPosition();
 		pos += _velocity * DELTA_TIME;
 		GetTransform()->SetLocalPosition(pos);
@@ -86,7 +96,8 @@ void BulletScript::MoveBullet()
 		if (_lifeTime <= 0.f)
 		{
 			_isFired = false;
-			GetGameObject()->SetRenderOff();
+			GetGameObject()->SetRender(false);
+			GetGameObject()->GetCollider()->SetEnable(false);
 		}
 	}
 }

@@ -1,14 +1,14 @@
 #pragma once
 #include "Scene.h"
-class RuinsScene {
+
+class RuinsScene : public Scene
+{
 public:
 	RuinsScene();
 	virtual ~RuinsScene();
 
-	shared_ptr<Scene> GetScene() { return activeScene; }
+	void Init() override;
 
 private:
-	shared_ptr<Scene> activeScene = make_shared<Scene>();
-
-	bool stageClear;
+	bool stageClear = false;
 };

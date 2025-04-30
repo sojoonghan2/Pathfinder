@@ -8,6 +8,7 @@
 #include "ParticleSystem.h"
 #include "MeshRenderer.h"
 #include "Transform.h"
+#include "BaseCollider.h"
 
 TestGrenadeScript::TestGrenadeScript(shared_ptr<PlayerScript> playerScript)
 	: _playerScript(playerScript),
@@ -45,7 +46,7 @@ void TestGrenadeScript::KeyboardInput()
 	{
 		if (!(_playerScript->GetIsGrenade())) return;
 
-		//GetGameObject()->SetRenderOff();
+		GetGameObject()->SetRender(false);
 
 		// 대기 상태 진입
 		_pendingThrow = true;
@@ -84,7 +85,7 @@ void TestGrenadeScript::ThrowGrenade()
 	{
 		_throwDelay += DELTA_TIME;
 
-		if (_throwDelay >= 1.8f)
+		if (_throwDelay >= 0.3f)
 		{
 			_pendingThrow = false;
 			_throwDelay = 0.0f;
@@ -107,16 +108,17 @@ void TestGrenadeScript::ThrowGrenade()
 
 	if (_isThrown)
 	{
-		GetGameObject()->SetRenderOn();
+		GetGameObject()->SetRender(true);
+		GetGameObject()->GetCollider()->SetEnable(true);
 
 		Vec3 pos = GetTransform()->GetLocalPosition();
 		_velocity.y += _gravity * DELTA_TIME;
 		pos += _velocity * DELTA_TIME;
 		GetTransform()->SetLocalPosition(pos);
 
-		if (pos.y <= 0.0f)
+		if (pos.y <= -70.0f)
 		{
-			pos.y = 0.0f;
+			pos.y = -70.0f;
 			_isThrown = false;
 
 			// 파티클 재생
@@ -137,7 +139,8 @@ void TestGrenadeScript::ThrowGrenade()
 
 		if (_timeSinceLanded >= 5.0f)
 		{
-			GetGameObject()->SetRenderOff();
+			GetGameObject()->SetRender(false);
+			GetGameObject()->GetCollider()->SetEnable(false);
 			_timeSinceLanded = -1.0f;
 		}
 	}

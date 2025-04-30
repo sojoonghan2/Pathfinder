@@ -37,51 +37,51 @@ void SceneManager::Init()
 #pragma endregion
 #pragma region AddScene
 	shared_ptr<TitleScene> titleScene = make_shared<TitleScene>();
-	scenes[L"TitleScene"] = titleScene->GetScene();
+	scenes[L"TitleScene"] = titleScene;
 
 #if defined(ALLLOAD)
 	shared_ptr<LoadingScene> loadingScene = make_shared<LoadingScene>();
-	scenes[L"LoadingScene"] = loadingScene->GetScene();
+	scenes[L"LoadingScene"] = loadingScene;
 #endif
 
 #if defined(RUINSLOAD)
 	shared_ptr<RuinsScene> ruinsScene = make_shared<RuinsScene>();
-	scenes[L"RuinsScene"] = ruinsScene->GetScene();
+	scenes[L"RuinsScene"] = ruinsScene;
 #endif
 
 #if defined(FACTORYLOAD)
 	shared_ptr<FactoryScene> factoryScene = make_shared<FactoryScene>();
-	scenes[L"FactoryScene"] = factoryScene->GetScene();
+	scenes[L"FactoryScene"] = factoryScene;
 #endif
 
 #if defined(EXPLORATIONLOAD)
 	shared_ptr<ExplorationScene> explorationScene = make_shared<ExplorationScene>();
-	scenes[L"ExplorationScene"] = explorationScene->GetScene();
+	scenes[L"ExplorationScene"] = explorationScene;
 #endif
 
 #if defined(CRASHLOAD)
 	shared_ptr<CrashScene> crashScene = make_shared<CrashScene>();
-	scenes[L"CrashScene"] = crashScene->GetScene();
+	scenes[L"CrashScene"] = crashScene;
 #endif
 
 #if defined(LUCKYLOAD)
 	shared_ptr<LuckyScene> luckyScene = make_shared<LuckyScene>();
-	scenes[L"LuckyScene"] = luckyScene->GetScene();
+	scenes[L"LuckyScene"] = luckyScene;
 #endif
 
 #if defined(BOSSLOAD)
 	shared_ptr<BossScene> bossScene = make_shared<BossScene>();
-	scenes[L"BossScene"] = bossScene->GetScene();
+	scenes[L"BossScene"] = bossScene;
 #endif
 
 #if defined(TESTLOAD)
 	shared_ptr<TestScene> testScene = make_shared<TestScene>();
-	scenes[L"TestScene"] = testScene->GetScene();
+	scenes[L"TestScene"] = testScene;
 #endif
 
 #if defined(PARTICLELOAD)
 	shared_ptr<ParticleScene> particleScene = make_shared<ParticleScene>();
-	scenes[L"ParticleScene"] = particleScene->GetScene();
+	scenes[L"ParticleScene"] = particleScene;
 #endif
 
 #pragma endregion
@@ -197,8 +197,11 @@ bool SceneManager::Collition(shared_ptr<GameObject> obj1,
 	auto obj1Collider = obj1->GetCollider();
 	auto obj2Collider = obj2->GetCollider();
 
-	if (!obj1Collider) return 0;
-	if (!obj2Collider) return 0;
+	if (!obj1Collider || !obj2Collider)
+		return false;
+
+	if (!obj1Collider->IsEnabled() || !obj2Collider->IsEnabled())
+		return false;
 
 	// 충돌 체크
 	if (obj1Collider->Intersects(obj2Collider))
