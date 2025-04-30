@@ -68,10 +68,10 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 	float ratio = g_data[id].curTime / g_data[id].lifeTime;
 	float scale = ((g_float_1 - g_float_0) * ratio + g_float_0); // 확대 효과 위해 *1.0f
 
-	output[0].position = vtx.viewPos + float4(-scale, scale, 0.f, 0.f);
-	output[1].position = vtx.viewPos + float4(scale, scale, 0.f, 0.f);
-	output[2].position = vtx.viewPos + float4(scale, -scale, 0.f, 0.f);
-	output[3].position = vtx.viewPos + float4(-scale, -scale, 0.f, 0.f);
+	output[0].position = vtx.viewPos + float4(-scale, scale * 1.5f, 0.f, 0.f);
+	output[1].position = vtx.viewPos + float4(scale, scale * 1.5f, 0.f, 0.f);
+	output[2].position = vtx.viewPos + float4(scale, -scale * 1.5f, 0.f, 0.f);
+	output[3].position = vtx.viewPos + float4(-scale, -scale * 1.5f, 0.f, 0.f);
 
 	for (int i = 0; i < 4; ++i)
 		output[i].position = mul(output[i].position, g_matProjection);

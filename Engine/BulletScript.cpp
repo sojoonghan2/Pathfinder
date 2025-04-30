@@ -58,10 +58,6 @@ void BulletScript::MouseInput()
 				auto currentScene = GET_SINGLE(SceneManager)->GetActiveScene();
 				auto mainCamera = currentScene->GetMainCamera();
 				dir = mainCamera->GetTransform()->GetLook();
-				dir.y += 0.025f;
-
-				Vec3 up = _parentTransform->GetUp();
-				dir += up * 400.f;
 			}
 			// 아니면 기존처럼 부모 객체의 Look 방향을 사용
 			else

@@ -116,7 +116,6 @@ float4 PS_Tex(VS_TEX_OUT input) : SV_Target
     if (color.a == 0.0f)
         discard;
     
-    color.a *= 0.5f;
 
     return color;
 }
