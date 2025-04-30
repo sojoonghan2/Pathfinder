@@ -76,7 +76,7 @@ void FactoryScene::Init()
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI¥¬ æ» ¬Ô¿Ω
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -92,7 +92,7 @@ void FactoryScene::Init()
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskAll(); // ¥Ÿ ≤Ù∞Ì
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false); // UI∏∏ ¬Ô¿Ω
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -119,7 +119,7 @@ void FactoryScene::Init()
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(100.f);
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
-			activeScene->AddGameObject(gameObject);
+			AddGameObject(gameObject);
 
 			shared_ptr<GameObject> wire = make_shared<GameObject>();
 			wstring name = L"wire";
@@ -141,7 +141,7 @@ void FactoryScene::Init()
 			}
 			wire->AddComponent(meshRenderer);
 
-			//activeScene->AddGameObject(wire);
+			//AddGameObject(wire);
 
 			shared_ptr<GameObject> particleObject = make_shared<GameObject>();
 			particleObject->SetName(L"GunFlameParticle");
@@ -152,7 +152,7 @@ void FactoryScene::Init()
 			gunFlameParticleSystem->SetParticleScale(50.f, 50.f);
 			particleObject->AddComponent(gunFlameParticleSystem);
 
-			activeScene->AddGameObject(particleObject);
+			AddGameObject(particleObject);
 		}
 
 		// √—
@@ -170,7 +170,7 @@ void FactoryScene::Init()
 			gameObject->GetTransform()->SetLocalPosition(Vec3(42.f, 58.f, -3.f));
 			gameObject->AddComponent(make_shared<GunScript>());
 
-			activeScene->AddGameObject(gameObject);
+			AddGameObject(gameObject);
 		}
 
 		// √—æÀ
@@ -211,7 +211,7 @@ void FactoryScene::Init()
 			bullet->AddComponent(meshRenderer);
 			bullet->SetRender(false);
 
-			activeScene->AddGameObject(bullet);
+			AddGameObject(bullet);
 		}
 
 		// √—æÀ
@@ -233,7 +233,7 @@ void FactoryScene::Init()
 				bullet->GetTransform()->GetTransform()->RemoveParent();
 				bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
 				bullet->AddComponent(make_shared<BulletScript>(playerScript));
-				activeScene->AddGameObject(bullet);
+				AddGameObject(bullet);
 			}
 		}
 		*/
@@ -277,7 +277,7 @@ void FactoryScene::Init()
 		dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetEnable(false);
 
 		grenade->SetRender(false);
-		activeScene->AddGameObject(grenade);
+		AddGameObject(grenade);
 
 		// ∑π¿Ã¿˙ ∆ƒ∆º≈¨
 		shared_ptr<GameObject> razerParticle = make_shared<GameObject>();
@@ -299,7 +299,7 @@ void FactoryScene::Init()
 		razerParticleSystem->SetEmitDirection(dir);
 		razerParticle->AddComponent(razerParticleSystem);
 
-		activeScene->AddGameObject(razerParticle);
+		AddGameObject(razerParticle);
 
 		// ¡∂¡ÿ¡°
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
@@ -325,7 +325,7 @@ void FactoryScene::Init()
 		}
 		obj->AddComponent(CrosshairmeshRenderer);
 		obj->SetRender(false);
-		activeScene->AddGameObject(obj);
+		AddGameObject(obj);
 
 		shared_ptr<GameObject> playerFace = make_shared<GameObject>();
 		playerFace->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
@@ -348,7 +348,7 @@ void FactoryScene::Init()
 			playerFacemeshRenderer->SetMaterial(material);
 		}
 		playerFace->AddComponent(playerFacemeshRenderer);
-		activeScene->AddGameObject(playerFace);
+		AddGameObject(playerFace);
 
 		// hp
 		shared_ptr<GameObject> hpBase = make_shared<GameObject>();
@@ -372,7 +372,7 @@ void FactoryScene::Init()
 			hpBasemeshRenderer->SetMaterial(material);
 		}
 		hpBase->AddComponent(hpBasemeshRenderer);
-		activeScene->AddGameObject(hpBase);
+		AddGameObject(hpBase);
 
 		shared_ptr<GameObject> hp = make_shared<GameObject>();
 		hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
@@ -395,7 +395,7 @@ void FactoryScene::Init()
 			hpmeshRenderer->SetMaterial(material);
 		}
 		hp->AddComponent(hpmeshRenderer);
-		activeScene->AddGameObject(hp);
+		AddGameObject(hp);
 	}
 #pragma endregion
 
@@ -428,7 +428,7 @@ void FactoryScene::Init()
 			CrosshairmeshRenderer->SetMaterial(material);
 		}
 		obj->AddComponent(CrosshairmeshRenderer);
-		activeScene->AddGameObject(obj);
+		AddGameObject(obj);
 	}
 #pragma endregion
 
@@ -469,7 +469,7 @@ void FactoryScene::Init()
 		terraincube->AddComponent(meshRenderer);
 
 		// 4. Sceneø° √ﬂ∞°
-		activeScene->AddGameObject(terraincube);
+		AddGameObject(terraincube);
 	}
 #pragma endregion
 
@@ -491,7 +491,7 @@ void FactoryScene::Init()
 		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
 		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
-		activeScene->AddGameObject(gameObjects[0]);
+		AddGameObject(gameObjects[0]);
 
 		// hp
 		shared_ptr<GameObject> hpBase = make_shared<GameObject>();
@@ -515,7 +515,7 @@ void FactoryScene::Init()
 			hpBasemeshRenderer->SetMaterial(material);
 		}
 		hpBase->AddComponent(hpBasemeshRenderer);
-		activeScene->AddGameObject(hpBase);
+		AddGameObject(hpBase);
 
 		shared_ptr<GameObject> hp = make_shared<GameObject>();
 		hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
@@ -538,7 +538,7 @@ void FactoryScene::Init()
 			hpmeshRenderer->SetMaterial(material);
 		}
 		hp->AddComponent(hpmeshRenderer);
-		activeScene->AddGameObject(hp);
+		AddGameObject(hp);
 	}
 #pragma endregion
 	
@@ -564,7 +564,7 @@ void FactoryScene::Init()
 		light->GetLight()->SetSpecular(Vec3(0.1f, 0.1f, 0.1f));
 
 		// 4. Sceneø° √ﬂ∞°
-		activeScene->AddGameObject(light);
+		AddGameObject(light);
 
 	}
 #pragma endregion
@@ -585,7 +585,7 @@ void FactoryScene::Init()
 			gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, -100.f, 0.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
-			activeScene->AddGameObject(gameObject);
+			AddGameObject(gameObject);
 		}
 	}
 #pragma endregion
@@ -610,9 +610,9 @@ void FactoryScene::Init()
 		particleObj->GetTransform()->SetLocalPosition(Vec3(0.0f, 0.0f, 500.0f));
 		particleObj->AddComponent(make_shared<IceParticleSystem>());
 		particleObj->AddComponent(make_shared<GeneratorScript>());
-		activeScene->AddGameObject(particleObj);
+		AddGameObject(particleObj);
 
-		activeScene->AddGameObject(gameObjects[0]);
+		AddGameObject(gameObjects[0]);
 	}
 #pragma endregion
 
@@ -635,7 +635,7 @@ void FactoryScene::Init()
 		testPBRParticle->AddComponent(make_shared<TestParticleScript>());
 		testPBRParticle->AddComponent(testPBRParticleSystem);
 
-		activeScene->AddGameObject(testPBRParticle);
+		AddGameObject(testPBRParticle);
 	}
 #pragma endregion
 
@@ -658,7 +658,7 @@ void FactoryScene::Init()
 		portalFrameParticle->AddComponent(make_shared<TestParticleScript>());
 		portalFrameParticle->AddComponent(portalFrameParticleSystem);
 
-		activeScene->AddGameObject(portalFrameParticle);
+		AddGameObject(portalFrameParticle);
 	}
 #pragma endregion
 }

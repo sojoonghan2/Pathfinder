@@ -34,7 +34,7 @@ void TitleScene::Init()
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskAll();
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false); // UI
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -61,7 +61,7 @@ void TitleScene::Init()
 		}
 		title->AddComponent(make_shared<TitleScript>());
 		title->AddComponent(meshRenderer);
-		activeScene->AddGameObject(title);
+		AddGameObject(title);
 	}
 #pragma endregion
 
@@ -87,7 +87,7 @@ void TitleScene::Init()
 			meshRenderer->SetMaterial(material);
 		}
 		icon->AddComponent(meshRenderer);
-		activeScene->AddGameObject(icon);
+		AddGameObject(icon);
 	}
 #pragma endregion
 
@@ -114,7 +114,7 @@ void TitleScene::Init()
 		}
 		icon->AddComponent(meshRenderer);
 		icon->SetRender(false);
-		activeScene->AddGameObject(icon);
+		AddGameObject(icon);
 	}
 #pragma endregion
 
@@ -141,7 +141,7 @@ void TitleScene::Init()
 		}
 		icon->AddComponent(meshRenderer);
 		icon->SetRender(false);
-		activeScene->AddGameObject(icon);
+		AddGameObject(icon);
 	}
 #pragma endregion
 }

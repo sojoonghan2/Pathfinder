@@ -87,7 +87,7 @@ void ParticleScene::Init()
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, 0.f));
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI는 안 찍음
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -103,7 +103,7 @@ void ParticleScene::Init()
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskAll(); // 다 끄고
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false); // UI만 찍음
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -144,7 +144,7 @@ void ParticleScene::Init()
 		terraincube->AddComponent(meshRenderer);
 
 		// 4. Scene에 추가
-		activeScene->AddGameObject(terraincube);
+		AddGameObject(terraincube);
 	}
 #pragma endregion
 
@@ -170,7 +170,7 @@ void ParticleScene::Init()
 		light->GetLight()->SetSpecular(Vec3(0.05f, 0.05f, 0.05f));
 
 		// 4. Scene에 추가
-		activeScene->AddGameObject(light);
+		AddGameObject(light);
 	}
 #pragma endregion
 
@@ -197,7 +197,7 @@ void ParticleScene::Init()
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(10.f);
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 
-			activeScene->AddGameObject(gameObject);
+			AddGameObject(gameObject);
 		}
 
 		// 총
@@ -216,7 +216,7 @@ void ParticleScene::Init()
 			gameObject->AddComponent(make_shared<TestScript>());
 			gameObject->AddComponent(make_shared<GunScript>());
 
-			activeScene->AddGameObject(gameObject);
+			AddGameObject(gameObject);
 		}
 
 		// 총알
@@ -250,7 +250,7 @@ void ParticleScene::Init()
 			}
 			bullet->AddComponent(meshRenderer);
 
-			activeScene->AddGameObject(bullet);
+			AddGameObject(bullet);
 		}
 
 		// 총알
@@ -272,7 +272,7 @@ void ParticleScene::Init()
 				bullet->GetTransform()->GetTransform()->RemoveParent();
 				bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
 				bullet->AddComponent(make_shared<BulletScript>(playerScript));
-				activeScene->AddGameObject(bullet);
+				AddGameObject(bullet);
 			}
 		}
 		*/
@@ -310,7 +310,7 @@ void ParticleScene::Init()
 		grenadeParticleSystem->SetParticleScale(100.f, 80.f);
 		grenade->AddComponent(grenadeParticleSystem);
 
-		activeScene->AddGameObject(grenade);
+		AddGameObject(grenade);
 
 		// 레이저 파티클
 		shared_ptr<GameObject> razerParticle = make_shared<GameObject>();
@@ -333,7 +333,7 @@ void ParticleScene::Init()
 		razerParticleSystem->SetEmitDirection(dir);
 		razerParticle->AddComponent(razerParticleSystem);
 
-		activeScene->AddGameObject(razerParticle);
+		AddGameObject(razerParticle);
 
 		// 조준점
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
@@ -359,7 +359,7 @@ void ParticleScene::Init()
 		}
 		obj->AddComponent(CrosshairmeshRenderer);
 		obj->SetRender(false);
-		activeScene->AddGameObject(obj);
+		AddGameObject(obj);
 
 		// 체력 UI
 		shared_ptr<GameObject> hpUI = make_shared<GameObject>();
@@ -383,7 +383,7 @@ void ParticleScene::Init()
 			hpUImeshRenderer->SetMaterial(material);
 		}
 		hpUI->AddComponent(hpUImeshRenderer);
-		activeScene->AddGameObject(hpUI);
+		AddGameObject(hpUI);
 	}
 #pragma endregion
 
@@ -415,7 +415,7 @@ void ParticleScene::Init()
 			meshRenderer->SetMaterial(material);
 		}
 		obj->AddComponent(meshRenderer);
-		activeScene->AddGameObject(obj);
+		AddGameObject(obj);
 	}
 #pragma endregion
 
@@ -448,7 +448,7 @@ void ParticleScene::Init()
 			CrosshairmeshRenderer->SetMaterial(material);
 		}
 		obj->AddComponent(CrosshairmeshRenderer);
-		activeScene->AddGameObject(obj);
+		AddGameObject(obj);
 	}
 #pragma endregion
 
@@ -485,7 +485,7 @@ void ParticleScene::Init()
 			obj[i]->AddComponent(meshRenderer);
 
 			// 5. Scene에 추가
-			activeScene->AddGameObject(obj[i]);
+			AddGameObject(obj[i]);
 		}
 	}
 #endif // NETWORK_ENABLE
@@ -519,7 +519,7 @@ void ParticleScene::LoadMyParticle()
 		iceParticle->AddComponent(make_shared<TestParticleScript>());
 		iceParticle->AddComponent(iceParticleSystem);
 
-		activeScene->AddGameObject(iceParticle);
+		AddGameObject(iceParticle);
 	}
 #pragma endregion
 
@@ -544,7 +544,7 @@ void ParticleScene::LoadMyParticle()
 		cataclysmParticle->AddComponent(make_shared<TestParticleScript>());
 		cataclysmParticle->AddComponent(fireParticleSystem);
 
-		activeScene->AddGameObject(cataclysmParticle);
+		AddGameObject(cataclysmParticle);
 	}
 #pragma endregion
 
@@ -568,7 +568,7 @@ void ParticleScene::LoadMyParticle()
 		overDriveParticle->AddComponent(make_shared<TestParticleScript>());
 		overDriveParticle->AddComponent(overDriveParticleSystem);
 
-		activeScene->AddGameObject(overDriveParticle);
+		AddGameObject(overDriveParticle);
 	}
 #pragma endregion
 
@@ -592,7 +592,7 @@ void ParticleScene::LoadMyParticle()
 		gliggerParticle->AddComponent(make_shared<TestParticleScript>());
 		gliggerParticle->AddComponent(gliggerParticleSystem);
 
-		//activeScene->AddGameObject(gliggerParticle);
+		//AddGameObject(gliggerParticle);
 	}
 #pragma endregion
 }
@@ -619,7 +619,7 @@ void ParticleScene::LoadDebugParticle()
 		testPBRParticle->AddComponent(make_shared<TestParticleScript>());
 		testPBRParticle->AddComponent(testPBRParticleSystem);
 
-		activeScene->AddGameObject(testPBRParticle);
+		AddGameObject(testPBRParticle);
 	}
 #pragma endregion
 
@@ -642,7 +642,7 @@ void ParticleScene::LoadDebugParticle()
 		portalFrameParticle->AddComponent(make_shared<TestParticleScript>());
 		portalFrameParticle->AddComponent(portalFrameParticleSystem);
 
-		activeScene->AddGameObject(portalFrameParticle);
+		AddGameObject(portalFrameParticle);
 	}
 #pragma endregion
 
@@ -698,7 +698,7 @@ void ParticleScene::LoadDebugParticle()
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
-			activeScene->AddGameObject(gameObjects[0]);
+			AddGameObject(gameObjects[0]);
 
 			// hp
 			shared_ptr<GameObject> hpBase = make_shared<GameObject>();
@@ -722,7 +722,7 @@ void ParticleScene::LoadDebugParticle()
 				hpBasemeshRenderer->SetMaterial(material);
 			}
 			hpBase->AddComponent(hpBasemeshRenderer);
-			activeScene->AddGameObject(hpBase);
+			AddGameObject(hpBase);
 
 			shared_ptr<GameObject> hp = make_shared<GameObject>();
 			hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
@@ -745,7 +745,7 @@ void ParticleScene::LoadDebugParticle()
 				hpmeshRenderer->SetMaterial(material);
 			}
 			hp->AddComponent(hpmeshRenderer);
-			activeScene->AddGameObject(hp);
+			AddGameObject(hp);
 		}
 	}
 #endif // !NETWORK_ENABLE

@@ -6,6 +6,7 @@
 #include "GameObject.h"
 #include "Timer.h"
 #include "SocketIO.h"
+#include "LoadingScene.h"
 
 TitleScript::TitleScript() {}
 TitleScript::~TitleScript() {}
@@ -39,6 +40,9 @@ void TitleScript::LateUpdate()
 		}
 		if (INPUT->GetButton(KEY_TYPE::M))
 		{
+			shared_ptr<LoadingScene> loadingScene = make_shared<LoadingScene>();
+			GET_SINGLE(SceneManager)->RegisterScene(L"LoadingScene", loadingScene);
+			loadingScene->Init();
 			GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
 		}
 	}

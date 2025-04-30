@@ -1,21 +1,31 @@
 #pragma once
 #include "MasterScript.h"
+#include "Scene.h"
 
-class LoadingScript : public MasterScript
+class Scene;
+
+class LoadingScript : public MonoBehaviour
 {
 public:
-	LoadingScript();
-	virtual ~LoadingScript();
+    LoadingScript();
+    virtual ~LoadingScript();
 
-	virtual void LateUpdate() override;
-	virtual void Awake() override;
-
-	void StartLoadingThread();
-	void SceneLoad();
+    virtual void Awake() override;
+    virtual void LateUpdate() override;
 
 private:
-	std::thread*	loadThread;
-	bool            loadEnd = false;
-	bool            isInitialized = false;
-	RoomType		roomType = RoomType::None;
+    void StartLoadingThread();
+    void SceneLoad();
+
+private:
+    bool loadEnd = false;
+    bool isInitialized = false;
+    bool pendingThreadJoin = false;
+
+    std::thread* loadThread = nullptr;
+
+    RoomType roomType = RoomType::None;
+
+    shared_ptr<Scene> _sceneToInit;
+    wstring _sceneNameToLoad;
 };

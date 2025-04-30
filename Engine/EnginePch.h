@@ -112,10 +112,10 @@ using Vec4 = DirectX::SimpleMath::Vector4;
 using Matrix = DirectX::SimpleMath::Matrix;
 
 // Scene ÀüÈ¯
-//#define ALLLOAD
+#define ALLLOAD
 //#define TITLELOAD
 //#define RUINSLOAD
-#define FACTORYLOAD
+//#define FACTORYLOAD
 //#define EXPLORATIONLOAD
 //#define CRASHLOAD
 //#define LUCKYLOAD
