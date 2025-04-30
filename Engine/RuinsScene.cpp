@@ -158,7 +158,7 @@ void RuinsScene::Init()
 			particleObject->GetTransform()->SetParent(gameObject->GetTransform());
 			particleObject->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 150.f));
 			shared_ptr<GunFlameParticleSystem> gunFlameParticleSystem = make_shared<GunFlameParticleSystem>();
-			gunFlameParticleSystem->SetParticleScale(50.f, 50.f);
+			gunFlameParticleSystem->SetParticleScale(20.f, 20.f);
 			particleObject->AddComponent(gunFlameParticleSystem);
 
 			AddGameObject(particleObject);
@@ -191,7 +191,7 @@ void RuinsScene::Init()
 			bullet->SetStatic(false);
 
 			bullet->AddComponent(make_shared<Transform>());
-			bullet->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+			bullet->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
 			bullet->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 			bullet->GetTransform()->GetTransform()->RemoveParent();
 			bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
@@ -481,9 +481,9 @@ void RuinsScene::Init()
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\myRuins.png");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Ruins", L"..\\Resources\\Texture\\TerrainCube\\myRuins.jpg");
 			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsFloor", L"..\\Resources\\Texture\\TerrainCube\\RuinsFloor.jpg");
-			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\myRuins.png");
+			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"RuinsTop", L"..\\Resources\\Texture\\TerrainCube\\myRuins.jpg");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);

@@ -510,17 +510,8 @@ void Resources::CreateDefaultShader()
 			BLEND_TYPE::ALPHA_BLEND
 		};
 
-		ShaderArg arg =
-		{
-			"VS_Tex",
-			"",
-			"",
-			"",
-			"PS_Tex"
-		};
-
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\Occupation.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\Occupation.fx", info);
 		Add<Shader>(L"Occupation", shader);
 	}
 
