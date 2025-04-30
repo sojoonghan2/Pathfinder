@@ -10,6 +10,7 @@ public:
 	void Update();
 	void LateUpdate();
 	void FinalUpdate();
+	virtual void Init();
 
 	shared_ptr<class Camera> GetMainCamera();
 

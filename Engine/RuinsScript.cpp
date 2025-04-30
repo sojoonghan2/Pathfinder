@@ -34,7 +34,7 @@ void RuinsScript::LateUpdate() {
 		{
 			_isStart = true;
 			cout << "Ruins Scene Start!\n";
-			GET_SINGLE(SceneManager)->FindObjectByName(L"WaitUI")->SetRenderOff();
+			GET_SINGLE(SceneManager)->FindObjectByName(L"WaitUI")->SetRender(false);
 		}
 		break;
 		default: break;
@@ -47,7 +47,7 @@ void RuinsScript::LateUpdate() {
 	{
 		_isStart = true;
 		cout << "Ruins Scene Start!\n";
-		GET_SINGLE(SceneManager)->FindObjectByName(L"WaitUI")->SetRenderOff();
+		GET_SINGLE(SceneManager)->FindObjectByName(L"WaitUI")->SetRender(false);
 	}
 
 	if(_isStart) Occupation();
@@ -70,7 +70,7 @@ void RuinsScript::Occupation()
 		_isClear = true;
 		if (!_isCreatePortal)
 		{
-			_occupationUI->SetRenderOff();
+			_occupationUI->SetRender(false);
 			_isCreatePortal = true;
 			auto pos = _water->GetTransform()->GetLocalPosition();
 			pos.y = -10000.f;
@@ -96,7 +96,7 @@ void RuinsScript::Occupation()
 			Vec3 pos = _water->GetTransform()->GetLocalPosition();
 			pos.y += 0.1f;
 			_water->GetTransform()->SetLocalPosition(pos);
-			_occupationUI->SetRenderOff();
+			_occupationUI->SetRender(false);
 		}
 	}
 }
@@ -112,9 +112,9 @@ void RuinsScript::BlinkUI()
 	}
 
 	if (_isVisible)
-		_occupationUI->SetRenderOn();
+		_occupationUI->SetRender(true);
 	else
-		_occupationUI->SetRenderOff();
+		_occupationUI->SetRender(false);
 }
 
 void RuinsScript::CreatePortal()

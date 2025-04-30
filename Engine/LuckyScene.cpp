@@ -68,7 +68,7 @@ void LuckyScene::Init()
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI´Â ¾È ÂïÀ½
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -84,7 +84,7 @@ void LuckyScene::Init()
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskAll(); // ´Ù ²ô°í
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false); // UI¸¸ ÂïÀ½
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -108,7 +108,7 @@ void LuckyScene::Init()
 			meshRenderer->SetMaterial(material);
 		}
 		skybox->AddComponent(meshRenderer);
-		activeScene->AddGameObject(skybox);
+		AddGameObject(skybox);
 	}
 #pragma endregion
 
@@ -149,7 +149,7 @@ void LuckyScene::Init()
 		terraincube->AddComponent(meshRenderer);
 
 		// 4. Scene¿¡ Ãß°¡
-		activeScene->AddGameObject(terraincube);
+		AddGameObject(terraincube);
 	}
 #pragma endregion
 
@@ -163,11 +163,11 @@ void LuckyScene::Init()
 		gameObjects[0]->SetCheckFrustum(false);
 		gameObjects[0]->AddComponent(make_shared<TestDragon>());
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, -500.0f));
-		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
 		gameObjects[0]->AddComponent(make_shared<PlayerScript>());
 
-		activeScene->AddGameObject(gameObjects[0]);
+		AddGameObject(gameObjects[0]);
 	}
 #pragma endregion
 
@@ -193,7 +193,7 @@ void LuckyScene::Init()
 		light->GetLight()->SetSpecular(Vec3(0.05f, 0.05f, 0.05f));
 
 		// 4. Scene¿¡ Ãß°¡
-		activeScene->AddGameObject(light);
+		AddGameObject(light);
 	}
 #pragma endregion
 
@@ -217,9 +217,9 @@ void LuckyScene::Init()
 			gameObject->AddComponent(glitterParticleSystem);
 
 			gameObject->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
-			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 0.0f, 0.0f));
-			if (index != 1) gameObject->SetRenderOff();
-			activeScene->AddGameObject(gameObject);
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, 0.0f, 0.0f));
+			if (index != 1) gameObject->SetRender(false);
+			AddGameObject(gameObject);
 			index++;
 		}
 	}
@@ -252,7 +252,7 @@ void LuckyScene::Init()
 			meshRenderer->SetMaterial(material);
 		}
 		obj->AddComponent(meshRenderer);
-		activeScene->AddGameObject(obj);
+		AddGameObject(obj);
 	}
 #pragma endregion
 }

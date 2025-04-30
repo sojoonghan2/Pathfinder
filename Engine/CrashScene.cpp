@@ -63,7 +63,7 @@ void CrashScene::Init()
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI´Â ¾È ÂïÀ½
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -79,7 +79,7 @@ void CrashScene::Init()
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskAll(); // ´Ù ²ô°í
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false); // UI¸¸ ÂïÀ½
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -103,7 +103,7 @@ void CrashScene::Init()
 			meshRenderer->SetMaterial(material);
 		}
 		skybox->AddComponent(meshRenderer);
-		activeScene->AddGameObject(skybox);
+		AddGameObject(skybox);
 	}
 #pragma endregion
 
@@ -144,7 +144,7 @@ void CrashScene::Init()
 		terraincube->AddComponent(meshRenderer);
 
 		// 4. Scene¿¡ Ãß°¡
-		activeScene->AddGameObject(terraincube);
+		AddGameObject(terraincube);
 	}
 #pragma endregion
 
@@ -187,7 +187,7 @@ void CrashScene::Init()
 			meshRenderer->SetMaterial(material);
 		}
 		obj->AddComponent(meshRenderer);
-		activeScene->AddGameObject(obj);
+		AddGameObject(obj);
 	}
 #pragma endregion
 
@@ -201,11 +201,11 @@ void CrashScene::Init()
 		gameObjects[0]->SetCheckFrustum(false);
 		gameObjects[0]->AddComponent(make_shared<TestDragon>());
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 		gameObjects[0]->AddComponent(make_shared<PlayerScript>());
 
-		activeScene->AddGameObject(gameObjects[0]);
+		AddGameObject(gameObjects[0]);
 	}
 #pragma endregion
 
@@ -231,7 +231,7 @@ void CrashScene::Init()
 		light->GetLight()->SetSpecular(Vec3(0.05f, 0.05f, 0.05f));
 
 		// 4. Scene¿¡ Ãß°¡
-		activeScene->AddGameObject(light);
+		AddGameObject(light);
 	}
 #pragma endregion
 }

@@ -49,6 +49,10 @@ void Scene::FinalUpdate()
 	}
 }
 
+void Scene::Init()
+{
+}
+
 shared_ptr<Camera> Scene::GetMainCamera()
 {
 	if (_cameras.empty())

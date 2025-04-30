@@ -11,6 +11,8 @@ public:
 	void MoveRandomly();
 	void CheckBoundary();
 	void CheckBulletHits();
+	void CheckGrenadeHits();
+	void CheckRazerHits();
 
 	void DeadAnimation();
 
@@ -25,10 +27,13 @@ private:
 
 	bool _initialized = false;
 
+	bool _takeGrenade = false;
+
 private:
 	vector<shared_ptr<GameObject>>	_bullets;
-	shared_ptr<Transform>			_hpTransform;
+	shared_ptr<GameObject>			_hp;
 	shared_ptr<GameObject>			_player;
+	shared_ptr<GameObject>			_grenade;
 
 	int32							_index = -1;
 	bool							_isAlive = true;
@@ -40,5 +45,9 @@ private:
 	Vec3							_targetRot = {};
 	float							_deathAnimTime = 0.f;
 	bool							_isDying = false;
+
+	float							_hitTime = 100.f;
+	float							_hitDuration = 0.5f;
+
 
 };
