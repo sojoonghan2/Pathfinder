@@ -16,18 +16,12 @@ enum class MonsterType : unsigned char
 class Monster : public Object
 {
 public:
-	//bool GetRunning() const;
 
-	//// CAS를 사용해서 동작.
-	//bool TrySetRunning(const bool running);
 
 	// getter /setter
 	ObjectType GetObjectType() const override { return ObjectType::Monster; }
 
 	void SetMonsterType(const MonsterType type) { _monsterType = type; }
-	
-	void SetRoomId(const int room_id) { _roomId = room_id; }	
-	int GetRoomId() const { return _roomId; }
 
 	// 자동적으로 Collider 생성.
 	// Todo: 
@@ -38,7 +32,6 @@ public:
 	}
 
 private:
-	int		_roomId{ -1 };
 
 	MonsterType			_monsterType{ MonsterType::None };
 	

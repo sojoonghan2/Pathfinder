@@ -28,7 +28,7 @@ constexpr const char* SERVER_IP{ "127.0.0.1" };
 constexpr float MOVE_PACKET_TIME_MS{ 75.f }; // 초당 13.3회
 constexpr float MAX_NETWORK_DELAY_MS{ 200.f }; // 최대 네트워크 딜레이
 
-constexpr int MAX_PLAYER{ 10000 };
+constexpr int MAX_PLAYER{ 100 };
 constexpr int MAX_ROOM{ MAX_PLAYER / 3 + 1 };
 constexpr int MAX_MONSTER{ MAX_ROOM * 10 };
 

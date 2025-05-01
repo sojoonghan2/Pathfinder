@@ -4,6 +4,7 @@ enum class ColliderType {
 	None,
 	AABB,
 	Circle,
+	Swept,
 };
 
 
@@ -17,6 +18,7 @@ public:
 	virtual bool CheckCollision(const std::shared_ptr<const Collider>& other) const = 0;
 	virtual bool CheckCollisionWithAABB(const class AABBCollider& other) const = 0;
 	virtual bool CheckCollisionWithCircle(const class CircleCollider& other) const = 0;
+	virtual bool CheckCollisionWithSwept(const class SweptCollider& other) const = 0;
 
 	Collider() = default;
 

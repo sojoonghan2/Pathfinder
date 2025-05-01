@@ -1,6 +1,12 @@
 #include "pch.h"
 #include "CircleCollider.h"
 #include "AABBCollider.h"
+#include "SweptCollider.h"
+
+bool CircleCollider::CheckCollisionWithAABB(const AABBCollider& other) const
+{
+	return other.CheckCollisionWithCircle(*this);
+}
 
 bool CircleCollider::CheckCollisionWithCircle(const CircleCollider& other) const
 {
@@ -10,7 +16,8 @@ bool CircleCollider::CheckCollisionWithCircle(const CircleCollider& other) const
 	return distance <= radius_sum * radius_sum;
 }
 
-bool CircleCollider::CheckCollisionWithAABB(const AABBCollider& other) const
+bool CircleCollider::CheckCollisionWithSwept(const SweptCollider& other) const
 {
-	return other.CheckCollisionWithCircle(*this);
+	return false;
 }
+

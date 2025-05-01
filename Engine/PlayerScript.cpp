@@ -374,9 +374,18 @@ void PlayerScript::Recoil()
 void PlayerScript::SetPosition(float x, float z)
 {
 	Vec3 pos = GetTransform()->GetLocalPosition();
-	pos.x = x * 200.f;
-	pos.z = z * 200.f;
-	GetTransform()->SetLocalPosition(pos);
+	Vec3 changed_pos = pos;
+	changed_pos.x = x * METER_TO_CLIENT;
+	changed_pos.z = z * METER_TO_CLIENT;
+
+
+	float dx{ pos.x - changed_pos.x };
+	float dy{ pos.y - changed_pos.y };
+	float distance{ std::sqrt(dx * dx + dy * dy) };
+
+	if (distance > 0.5f * METER_TO_CLIENT) {
+		GetTransform()->SetLocalPosition(changed_pos);
+	}
 }
 
 

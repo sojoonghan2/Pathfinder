@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClCompile Include="..\Common\util.cpp" />
     <ClCompile Include="AABBCollider.cpp" />
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="CircleCollider.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -152,12 +153,14 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="RoomInfo.cpp" />
+    <ClCompile Include="SweptCollider.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\protocol.h" />
     <ClInclude Include="..\Common\util.h" />
     <ClInclude Include="AABBCollider.h" />
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="CircleCollider.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="define.h" />
@@ -170,6 +173,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="RoomInfo.h" />
+    <ClInclude Include="SweptCollider.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

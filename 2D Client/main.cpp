@@ -394,7 +394,7 @@ int main() {
 						Vec2f pos2{ packet.x, packet.y };
 
 						float dx{ pos1.x - pos2.x };
-						float dy{ pos2.y - pos2.y };
+						float dy{ pos1.y - pos2.y };
 						float distance{ std::sqrt(dx * dx + dy * dy) };
 
 						if (distance > 0.5f) {

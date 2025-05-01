@@ -8,6 +8,7 @@ public:
 	bool CheckCollision(const std::shared_ptr<const Collider>& other) const override;
 	bool CheckCollisionWithAABB(const AABBCollider& other) const override;
 	bool CheckCollisionWithCircle(const CircleCollider& other) const override;
+	bool CheckCollisionWithSwept(const SweptCollider& other) const override;
 
 
 

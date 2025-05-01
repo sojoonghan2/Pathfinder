@@ -18,7 +18,6 @@ public:
 
 	void InitRoom(int room_id);
 
-	// 	std::shared_ptr<Monster> GetMonster(const int monster_id) { return _monsterList.at(monster_id); }
 	std::shared_ptr<Room> GetRoom(const int room_id) { return _roomList.at(room_id); }
 	std::shared_ptr<Player> GetPlayer(const int player_id) { return _playerList.at(player_id); }
 	std::shared_ptr<Player> GetPlayer(const ClientIdInfo& id_info);
@@ -50,6 +49,7 @@ private:
 	// 각 정적 장애물이 저장되어 있는 자료구조.
 	// read only. 수정이 없어서 data race가 아님.
 	// 4 TODO: init 시 여기에 장애물을 넣는다.
+	// 객체 핸들러가 있으면 조금 더 편할듯?
 	std::unordered_map<RoomType, ObstacleVec> _staticObstacleVec;
 
 	Timer _deltaTimer;

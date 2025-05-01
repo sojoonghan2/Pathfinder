@@ -31,9 +31,9 @@ void Game::InitRoom(int room_id)
 
 
 	// 몬스터 설정
-	// 일단 임시로 10마리
-	// todo:
-	// 임시로 몬스터가 생길때까지 돌린다. 
+	
+	// 몬스터 꺼내오기
+	// 일단 임시로 10마리. 방타입에 따라 몬스터 양이 달라져야 함.
 	std::array<std::shared_ptr<Monster>, 10> monsters{};
 	for (auto& monster : monsters) {
 		std::shared_ptr<Object> obj;
@@ -52,7 +52,6 @@ void Game::InitRoom(int room_id)
 		// 몬스터 타입을 입력하면 자동으로 내부 설정이 가능하도록.
 		// 나중엔 lua까지.
 		monster->SetMonsterType(MonsterType::Crab);
-		monster->SetRoomId(room_id);
 		monster->SetSpeed(speedDist(dre_game));
 		_roomList[room_id]->AddObject(monster);
 	}

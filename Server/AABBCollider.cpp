@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "AABBCollider.h"
 #include "CircleCollider.h"
+#include "SweptCollider.h"
 
 
 bool AABBCollider::CheckCollision(const std::shared_ptr<const Collider>& other) const
@@ -30,4 +31,9 @@ bool AABBCollider::CheckCollisionWithCircle(const CircleCollider& other) const
 
 	Vec2f diff = other.center - Vec2f{closest_x, closest_y};
 	return diff.x * diff.x + diff.y * diff.y <= other.radius * other.radius;
+}
+
+bool AABBCollider::CheckCollisionWithSwept(const SweptCollider& other) const
+{
+	return false;
 }

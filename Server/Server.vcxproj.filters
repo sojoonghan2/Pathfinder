@@ -68,6 +68,12 @@
     <ClCompile Include="Obstacle.cpp">
       <Filter>Object</Filter>
     </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="SweptCollider.cpp">
+      <Filter>Collider</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IOCP.h">
@@ -117,6 +123,12 @@
     </ClInclude>
     <ClInclude Include="Obstacle.h">
       <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="SweptCollider.h">
+      <Filter>Collider</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
