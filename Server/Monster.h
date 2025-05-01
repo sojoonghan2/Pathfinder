@@ -16,24 +16,22 @@ enum class MonsterType : unsigned char
 class Monster : public Object
 {
 public:
-	bool GetRunning() const;
+	//bool GetRunning() const;
 
-	// CAS를 사용해서 동작.
-	bool TrySetRunning(const bool running);
-
-	void Update(const float delta_time);
-
+	//// CAS를 사용해서 동작.
+	//bool TrySetRunning(const bool running);
 
 	// getter /setter
 	ObjectType GetObjectType() const override { return ObjectType::Monster; }
 
 	void SetMonsterType(const MonsterType type) { _monsterType = type; }
-	void SetRoomId(const int room_id) { _roomId = room_id; }
 	
+	void SetRoomId(const int room_id) { _roomId = room_id; }	
 	int GetRoomId() const { return _roomId; }
 
 	// 자동적으로 Collider 생성.
-	// TODO: MonsterType에 따라 달라지도록. 지금은 CRAB 고정.
+	// Todo: 
+	// 일단 이렇게 하는데 나중에 SETMONSTERTYPE에서 바뀌도록 해야한다.
 	Monster()
 	{
 		SetCollider(std::make_shared<AABBCollider>(GetPosRef(), MONSTER_CRAB_SIZE_M, MONSTER_CRAB_SIZE_M));
@@ -42,7 +40,7 @@ public:
 private:
 	int		_roomId{ -1 };
 
-	std::atomic_bool	_isRunning{ false };
 	MonsterType			_monsterType{ MonsterType::None };
+	
 };
 

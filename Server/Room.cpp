@@ -120,5 +120,7 @@ void Room::SyncObjects()
 	}
 }
 
-
+void Room::Clear()
+{
+}
 

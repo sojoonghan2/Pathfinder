@@ -46,6 +46,10 @@ public:
 
 	void SetRoomId(const int id) { _roomId = id; }
 
+	// 모든 플레이어가 게임 종료했다고 한 순간 호출될 함수.
+	// game에서 가지고 있는 object pool에 반환해 주어야 함.
+	void Clear();
+
 private:
 
 	// TODO:

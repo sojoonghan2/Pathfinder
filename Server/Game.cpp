@@ -34,38 +34,27 @@ void Game::InitRoom(int room_id)
 	// 일단 임시로 10마리
 	// todo:
 	// 임시로 몬스터가 생길때까지 돌린다. 
-	std::array<int, 10> monster_ids{};
-
-
-	while (true) {
-		int count{ 0 };
-		for (int i = 0; i < MAX_MONSTER; ++i) {
-			if (false == _monsterList[i]->GetRunning()) {
-				if (_monsterList[i]->TrySetRunning(true)) {
-					monster_ids[count++] = i;
-					if (10 == count) {
-						break;
-					}
-				}
-			}
+	std::array<std::shared_ptr<Monster>, 10> monsters{};
+	for (auto& monster : monsters) {
+		std::shared_ptr<Object> obj;
+		if (not _objectPoolHash[ObjectType::Monster].try_pop(obj)) {
+			monster = std::shared_ptr<Monster>();
+			continue;
 		}
-
-		if (10 == count) {
-			break;
-		}
+		monster = std::dynamic_pointer_cast<Monster, Object>(obj);
 	}
-
+	
 	// 몬스터 추가
-	for (auto id : monster_ids) {
-		_monsterList[id]->SetPos(posDist(dre_game), posDist(dre_game));
+	for (auto& monster: monsters) {
+		monster->SetPos(posDist(dre_game), posDist(dre_game));
 
 		// TODO: 
 		// 몬스터 타입을 입력하면 자동으로 내부 설정이 가능하도록.
-		// 나중엔 lua까지. 
-		_monsterList[id]->SetMonsterType(MonsterType::Crab);
-		_monsterList[id]->SetRoomId(room_id);
-		_monsterList[id]->SetSpeed(speedDist(dre_game));
-		_roomList[room_id]->AddObject(_monsterList[id]);
+		// 나중엔 lua까지.
+		monster->SetMonsterType(MonsterType::Crab);
+		monster->SetRoomId(room_id);
+		monster->SetSpeed(speedDist(dre_game));
+		_roomList[room_id]->AddObject(monster);
 	}
 
 }
@@ -98,15 +87,25 @@ void Game::Update()
 
 void Game::Init()
 {
+	// player init
 	for (auto& player : _playerList) {
 		player = std::make_shared<Player>();
 	}
 
+	// room init
 	for (auto& room : _roomList) {
 		room = std::make_shared<Room>();
 	}
 
-	for (auto& monster : _monsterList) {
-		monster = std::make_shared<Monster>();
+	// monster init
+	_objectPoolHash[ObjectType::Monster].clear();
+
+	for (int i = 0; i < MAX_MONSTER; ++i) {
+		_objectPoolHash[ObjectType::Monster].push(
+			std::make_shared<Monster>()
+		);
 	}
+
+	// 나중엔 총알도 넣을 예정.
+
 }

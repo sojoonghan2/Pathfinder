@@ -65,6 +65,9 @@
     <ClCompile Include="CircleCollider.cpp">
       <Filter>Collider</Filter>
     </ClCompile>
+    <ClCompile Include="Obstacle.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IOCP.h">
@@ -111,6 +114,9 @@
     </ClInclude>
     <ClInclude Include="CircleCollider.h">
       <Filter>Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="Obstacle.h">
+      <Filter>Object</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
