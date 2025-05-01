@@ -5,9 +5,24 @@
 #include "GameObject.h"
 #include "IceParticleSystem.h"
 #include "Timer.h"
+#include "SceneManager.h"
+#include "BaseCollider.h"
 
-GeneratorScript::GeneratorScript() : _isPlaying(false), _init(false)
+GeneratorScript::GeneratorScript() : _isDead(false), _init(false)
 {
+}
+
+void GeneratorScript::Start()
+{
+	_bullets.resize(50);
+	for (int i = 0; i < 50; ++i)
+	{
+		wstring name = L"Bullet" + to_wstring(i);
+		_bullets[i] = GET_SINGLE(SceneManager)->FindObjectByName(name);
+	}
+
+	_hp = GET_SINGLE(SceneManager)->FindObjectByName(L"GeneratorHP");
+	_generatorParticle = GET_SINGLE(SceneManager)->FindObjectByName(L"GeneratorParticle");
 }
 
 void GeneratorScript::LateUpdate()
@@ -18,20 +33,7 @@ void GeneratorScript::LateUpdate()
 		_init = true;
 	}
 
-	// TODO: INPUT U 대신 Generator의 hp가 0이 되면 아래의 코드를 실행하도록 수정 필요
-	if (INPUT->GetButtonDown(KEY_TYPE::U))
-	{
-		if (!_isPlaying)
-		{
-			if (GetAnimator()) GetAnimator()->Play(0);
-			_isPlaying = true;
-			_deadTime = 0.f;
-		}
-		auto particle_system = GetGameObject()->GetParticleSystem();
-		if (particle_system) particle_system->ParticleStart();
-	}
-
-	if (_isPlaying)
+	if (_isDead)
 	{
 		_deadTime += DELTA_TIME;
 	}
@@ -40,6 +42,93 @@ void GeneratorScript::LateUpdate()
 	if (_deadTime > 7.f)
 	{
 		GetGameObject()->SetRender(false);
-		_isPlaying = false;
+		_isDead = false;
+	}
+
+	if(!_isDead) CheckBulletHits();
+	if(!_isDead) Recovery();
+}
+
+void GeneratorScript::CheckBulletHits()
+{
+	if (!_hp)
+		return;
+
+	for (const auto& bullet : _bullets)
+	{
+		if (!bullet)
+			continue;
+
+		if (GET_SINGLE(SceneManager)->Collition(GetGameObject(), bullet))
+		{
+			if (!_initialized)
+			{
+				_initialized = true;
+				return;
+			}
+
+			bullet->GetCollider()->SetEnable(false);
+			_hitTime = 0.f;
+
+			Vec3 hpScale = _hp->GetTransform()->GetLocalScale();
+			Vec3 hpPos = _hp->GetTransform()->GetLocalPosition();
+			float delta = 10.f;
+
+			if (hpScale.x - delta >= 0.f)
+			{
+				hpScale.x -= delta;
+				hpPos.x -= delta * 0.5f;
+
+				_hp->GetTransform()->SetLocalScale(hpScale);
+				_hp->GetTransform()->SetLocalPosition(hpPos);
+			}
+
+			_recoveryElapsedTime = 0.f;
+			_wasHit = true;
+
+			if ((hpScale.x - delta) < 0.f)
+			{
+				if (!_isDead)
+				{
+					if (GetAnimator()) GetAnimator()->Play(0);
+					_isDead = true;
+					_deadTime = 0.f;
+					_generatorParticle->GetParticleSystem()->ParticleStart();
+				}
+				_hp->SetRender(false);
+			}
+			break;
+		}
+	}
+}
+
+void GeneratorScript::Recovery()
+{
+	if (_wasHit)
+	{
+		_recoveryElapsedTime += DELTA_TIME;
+
+		if (_recoveryElapsedTime >= _recoveryWaitTime)
+		{
+			Vec3 hpScale = _hp->GetTransform()->GetLocalScale();
+			Vec3 hpPos = _hp->GetTransform()->GetLocalPosition();
+			float delta = 1.f;
+
+			if (hpScale.x + delta <= _hpMax)
+			{
+				hpScale.x += delta;
+				hpPos.x += delta * 0.5f;
+
+				_hp->GetTransform()->SetLocalScale(hpScale);
+				_hp->GetTransform()->SetLocalPosition(hpPos);
+			}
+			else
+			{
+				hpScale.x = _hpMax;
+				_wasHit = false;
+			}
+			_hp->GetTransform()->SetLocalScale(hpScale);
+			_hp->GetTransform()->SetLocalPosition(hpPos);
+		}
 	}
 }
