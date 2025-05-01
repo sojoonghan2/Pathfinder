@@ -919,11 +919,11 @@ void RuinsScene::Init()
 	for (int i{}; i < 3; ++i)
 	{
 		shared_ptr<GameObject> occupation = make_shared<GameObject>();
-		occupation->SetName(L"Occupation" + std::to_wstring(i + 1));
+		occupation->SetName(L"Occupation" + std::to_wstring(i));
 		occupation->AddComponent(make_shared<Transform>());
 		occupation->AddComponent(make_shared<OccupationScript>());
 		occupation->GetTransform()->SetLocalScale(Vec3(2000.f, 1.f, 2000.f));
-		occupation->GetTransform()->SetLocalPosition(Vec3(0.f, i * 300.f, 0.f));
+		occupation->GetTransform()->SetLocalPosition(Vec3(0.f, -99.f + 100 * i, 0.f));
 		occupation->SetStatic(false);
 
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -978,7 +978,7 @@ void RuinsScene::Init()
 			gameObjects[0]->SetCheckFrustum(false);
 			gameObjects[0]->AddComponent(make_shared<Transform>());
 			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
-			gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(100.0f + i * 4000, -50.f, -4550));
+			gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(100.0f + i * 4000, -100.f, -4550));
 			gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(0.f, PI * (i - 1), 0.f));
 			AddGameObject(gameObjects[0]);
 		}

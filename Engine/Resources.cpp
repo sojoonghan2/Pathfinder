@@ -500,13 +500,13 @@ void Resources::CreateDefaultShader()
 		Add<Shader>(L"Texture", shader);
 	}
 
-	// Occupation (Forward)
+	// Occupation (Deferred)
 	{
 		ShaderInfo info =
 		{
 			SHADER_TYPE::DEFERRED,
 			RASTERIZER_TYPE::CULL_NONE,
-			DEPTH_STENCIL_TYPE::NO_DEPTH_TEST_NO_WRITE,
+			DEPTH_STENCIL_TYPE::LESS,
 			BLEND_TYPE::ALPHA_BLEND
 		};
 

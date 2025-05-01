@@ -5,7 +5,7 @@ CrabParticleSystem::CrabParticleSystem() : BaseParticleSystem()
 {
     SetParticleInterval(0.0005f, 0.0008f);
     SetParticleLifeTime(0.2f, 0.6f);
-    SetParticleSpeed(1800.0f, 2400.0f);
+    SetParticleSpeed(3600.0f, 4800.0f);
     SetParticleScale(120.0f, 20.0f);
     SetDuration(0.6f);
     SetOnceParticleNum(45);

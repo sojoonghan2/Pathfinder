@@ -71,36 +71,40 @@ struct PS_OUT
 PS_OUT PS_Main(VS_OUT input)
 {
 	PS_OUT output;
-
     // 디폴트 컬러 또는 텍스처
 	float4 color = float4(1.f, 1.f, 1.f, 1.f);
 	if (g_tex_on_0 == 1)
 		color = g_textures.Sample(g_sam_0, input.uv);
-
+    
+	float alphaMin = 0.3f;
+	float alphaMax = 0.7f;
+	float alphaMid = (alphaMin + alphaMax) * 0.5f;
+	float alphaHalfRange = (alphaMax - alphaMin) * 0.5f;
+	float oscillation = sin(g_float_0 * 2.0f);
+	float animatedAlpha = alphaMid + oscillation * alphaHalfRange;
+	
+	// 알파값 적용
+	color.a = color.a * animatedAlpha;
+    
     // 알파가 0이면 픽셀 버림
 	if (color.a == 0.0f)
 		discard;
-
     // 노말 매핑
 	float3 viewNormal = input.viewNormal;
 	if (g_tex_on_1 == 1)
 	{
 		float3 tangentSpaceNormal = g_textures1.Sample(g_sam_0, input.uv).xyz;
 		tangentSpaceNormal = (tangentSpaceNormal - 0.5f) * 2.f;
-
 		float3x3 matTBN = float3x3(
             input.viewTangent,
             input.viewBinormal,
             input.viewNormal
         );
-
 		viewNormal = normalize(mul(matTBN, tangentSpaceNormal));
 	}
-
 	output.position = float4(input.viewPos, 0.f);
 	output.normal = float4(viewNormal, 0.f);
 	output.color = color;
-
 	return output;
 }
 
