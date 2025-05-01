@@ -7,6 +7,7 @@
 #include "Shader.h"
 #include "Material.h"
 #include "GameObject.h"
+#include "GameModule.h"
 #include "MeshRenderer.h"
 #include "Transform.h"
 #include "Camera.h"
@@ -26,6 +27,7 @@
 #include "BulletScript.h"
 #include "GunScript.h"
 #include "TestScript.h"
+#include "ModuleScript.h"
 
 #include "SphereCollider.h"
 #include "BoxCollider.h"
@@ -982,6 +984,38 @@ void RuinsScene::Init()
 			gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(0.f, PI * (i - 1), 0.f));
 			AddGameObject(gameObjects[0]);
 		}
+	}
+#pragma endregion
+
+	// ¸ðµâ
+#pragma region Module
+	for (int i{}; i < 3; ++i)
+	{
+		shared_ptr<GameModule> obj = make_shared<GameModule>();
+		obj->SetName(L"RuinsModule" + std::to_wstring(i));
+		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		obj->AddComponent(make_shared<Transform>());
+		obj->AddComponent(make_shared<ModuleScript>());
+		obj->GetTransform()->SetLocalScale(Vec3(300.f, 500.f, 100.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(-400.f + (i * 400), -800.f, 1.f));
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			meshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
+
+			shared_ptr<Texture> texture;
+			texture = obj->GetTexture();
+
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			meshRenderer->SetMaterial(material);
+		}
+		obj->AddComponent(meshRenderer);
+		AddGameObject(obj);
 	}
 #pragma endregion
 

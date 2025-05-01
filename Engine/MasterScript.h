@@ -1,6 +1,16 @@
 #pragma once
 #include "MonoBehaviour.h"
 
+enum class StageState
+{
+	START,
+	PLAYING,
+	PORTAL_CREATE,
+	PORTAL_ENTERED,
+	MODULE_SELECTI,
+	LOAD_NEXT_SCENE
+};
+
 class MasterScript : public MonoBehaviour
 {
 public:
@@ -16,7 +26,5 @@ public:
 	void ApplyModuleAbillities();
 
 protected:
-	bool _isStart = false;
-	bool _isClear = false;
-	bool _isCreatePortal = false;
+	StageState _currentState = StageState::START;
 };

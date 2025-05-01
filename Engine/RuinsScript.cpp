@@ -5,10 +5,13 @@
 #include "SceneManager.h"
 #include "Scene.h"
 #include "GameObject.h"
+#include "GameModule.h"
 #include "Timer.h"
 #include "SphereCollider.h"
 #include "ParticleSystem.h"
 #include "MessageManager.h"
+#include "LoadingScene.h"
+#include "ModuleScript.h"
 
 RuinsScript::RuinsScript() {}
 
@@ -32,9 +35,9 @@ void RuinsScript::LateUpdate() {
 		switch (message->type) {
 		case MsgType::START_GAME:
 		{
-			_isStart = true;
+			_currentState = StageState::PLAYING;
 			cout << "Ruins Scene Start!\n";
-			GET_SINGLE(SceneManager)->FindObjectByName(L"WaitUI")->SetRender(false);
+			_waitUI->SetRender(false);
 		}
 		break;
 		default: break;
@@ -43,61 +46,73 @@ void RuinsScript::LateUpdate() {
 	}
 
 #endif // NETWORK_ENABLE
-	if (INPUT->GetButton(KEY_TYPE::N))
+	if (INPUT->GetButton(KEY_TYPE::N) && (_currentState == StageState::START))
 	{
-		_isStart = true;
+		_currentState = StageState::PLAYING;
 		cout << "Ruins Scene Start!\n";
-		GET_SINGLE(SceneManager)->FindObjectByName(L"WaitUI")->SetRender(false);
+		_waitUI->SetRender(false);
 	}
 
-	if(_isStart) Occupation();
+	if(_currentState == StageState::PLAYING) Occupation();
+	if (_currentState == StageState::PORTAL_CREATE) IsPortalZone();
+	if (_currentState == StageState::PORTAL_ENTERED) ModuleSelect();
+	if (_currentState == StageState::MODULE_SELECTI) WaitOtherModule();
+	if (_currentState == StageState::LOAD_NEXT_SCENE)
+	{
+		// 모듈을 골랐으면 다음 씬으로
+		shared_ptr<LoadingScene> loadingScene = make_shared<LoadingScene>();
+		GET_SINGLE(SceneManager)->RegisterScene(L"LoadingScene", loadingScene);
+		loadingScene->Init();
+		GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
+	}
 }
 
 void RuinsScript::Start()
 {
+	// 리소스 캐싱
 	_waitUI = GET_SINGLE(SceneManager)->FindObjectByName(L"WaitUI");
 	_portalParticle = GET_SINGLE(SceneManager)->FindObjectByName(L"potalParticle");
 	_portalFrameParticle = GET_SINGLE(SceneManager)->FindObjectByName(L"portalFrameParticle");
 	_water = GET_SINGLE(SceneManager)->FindObjectByName(L"Water");
 	_player = GET_SINGLE(SceneManager)->FindObjectByName(L"Player");
 	_occupationUI = GET_SINGLE(SceneManager)->FindObjectByName(L"OccupationUI");
+
+	for (int i = 0; i < 3; ++i)
+	{
+		std::wstring name = L"RuinsModule" + std::to_wstring(i);
+		shared_ptr<GameObject> go = GET_SINGLE(SceneManager)->FindObjectByName(name);
+		_module[i] = dynamic_pointer_cast<GameModule>(go);
+	}
 }
 
 void RuinsScript::Occupation()
 {
-	if (_water->GetTransform()->GetLocalPosition().y < -200.f)
+	// 점령 조건
+	auto playerPos = _player->GetTransform()->GetLocalPosition();
+	if (playerPos.x >= -2000.0f && playerPos.x <= 2000.0f &&
+		playerPos.z >= -2000.0f && playerPos.z <= 2000.0f)
 	{
-		_isClear = true;
-		if (!_isCreatePortal)
-		{
-			_occupationUI->SetRender(false);
-			_isCreatePortal = true;
-			auto pos = _water->GetTransform()->GetLocalPosition();
-			pos.y = -10000.f;
-			_water->GetTransform()->SetLocalPosition(pos);
-			CreatePortal();
-		}
+		Vec3 pos = _water->GetTransform()->GetLocalPosition();
+		pos.y -= 0.2f;
+		_water->GetTransform()->SetLocalPosition(pos);
+		BlinkUI();
+	}
+	else
+	{
+		Vec3 pos = _water->GetTransform()->GetLocalPosition();
+		pos.y += 0.1f;
+		_water->GetTransform()->SetLocalPosition(pos);
+		_occupationUI->SetRender(false);
 	}
 
-	if (!_isClear)
+	// 씬 종료 조건
+	if (_water->GetTransform()->GetLocalPosition().y < -200.f)
 	{
-		auto playerPos = _player->GetTransform()->GetLocalPosition();
-
-		if (playerPos.x >= -2000.0f && playerPos.x <= 2000.0f &&
-			playerPos.z >= -2000.0f && playerPos.z <= 2000.0f)
-		{
-			Vec3 pos = _water->GetTransform()->GetLocalPosition();
-			pos.y -= 0.2f;
-			_water->GetTransform()->SetLocalPosition(pos);
-			BlinkUI();
-		}
-		else
-		{
-			Vec3 pos = _water->GetTransform()->GetLocalPosition();
-			pos.y += 0.1f;
-			_water->GetTransform()->SetLocalPosition(pos);
-			_occupationUI->SetRender(false);
-		}
+		_occupationUI->SetRender(false);
+		auto pos = _water->GetTransform()->GetLocalPosition();
+		pos.y = -10000.f;
+		_water->GetTransform()->SetLocalPosition(pos);
+		CreatePortal();
 	}
 }
 
@@ -105,10 +120,10 @@ void RuinsScript::BlinkUI()
 {
 	_elapsedTime += DELTA_TIME;
 
-	if (_elapsedTime >= _blinkTime) // _blinkTime(1초)마다 상태 변경
+	if (_elapsedTime >= _blinkTime)
 	{
-		_isVisible = !_isVisible; // 상태 반전
-		_elapsedTime = 0.0f; // 타이머 초기화
+		_isVisible = !_isVisible;
+		_elapsedTime = 0.0f;
 	}
 
 	if (_isVisible)
@@ -123,4 +138,60 @@ void RuinsScript::CreatePortal()
 		_portalParticle->GetParticleSystem()->ParticleStart();
 	if (_portalFrameParticle)
 		_portalFrameParticle->GetParticleSystem()->ParticleStart();
+
+	_currentState = StageState::PORTAL_CREATE;
+}
+
+void RuinsScript::IsPortalZone()
+{
+	// 포탈에 들어왔는지 확인
+	// 한 명이라도 포탈에 들어가면 처리하는게 좋을 듯
+
+
+	auto playerPos = _player->GetTransform()->GetLocalPosition();
+	if (playerPos.x >= -100.0f && playerPos.x <= 100.0f &&
+		playerPos.z >= 3900.0f && playerPos.z <= 4100.0f)
+	{
+		cout << "포탈 도착\n";
+		_currentState = StageState::PORTAL_ENTERED;
+	}
+}
+
+void RuinsScript::ModuleSelect()
+{
+	/*
+	if (모듈을 선택하라는 메시지)
+	{
+		for (int i = 0; i < 3; ++i) _module[i]들의 모듈 스크립트->Activate();
+	}
+
+	if (모듈을 선택했다는 메시지)
+	{
+		_module[selectedIdx]->GetScript<ModuleScript>()->OnSelected();
+	}
+
+	if (모든 플레이어가 모듈을 골랐으면)
+	{
+		for (int i = 0; i < 3; ++i) _module[i]들의 모듈 스크립트->Deactivate();
+
+		_currentState = StageState::MODULE_SELECTI;
+	}
+	*/
+
+	// 모든 플레이어가 모듈을 골랐다면
+	// 클라에서는 키보드 인풋으로 임시 처리
+	if (INPUT->GetButton(KEY_TYPE::M))
+	{
+		cout << "모듈 선택\n";
+		_currentState = StageState::MODULE_SELECTI;
+	}
+}
+
+void RuinsScript::WaitOtherModule()
+{
+	// 클라 임시 처리: 다음 씬으로 이동
+	if (INPUT->GetButton(KEY_TYPE::N))
+	{
+		_currentState = StageState::LOAD_NEXT_SCENE;
+	}
 }

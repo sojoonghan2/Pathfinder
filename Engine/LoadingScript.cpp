@@ -58,7 +58,7 @@ void LoadingScript::StartLoadingThread()
 #ifdef NETWORK_ENABLE
 	roomType = GET_SINGLE(SocketIO)->GetRoomType();
 #else
-	roomType = RoomType::Ruin;
+	roomType = RoomType::Factory;
 #endif
 
 	loadThread = new std::thread(&LoadingScript::SceneLoad, this);
