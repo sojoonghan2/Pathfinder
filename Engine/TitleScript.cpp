@@ -30,7 +30,7 @@ void TitleScript::LateUpdate()
 
 	if (GetForegroundWindow() == GEngine->GetWindow().hwnd)
 	{
-		if (INPUT->GetButton(KEY_TYPE::LBUTTON) && isMouseOnButton)
+		if (INPUT->GetButton(MOUSE_TYPE::LBUTTON) && isMouseOnButton)
 		{
 #ifdef NETWORK_ENABLE
 			if (false == _isMatch)

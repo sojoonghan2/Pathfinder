@@ -237,7 +237,7 @@ void PlayerScript::Shoot()
 {
 	if (_isGrenade || _isRazer || _isDashing) return;
 
-	if (INPUT->GetButton(KEY_TYPE::LBUTTON))
+	if (INPUT->GetButton(MOUSE_TYPE::LBUTTON))
 	{
 		if (!_isShoot)
 		{
@@ -381,12 +381,12 @@ void PlayerScript::RotateToCameraOnShoot()
 {
 	if (_crosshairUI)
 	{
-		if (INPUT->GetButton(KEY_TYPE::RBUTTON))
+		if (INPUT->GetButton(MOUSE_TYPE::RBUTTON))
 		{
 			_crosshairUI->SetRender(true);
 			RotateToCameraLook();
 		}
-		if (INPUT->GetButtonUp(KEY_TYPE::RBUTTON))
+		if (INPUT->GetButtonUp(MOUSE_TYPE::RBUTTON))
 		{
 			_crosshairUI->SetRender(false);
 		}

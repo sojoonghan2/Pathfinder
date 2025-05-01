@@ -40,7 +40,7 @@ void CameraScript::LateUpdate() {
 		Vec3 targetPos = _target->GetTransform()->GetLocalPosition();
 
 		// 오른쪽 마우스 버튼 상태에 따라 오프셋 보간
-		Vec3 targetOffset = INPUT->GetButton(KEY_TYPE::RBUTTON) ? _zoomOffset : _defaultOffset;
+		Vec3 targetOffset = INPUT->GetButton(MOUSE_TYPE::RBUTTON) ? _zoomOffset : _defaultOffset;
 		_currentOffset = Lerp(_currentOffset, targetOffset, 5.f * DELTA_TIME); // 빠르게 따라가도록 보간
 
 		// 공전 위치 계산
@@ -122,7 +122,7 @@ void CameraScript::MouseInput() {
 	else
 	{
 		while (ShowCursor(TRUE) < 0);
-		if (INPUT->GetButton(KEY_TYPE::LBUTTON)) {
+		if (INPUT->GetButton(MOUSE_TYPE::LBUTTON)) {
 			POINT mouseDelta = INPUT->GetMouseDelta();
 			Vec3 rotation = GetTransform()->GetLocalRotation();
 			rotation.y += mouseDelta.x * 0.005f;
