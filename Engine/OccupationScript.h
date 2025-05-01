@@ -7,4 +7,5 @@ public:
 	virtual void LateUpdate() override;
 
 private:
+	float m_accumulatedTime = 0.0f;
 };
