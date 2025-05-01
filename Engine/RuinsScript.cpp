@@ -62,7 +62,7 @@ void RuinsScript::LateUpdate() {
 		// 모듈을 골랐으면 다음 씬으로
 		shared_ptr<LoadingScene> loadingScene = make_shared<LoadingScene>();
 		GET_SINGLE(SceneManager)->RegisterScene(L"LoadingScene", loadingScene);
-		loadingScene->Init();
+		loadingScene->Init(RoomType::Factory);
 		GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
 	}
 }
@@ -153,7 +153,8 @@ void RuinsScript::IsPortalZone()
 		playerPos.z >= 3900.0f && playerPos.z <= 4100.0f)
 	{
 		cout << "포탈 도착\n";
-		_currentState = StageState::PORTAL_ENTERED;
+		// 일단 포탈 도착하면 바로 다음 씬 이동
+		_currentState = StageState::LOAD_NEXT_SCENE;
 	}
 }
 
@@ -168,30 +169,20 @@ void RuinsScript::ModuleSelect()
 	if (모듈을 선택했다는 메시지)
 	{
 		_module[selectedIdx]->GetScript<ModuleScript>()->OnSelected();
-	}
-
-	if (모든 플레이어가 모듈을 골랐으면)
-	{
-		for (int i = 0; i < 3; ++i) _module[i]들의 모듈 스크립트->Deactivate();
 
 		_currentState = StageState::MODULE_SELECT;
 	}
 	*/
-
-	// 모든 플레이어가 모듈을 골랐다면
-	// 클라에서는 키보드 인풋으로 임시 처리
-	if (INPUT->GetButton(KEY_TYPE::M))
-	{
-		cout << "모듈 선택\n";
-		_currentState = StageState::MODULE_SELECT;
-	}
 }
 
 void RuinsScript::WaitOtherModule()
 {
-	// 클라 임시 처리: 다음 씬으로 이동
-	if (INPUT->GetButton(KEY_TYPE::N))
+	/*
+	if (모든 플레이어가 모듈을 골랐으면)
 	{
+		for (int i = 0; i < 3; ++i) _module[i]들의 모듈 스크립트->Deactivate();
+
 		_currentState = StageState::LOAD_NEXT_SCENE;
 	}
+	*/
 }

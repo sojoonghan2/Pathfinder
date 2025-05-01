@@ -42,7 +42,7 @@ void TitleScript::LateUpdate()
 		{
 			shared_ptr<LoadingScene> loadingScene = make_shared<LoadingScene>();
 			GET_SINGLE(SceneManager)->RegisterScene(L"LoadingScene", loadingScene);
-			loadingScene->Init();
+			loadingScene->Init(RoomType::Ruin);
 			GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
 		}
 	}

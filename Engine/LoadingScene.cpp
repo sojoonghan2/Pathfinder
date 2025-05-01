@@ -15,7 +15,7 @@ LoadingScene::LoadingScene() : stageClear(false) {}
 
 LoadingScene::~LoadingScene() {}
 
-void LoadingScene::Init()
+void LoadingScene::Init(RoomType type)
 {
 #pragma region Camera
 	{
@@ -23,7 +23,7 @@ void LoadingScene::Init()
 		camera->SetName(L"TitleCamera");
 		camera->AddComponent(make_shared<Transform>());
 		camera->AddComponent(make_shared<Camera>()); // Near=1, Far=1000, 800*600
-		camera->AddComponent(make_shared<LoadingScript>());
+		camera->AddComponent(make_shared<LoadingScript>(type));
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		camera->GetCamera()->SetProjectionType(PROJECTION_TYPE::ORTHOGRAPHIC);
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
