@@ -56,7 +56,7 @@ void RuinsScript::LateUpdate() {
 	if(_currentState == StageState::PLAYING) Occupation();
 	if (_currentState == StageState::PORTAL_CREATE) IsPortalZone();
 	if (_currentState == StageState::PORTAL_ENTERED) ModuleSelect();
-	if (_currentState == StageState::MODULE_SELECTI) WaitOtherModule();
+	if (_currentState == StageState::MODULE_SELECT) WaitOtherModule();
 	if (_currentState == StageState::LOAD_NEXT_SCENE)
 	{
 		// 모듈을 골랐으면 다음 씬으로
@@ -174,7 +174,7 @@ void RuinsScript::ModuleSelect()
 	{
 		for (int i = 0; i < 3; ++i) _module[i]들의 모듈 스크립트->Deactivate();
 
-		_currentState = StageState::MODULE_SELECTI;
+		_currentState = StageState::MODULE_SELECT;
 	}
 	*/
 
@@ -183,7 +183,7 @@ void RuinsScript::ModuleSelect()
 	if (INPUT->GetButton(KEY_TYPE::M))
 	{
 		cout << "모듈 선택\n";
-		_currentState = StageState::MODULE_SELECTI;
+		_currentState = StageState::MODULE_SELECT;
 	}
 }
 
