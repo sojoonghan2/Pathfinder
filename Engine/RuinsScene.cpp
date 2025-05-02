@@ -458,9 +458,6 @@ void RuinsScene::Init()
 #endif // NETWORK_ENABLE
 #pragma endregion
 
-
-
-
 	// 터레인 큐브
 #pragma region TerrainCube
 	{

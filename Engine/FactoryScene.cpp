@@ -27,6 +27,7 @@
 #include "TestParticleScript.h"
 
 #include "SphereCollider.h"
+#include "BoxCollider.h"
 #include "GeneratorScript.h"
 
 #include "IceParticleSystem.h"
@@ -470,6 +471,70 @@ void FactoryScene::Init()
 
 		// 4. Scene에 추가
 		AddGameObject(terraincube);
+	}
+#pragma endregion
+
+	// 더미 콜라이더
+#pragma region DummyCollider
+	int dummyCount{};
+	// 큐브
+	{
+		vector<pair<Vec3, Vec3>> dummyInfo;
+		
+		for (int i{}; i < 7; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, -4800.f), Vec3(400.f, 400.f, 400.f));
+		}
+
+		for (int i{}; i < 7; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, -2400.f), Vec3(400.f, 400.f, 400.f));
+		}
+
+		for (int i{}; i < 7; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, 0.f), Vec3(400.f, 400.f, 400.f));
+		}
+
+		for (int i{}; i < 7; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, 2400.f), Vec3(400.f, 400.f, 400.f));
+		}
+
+		for (int i{}; i < 7; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, 4800.f), Vec3(400.f, 400.f, 400.f));
+		}
+
+		for (const auto& info : dummyInfo)
+		{
+			shared_ptr<GameObject> dummy = make_shared<GameObject>();
+
+			wstring name = L"dummy" + to_wstring(dummyCount++);
+			dummy->SetName(name);
+
+			dummy->AddComponent(make_shared<Transform>());
+			dummy->GetTransform()->SetLocalPosition(info.first);
+			dummy->GetTransform()->SetLocalScale(info.second);
+			dummy->SetStatic(true);
+
+			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> cubeMesh = GET_SINGLE(Resources)->LoadCubeMesh();
+				meshRenderer->SetMesh(cubeMesh);
+			}
+			{
+				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
+				meshRenderer->SetMaterial(material->Clone());
+			}
+			//dummy->AddComponent(meshRenderer);
+
+			dummy->AddComponent(make_shared<BoxCollider>());
+			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetExtents(info.second / 1.5);
+			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetCenter(info.first);
+
+			AddGameObject(dummy);
+		}
 	}
 #pragma endregion
 
