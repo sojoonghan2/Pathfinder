@@ -8,7 +8,7 @@ GunFlameParticleSystem::GunFlameParticleSystem() : BaseParticleSystem()
 	SetParticleSpeed(700.0f, 700.0f);
 	SetParticleScale(5.0f, 30.0f);
 	SetDuration(10000000.f);
-	SetOnceParticleNum(20);
+	SetOnceParticleNum(1);
 
 	// 기존 머티리얼 사용
 	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"GunFlameParticle")->Clone(),

@@ -160,7 +160,7 @@ void RuinsScene::Init()
 			particleObject->GetTransform()->SetParent(gameObject->GetTransform());
 			particleObject->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 150.f));
 			shared_ptr<GunFlameParticleSystem> gunFlameParticleSystem = make_shared<GunFlameParticleSystem>();
-			gunFlameParticleSystem->SetParticleScale(20.f, 20.f);
+			gunFlameParticleSystem->SetParticleScale(50.f, 50.f);
 			particleObject->AddComponent(gunFlameParticleSystem);
 
 			AddGameObject(particleObject);
@@ -746,7 +746,7 @@ void RuinsScene::Init()
 		vector<Vec3> positions;
 		float minDistance = 300.0f;
 
-		for (int i = 0; i < 10; ++i)
+		for (int i = 0; i < 1; ++i)
 		{
 			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
 			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
