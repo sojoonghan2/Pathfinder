@@ -47,7 +47,7 @@ private:
 	bool							_isDying = false;
 
 	float							_hitTime = 100.f;
-	float							_hitDuration = 0.5f;
+	float							_hitDuration = 0.2f;
 
 
 };
