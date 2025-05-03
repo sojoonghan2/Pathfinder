@@ -133,9 +133,16 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	ShowWindow(hWnd, nCmdShow);
-	SetForegroundWindow(hWnd);
-	SetFocus(hWnd);
 	UpdateWindow(hWnd);
+
+	if (GetForegroundWindow() != hWnd)
+	{
+		if (IsIconic(hWnd))
+			ShowWindow(hWnd, SW_RESTORE);
+
+		SetForegroundWindow(hWnd);
+		SetFocus(hWnd);
+	}
 
 	GWindowInfo.hwnd = hWnd;
 
