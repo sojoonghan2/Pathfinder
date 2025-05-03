@@ -79,6 +79,14 @@ void Input::Update()
 {
 	_frameCount++;
 
+	// 포커스를 잃은 경우 포커스를 되찾기 위한 시도
+	if (::GetForegroundWindow() != _hwnd)
+	{
+		::SetForegroundWindow(_hwnd);
+		::SetFocus(_hwnd);
+	}
+
+	// 여전히 비활성 상태라면 입력 무시
 	if (_hwnd != ::GetActiveWindow())
 	{
 		for (auto& state : _keyStates)
@@ -93,13 +101,13 @@ void Input::Update()
 
 	if (FAILED(hr = _mouse->GetDeviceState(sizeof(DIMOUSESTATE), &_DIMouseState)))
 	{
-		while (_mouse->Acquire() == DIERR_INPUTLOST);
+		while ((hr = _mouse->Acquire()) == DIERR_INPUTLOST || hr == DIERR_NOTACQUIRED);
 	}
 
 	BYTE asciiKeys[KEY_TYPE_COUNT] = {};
 	if (FAILED(hr = _keyboard->GetDeviceState(KEY_TYPE_COUNT, &asciiKeys)))
 	{
-		while (_keyboard->Acquire() == DIERR_INPUTLOST);
+		while ((hr = _keyboard->Acquire()) == DIERR_INPUTLOST || hr == DIERR_NOTACQUIRED);
 	}
 
 	// 마우스 버튼 처리

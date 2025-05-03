@@ -683,6 +683,26 @@ void FactoryScene::Init()
 	}
 #pragma endregion
 
+	// Temp
+#pragma region Temp
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Temp\\Temp.fbx");
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		for (const auto& gameObject : gameObjects)
+		{
+			gameObject->SetName(L"Temp");
+			gameObject->SetCheckFrustum(true);
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, 0.0f, 0.0f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 0.f, 0.0f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+			AddGameObject(gameObject);
+		}
+
+		
+	}
+#pragma endregion
+
 #pragma region PotalParticle
 	{
 		// 파티클 오브젝트 생성
