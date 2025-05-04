@@ -157,4 +157,14 @@ private:
 	POINT _mouseDelta = {};
 
 	int64_t _frameCount = 0;
+
+private:
+	bool _lockCursor = true;
+	POINT _centerScreenPos = { 0, 0 };
+	bool _initializedCenter = false;
+
+public:
+	void LockCursor(bool enable);
+	bool IsCursorLocked() const;
+
 };

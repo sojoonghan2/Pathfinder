@@ -129,12 +129,37 @@ void Input::Update()
 		}
 	}
 
-	// 마우스 위치 및 델타
-	::GetCursorPos(&_mousePos);
-	::ScreenToClient(_hwnd, &_mousePos);
-	_mouseDelta.x = _mousePos.x - _prevMousePos.x;
-	_mouseDelta.y = _mousePos.y - _prevMousePos.y;
-	_prevMousePos = _mousePos;
+	if (_lockCursor)
+	{
+		if (!_initializedCenter)
+		{
+			_centerScreenPos.x = GEngine->GetWindow().width / 2;
+			_centerScreenPos.y = GEngine->GetWindow().height / 2;
+			ClientToScreen(_hwnd, &_centerScreenPos);
+			_initializedCenter = true;
+		}
+
+		POINT screenPos;
+		GetCursorPos(&screenPos);
+
+		_mouseDelta.x = screenPos.x - _centerScreenPos.x;
+		_mouseDelta.y = screenPos.y - _centerScreenPos.y;
+
+		SetCursorPos(_centerScreenPos.x, _centerScreenPos.y);
+
+		_mousePos = _centerScreenPos;
+		ScreenToClient(_hwnd, &_mousePos);
+	}
+	else
+	{
+		GetCursorPos(&_mousePos);
+		ScreenToClient(_hwnd, &_mousePos);
+
+		_mouseDelta.x = _mousePos.x - _prevMousePos.x;
+		_mouseDelta.y = _mousePos.y - _prevMousePos.y;
+
+		_prevMousePos = _mousePos;
+	}
 
 	// 키보드 키 처리
 	for (uint32 key = 0; key < KEY_TYPE_COUNT; ++key)
@@ -211,4 +236,19 @@ KEY_STATE Input::GetMouseState(int index) const
 	if (index >= 0 && index < _mouseStates.size())
 		return _mouseStates[index];
 	return KEY_STATE::NONE;
+}
+
+void Input::LockCursor(bool enable)
+{
+	_lockCursor = enable;
+
+	if (_lockCursor)
+		while (ShowCursor(FALSE) >= 0);
+	else
+		while (ShowCursor(TRUE) < 0);
+}
+
+bool Input::IsCursorLocked() const
+{
+	return _lockCursor;
 }

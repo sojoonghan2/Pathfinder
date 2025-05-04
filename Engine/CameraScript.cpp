@@ -83,7 +83,8 @@ void CameraScript::KeyboardInput() {
 	GetTransform()->SetLocalPosition(pos);
 }
 
-void CameraScript::MouseInput() {
+void CameraScript::MouseInput()
+{
 	if (_playerCamera)
 	{
 		while (ShowCursor(FALSE) >= 0);
@@ -100,24 +101,6 @@ void CameraScript::MouseInput() {
 		const float minAngle = -XM_PI / 18.0f; // -30도
 		const float maxAngle = XM_PI / 18.0f;  // 30도
 		_cameraRotation.x = std::clamp(_cameraRotation.x, minAngle, maxAngle);
-
-		// 커서가 화면 경계를 넘었는지 검사
-		POINT cursorPos;
-		GetCursorPos(&cursorPos);
-
-		int margin = 2;
-		RECT windowRect;
-		GetClientRect(GEngine->GetWindow().hwnd, &windowRect);
-		ClientToScreen(GEngine->GetWindow().hwnd, reinterpret_cast<LPPOINT>(&windowRect.left));
-		ClientToScreen(GEngine->GetWindow().hwnd, reinterpret_cast<LPPOINT>(&windowRect.right));
-
-		if (cursorPos.x <= windowRect.left + margin ||
-			cursorPos.x >= windowRect.right - margin ||
-			cursorPos.y <= windowRect.top + margin ||
-			cursorPos.y >= windowRect.bottom - margin)
-		{
-			SetCursorPos(_centerScreenPos.x, _centerScreenPos.y);
-		}
 	}
 	else
 	{
@@ -135,4 +118,6 @@ void CameraScript::MouseInput() {
 void CameraScript::ToggleCamera()
 {
 	_playerCamera = !_playerCamera;
+
+	INPUT->LockCursor(_playerCamera);
 }

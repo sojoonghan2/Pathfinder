@@ -223,15 +223,15 @@ void ParticleScene::Init()
 		for (int i{}; i < 50; ++i)
 		{
 			shared_ptr<GameObject> bullet = make_shared<GameObject>();
-			bullet->SetName(L"Bullet" + std::to_wstring(i + 1));
+			bullet->SetName(L"Bullet" + std::to_wstring(i));
 			bullet->SetCheckFrustum(true);
 			bullet->SetStatic(false);
 
 			bullet->AddComponent(make_shared<Transform>());
-			bullet->GetTransform()->SetLocalScale(Vec3(30.f, 30.f, 30.f));
+			bullet->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
 			bullet->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 			bullet->GetTransform()->GetTransform()->RemoveParent();
-			bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
+			bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 			bullet->AddComponent(make_shared<BulletScript>(playerScript));
 
 			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -248,7 +248,14 @@ void ParticleScene::Init()
 				material->SetTexture(0, texture);
 				meshRenderer->SetMaterial(material);
 			}
+
+			bullet->AddComponent(make_shared<SphereCollider>());
+			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetRadius(10.f);
+			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetEnable(false);
+
 			bullet->AddComponent(meshRenderer);
+			bullet->SetRender(false);
 
 			AddGameObject(bullet);
 		}
@@ -646,108 +653,4 @@ void ParticleScene::LoadDebugParticle()
 	}
 #pragma endregion
 
-	// ·Îº¿
-#pragma region SELFDESTRUCTIONROBOT
-#ifndef NETWORK_ENABLE
-	{
-		std::random_device rd;
-		std::mt19937 gen(rd());
-		std::uniform_real_distribution<float> disX(-4000.0f, 4000.0f);
-		std::uniform_real_distribution<float> disZ(-4000.0f, 4000.0f);
-
-		vector<Vec3> positions;
-		float minDistance = 300.0f;
-
-		for (int i = 0; i < 10; ++i)
-		{
-			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
-			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
-
-			// °ãÄ¡Áö ¾Ê´Â ·£´ý À§Ä¡ »ý¼º
-			Vec3 randomPos;
-			bool validPosition = false;
-			int maxAttempts = 100;
-
-			while (!validPosition && maxAttempts > 0)
-			{
-				randomPos = Vec3(disX(gen), 0.0f, disZ(gen));
-				validPosition = true;
-
-				for (const Vec3& pos : positions)
-				{
-					if ((randomPos - pos).Length() < minDistance)
-					{
-						validPosition = false;
-						break;
-					}
-				}
-				maxAttempts--;
-			}
-
-			positions.push_back(randomPos);
-
-			gameObjects[0]->SetName(L"CyberCrabs" + std::to_wstring(i));
-			gameObjects[0]->SetCheckFrustum(true);
-			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
-			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
-			gameObjects[0]->AddComponent(make_shared<CrabScript>());
-			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
-			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(700.f, 700.f, 700.f));
-
-			gameObjects[0]->AddComponent(make_shared<SphereCollider>());
-			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
-			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
-
-			AddGameObject(gameObjects[0]);
-
-			// hp
-			shared_ptr<GameObject> hpBase = make_shared<GameObject>();
-			hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
-			hpBase->AddComponent(make_shared<Transform>());
-			hpBase->SetName(L"CrabHPBase" + std::to_wstring(i));
-			hpBase->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
-			hpBase->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
-			shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
-			{
-				shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-				hpBasemeshRenderer->SetMesh(mesh);
-			}
-			{
-				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
-				shared_ptr<Texture> texture{};
-				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrabHPBase", L"..\\Resources\\Texture\\CrabHPBase.png");
-				shared_ptr<Material> material = make_shared<Material>();
-				material->SetShader(shader);
-				material->SetTexture(0, texture);
-				hpBasemeshRenderer->SetMaterial(material);
-			}
-			hpBase->AddComponent(hpBasemeshRenderer);
-			AddGameObject(hpBase);
-
-			shared_ptr<GameObject> hp = make_shared<GameObject>();
-			hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
-			hp->AddComponent(make_shared<Transform>());
-			hp->SetName(L"CrabHP");
-			hp->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
-			hp->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
-			shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
-			{
-				shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-				hpmeshRenderer->SetMesh(mesh);
-			}
-			{
-				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
-				shared_ptr<Texture> texture{};
-				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrabHP", L"..\\Resources\\Texture\\CrabHP.png");
-				shared_ptr<Material> material = make_shared<Material>();
-				material->SetShader(shader);
-				material->SetTexture(0, texture);
-				hpmeshRenderer->SetMaterial(material);
-			}
-			hp->AddComponent(hpmeshRenderer);
-			AddGameObject(hp);
-		}
-	}
-#endif // !NETWORK_ENABLE
-#pragma endregion
 }
