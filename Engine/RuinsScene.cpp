@@ -786,7 +786,7 @@ void RuinsScene::Init()
 			//gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 			gameObjects[0]->AddComponent(make_shared<CrabScript>());
 			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
-			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(400.f, 400.f, 400.f));
+			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(300.f, 300.f, 300.f));
 
 			gameObjects[0]->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
@@ -1010,7 +1010,7 @@ void RuinsScene::Init()
 			gameObject->SetCheckFrustum(true);
 			gameObject->GetTransform()->SetLocalPosition(Vec3(-4000.f, -200.f, 0.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 0.f, 0.f));
-			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(200.f, 200.f, 200.f));
 			AddGameObject(gameObject);
 		}
 	}
@@ -1145,7 +1145,7 @@ void RuinsScene::Init()
 		// 2-2. 스팟 라이트 방향 설정
 		light->GetLight()->SetLightDirection(Vec3(0.f, -1.f, 0.f));
 
-		float lightpower = 1.5f;
+		float lightpower = 0.5f;
 		// 3. 조명 색상 및 강도 조정 (따뜻한 황금빛)
 		light->GetLight()->SetDiffuse(Vec3(1.0f, 0.85f, 0.6f) * lightpower);
 		light->GetLight()->SetAmbient(Vec3(0.25f, 0.2f, 0.25f) * lightpower);
