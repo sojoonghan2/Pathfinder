@@ -50,7 +50,9 @@
 
 #define PARTICLEDEBUG	FALSE
 
-ParticleScene::ParticleScene()
+ParticleScene::ParticleScene() {}
+
+void ParticleScene::Init()
 {
 	// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
 #pragma region ComputeShader
@@ -85,7 +87,7 @@ ParticleScene::ParticleScene()
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, 0.f));
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI는 안 찍음
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -101,7 +103,7 @@ ParticleScene::ParticleScene()
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskAll(); // 다 끄고
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false); // UI만 찍음
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -142,7 +144,7 @@ ParticleScene::ParticleScene()
 		terraincube->AddComponent(meshRenderer);
 
 		// 4. Scene에 추가
-		activeScene->AddGameObject(terraincube);
+		AddGameObject(terraincube);
 	}
 #pragma endregion
 
@@ -168,7 +170,7 @@ ParticleScene::ParticleScene()
 		light->GetLight()->SetSpecular(Vec3(0.05f, 0.05f, 0.05f));
 
 		// 4. Scene에 추가
-		activeScene->AddGameObject(light);
+		AddGameObject(light);
 	}
 #pragma endregion
 
@@ -186,7 +188,7 @@ ParticleScene::ParticleScene()
 			gameObject->SetName(L"Player");
 			gameObject->SetCheckFrustum(false);
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 			gameObject->AddComponent(playerScript);
 			gameObject->AddComponent(make_shared<TestDragon>());
@@ -195,7 +197,7 @@ ParticleScene::ParticleScene()
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(10.f);
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 
-			activeScene->AddGameObject(gameObject);
+			AddGameObject(gameObject);
 		}
 
 		// 총
@@ -214,22 +216,22 @@ ParticleScene::ParticleScene()
 			gameObject->AddComponent(make_shared<TestScript>());
 			gameObject->AddComponent(make_shared<GunScript>());
 
-			activeScene->AddGameObject(gameObject);
+			AddGameObject(gameObject);
 		}
 
 		// 총알
 		for (int i{}; i < 50; ++i)
 		{
 			shared_ptr<GameObject> bullet = make_shared<GameObject>();
-			bullet->SetName(L"Bullet" + std::to_wstring(i + 1));
+			bullet->SetName(L"Bullet" + std::to_wstring(i));
 			bullet->SetCheckFrustum(true);
 			bullet->SetStatic(false);
 
 			bullet->AddComponent(make_shared<Transform>());
-			bullet->GetTransform()->SetLocalScale(Vec3(30.f, 30.f, 30.f));
+			bullet->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
 			bullet->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 			bullet->GetTransform()->GetTransform()->RemoveParent();
-			bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
+			bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 			bullet->AddComponent(make_shared<BulletScript>(playerScript));
 
 			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -239,16 +241,23 @@ ParticleScene::ParticleScene()
 			}
 			{
 				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
-				shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bullet", L"..\\Resources\\Texture\\Bullet.png");
+				shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bullet", L"..\\Resources\\Texture\\Skill\\Bullet.png");
 
 				shared_ptr<Material> material = make_shared<Material>();
 				material->SetShader(shader);
 				material->SetTexture(0, texture);
 				meshRenderer->SetMaterial(material);
 			}
-			bullet->AddComponent(meshRenderer);
 
-			activeScene->AddGameObject(bullet);
+			bullet->AddComponent(make_shared<SphereCollider>());
+			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetRadius(10.f);
+			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetEnable(false);
+
+			bullet->AddComponent(meshRenderer);
+			bullet->SetRender(false);
+
+			AddGameObject(bullet);
 		}
 
 		// 총알
@@ -270,7 +279,7 @@ ParticleScene::ParticleScene()
 				bullet->GetTransform()->GetTransform()->RemoveParent();
 				bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
 				bullet->AddComponent(make_shared<BulletScript>(playerScript));
-				activeScene->AddGameObject(bullet);
+				AddGameObject(bullet);
 			}
 		}
 		*/
@@ -295,7 +304,7 @@ ParticleScene::ParticleScene()
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Grenade", L"..\\Resources\\Texture\\Grenade.jpg");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Grenade", L"..\\Resources\\Texture\\Skill\\Grenade.jpg");
 
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
@@ -308,7 +317,7 @@ ParticleScene::ParticleScene()
 		grenadeParticleSystem->SetParticleScale(100.f, 80.f);
 		grenade->AddComponent(grenadeParticleSystem);
 
-		activeScene->AddGameObject(grenade);
+		AddGameObject(grenade);
 
 		// 레이저 파티클
 		shared_ptr<GameObject> razerParticle = make_shared<GameObject>();
@@ -331,7 +340,7 @@ ParticleScene::ParticleScene()
 		razerParticleSystem->SetEmitDirection(dir);
 		razerParticle->AddComponent(razerParticleSystem);
 
-		activeScene->AddGameObject(razerParticle);
+		AddGameObject(razerParticle);
 
 		// 조준점
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
@@ -356,8 +365,8 @@ ParticleScene::ParticleScene()
 			CrosshairmeshRenderer->SetMaterial(material);
 		}
 		obj->AddComponent(CrosshairmeshRenderer);
-		obj->SetRenderOff();
-		activeScene->AddGameObject(obj);
+		obj->SetRender(false);
+		AddGameObject(obj);
 
 		// 체력 UI
 		shared_ptr<GameObject> hpUI = make_shared<GameObject>();
@@ -381,7 +390,7 @@ ParticleScene::ParticleScene()
 			hpUImeshRenderer->SetMaterial(material);
 		}
 		hpUI->AddComponent(hpUImeshRenderer);
-		activeScene->AddGameObject(hpUI);
+		AddGameObject(hpUI);
 	}
 #pragma endregion
 
@@ -413,7 +422,7 @@ ParticleScene::ParticleScene()
 			meshRenderer->SetMaterial(material);
 		}
 		obj->AddComponent(meshRenderer);
-		activeScene->AddGameObject(obj);
+		AddGameObject(obj);
 	}
 #pragma endregion
 
@@ -446,7 +455,7 @@ ParticleScene::ParticleScene()
 			CrosshairmeshRenderer->SetMaterial(material);
 		}
 		obj->AddComponent(CrosshairmeshRenderer);
-		activeScene->AddGameObject(obj);
+		AddGameObject(obj);
 	}
 #pragma endregion
 
@@ -483,7 +492,7 @@ ParticleScene::ParticleScene()
 			obj[i]->AddComponent(meshRenderer);
 
 			// 5. Scene에 추가
-			activeScene->AddGameObject(obj[i]);
+			AddGameObject(obj[i]);
 		}
 	}
 #endif // NETWORK_ENABLE
@@ -517,7 +526,7 @@ void ParticleScene::LoadMyParticle()
 		iceParticle->AddComponent(make_shared<TestParticleScript>());
 		iceParticle->AddComponent(iceParticleSystem);
 
-		activeScene->AddGameObject(iceParticle);
+		AddGameObject(iceParticle);
 	}
 #pragma endregion
 
@@ -542,7 +551,7 @@ void ParticleScene::LoadMyParticle()
 		cataclysmParticle->AddComponent(make_shared<TestParticleScript>());
 		cataclysmParticle->AddComponent(fireParticleSystem);
 
-		activeScene->AddGameObject(cataclysmParticle);
+		AddGameObject(cataclysmParticle);
 	}
 #pragma endregion
 
@@ -566,7 +575,7 @@ void ParticleScene::LoadMyParticle()
 		overDriveParticle->AddComponent(make_shared<TestParticleScript>());
 		overDriveParticle->AddComponent(overDriveParticleSystem);
 
-		activeScene->AddGameObject(overDriveParticle);
+		AddGameObject(overDriveParticle);
 	}
 #pragma endregion
 
@@ -590,7 +599,7 @@ void ParticleScene::LoadMyParticle()
 		gliggerParticle->AddComponent(make_shared<TestParticleScript>());
 		gliggerParticle->AddComponent(gliggerParticleSystem);
 
-		//activeScene->AddGameObject(gliggerParticle);
+		//AddGameObject(gliggerParticle);
 	}
 #pragma endregion
 }
@@ -617,7 +626,7 @@ void ParticleScene::LoadDebugParticle()
 		testPBRParticle->AddComponent(make_shared<TestParticleScript>());
 		testPBRParticle->AddComponent(testPBRParticleSystem);
 
-		activeScene->AddGameObject(testPBRParticle);
+		AddGameObject(testPBRParticle);
 	}
 #pragma endregion
 
@@ -640,112 +649,8 @@ void ParticleScene::LoadDebugParticle()
 		portalFrameParticle->AddComponent(make_shared<TestParticleScript>());
 		portalFrameParticle->AddComponent(portalFrameParticleSystem);
 
-		activeScene->AddGameObject(portalFrameParticle);
+		AddGameObject(portalFrameParticle);
 	}
 #pragma endregion
 
-	// 로봇
-#pragma region SELFDESTRUCTIONROBOT
-#ifndef NETWORK_ENABLE
-	{
-		std::random_device rd;
-		std::mt19937 gen(rd());
-		std::uniform_real_distribution<float> disX(-4000.0f, 4000.0f);
-		std::uniform_real_distribution<float> disZ(-4000.0f, 4000.0f);
-
-		vector<Vec3> positions;
-		float minDistance = 300.0f;
-
-		for (int i = 0; i < 10; ++i)
-		{
-			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun_Bot\\Gun_Bot.fbx");
-			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
-
-			// 겹치지 않는 랜덤 위치 생성
-			Vec3 randomPos;
-			bool validPosition = false;
-			int maxAttempts = 100;
-
-			while (!validPosition && maxAttempts > 0)
-			{
-				randomPos = Vec3(disX(gen), 0.0f, disZ(gen));
-				validPosition = true;
-
-				for (const Vec3& pos : positions)
-				{
-					if ((randomPos - pos).Length() < minDistance)
-					{
-						validPosition = false;
-						break;
-					}
-				}
-				maxAttempts--;
-			}
-
-			positions.push_back(randomPos);
-
-			gameObjects[0]->SetName(L"CyberCrabs" + std::to_wstring(i));
-			gameObjects[0]->SetCheckFrustum(true);
-			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
-			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
-			gameObjects[0]->AddComponent(make_shared<CrabScript>());
-			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
-			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(700.f, 700.f, 700.f));
-
-			gameObjects[0]->AddComponent(make_shared<SphereCollider>());
-			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
-			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
-
-			activeScene->AddGameObject(gameObjects[0]);
-
-			// hp
-			shared_ptr<GameObject> hpBase = make_shared<GameObject>();
-			hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
-			hpBase->AddComponent(make_shared<Transform>());
-			hpBase->SetName(L"CrabHPBase" + std::to_wstring(i));
-			hpBase->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
-			hpBase->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
-			shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
-			{
-				shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-				hpBasemeshRenderer->SetMesh(mesh);
-			}
-			{
-				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
-				shared_ptr<Texture> texture{};
-				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrabHPBase", L"..\\Resources\\Texture\\CrabHPBase.png");
-				shared_ptr<Material> material = make_shared<Material>();
-				material->SetShader(shader);
-				material->SetTexture(0, texture);
-				hpBasemeshRenderer->SetMaterial(material);
-			}
-			hpBase->AddComponent(hpBasemeshRenderer);
-			activeScene->AddGameObject(hpBase);
-
-			shared_ptr<GameObject> hp = make_shared<GameObject>();
-			hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
-			hp->AddComponent(make_shared<Transform>());
-			hp->SetName(L"CrabHP");
-			hp->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
-			hp->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
-			shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
-			{
-				shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-				hpmeshRenderer->SetMesh(mesh);
-			}
-			{
-				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
-				shared_ptr<Texture> texture{};
-				texture = GET_SINGLE(Resources)->Load<Texture>(L"CrabHP", L"..\\Resources\\Texture\\CrabHP.png");
-				shared_ptr<Material> material = make_shared<Material>();
-				material->SetShader(shader);
-				material->SetTexture(0, texture);
-				hpmeshRenderer->SetMaterial(material);
-			}
-			hp->AddComponent(hpmeshRenderer);
-			activeScene->AddGameObject(hp);
-		}
-	}
-#endif // !NETWORK_ENABLE
-#pragma endregion
 }

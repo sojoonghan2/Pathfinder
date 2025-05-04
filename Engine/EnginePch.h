@@ -61,11 +61,17 @@ using namespace Microsoft::WRL;
 
 #include "FBX/fbxsdk.h"
 
+#define DIRECTINPUT_VERSION 0x0800
+
 // 각종 lib
 #pragma comment(lib, "d3d12")
 #pragma comment(lib, "dxgi")
 #pragma comment(lib, "dxguid")
 #pragma comment(lib, "d3dcompiler")
+#pragma comment(lib, "dinput8")
+#pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "dwrite.lib")
+#pragma comment(lib, "d3d11.lib")
 
 #ifdef _DEBUG
 #pragma comment(lib, "DirectXTex\\DirectXTex_debug.lib")
@@ -112,9 +118,9 @@ using Vec4 = DirectX::SimpleMath::Vector4;
 using Matrix = DirectX::SimpleMath::Matrix;
 
 // Scene 전환
-//#define ALLLOAD
+#define ALLLOAD
 //#define TITLELOAD
-#define RUINSLOAD
+//#define RUINSLOAD
 //#define FACTORYLOAD
 //#define EXPLORATIONLOAD
 //#define CRASHLOAD

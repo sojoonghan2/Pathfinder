@@ -17,7 +17,11 @@
 #include "SphereCollider.h"
 #include "MeshRenderer.h"
 
-TitleScene::TitleScene()
+TitleScene::TitleScene() {}
+
+TitleScene::~TitleScene() {}
+
+void TitleScene::Init()
 {
 #pragma region Camera
 	{
@@ -30,7 +34,7 @@ TitleScene::TitleScene()
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskAll();
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false); // UI
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -49,7 +53,7 @@ TitleScene::TitleScene()
 		}
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Title", L"..\\Resources\\Texture\\Title.jpg");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Title", L"..\\Resources\\Texture\\Title.png");
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
 			material->SetTexture(0, texture);
@@ -57,7 +61,7 @@ TitleScene::TitleScene()
 		}
 		title->AddComponent(make_shared<TitleScript>());
 		title->AddComponent(meshRenderer);
-		activeScene->AddGameObject(title);
+		AddGameObject(title);
 	}
 #pragma endregion
 
@@ -67,8 +71,8 @@ TitleScene::TitleScene()
 		icon->SetName(L"MatchingIcon");
 		icon->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI"));
 		icon->AddComponent(make_shared<Transform>());
-		icon->GetTransform()->SetLocalScale(Vec3(500.f, 500.f, 1.f));
-		icon->GetTransform()->SetLocalPosition(Vec3(0.f, -200.f, 1.f));
+		icon->GetTransform()->SetLocalScale(Vec3(450.f, 450.f, 1.f));
+		icon->GetTransform()->SetLocalPosition(Vec3(400.f, -250.f, 1.f));
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
@@ -83,7 +87,34 @@ TitleScene::TitleScene()
 			meshRenderer->SetMaterial(material);
 		}
 		icon->AddComponent(meshRenderer);
-		activeScene->AddGameObject(icon);
+		AddGameObject(icon);
+	}
+#pragma endregion
+
+#pragma region MATCHMAKING ING
+	{
+		shared_ptr<GameObject> icon = make_shared<GameObject>();
+		icon->SetName(L"Matchmaking_ing");
+		icon->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI"));
+		icon->AddComponent(make_shared<Transform>());
+		icon->GetTransform()->SetLocalScale(Vec3(600.f, 450.f, 1.f));
+		icon->GetTransform()->SetLocalPosition(Vec3(0.f, -200.f, 1.f));
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			meshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"PNG");
+			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Matchmaking_ing", L"..\\Resources\\Texture\\Matchmaking_ing.png");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			meshRenderer->SetMaterial(material);
+		}
+		icon->AddComponent(meshRenderer);
+		icon->SetRender(false);
+		AddGameObject(icon);
 	}
 #pragma endregion
 
@@ -109,10 +140,8 @@ TitleScene::TitleScene()
 			meshRenderer->SetMaterial(material);
 		}
 		icon->AddComponent(meshRenderer);
-		icon->SetRenderOff();
-		activeScene->AddGameObject(icon);
+		icon->SetRender(false);
+		AddGameObject(icon);
 	}
 #pragma endregion
 }
-
-TitleScene::~TitleScene() {}

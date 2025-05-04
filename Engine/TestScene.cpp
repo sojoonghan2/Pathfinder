@@ -20,7 +20,11 @@
 #include "input.h"
 #include "SphereCollider.h"
 
-TestScene::TestScene()
+TestScene::TestScene() {}
+
+TestScene::~TestScene() {}
+
+void TestScene::Init()
 {
 	// 카메라가 없으면 오류가 난다.
 #pragma region Camera
@@ -35,7 +39,7 @@ TestScene::TestScene()
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI는 안 찍음
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 	// 전역 조명
@@ -60,7 +64,7 @@ TestScene::TestScene()
 		light->GetLight()->SetSpecular(Vec3(0.05f, 0.05f, 0.05f));
 
 		// 4. Scene에 추가
-		activeScene->AddGameObject(light);
+		AddGameObject(light);
 	}
 #pragma endregion
 	// 임시 사각형 객체
@@ -101,7 +105,7 @@ TestScene::TestScene()
 		um->AddComponent(meshRenderer);
 
 		// 4. Scene에 추가
-		activeScene->AddGameObject(um);
+		AddGameObject(um);
 	#pragma endregion
 
 	*/
@@ -123,10 +127,8 @@ TestScene::TestScene()
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 0.f, 0.f));
-			activeScene->AddGameObject(gameObject);
+			AddGameObject(gameObject);
 		}
 	}
 #pragma endregion
 }
-
-TestScene::~TestScene() {}

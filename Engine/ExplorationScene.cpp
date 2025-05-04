@@ -24,7 +24,11 @@
 
 #include "SphereCollider.h"
 
-ExplorationScene::ExplorationScene()
+ExplorationScene::ExplorationScene() {}
+
+ExplorationScene::~ExplorationScene() {}
+
+void ExplorationScene::Init()
 {
 	// 컴퓨트 셰이더, 멀티쓰레드로 작업이 가능
 #pragma region ComputeShader
@@ -60,7 +64,7 @@ ExplorationScene::ExplorationScene()
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI는 안 찍음
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -76,7 +80,7 @@ ExplorationScene::ExplorationScene()
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskAll(); // 다 끄고
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false); // UI만 찍음
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -90,11 +94,11 @@ ExplorationScene::ExplorationScene()
 		gameObjects[0]->SetCheckFrustum(false);
 		gameObjects[0]->AddComponent(make_shared<TestDragon>());
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
 		gameObjects[0]->AddComponent(make_shared<PlayerScript>());
 
-		activeScene->AddGameObject(gameObjects[0]);
+		AddGameObject(gameObjects[0]);
 
 		// 얘가 없으면 조명 버그남
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
@@ -115,8 +119,8 @@ ExplorationScene::ExplorationScene()
 			meshRenderer->SetMaterial(material->Clone());
 		}
 		obj->AddComponent(meshRenderer);
-		obj->SetRenderOff();
-		activeScene->AddGameObject(obj);
+		obj->SetRender(false);
+		AddGameObject(obj);
 
 		// 1. light 오브젝트 생성
 		shared_ptr<GameObject> light = make_shared<GameObject>();
@@ -137,7 +141,7 @@ ExplorationScene::ExplorationScene()
 		light->GetLight()->SetSpecular(Vec3(1.0f, 1.0f, 1.0f));
 
 		// 4. Scene에 추가
-		activeScene->AddGameObject(light);
+		AddGameObject(light);
 	}
 #pragma endregion
 
@@ -161,7 +165,7 @@ ExplorationScene::ExplorationScene()
 			meshRenderer->SetMaterial(material);
 		}
 		skybox->AddComponent(meshRenderer);
-		activeScene->AddGameObject(skybox);
+		AddGameObject(skybox);
 	}
 #pragma endregion
 
@@ -202,7 +206,7 @@ ExplorationScene::ExplorationScene()
 		terraincube->AddComponent(meshRenderer);
 
 		// 4. Scene에 추가
-		activeScene->AddGameObject(terraincube);
+		AddGameObject(terraincube);
 	}
 #pragma endregion
 
@@ -237,7 +241,7 @@ ExplorationScene::ExplorationScene()
 		meshRenderer->SetMaterial(material);
 	}
 	obj->AddComponent(meshRenderer);
-	activeScene->AddGameObject(obj);
+	AddGameObject(obj);
 #pragma endregion
 
 	// 전역 조명(삭제 예정)
@@ -262,7 +266,7 @@ ExplorationScene::ExplorationScene()
 		light->GetLight()->SetSpecular(Vec3(0.05f, 0.05f, 0.05f));
 
 		// 4. Scene에 추가
-		//activeScene->AddGameObject(light);
+		//AddGameObject(light);
 	}
 #pragma endregion
 
@@ -311,10 +315,8 @@ ExplorationScene::ExplorationScene()
 			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 			gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.7f, 0.f, 0.f));
 			gameObjects[0]->AddComponent(make_shared<SelfDestructionRobotScript>());
-			activeScene->AddGameObject(gameObjects[0]);
+			AddGameObject(gameObjects[0]);
 		}
 	}
 #pragma endregion
 }
-
-ExplorationScene::~ExplorationScene() {}

@@ -38,10 +38,10 @@ void GunScript::UpdateGunTransformByInput()
 	else if (INPUT->GetButton(KEY_TYPE::SPACE)) {
 		SetDashPose();
 	}
-	else if (INPUT->GetButton(KEY_TYPE::LBUTTON) && moving) {
+	else if (INPUT->GetButton(MOUSE_TYPE::LBUTTON) && moving) {
 		SetShootMovePose();
 	}
-	else if (INPUT->GetButton(KEY_TYPE::LBUTTON)) {
+	else if (INPUT->GetButton(MOUSE_TYPE::LBUTTON)) {
 		SetShootIdlePose();
 	}
 	else if (moving) {
@@ -61,7 +61,7 @@ void GunScript::FlamePlaying()
 {
 	if (!_gunFlame) return;
 
-	if (INPUT->GetButton(KEY_TYPE::LBUTTON))
+	if (INPUT->GetButton(MOUSE_TYPE::LBUTTON))
 	{
 		if (!_isFlamePlaying)
 		{

@@ -11,6 +11,8 @@
 #include "SocketIO.h"
 #include "Animator.h"
 #include "BoxCollider.h"
+#include "Material.h"
+#include "MeshRenderer.h"
 #include "SphereCollider.h"
 
 PlayerScript::PlayerScript() {}
@@ -182,8 +184,8 @@ void PlayerScript::Move()
 		_isMove = false;
 	}
 
-	float mapMinX = -4950.f, mapMaxX = 4950.f;
-	float mapMinZ = -4950.f, mapMaxZ = 4950.f;
+	float mapMinX = -4800.f, mapMaxX = 4800.f;
+	float mapMinZ = -4800.f, mapMaxZ = 4800.f;
 	float minY = -100.f, maxY = 9500.f;
 
 	pos.x = max(mapMinX, min(pos.x, mapMaxX));
@@ -201,8 +203,10 @@ void PlayerScript::Dash()
 	if (_dashCooldownTimer > 0.f)
 	{
 		_dashCooldownTimer -= DELTA_TIME;
-		if (_dashCooldownTimer <= 0.f && _dashUI)
-			_dashUI->SetRenderOn();
+		if (_dashCooldownTimer <= 0.f && _dashUI) {
+			_dashUI->GetMeshRenderer()->GetMaterial()->SetFloat(3, 1.0f);
+		}
+
 	}
 
 	if (_isDashing)
@@ -229,7 +233,8 @@ void PlayerScript::Dash()
 		_dashDirection = lookDir;
 		_isDashing = true;
 		_dashTimer = _dashDuration;
-		_dashUI->SetRenderOff();
+		_dashUI->GetMeshRenderer()->GetMaterial()->SetFloat(3, 0.3f);
+
 	}
 }
 
@@ -237,7 +242,7 @@ void PlayerScript::Shoot()
 {
 	if (_isGrenade || _isRazer || _isDashing) return;
 
-	if (INPUT->GetButton(KEY_TYPE::LBUTTON))
+	if (INPUT->GetButton(MOUSE_TYPE::LBUTTON))
 	{
 		if (!_isShoot)
 		{
@@ -266,7 +271,7 @@ void PlayerScript::ThrowGrenade()
 	{
 		_grenadeCooldownTimer -= DELTA_TIME;
 		if (_grenadeCooldownTimer <= 0.f)
-			GET_SINGLE(SceneManager)->FindObjectByName(L"GrenadeUI")->SetRenderOn();
+			GET_SINGLE(SceneManager)->FindObjectByName(L"GrenadeUI")->SetRender(true);
 	}
 
 	if (_isGrenade)
@@ -285,8 +290,8 @@ void PlayerScript::ThrowGrenade()
 	{
 		RotateToCameraLook();
 		_isGrenade = true;
-		_grenadeAniDurationTimer = 3.0f;
-		GET_SINGLE(SceneManager)->FindObjectByName(L"GrenadeUI")->SetRenderOff();
+		_grenadeAniDurationTimer = 1.0f;
+		GET_SINGLE(SceneManager)->FindObjectByName(L"GrenadeUI")->SetRender(false);
 	}
 }
 
@@ -298,7 +303,7 @@ void PlayerScript::ShootRazer()
 	{
 		_razerCooldownTimer -= DELTA_TIME;
 		if (_razerCooldownTimer <= 0.f)
-			GET_SINGLE(SceneManager)->FindObjectByName(L"RazerUI")->SetRenderOn();
+			GET_SINGLE(SceneManager)->FindObjectByName(L"RazerUI")->SetRender(true);
 	}
 
 	if (_isRazer)
@@ -317,8 +322,8 @@ void PlayerScript::ShootRazer()
 	{
 		RotateToCameraLook();
 		_isRazer = true;
-		_razerAniDurationTimer = 7.5f;
-		GET_SINGLE(SceneManager)->FindObjectByName(L"RazerUI")->SetRenderOff();
+		_razerAniDurationTimer = 1.7f;
+		GET_SINGLE(SceneManager)->FindObjectByName(L"RazerUI")->SetRender(false);
 	}
 }
 
@@ -381,14 +386,14 @@ void PlayerScript::RotateToCameraOnShoot()
 {
 	if (_crosshairUI)
 	{
-		if (INPUT->GetButton(KEY_TYPE::RBUTTON))
+		if (INPUT->GetButton(MOUSE_TYPE::RBUTTON))
 		{
-			_crosshairUI->SetRenderOn();
+			_crosshairUI->SetRender(true);
 			RotateToCameraLook();
 		}
-		if (INPUT->GetButtonUp(KEY_TYPE::RBUTTON))
+		if (INPUT->GetButtonUp(MOUSE_TYPE::RBUTTON))
 		{
-			_crosshairUI->SetRenderOff();
+			_crosshairUI->SetRender(false);
 		}
 	}
 

@@ -12,10 +12,8 @@ DustParticleSystem::DustParticleSystem() : BaseParticleSystem()
 	SetMaterial(GET_SINGLE(Resources)->Get<Material>(L"DustParticle")->Clone(), GET_SINGLE(Resources)->Get<Material>(L"DustComputeParticle")->Clone());
 
 	shared_ptr<Texture> dust = GET_SINGLE(Resources)->Load<Texture>(L"Dust", L"..\\Resources\\Texture\\Particle\\razer.png");
-	shared_ptr<Texture> dust2 = GET_SINGLE(Resources)->Load<Texture>(L"Dust2", L"..\\Resources\\Texture\\LightPillar.png");
 
 	SetParticleTexture(0, dust);
-	SetParticleTexture(1, dust2);
 
 	ParticleStart();
 }

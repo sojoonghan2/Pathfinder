@@ -1,16 +1,17 @@
 #pragma once
 #include "Scene.h"
-class ParticleScene {
+
+class ParticleScene : public Scene
+{
 public:
 	ParticleScene();
 	virtual ~ParticleScene();
 
-	void LoadMyParticle();
+	void Init() override;
+
 	void LoadDebugParticle();
+	void LoadMyParticle();
 
-	shared_ptr<Scene> GetScene() { return activeScene; }
 private:
-	shared_ptr<Scene> activeScene = make_shared<Scene>();
-
 	bool stageClear;
 };

@@ -28,7 +28,7 @@ void RazerParticleScript::LateUpdate()
 		_delayTimer <= 0.f &&
 		_cooldownTimer <= 0.f)
 	{
-		_delayTimer = 3.5f;
+		_delayTimer = 0.7f;
 	}
 
 	// 발사 지연 타이머 감소
