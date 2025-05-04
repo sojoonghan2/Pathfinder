@@ -19,6 +19,7 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+void                SetWindowFocus(HWND hWnd);  // 창 포커스 설정 함수 추가
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -51,6 +52,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	unique_ptr<Game> game = make_unique<Game>();
 	game->Init(GWindowInfo);
+
+	// 게임 초기화 후 창에 포커스 설정
+	SetWindowFocus(GWindowInfo.hwnd);
 
 	// 기본 메시지 루프입니다:
 	while (true)
@@ -135,18 +139,24 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
-	if (GetForegroundWindow() != hWnd)
-	{
-		if (IsIconic(hWnd))
-			ShowWindow(hWnd, SW_RESTORE);
-
-		SetForegroundWindow(hWnd);
-		SetFocus(hWnd);
-	}
+	// 초기 창 생성 시 포커스 설정
+	SetWindowFocus(hWnd);
 
 	GWindowInfo.hwnd = hWnd;
 
 	return TRUE;
+}
+
+// 창 포커스 설정 함수
+void SetWindowFocus(HWND hWnd)
+{
+	// 현재 창이 최소화되어 있다면 복원
+	if (IsIconic(hWnd))
+		ShowWindow(hWnd, SW_RESTORE);
+
+	// 창을 전경으로 가져오고 포커스 설정
+	SetForegroundWindow(hWnd);
+	SetFocus(hWnd);
 }
 
 //
@@ -180,6 +190,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	break;
+	case WM_ACTIVATE:
+		// 창이 활성화되면 포커스 설정 (ALT+TAB 후 돌아올 때)
+		if (LOWORD(wParam) != WA_INACTIVE)
+		{
+			SetFocus(hWnd);
+		}
+		break;
 	case WM_PAINT:
 	{
 		PAINTSTRUCT ps;
