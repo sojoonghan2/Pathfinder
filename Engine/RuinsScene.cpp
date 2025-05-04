@@ -469,8 +469,10 @@ void RuinsScene::Init()
 		shared_ptr<GameObject> terraincube = make_shared<GameObject>();
 		terraincube->AddComponent(make_shared<Transform>());
 		terraincube->SetCheckFrustum(false);
+		terraincube->SetStatic(false);
 		// 2. Transform 컴포넌트 추가 및 설정
 		terraincube->AddComponent(make_shared<Transform>());
+
 		// 씬의 임시 크기
 		terraincube->GetTransform()->SetLocalScale(Vec3(10000.f, 10000.f, 10000.f));
 		// 씬의 임시 좌표
@@ -984,6 +986,7 @@ void RuinsScene::Init()
 
 			gameObjects[0]->SetName(L"Stone" + std::to_wstring(i + 1));
 			gameObjects[0]->SetCheckFrustum(false);
+			gameObjects[0]->SetStatic(false);
 			gameObjects[0]->AddComponent(make_shared<Transform>());
 			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 			gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(100.0f + i * 4000, -100.f, -4550));
@@ -1139,7 +1142,6 @@ void RuinsScene::Init()
 		// 2-1. Light 컴포넌트 추가 및 속성 설정
 		light->AddComponent(make_shared<Light>());
 		light->GetLight()->SetLightType(LIGHT_TYPE::DIRECTIONAL_LIGHT);
-
 		// 2-2. 스팟 라이트 방향 설정
 		light->GetLight()->SetLightDirection(Vec3(0.f, -1.f, 0.f));
 
