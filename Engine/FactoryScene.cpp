@@ -693,13 +693,53 @@ void FactoryScene::Init()
 		{
 			gameObject->SetName(L"Temp");
 			gameObject->SetCheckFrustum(true);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, 0.0f, 0.0f));
-			gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 0.f, 0.0f));
-			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
-			AddGameObject(gameObject);
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -100.0f, 0.0f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, 0.f, 0.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(5.f, 5.f, 5.f));
+			//AddGameObject(gameObject);
 		}
 
 		
+	}
+#pragma endregion
+
+	// FactoryMid
+#pragma region FactoryMid
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\FactoryMid\\FactoryMid.fbx");
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		for (const auto& gameObject : gameObjects)
+		{
+			gameObject->SetName(L"FactoryMid");
+			gameObject->SetCheckFrustum(true);
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -200.0f, 1000.0f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, 0.f, 0.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 15.f));
+			AddGameObject(gameObject);
+		}
+
+
+	}
+#pragma endregion
+
+	// Door
+#pragma region Door
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Door\\Door.fbx");
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		for (const auto& gameObject : gameObjects)
+		{
+			gameObject->SetName(L"Door");
+			gameObject->SetCheckFrustum(true);
+			gameObject->GetTransform()->SetLocalPosition(Vec3(950.f, -100.f, -5200.f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 0.f, 0.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(200.f, 100.f, 100.f));
+			AddGameObject(gameObject);
+		}
+
+
 	}
 #pragma endregion
 
