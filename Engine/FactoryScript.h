@@ -7,6 +7,7 @@ public:
 	FactoryScript();
 	virtual ~FactoryScript();
 
+	virtual void Start() override;
 	virtual void LateUpdate() override;
 
 private:

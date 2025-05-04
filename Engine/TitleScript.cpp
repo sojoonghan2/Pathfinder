@@ -36,14 +36,12 @@ void TitleScript::LateUpdate()
 			if (false == _isMatch)
 			{
 				GET_SINGLE(SocketIO)->DoSend<packet::CSMatchmaking>();
-				INPUT->LockCursor(true);
 			}
 #endif
 			_isMatch = true;
 		}
 		if (INPUT->GetButton(KEY_TYPE::M))
 		{
-			INPUT->LockCursor(true);
 			shared_ptr<LoadingScene> loadingScene = make_shared<LoadingScene>();
 			GET_SINGLE(SceneManager)->RegisterScene(L"LoadingScene", loadingScene);
 			loadingScene->Init(RoomType::Ruin);

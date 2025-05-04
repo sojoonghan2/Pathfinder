@@ -83,6 +83,7 @@ void RuinsScript::Start()
 		shared_ptr<GameObject> go = GET_SINGLE(SceneManager)->FindObjectByName(name);
 		_module[i] = dynamic_pointer_cast<GameModule>(go);
 	}
+	INPUT->LockCursor(true);
 }
 
 void RuinsScript::Occupation()

@@ -784,7 +784,7 @@ void RuinsScene::Init()
 			//gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 			gameObjects[0]->AddComponent(make_shared<CrabScript>());
 			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
-			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(700.f, 700.f, 700.f));
+			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(400.f, 400.f, 400.f));
 
 			gameObjects[0]->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
@@ -991,6 +991,24 @@ void RuinsScene::Init()
 			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
 			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 			AddGameObject(gameObjects[0]);
+		}
+	}
+#pragma endregion
+
+	// Apollo
+#pragma region Apollo
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Apollo\\Apollo.fbx");
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		for (const auto& gameObject : gameObjects)
+		{
+			gameObject->SetName(L"Apollo");
+			gameObject->SetCheckFrustum(true);
+			gameObject->GetTransform()->SetLocalPosition(Vec3(-4000.f, -200.f, 0.f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 0.f, 0.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+			AddGameObject(gameObject);
 		}
 	}
 #pragma endregion
