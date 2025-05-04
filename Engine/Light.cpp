@@ -25,6 +25,10 @@ void Light::FinalUpdate()
 {
 	_lightInfo.position = GetTransform()->GetWorldPosition();
 	
+	Vec3 lightPos = GetTransform()->GetWorldPosition();
+	Vec3 targetPos = lightPos + _lightInfo.direction * 1000.f; // 충분히 멀리
+	_shadowCamera->GetTransform()->LookAt(targetPos);
+
 	_shadowCamera->GetTransform()->SetLocalPosition(GetTransform()->GetWorldPosition());
 	_shadowCamera->GetTransform()->SetLocalRotation(GetTransform()->GetLocalRotation());
 	_shadowCamera->GetTransform()->SetLocalScale(GetTransform()->GetLocalScale());
@@ -87,7 +91,8 @@ void Light::SetLightType(LIGHT_TYPE type)
 		_volumeMesh = GET_SINGLE(Resources)->Get<Mesh>(L"Rectangle");
 		_lightMaterial = GET_SINGLE(Resources)->Get<Material>(L"DirLight");
 
-		_shadowCamera->GetCamera()->SetScale(1.f);
+		_shadowCamera->GetCamera()->SetScale(30.f);
+		//_shadowCamera->GetCamera()->SetNear(100.f);
 		_shadowCamera->GetCamera()->SetFar(10000.f);
 		_shadowCamera->GetCamera()->SetWidth(4096);
 		_shadowCamera->GetCamera()->SetHeight(4096);

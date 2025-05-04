@@ -74,7 +74,7 @@ PS_OUT PS_DirLight(VS_OUT input)
         if (uv.x >= 0 && uv.x <= 1 && uv.y >= 0 && uv.y <= 1)
         {
             float shadowDepth = g_textures2.Sample(g_sam_0, uv).x;
-            float bias = 0.05f;
+            float bias = max(0.005f * (1.0 - dot(viewNormal, float3(0, 0, -1))), 0.0005f);
 
             if (depth < shadowDepth + bias)
             {
