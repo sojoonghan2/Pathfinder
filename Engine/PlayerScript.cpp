@@ -184,8 +184,8 @@ void PlayerScript::Move()
 		_isMove = false;
 	}
 
-	float mapMinX = -4950.f, mapMaxX = 4950.f;
-	float mapMinZ = -4950.f, mapMaxZ = 4950.f;
+	float mapMinX = -4800.f, mapMaxX = 4800.f;
+	float mapMinZ = -4800.f, mapMaxZ = 4800.f;
 	float minY = -100.f, maxY = 9500.f;
 
 	pos.x = max(mapMinX, min(pos.x, mapMaxX));
@@ -242,7 +242,7 @@ void PlayerScript::Shoot()
 {
 	if (_isGrenade || _isRazer || _isDashing) return;
 
-	if (INPUT->GetButton(KEY_TYPE::LBUTTON))
+	if (INPUT->GetButton(MOUSE_TYPE::LBUTTON))
 	{
 		if (!_isShoot)
 		{
@@ -386,12 +386,12 @@ void PlayerScript::RotateToCameraOnShoot()
 {
 	if (_crosshairUI)
 	{
-		if (INPUT->GetButton(KEY_TYPE::RBUTTON))
+		if (INPUT->GetButton(MOUSE_TYPE::RBUTTON))
 		{
 			_crosshairUI->SetRender(true);
 			RotateToCameraLook();
 		}
-		if (INPUT->GetButtonUp(KEY_TYPE::RBUTTON))
+		if (INPUT->GetButtonUp(MOUSE_TYPE::RBUTTON))
 		{
 			_crosshairUI->SetRender(false);
 		}

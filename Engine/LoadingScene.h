@@ -7,7 +7,7 @@ public:
 	LoadingScene();
 	virtual ~LoadingScene();
 
-	void Init() override;
+	virtual void Init(RoomType type);
 
 private:
 	bool stageClear;

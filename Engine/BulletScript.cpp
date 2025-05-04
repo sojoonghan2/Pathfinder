@@ -30,7 +30,7 @@ void BulletScript::Update()
 
 void BulletScript::MouseInput()
 {
-	if (INPUT->GetButton(KEY_TYPE::LBUTTON))
+	if (INPUT->GetButton(MOUSE_TYPE::LBUTTON))
 	{
 		s_lastFireTime += DELTA_TIME;
 		if (!_isFired && _myIndex == s_currentBulletIndex && s_lastFireTime >= s_fireInterval)
@@ -53,7 +53,7 @@ void BulletScript::MouseInput()
 			Vec3 dir;
 
 			// 오른쪽 버튼이 눌려있으면 (줌 상태이면) 카메라 Look 방향을 사용
-			if (INPUT->GetButton(KEY_TYPE::RBUTTON))
+			if (INPUT->GetButton(MOUSE_TYPE::RBUTTON))
 			{
 				auto currentScene = GET_SINGLE(SceneManager)->GetActiveScene();
 				auto mainCamera = currentScene->GetMainCamera();

@@ -27,6 +27,7 @@
 #include "TestParticleScript.h"
 
 #include "SphereCollider.h"
+#include "BoxCollider.h"
 #include "GeneratorScript.h"
 
 #include "IceParticleSystem.h"
@@ -182,7 +183,7 @@ void FactoryScene::Init()
 			bullet->SetStatic(false);
 
 			bullet->AddComponent(make_shared<Transform>());
-			bullet->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+			bullet->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
 			bullet->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 			bullet->GetTransform()->GetTransform()->RemoveParent();
 			bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
@@ -473,6 +474,70 @@ void FactoryScene::Init()
 	}
 #pragma endregion
 
+	// 더미 콜라이더
+#pragma region DummyCollider
+	int dummyCount{};
+	// 큐브
+	{
+		vector<pair<Vec3, Vec3>> dummyInfo;
+		
+		for (int i{}; i < 7; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, -4800.f), Vec3(400.f, 400.f, 400.f));
+		}
+
+		for (int i{}; i < 7; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, -2400.f), Vec3(400.f, 400.f, 400.f));
+		}
+
+		for (int i{}; i < 7; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, 0.f), Vec3(400.f, 400.f, 400.f));
+		}
+
+		for (int i{}; i < 7; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, 2400.f), Vec3(400.f, 400.f, 400.f));
+		}
+
+		for (int i{}; i < 7; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, 4800.f), Vec3(400.f, 400.f, 400.f));
+		}
+
+		for (const auto& info : dummyInfo)
+		{
+			shared_ptr<GameObject> dummy = make_shared<GameObject>();
+
+			wstring name = L"dummy" + to_wstring(dummyCount++);
+			dummy->SetName(name);
+
+			dummy->AddComponent(make_shared<Transform>());
+			dummy->GetTransform()->SetLocalPosition(info.first);
+			dummy->GetTransform()->SetLocalScale(info.second);
+			dummy->SetStatic(true);
+
+			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> cubeMesh = GET_SINGLE(Resources)->LoadCubeMesh();
+				meshRenderer->SetMesh(cubeMesh);
+			}
+			{
+				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
+				meshRenderer->SetMaterial(material->Clone());
+			}
+			//dummy->AddComponent(meshRenderer);
+
+			dummy->AddComponent(make_shared<BoxCollider>());
+			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetExtents(info.second / 1.5);
+			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetCenter(info.first);
+
+			AddGameObject(dummy);
+		}
+	}
+#pragma endregion
+
 	// 로봇
 #pragma region FactoryMonster
 	{
@@ -492,57 +557,9 @@ void FactoryScene::Init()
 		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
 		AddGameObject(gameObjects[0]);
-
-		// hp
-		shared_ptr<GameObject> hpBase = make_shared<GameObject>();
-		hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI"));
-		hpBase->AddComponent(make_shared<Transform>());
-		hpBase->SetName(L"FactoryMonsterHPBase");
-		hpBase->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
-		hpBase->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
-		shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
-		{
-			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-			hpBasemeshRenderer->SetMesh(mesh);
-		}
-		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
-			shared_ptr<Texture> texture{};
-			texture = GET_SINGLE(Resources)->Load<Texture>(L"FactoryMonsterHPBase", L"..\\Resources\\Texture\\FactoryMonsterHPBase.png");
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, texture);
-			hpBasemeshRenderer->SetMaterial(material);
-		}
-		hpBase->AddComponent(hpBasemeshRenderer);
-		AddGameObject(hpBase);
-
-		shared_ptr<GameObject> hp = make_shared<GameObject>();
-		hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
-		hp->AddComponent(make_shared<Transform>());
-		hp->SetName(L"FactoryMonsterHP");
-		hp->GetTransform()->SetLocalScale(Vec3(480.f, 35.f, 100.f));
-		hp->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
-		shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
-		{
-			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-			hpmeshRenderer->SetMesh(mesh);
-		}
-		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
-			shared_ptr<Texture> texture{};
-			texture = GET_SINGLE(Resources)->Load<Texture>(L"FactoryMonsterHP", L"..\\Resources\\Texture\\FactoryMonsterHP.png");
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, texture);
-			hpmeshRenderer->SetMaterial(material);
-		}
-		hp->AddComponent(hpmeshRenderer);
-		AddGameObject(hp);
 	}
 #pragma endregion
 	
-
 	// 전역 조명
 #pragma region Directional Light
 	{
@@ -599,20 +616,130 @@ void FactoryScene::Init()
 		gameObjects[0]->SetName(L"Generator");
 		gameObjects[0]->SetCheckFrustum(true);
 		gameObjects[0]->AddComponent(make_shared<GeneratorScript>());
-		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(2000.0f, -200.0f, 2000.0f));
+		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -200.0f, -3000.0f));
 		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.6f, 0.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(1.f, 1.f, 1.f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
+
+		gameObjects[0]->AddComponent(make_shared<SphereCollider>());
+		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
+		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 700.f, 0.f));
 
 		shared_ptr<GameObject> particleObj = make_shared<GameObject>();
-		particleObj->SetName(L"IceParticleSystem");
+		particleObj->SetName(L"GeneratorParticle");
 		particleObj->AddComponent(make_shared<Transform>());
 		particleObj->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 		particleObj->GetTransform()->SetLocalPosition(Vec3(0.0f, 0.0f, 500.0f));
 		particleObj->AddComponent(make_shared<IceParticleSystem>());
-		particleObj->AddComponent(make_shared<GeneratorScript>());
 		AddGameObject(particleObj);
 
 		AddGameObject(gameObjects[0]);
+
+		// hp
+		shared_ptr<GameObject> hpBase = make_shared<GameObject>();
+		hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI"));
+		hpBase->AddComponent(make_shared<Transform>());
+		hpBase->SetName(L"GeneratorHPBase");
+		hpBase->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
+		hpBase->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
+		shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			hpBasemeshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+			shared_ptr<Texture> texture{};
+			texture = GET_SINGLE(Resources)->Load<Texture>(L"GeneratorHPBase", L"..\\Resources\\Texture\\FactoryMonsterHPBase.png");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			hpBasemeshRenderer->SetMaterial(material);
+		}
+		hpBase->AddComponent(hpBasemeshRenderer);
+		AddGameObject(hpBase);
+
+		shared_ptr<GameObject> hp = make_shared<GameObject>();
+		hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		hp->AddComponent(make_shared<Transform>());
+		hp->SetName(L"GeneratorHP");
+		hp->GetTransform()->SetLocalScale(Vec3(480.f, 35.f, 100.f));
+		hp->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
+		shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			hpmeshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+			shared_ptr<Texture> texture{};
+			texture = GET_SINGLE(Resources)->Load<Texture>(L"GeneratorHP", L"..\\Resources\\Texture\\FactoryMonsterHP.png");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			hpmeshRenderer->SetMaterial(material);
+		}
+		hp->AddComponent(hpmeshRenderer);
+		AddGameObject(hp);
+	}
+#pragma endregion
+
+	// Temp
+#pragma region Temp
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Temp\\Temp.fbx");
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		for (const auto& gameObject : gameObjects)
+		{
+			gameObject->SetName(L"Temp");
+			gameObject->SetCheckFrustum(true);
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -100.0f, 0.0f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, 0.f, 0.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(5.f, 5.f, 5.f));
+			//AddGameObject(gameObject);
+		}
+
+		
+	}
+#pragma endregion
+
+	// FactoryMid
+#pragma region FactoryMid
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\FactoryMid\\FactoryMid.fbx");
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		for (const auto& gameObject : gameObjects)
+		{
+			gameObject->SetName(L"FactoryMid");
+			gameObject->SetCheckFrustum(true);
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -200.0f, 1000.0f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, 0.f, 0.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 15.f));
+			AddGameObject(gameObject);
+		}
+
+
+	}
+#pragma endregion
+
+	// Door
+#pragma region Door
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Door\\Door.fbx");
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		for (const auto& gameObject : gameObjects)
+		{
+			gameObject->SetName(L"Door");
+			gameObject->SetCheckFrustum(true);
+			gameObject->GetTransform()->SetLocalPosition(Vec3(950.f, -100.f, -5200.f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 0.f, 0.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(200.f, 100.f, 100.f));
+			AddGameObject(gameObject);
+		}
+
+
 	}
 #pragma endregion
 

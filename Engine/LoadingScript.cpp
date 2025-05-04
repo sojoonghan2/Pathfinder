@@ -17,8 +17,8 @@
 #include "TestScene.h"
 #include "SocketIO.h"
 
-LoadingScript::LoadingScript()
-	: loadEnd(false), loadThread(nullptr), isInitialized(false), pendingThreadJoin(false), _state(LoadingState::Idle)
+LoadingScript::LoadingScript(RoomType type)
+	: loadEnd(false), loadThread(nullptr), isInitialized(false), pendingThreadJoin(false), _state(LoadingState::Idle), roomType(type)
 {
 }
 
@@ -57,8 +57,6 @@ void LoadingScript::StartLoadingThread()
 
 #ifdef NETWORK_ENABLE
 	roomType = GET_SINGLE(SocketIO)->GetRoomType();
-#else
-	roomType = RoomType::Ruin;
 #endif
 
 	loadThread = new std::thread(&LoadingScript::SceneLoad, this);

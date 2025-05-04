@@ -14,7 +14,7 @@ class Scene;
 class LoadingScript : public MonoBehaviour
 {
 public:
-	LoadingScript();
+	LoadingScript(RoomType type);
 	virtual ~LoadingScript();
 
 	virtual void Awake() override;

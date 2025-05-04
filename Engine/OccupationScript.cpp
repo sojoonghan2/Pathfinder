@@ -9,7 +9,7 @@
 void OccupationScript::LateUpdate()
 {
 	auto pos = GetTransform()->GetLocalPosition();
-	pos.y += 2.f;
+	pos.y += 1;
 	if (pos.y > 201.f) pos.y = -99.f;
 	GetTransform()->SetLocalPosition(pos);
 

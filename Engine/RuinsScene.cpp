@@ -7,6 +7,7 @@
 #include "Shader.h"
 #include "Material.h"
 #include "GameObject.h"
+#include "GameModule.h"
 #include "MeshRenderer.h"
 #include "Transform.h"
 #include "Camera.h"
@@ -26,6 +27,7 @@
 #include "BulletScript.h"
 #include "GunScript.h"
 #include "TestScript.h"
+#include "ModuleScript.h"
 
 #include "SphereCollider.h"
 #include "BoxCollider.h"
@@ -159,7 +161,7 @@ void RuinsScene::Init()
 			particleObject->GetTransform()->SetParent(gameObject->GetTransform());
 			particleObject->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 150.f));
 			shared_ptr<GunFlameParticleSystem> gunFlameParticleSystem = make_shared<GunFlameParticleSystem>();
-			gunFlameParticleSystem->SetParticleScale(20.f, 20.f);
+			gunFlameParticleSystem->SetParticleScale(50.f, 50.f);
 			particleObject->AddComponent(gunFlameParticleSystem);
 
 			AddGameObject(particleObject);
@@ -459,9 +461,6 @@ void RuinsScene::Init()
 
 #endif // NETWORK_ENABLE
 #pragma endregion
-
-
-
 
 	// 터레인 큐브
 #pragma region TerrainCube
@@ -993,6 +992,38 @@ void RuinsScene::Init()
 			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 			AddGameObject(gameObjects[0]);
 		}
+	}
+#pragma endregion
+
+	// 모듈
+#pragma region Module
+	for (int i{}; i < 3; ++i)
+	{
+		shared_ptr<GameModule> obj = make_shared<GameModule>();
+		obj->SetName(L"RuinsModule" + std::to_wstring(i));
+		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		obj->AddComponent(make_shared<Transform>());
+		obj->AddComponent(make_shared<ModuleScript>());
+		obj->GetTransform()->SetLocalScale(Vec3(300.f, 500.f, 100.f));
+		obj->GetTransform()->SetLocalPosition(Vec3(-400.f + (i * 400), -800.f, 1.f));
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			meshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Texture");
+
+			shared_ptr<Texture> texture;
+			texture = obj->GetTexture();
+
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			meshRenderer->SetMaterial(material);
+		}
+		obj->AddComponent(meshRenderer);
+		AddGameObject(obj);
 	}
 #pragma endregion
 
