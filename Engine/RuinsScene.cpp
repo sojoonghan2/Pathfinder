@@ -125,7 +125,8 @@ void RuinsScene::Init()
 			gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 			gameObject->AddComponent(playerScript);
 			gameObject->AddComponent(make_shared<TestDragon>());
-
+			gameObject->GetMeshRenderer()->GetMesh()->SetVrs(true);
+			gameObject->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 			gameObject->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(100.f);
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
@@ -179,6 +180,8 @@ void RuinsScene::Init()
 			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(PI / 2, -0.4f, 1.f));
 			gameObject->GetTransform()->SetLocalPosition(Vec3(42.f, 58.f, -3.f));
+			gameObject->GetMeshRenderer()->GetMesh()->SetVrs(true);
+			gameObject->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 			gameObject->AddComponent(make_shared<GunScript>());
 
 			AddGameObject(gameObject);
@@ -261,6 +264,7 @@ void RuinsScene::Init()
 		grenade->GetTransform()->GetTransform()->RemoveParent();
 		grenade->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		grenade->AddComponent(make_shared<TestGrenadeScript>(playerScript));
+
 
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 		{
@@ -490,8 +494,8 @@ void RuinsScene::Init()
 			material->SetTexture(2, floorTexture);
 			material->SetTexture(1, topTexture);
 			meshRenderer->SetMaterial(material);
-			meshRenderer->GetMesh()->SetVrs(true);
-			meshRenderer->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
+			//meshRenderer->GetMesh()->SetVrs(true);
+			//meshRenderer->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 		}
 
 		terraincube->AddComponent(meshRenderer);
@@ -709,6 +713,7 @@ void RuinsScene::Init()
 			dummy->AddComponent(make_shared<Transform>());
 			dummy->GetTransform()->SetLocalPosition(info.first);
 			dummy->GetTransform()->SetLocalScale(info.second);
+
 			dummy->SetStatic(true);
 
 			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -720,8 +725,10 @@ void RuinsScene::Init()
 				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
 				meshRenderer->SetMaterial(material->Clone());
 			}
+			// 여기가 문제네
 			//dummy->AddComponent(meshRenderer);
-
+			//dummy->GetMeshRenderer()->GetMesh()->SetVrs(true);
+			//dummy->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 			dummy->AddComponent(make_shared<BoxCollider>());
 			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetExtents(info.second / 1.5);
 			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetCenter(info.first);
@@ -773,8 +780,8 @@ void RuinsScene::Init()
 
 			gameObjects[0]->SetName(L"CyberCrabs" + std::to_wstring(i));
 			gameObjects[0]->SetCheckFrustum(true);
-			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
-			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
+			//gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
+			//gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 			gameObjects[0]->AddComponent(make_shared<CrabScript>());
 			gameObjects[0]->GetTransform()->SetLocalPosition(randomPos);
 			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(700.f, 700.f, 700.f));
@@ -959,6 +966,8 @@ void RuinsScene::Init()
 			gameObject->GetTransform()->SetLocalScale(Vec3(50.f, 50.f, 50.f));
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 3500.0f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI / 2, 0.0f));
+			gameObject->GetMeshRenderer()->GetMesh()->SetVrs(true);
+			gameObject->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 			AddGameObject(gameObject);
 		}
 	}
@@ -979,6 +988,8 @@ void RuinsScene::Init()
 			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 			gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(100.0f + i * 4000, -100.f, -4550));
 			gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(0.f, PI * (i - 1), 0.f));
+			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
+			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 			AddGameObject(gameObjects[0]);
 		}
 	}
@@ -1023,6 +1034,7 @@ void RuinsScene::Init()
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
 		obj->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 		obj->AddComponent(make_shared<Transform>());
+
 		if (i == 0) obj->SetName(L"DashUI");
 		else if (i == 1) obj->SetName(L"GrenadeUI");
 		else if (i == 2) obj->SetName(L"RazerUI");
@@ -1036,7 +1048,9 @@ void RuinsScene::Init()
 		{
 			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
 			shared_ptr<Texture> texture{};
-			if (i == 0) texture = GET_SINGLE(Resources)->Load<Texture>(L"DashUI", L"..\\Resources\\Texture\\Skill\\Dash.png");
+			if (i == 0) {
+				texture = GET_SINGLE(Resources)->Load<Texture>(L"DashUI", L"..\\Resources\\Texture\\Skill\\Dash.png");
+			}
 			else if (i == 1) texture = GET_SINGLE(Resources)->Load<Texture>(L"GrenadeUI", L"..\\Resources\\Texture\\Skill\\Grenade.png");
 			else if (i == 2) texture = GET_SINGLE(Resources)->Load<Texture>(L"RazerUI", L"..\\Resources\\Texture\\Skill\\Razer.png");
 			shared_ptr<Material> material = make_shared<Material>();
@@ -1111,7 +1125,7 @@ void RuinsScene::Init()
 		// 2-2. 스팟 라이트 방향 설정
 		light->GetLight()->SetLightDirection(Vec3(0.f, -1.f, 0.f));
 
-		float lightpower = 0.7f;
+		float lightpower = 1.5f;
 		// 3. 조명 색상 및 강도 조정 (따뜻한 황금빛)
 		light->GetLight()->SetDiffuse(Vec3(1.0f, 0.85f, 0.6f) * lightpower);
 		light->GetLight()->SetAmbient(Vec3(0.25f, 0.2f, 0.25f) * lightpower);

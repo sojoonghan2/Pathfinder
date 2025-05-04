@@ -96,7 +96,7 @@ private:
 	// Animation
 	vector<AnimClipInfo>			_animClips;
 	vector<BoneInfo>				_bones;
-
+	D3D12_SHADING_RATE shading_rate = D3D12_SHADING_RATE_2X2;
 	shared_ptr<StructuredBuffer>	_offsetBuffer; // 각 뼈의 offset 행렬
 	vector<shared_ptr<StructuredBuffer>> _frameBuffer; // 전체 본 프레임 정보
 };

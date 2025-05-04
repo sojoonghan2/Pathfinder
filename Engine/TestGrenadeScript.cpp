@@ -6,6 +6,7 @@
 #include "SceneManager.h"
 #include "GameObject.h"
 #include "ParticleSystem.h"
+#include "MeshRenderer.h"
 #include "Transform.h"
 #include "BaseCollider.h"
 
@@ -29,6 +30,7 @@ void TestGrenadeScript::LateUpdate()
 	KeyboardInput();
 	MouseInput();
 	ThrowGrenade();
+	//UpdateGrenadeUI();
 
 	if (_resetThrow)
 	{
@@ -75,6 +77,7 @@ void TestGrenadeScript::KeyboardInput()
 void TestGrenadeScript::MouseInput()
 {
 }
+
 
 void TestGrenadeScript::ThrowGrenade()
 {

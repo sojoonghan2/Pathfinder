@@ -11,6 +11,8 @@
 #include "SocketIO.h"
 #include "Animator.h"
 #include "BoxCollider.h"
+#include "Material.h"
+#include "MeshRenderer.h"
 #include "SphereCollider.h"
 
 PlayerScript::PlayerScript() {}
@@ -201,8 +203,10 @@ void PlayerScript::Dash()
 	if (_dashCooldownTimer > 0.f)
 	{
 		_dashCooldownTimer -= DELTA_TIME;
-		if (_dashCooldownTimer <= 0.f && _dashUI)
-			_dashUI->SetRender(true);
+		if (_dashCooldownTimer <= 0.f && _dashUI) {
+			_dashUI->GetMeshRenderer()->GetMaterial()->SetFloat(3, 1.0f);
+		}
+
 	}
 
 	if (_isDashing)
@@ -229,7 +233,8 @@ void PlayerScript::Dash()
 		_dashDirection = lookDir;
 		_isDashing = true;
 		_dashTimer = _dashDuration;
-		_dashUI->SetRender(false);
+		_dashUI->GetMeshRenderer()->GetMaterial()->SetFloat(3, 0.3f);
+
 	}
 }
 
