@@ -370,8 +370,8 @@ void RuinsScene::Init()
 		hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 		hpBase->AddComponent(make_shared<Transform>());
 		hpBase->SetName(L"HPBase");
-		hpBase->GetTransform()->SetLocalScale(Vec3(200.f, 100.f, 100.f));
-		hpBase->GetTransform()->SetLocalPosition(Vec3(-350.f, -300.f, 1.f));
+		hpBase->GetTransform()->SetLocalScale(Vec3(200.f, 150.f, 1.f));
+		hpBase->GetTransform()->SetLocalPosition(Vec3(-370.f, -320.f, 1.f));
 		shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
@@ -393,8 +393,8 @@ void RuinsScene::Init()
 		hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
 		hp->AddComponent(make_shared<Transform>());
 		hp->SetName(L"HP");
-		hp->GetTransform()->SetLocalScale(Vec3(180.f, 85.f, 100.f));
-		hp->GetTransform()->SetLocalPosition(Vec3(-350.f, -300.f, 1.f));
+		hp->GetTransform()->SetLocalScale(Vec3(160.f, 30.f, 1.f));
+		hp->GetTransform()->SetLocalPosition(Vec3(-370.f, -322.5f, 1.f));
 		shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
 		{
 			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
