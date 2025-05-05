@@ -53,19 +53,6 @@ void CrabScript::LateUpdate()
 		return;
 	}
 
-	// 피격 파티클 유지 여부 체크
-	_hitTime += DELTA_TIME;
-	if (_hitTime < _hitDuration)
-	{
-		if (GetGameObject()->GetParticleSystem() && !GetGameObject()->GetParticleSystem()->IsActive())
-			GetGameObject()->GetParticleSystem()->ParticleStart();
-	}
-	else
-	{
-		if (GetGameObject()->GetParticleSystem() && GetGameObject()->GetParticleSystem()->IsActive())
-			GetGameObject()->GetParticleSystem()->ParticleStop();
-	}
-
 	// 죽었는지 체크
 	if (!_isAlive)
 	{
@@ -133,6 +120,8 @@ void CrabScript::Start()
 
 	wstring hpName = L"CrabHP" + to_wstring(_index);
 	_hp = GET_SINGLE(SceneManager)->FindObjectByName(hpName);
+
+	_particlePool.Init(_particleObjects);
 }
 
 void CrabScript::MoveRandomly()
@@ -185,7 +174,12 @@ void CrabScript::CheckBulletHits()
 			}
 
 			bullet->GetCollider()->SetEnable(false);
-			_hitTime = 0.f; // 피격 시각 갱신
+			auto particle = _particlePool.GetAvailable();
+			if (particle)
+			{
+				particle->ParticleStart();
+			}
+
 
 			Vec3 hpScale = _hp->GetTransform()->GetLocalScale();
 			Vec3 hpPos = _hp->GetTransform()->GetLocalPosition();

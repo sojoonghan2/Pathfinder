@@ -1,5 +1,6 @@
 #pragma once
 #include "MonoBehaviour.h"
+#include "ParticlePool.h"
 
 class CrabScript : public MonoBehaviour
 {
@@ -16,7 +17,12 @@ public:
 
 	void DeadAnimation();
 
+	void RegisterParticles(const vector<shared_ptr<GameObject>>& particles) { _particleObjects = particles; }
+
 private:
+	vector<shared_ptr<GameObject>> _particleObjects;
+	ParticlePool _particlePool;
+
 	float _speed = 1000.f;
 	Vec3 _direction;
 	float _changeDirectionTime = 10.0f;

@@ -234,6 +234,7 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="OccupationScript.h" />
     <ClInclude Include="OverDriveParticleSystem.h" />
+    <ClInclude Include="ParticlePool.h" />
     <ClInclude Include="ParticleScene.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="pch.h" />
@@ -336,6 +337,7 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="OccupationScript.cpp" />
     <ClCompile Include="OverDriveParticleSystem.cpp" />
+    <ClCompile Include="ParticlePool.cpp" />
     <ClCompile Include="ParticleScene.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="pch.cpp">

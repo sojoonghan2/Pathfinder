@@ -792,9 +792,27 @@ void RuinsScene::Init()
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
-			shared_ptr<CrabParticleSystem> crapParticleSystem = make_shared<CrabParticleSystem>();
-			crapParticleSystem->SetParticleScale(50.f, 50.f);
-			gameObjects[0]->AddComponent(crapParticleSystem);
+			vector<shared_ptr<GameObject>> crabParticles;
+			for (int j = 0; j < 5; ++j)
+			{
+				shared_ptr<GameObject> psObj = make_shared<GameObject>();
+				psObj->SetName(L"CrabParticle_" + to_wstring(i) + L"_" + to_wstring(j));
+				psObj->AddComponent(make_shared<Transform>());
+				psObj->AddComponent(make_shared<CrabParticleSystem>());
+				psObj->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+				psObj->SetLayerIndex(gameObjects[0]->GetLayerIndex());
+
+				// 처음에는 비활성화
+				psObj->GetParticleSystem()->ParticleStop();
+
+				// GameObject 등록
+				AddGameObject(psObj);
+				crabParticles.push_back(psObj);
+			}
+
+			// Script에 등록
+			auto crabScript = gameObjects[0]->GetScript<CrabScript>();
+			crabScript->RegisterParticles(crabParticles);
 
 			AddGameObject(gameObjects[0]);
 
