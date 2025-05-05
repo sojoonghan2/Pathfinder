@@ -1,5 +1,5 @@
-#ifndef _PNG_FX_
-#define _PNG_FX_
+#ifndef _SKILLICON_FX_
+#define _SKILLICON_FX_
 
 #include "params.fx"
 #include "utils.fx"
@@ -115,6 +115,8 @@ float4 PS_Tex(VS_TEX_OUT input) : SV_Target
     // 알파 값이 0이면 픽셀을 버림
 	if (color.a == 0.0f)
 		discard;
+    
+	color.rgb *= g_float_3;
 
 	return color;
 }

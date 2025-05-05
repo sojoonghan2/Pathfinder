@@ -46,29 +46,29 @@ VS_OUT VS_Main(VS_IN input)
 
 float4 PS_Main(VS_OUT input) : SV_Target
 {
-    float4 color = float4(1.f, 1.f, 1.f, 1.f);
-    if (g_tex_on_0)
-        color = g_textures.Sample(g_sam_0, input.uv);
+	float4 color = float4(1.f, 1.f, 1.f, 1.f);
+	if (g_tex_on_0)
+		color = g_textures.Sample(g_sam_0, input.uv);
 
-    // 노말맵, 라이트 계산은 그대로
-    float alpha = color.a; // <--- 원래 텍스처 알파를 저장해둔다
+	float alpha = color.a;
 
-    LightColor totalColor = (LightColor) 0.f;
-    for (int i = 0; i < g_lightCount; ++i)
-    {
-        LightColor colorLight = CalculateLightColor(i, input.viewNormal, input.viewPos);
-        totalColor.diffuse += colorLight.diffuse;
-        totalColor.ambient += colorLight.ambient;
-        totalColor.specular += colorLight.specular;
-    }
+	LightColor totalColor = (LightColor) 0.f;
+	for (int i = 0; i < g_lightCount; ++i)
+	{
+		LightColor colorLight = CalculateLightColor(i, input.viewNormal, input.viewPos);
+		totalColor.diffuse += colorLight.diffuse;
+		totalColor.ambient += colorLight.ambient;
+		totalColor.specular += colorLight.specular;
+	}
 
-    color.rgb = (totalColor.diffuse.rgb * color.rgb)
+	color.rgb = (totalColor.diffuse.rgb * color.rgb)
               + (totalColor.ambient.rgb * color.rgb)
               + (totalColor.specular.rgb);
 
-    color.a = alpha; // <--- 최종 color에 알파 복원
+    // 알파값 조정 적용
+	color.a = g_float_3;
 
-    return color;
+	return color;
 }
 
 // [Texture Shader]

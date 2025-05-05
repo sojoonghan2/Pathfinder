@@ -234,7 +234,6 @@ void PlayerScript::Dash()
 		_isDashing = true;
 		_dashTimer = _dashDuration;
 		_dashUI->GetMeshRenderer()->GetMaterial()->SetFloat(3, 0.3f);
-
 	}
 }
 
@@ -271,7 +270,7 @@ void PlayerScript::ThrowGrenade()
 	{
 		_grenadeCooldownTimer -= DELTA_TIME;
 		if (_grenadeCooldownTimer <= 0.f)
-			GET_SINGLE(SceneManager)->FindObjectByName(L"GrenadeUI")->SetRender(true);
+			_grenadeUI->GetMeshRenderer()->GetMaterial()->SetFloat(3, 1.0f);
 	}
 
 	if (_isGrenade)
@@ -291,7 +290,7 @@ void PlayerScript::ThrowGrenade()
 		RotateToCameraLook();
 		_isGrenade = true;
 		_grenadeAniDurationTimer = 1.0f;
-		GET_SINGLE(SceneManager)->FindObjectByName(L"GrenadeUI")->SetRender(false);
+		_grenadeUI->GetMeshRenderer()->GetMaterial()->SetFloat(3, 0.3f);
 	}
 }
 
@@ -303,7 +302,7 @@ void PlayerScript::ShootRazer()
 	{
 		_razerCooldownTimer -= DELTA_TIME;
 		if (_razerCooldownTimer <= 0.f)
-			GET_SINGLE(SceneManager)->FindObjectByName(L"RazerUI")->SetRender(true);
+			_razerUI->GetMeshRenderer()->GetMaterial()->SetFloat(3, 1.0f);
 	}
 
 	if (_isRazer)
@@ -323,7 +322,7 @@ void PlayerScript::ShootRazer()
 		RotateToCameraLook();
 		_isRazer = true;
 		_razerAniDurationTimer = 1.7f;
-		GET_SINGLE(SceneManager)->FindObjectByName(L"RazerUI")->SetRender(false);
+		_razerUI->GetMeshRenderer()->GetMaterial()->SetFloat(3, 0.3f);
 	}
 }
 

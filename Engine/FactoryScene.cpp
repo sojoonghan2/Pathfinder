@@ -418,7 +418,7 @@ void FactoryScene::Init()
 			CrosshairmeshRenderer->SetMesh(mesh);
 		}
 		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"SkillIcon");
 			shared_ptr<Texture> texture{};
 			if (i == 0) texture = GET_SINGLE(Resources)->Load<Texture>(L"DashUI", L"..\\Resources\\Texture\\Skill\\Dash.png");
 			else if (i == 1) texture = GET_SINGLE(Resources)->Load<Texture>(L"GrenadeUI", L"..\\Resources\\Texture\\Skill\\Grenade.png");
@@ -426,6 +426,7 @@ void FactoryScene::Init()
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
 			material->SetTexture(0, texture);
+			material->SetFloat(3, 1.0f);
 			CrosshairmeshRenderer->SetMaterial(material);
 		}
 		obj->AddComponent(CrosshairmeshRenderer);

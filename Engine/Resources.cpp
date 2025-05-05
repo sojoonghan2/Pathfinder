@@ -515,7 +515,7 @@ void Resources::CreateDefaultShader()
 		Add<Shader>(L"Occupation", shader);
 	}
 
-	// PNG(Forward)
+	// SkillIcon(Forward)
 	{
 		ShaderInfo info =
 		{
@@ -535,8 +535,8 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\PNG.fx", info, arg);
-		Add<Shader>(L"PNG", shader);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\SkillIcon.fx", info, arg);
+		Add<Shader>(L"SkillIcon", shader);
 	}
 
 	// Billboard

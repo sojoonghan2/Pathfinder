@@ -70,7 +70,7 @@ void LoadingScene::Init(RoomType type)
 			meshRenderer->SetMesh(mesh);
 		}
 		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"PNG");
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
 			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"LoadingIcon", L"..\\Resources\\Texture\\LoadingIcon.png");
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);

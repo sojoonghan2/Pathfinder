@@ -757,7 +757,7 @@
     <FxCompile Include="..\Resources\Shader\CrabParticle.fx">
       <Filter>Shader\Particle</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\PNG.fx">
+    <FxCompile Include="..\Resources\Shader\SkillIcon.fx">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
