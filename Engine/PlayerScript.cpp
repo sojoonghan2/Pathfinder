@@ -419,6 +419,9 @@ void PlayerScript::CheckDummyHits()
 	auto player = GetGameObject();
 	if (!player) return;
 
+	Vec3 curPos = player->GetTransform()->GetLocalPosition();
+	Vec3 newPos = curPos;
+
 	for (auto& dummy : _dummyList)
 	{
 		if (!dummy) continue;
@@ -426,21 +429,26 @@ void PlayerScript::CheckDummyHits()
 		bool is_collision = GET_SINGLE(SceneManager)->Collition(player, dummy);
 		if (is_collision)
 		{
-			Vec3 curPos = player->GetTransform()->GetLocalPosition();
-			Vec3 dummyPos = dummy->GetTransform()->GetLocalPosition();
-			Vec3 dir = (curPos - dummyPos);
+			player->GetTransform()->SetLocalPosition(_prevPosition);
 
-			if (dir.LengthSquared() > 0.001f)
+			Vec3 dummyPos = dummy->GetTransform()->GetLocalPosition();
+			Vec3 dummyToPlayer = curPos - dummyPos;
+
+			if (dummyToPlayer.LengthSquared() > 0.0001f)
 			{
-				dir.Normalize();
-				curPos += dir * 10.f;
+				dummyToPlayer.Normalize();
+
+				Vec3 slideDir = dummyToPlayer;
+				slideDir.y = 0.f;
+
+				Vec3 slidePos = _prevPosition + slideDir * 2.f;
+				player->GetTransform()->SetLocalPosition(slidePos);
 			}
 			else
 			{
-				curPos = _prevPosition;
+				player->GetTransform()->SetLocalPosition(_prevPosition);
 			}
 
-			player->GetTransform()->SetLocalPosition(curPos);
 			break;
 		}
 	}
