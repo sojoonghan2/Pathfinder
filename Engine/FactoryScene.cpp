@@ -484,27 +484,27 @@ void FactoryScene::Init()
 		
 		for (int i{}; i < 7; ++i)
 		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, -4800.f), Vec3(400.f, 400.f, 400.f));
+			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, -4800.f), Vec3(300.f, 300.f, 300.f));
 		}
 
 		for (int i{}; i < 7; ++i)
 		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, -2400.f), Vec3(400.f, 400.f, 400.f));
+			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, -2400.f), Vec3(300.f, 300.f, 300.f));
 		}
 
 		for (int i{}; i < 7; ++i)
 		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, 0.f), Vec3(400.f, 400.f, 400.f));
+			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, 0.f), Vec3(300.f, 300.f, 300.f));
 		}
 
 		for (int i{}; i < 7; ++i)
 		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, 2400.f), Vec3(400.f, 400.f, 400.f));
+			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, 2400.f), Vec3(300.f, 300.f, 300.f));
 		}
 
 		for (int i{}; i < 7; ++i)
 		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, 4800.f), Vec3(400.f, 400.f, 400.f));
+			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, 4800.f), Vec3(300.f, 300.f, 300.f));
 		}
 
 		for (const auto& info : dummyInfo)

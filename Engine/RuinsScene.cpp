@@ -608,7 +608,7 @@ void RuinsScene::Init()
 		}
 		meshRenderer->GetMesh()->SetVrs(true);
 		meshRenderer->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
-		//water->AddComponent(meshRenderer);
+		water->AddComponent(meshRenderer);
 		AddGameObject(water);
 	}
 #pragma endregion
