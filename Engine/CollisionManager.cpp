@@ -2,8 +2,10 @@
 #include "CollisionManager.h"
 #include "GameObject.h"
 #include "SceneManager.h"
+#include "Scene.h"
 #include "PlayerScript.h"
 #include "CrabScript.h"
+#include "GeneratorScript.h"
 
 void CollisionManager::RegisterCollider(const shared_ptr<BaseCollider>& collider, COLLISION_OBJECT_TYPE objectType)
 {
@@ -25,15 +27,28 @@ void CollisionManager::UnregisterCollider(const shared_ptr<BaseCollider>& collid
 		}), _colliders.end());
 }
 
+void CollisionManager::ClearCollider()
+{
+	_colliders.clear();
+}
+
 void CollisionManager::Update()
 {
+	const auto& sceneName = GET_SINGLE(SceneManager)->GetActiveScene()->GetName();
+
 	CheckPlayerToDummy();
-	CheckCrabToDummy();
-	CheckPlayerToCrab();
-	CheckCrabToBullet();
-	CheckCrabToGrenade();
-	CheckCrabToRazer();
-	CheckGenerateToBullet();
+	if (sceneName == L"RuinsScene")
+	{
+		CheckCrabToDummy();
+		CheckPlayerToCrab();
+		CheckCrabToBullet();
+		CheckCrabToGrenade();
+		CheckCrabToRazer();
+	}
+	else if (sceneName == L"FactoryScene")
+	{
+		CheckGenerateToBullet();
+	}
 }
 
 void CollisionManager::CheckPlayerToDummy()
@@ -177,4 +192,27 @@ void CollisionManager::CheckCrabToRazer()
 
 void CollisionManager::CheckGenerateToBullet()
 {
+	for (auto& [generate, typeA] : _colliders)
+	{
+		if (typeA != COLLISION_OBJECT_TYPE::GENERATE || !generate->IsEnabled())
+			continue;
+
+		for (auto& [bullet, typeB] : _colliders)
+		{
+			if (typeB != COLLISION_OBJECT_TYPE::BULLET || !bullet->IsEnabled())
+				continue;
+
+			const auto& objA = generate->GetGameObject();
+			const auto& objB = bullet->GetGameObject();
+
+			if (!objA || !objB)
+				continue;
+
+			if (GET_SINGLE(SceneManager)->Collition(objA, objB))
+			{
+				auto generatorScript = objA->GetScript<GeneratorScript>();
+				generatorScript->CheckBulletHits(objB);
+			}
+		}
+	}
 }

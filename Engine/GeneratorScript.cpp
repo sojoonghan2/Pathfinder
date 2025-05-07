@@ -14,12 +14,6 @@ GeneratorScript::GeneratorScript() : _isDead(false), _init(false)
 
 void GeneratorScript::Start()
 {
-	_bullets.resize(50);
-	for (int i = 0; i < 50; ++i)
-	{
-		wstring name = L"Bullet" + to_wstring(i);
-		_bullets[i] = GET_SINGLE(SceneManager)->FindObjectByName(name);
-	}
 
 	_hp = GET_SINGLE(SceneManager)->FindObjectByName(L"GeneratorHP");
 	_generatorParticle = GET_SINGLE(SceneManager)->FindObjectByName(L"GeneratorParticle");
@@ -45,60 +39,43 @@ void GeneratorScript::LateUpdate()
 		_isDead = false;
 	}
 
-	if(!_isDead) CheckBulletHits();
 	if(!_isDead) Recovery();
 }
 
-void GeneratorScript::CheckBulletHits()
+void GeneratorScript::CheckBulletHits(shared_ptr<GameObject> bullet)
 {
 	if (!_hp)
 		return;
 
-	for (const auto& bullet : _bullets)
+	bullet->GetCollider()->SetEnable(false);
+	_hitTime = 0.f;
+
+	Vec3 hpScale = _hp->GetTransform()->GetLocalScale();
+	Vec3 hpPos = _hp->GetTransform()->GetLocalPosition();
+	float delta = 10.f;
+
+	if (hpScale.x - delta >= 0.f)
 	{
-		if (!bullet)
-			continue;
+		hpScale.x -= delta;
+		hpPos.x -= delta * 0.5f;
 
-		if (GET_SINGLE(SceneManager)->Collition(GetGameObject(), bullet))
+		_hp->GetTransform()->SetLocalScale(hpScale);
+		_hp->GetTransform()->SetLocalPosition(hpPos);
+	}
+
+	_recoveryElapsedTime = 0.f;
+	_wasHit = true;
+
+	if ((hpScale.x - delta) < 0.f)
+	{
+		if (!_isDead)
 		{
-			if (!_initialized)
-			{
-				_initialized = true;
-				return;
-			}
-
-			bullet->GetCollider()->SetEnable(false);
-			_hitTime = 0.f;
-
-			Vec3 hpScale = _hp->GetTransform()->GetLocalScale();
-			Vec3 hpPos = _hp->GetTransform()->GetLocalPosition();
-			float delta = 10.f;
-
-			if (hpScale.x - delta >= 0.f)
-			{
-				hpScale.x -= delta;
-				hpPos.x -= delta * 0.5f;
-
-				_hp->GetTransform()->SetLocalScale(hpScale);
-				_hp->GetTransform()->SetLocalPosition(hpPos);
-			}
-
-			_recoveryElapsedTime = 0.f;
-			_wasHit = true;
-
-			if ((hpScale.x - delta) < 0.f)
-			{
-				if (!_isDead)
-				{
-					if (GetAnimator()) GetAnimator()->Play(0);
-					_isDead = true;
-					_deadTime = 0.f;
-					_generatorParticle->GetParticleSystem()->ParticleStart();
-				}
-				_hp->SetRender(false);
-			}
-			break;
+			if (GetAnimator()) GetAnimator()->Play(0);
+			_isDead = true;
+			_deadTime = 0.f;
+			_generatorParticle->GetParticleSystem()->ParticleStart();
 		}
+		_hp->SetRender(false);
 	}
 }
 

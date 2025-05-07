@@ -15,6 +15,7 @@
 #include "CameraScript.h"
 #include "Resources.h"
 #include "MeshData.h"
+#include "CollisionManager.h"
 
 #include "TestDragon.h"
 #include "PlayerScript.h"
@@ -120,6 +121,8 @@ void FactoryScene::Init()
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(100.f);
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
+			GET_SINGLE(CollisionManager)->RegisterCollider(gameObject->GetCollider(), COLLISION_OBJECT_TYPE::PLAYER);
+
 			AddGameObject(gameObject);
 
 			shared_ptr<GameObject> wire = make_shared<GameObject>();
@@ -208,6 +211,8 @@ void FactoryScene::Init()
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetRadius(10.f);
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetEnable(false);
+
+			GET_SINGLE(CollisionManager)->RegisterCollider(bullet->GetCollider(), COLLISION_OBJECT_TYPE::BULLET);
 
 			bullet->AddComponent(meshRenderer);
 			bullet->SetRender(false);
@@ -533,6 +538,8 @@ void FactoryScene::Init()
 			dummy->AddComponent(make_shared<BoxCollider>());
 			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetExtents(info.second / 1.5);
 			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetCenter(info.first);
+			
+			GET_SINGLE(CollisionManager)->RegisterCollider(dummy->GetCollider(), COLLISION_OBJECT_TYPE::DUMMY);
 
 			AddGameObject(dummy);
 		}
@@ -624,6 +631,8 @@ void FactoryScene::Init()
 		gameObjects[0]->AddComponent(make_shared<SphereCollider>());
 		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
 		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 700.f, 0.f));
+
+		GET_SINGLE(CollisionManager)->RegisterCollider(gameObjects[0]->GetCollider(), COLLISION_OBJECT_TYPE::GENERATE);
 
 		shared_ptr<GameObject> particleObj = make_shared<GameObject>();
 		particleObj->SetName(L"GeneratorParticle");

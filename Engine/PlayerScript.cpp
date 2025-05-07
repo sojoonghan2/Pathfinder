@@ -410,6 +410,7 @@ void PlayerScript::CheckDummyHits(shared_ptr<GameObject> dummy)
 
 void PlayerScript::CheckCrabHits()
 {
+	if (!_hpTransform) return;
 	Vec3 scale = _hpTransform->GetLocalScale();
 	Vec3 pos = _hpTransform->GetLocalPosition();
 

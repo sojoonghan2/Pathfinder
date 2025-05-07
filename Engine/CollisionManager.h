@@ -18,6 +18,7 @@ class CollisionManager
 public:
 	void RegisterCollider(const shared_ptr<BaseCollider>& collider, COLLISION_OBJECT_TYPE objectType);
 	void UnregisterCollider(const shared_ptr<BaseCollider>& collider);
+	void ClearCollider();
 
 	void Update();
 
