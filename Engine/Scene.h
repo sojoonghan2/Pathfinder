@@ -37,7 +37,11 @@ public:
 
 	void SetSelectedModuleType(int type) { _selectedModuleType = type; }
 
+	void SetName(const wstring& name) { _sceneName = name; }
+	const wstring& GetName() const { return _sceneName; }
+
 private:
+	wstring								_sceneName;
 	vector<shared_ptr<GameObject>>		_gameObjects;
 	vector<shared_ptr<class Camera>>	_cameras;
 	vector<shared_ptr<class Light>>		_lights;

@@ -10,7 +10,7 @@ void OccupationScript::LateUpdate()
 {
 	auto pos = GetTransform()->GetLocalPosition();
 	pos.y += 1;
-	if (pos.y > 201.f) pos.y = -99.f;
+	if (pos.y > 401.f) pos.y = -99.f;
 	GetTransform()->SetLocalPosition(pos);
 
     m_accumulatedTime += DELTA_TIME * 1.5;

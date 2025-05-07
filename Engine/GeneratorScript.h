@@ -9,11 +9,10 @@ public:
 	virtual void Start() override;
 	virtual void LateUpdate() override;
 
-	void CheckBulletHits();
+	void CheckBulletHits(shared_ptr<GameObject> bullet);
 	void Recovery();
 
 private:
-	vector<shared_ptr<GameObject>>	_bullets;
 	shared_ptr<GameObject>			_hp;
 	shared_ptr<GameObject>			_generatorParticle;
 

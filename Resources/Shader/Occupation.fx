@@ -76,7 +76,8 @@ PS_OUT PS_Main(VS_OUT input)
 	if (g_tex_on_0 == 1)
 		color = g_textures.Sample(g_sam_0, input.uv);
     
-	float alphaMin = 0.3f;
+	// ¾ËÆÄ°ª alphaMin ~ alphaMax
+	float alphaMin = 0.7f;
 	float alphaMax = 0.7f;
 	float alphaMid = (alphaMin + alphaMax) * 0.5f;
 	float alphaHalfRange = (alphaMax - alphaMin) * 0.5f;

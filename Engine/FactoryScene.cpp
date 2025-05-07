@@ -15,6 +15,7 @@
 #include "CameraScript.h"
 #include "Resources.h"
 #include "MeshData.h"
+#include "CollisionManager.h"
 
 #include "TestDragon.h"
 #include "PlayerScript.h"
@@ -110,7 +111,7 @@ void FactoryScene::Init()
 		{
 			gameObject->SetName(L"Player");
 			gameObject->SetCheckFrustum(false);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -300.0f, 0.0f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 			gameObject->AddComponent(playerScript);
@@ -119,6 +120,8 @@ void FactoryScene::Init()
 			gameObject->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(100.f);
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
+
+			GET_SINGLE(CollisionManager)->RegisterCollider(gameObject->GetCollider(), COLLISION_OBJECT_TYPE::PLAYER);
 
 			AddGameObject(gameObject);
 
@@ -208,6 +211,8 @@ void FactoryScene::Init()
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetRadius(10.f);
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetEnable(false);
+
+			GET_SINGLE(CollisionManager)->RegisterCollider(bullet->GetCollider(), COLLISION_OBJECT_TYPE::BULLET);
 
 			bullet->AddComponent(meshRenderer);
 			bullet->SetRender(false);
@@ -434,47 +439,6 @@ void FactoryScene::Init()
 	}
 #pragma endregion
 
-	// 터레인 큐브
-#pragma region TerrainCube
-	{
-		// 1. 기본 오브젝트 생성 및 설정
-		shared_ptr<GameObject> terraincube = make_shared<GameObject>();
-		terraincube->AddComponent(make_shared<Transform>());
-		terraincube->SetCheckFrustum(true);
-
-		// 2. Transform 컴포넌트 추가 및 설정
-		terraincube->AddComponent(make_shared<Transform>());
-		// 씬의 임시 크기
-		terraincube->GetTransform()->SetLocalScale(Vec3(11000.f, 11000.f, 11000.f));
-		// 씬의 임시 좌표
-		terraincube->GetTransform()->SetLocalPosition(Vec3(0, 4900.f, 0.f));
-
-		// 3. MeshRenderer 설정
-		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-		{
-			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadCubeMesh();
-			meshRenderer->SetMesh(sphereMesh);
-		}
-		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Factory", L"..\\Resources\\Texture\\TerrainCube\\Factory.jpg");
-			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"FactoryFloor", L"..\\Resources\\Texture\\TerrainCube\\FactoryFloor.jpg");
-			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"FactoryTop", L"..\\Resources\\Texture\\TerrainCube\\FactoryTop.jpg");
-
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, texture);
-			material->SetTexture(1, floorTexture);
-			material->SetTexture(2, topTexture);
-			meshRenderer->SetMaterial(material);
-		}
-		terraincube->AddComponent(meshRenderer);
-
-		// 4. Scene에 추가
-		AddGameObject(terraincube);
-	}
-#pragma endregion
-
 	// 더미 콜라이더
 #pragma region DummyCollider
 	int dummyCount{};
@@ -484,27 +448,27 @@ void FactoryScene::Init()
 		
 		for (int i{}; i < 7; ++i)
 		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, -4800.f), Vec3(400.f, 400.f, 400.f));
+			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, -4800.f), Vec3(300.f, 300.f, 300.f));
 		}
 
 		for (int i{}; i < 7; ++i)
 		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, -2400.f), Vec3(400.f, 400.f, 400.f));
+			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, -2400.f), Vec3(300.f, 300.f, 300.f));
 		}
 
 		for (int i{}; i < 7; ++i)
 		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, 0.f), Vec3(400.f, 400.f, 400.f));
+			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, 0.f), Vec3(300.f, 300.f, 300.f));
 		}
 
 		for (int i{}; i < 7; ++i)
 		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, 2400.f), Vec3(400.f, 400.f, 400.f));
+			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, 2400.f), Vec3(300.f, 300.f, 300.f));
 		}
 
 		for (int i{}; i < 7; ++i)
 		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 400.f * i, 0.f, 4800.f), Vec3(400.f, 400.f, 400.f));
+			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, 4800.f), Vec3(300.f, 300.f, 300.f));
 		}
 
 		for (const auto& info : dummyInfo)
@@ -533,6 +497,8 @@ void FactoryScene::Init()
 			dummy->AddComponent(make_shared<BoxCollider>());
 			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetExtents(info.second / 1.5);
 			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetCenter(info.first);
+			
+			GET_SINGLE(CollisionManager)->RegisterCollider(dummy->GetCollider(), COLLISION_OBJECT_TYPE::DUMMY);
 
 			AddGameObject(dummy);
 		}
@@ -603,7 +569,7 @@ void FactoryScene::Init()
 			gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, -100.f, 0.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
-			AddGameObject(gameObject);
+			//AddGameObject(gameObject);
 		}
 	}
 #pragma endregion
@@ -624,6 +590,8 @@ void FactoryScene::Init()
 		gameObjects[0]->AddComponent(make_shared<SphereCollider>());
 		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
 		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 700.f, 0.f));
+
+		GET_SINGLE(CollisionManager)->RegisterCollider(gameObjects[0]->GetCollider(), COLLISION_OBJECT_TYPE::GENERATE);
 
 		shared_ptr<GameObject> particleObj = make_shared<GameObject>();
 		particleObj->SetName(L"GeneratorParticle");
@@ -717,7 +685,7 @@ void FactoryScene::Init()
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -200.0f, 1000.0f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, 0.f, 0.f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 15.f));
-			AddGameObject(gameObject);
+			//AddGameObject(gameObject);
 		}
 
 

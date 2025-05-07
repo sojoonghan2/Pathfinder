@@ -29,17 +29,6 @@ void PlayerScript::Start()
 	if (hpObj) _hpTransform = hpObj->GetTransform();
 
 	_cameraObj = GET_SINGLE(SceneManager)->GetActiveScene()->GetMainCamera()->GetGameObject();
-
-	// Dummy 캐싱
-	int index = 0;
-	while (true)
-	{
-		wstring name = L"dummy" + to_wstring(index++);
-		auto dummy = GET_SINGLE(SceneManager)->FindObjectByName(name);
-		if (!dummy) break;
-		_dummyList.push_back(dummy);
-	}
-	_dummiesInitialized = true;
 }
 
 void PlayerScript::LateUpdate()
@@ -86,22 +75,6 @@ void PlayerScript::LateUpdate()
 	ShootRazer();
 	Animation();
 	Recoil();
-
-	// 테스트용 HP 코드
-	if (_hpTransform && INPUT->GetButton(KEY_TYPE::K))
-	{
-		Vec3 scale = _hpTransform->GetLocalScale();
-		Vec3 pos = _hpTransform->GetLocalPosition();
-
-		float delta = 10.f;
-		if (scale.x - delta >= 0.f)
-		{
-			scale.x -= delta;
-			pos.x -= delta * 0.5f;
-			_hpTransform->SetLocalScale(scale);
-			_hpTransform->SetLocalPosition(pos);
-		}
-	}
 }
 
 void PlayerScript::KeyboardInput() { Move(); Dash(); }
@@ -193,7 +166,6 @@ void PlayerScript::Move()
 	pos.z = max(mapMinZ, min(pos.z, mapMaxZ));
 
 	GetTransform()->SetLocalPosition(pos);
-	CheckDummyHits();
 }
 
 void PlayerScript::Dash()
@@ -412,36 +384,43 @@ void PlayerScript::RotateToCameraLook()
 	}
 }
 
-void PlayerScript::CheckDummyHits()
+void PlayerScript::CheckDummyHits(shared_ptr<GameObject> dummy)
 {
-	if (!_dummiesInitialized) return;
-
 	auto player = GetGameObject();
-	if (!player) return;
+	if (!player || !dummy)
+		return;
 
-	for (auto& dummy : _dummyList)
+	Vec3 curPos = player->GetTransform()->GetLocalPosition();
+	Vec3 dummyPos = dummy->GetTransform()->GetLocalPosition();
+	Vec3 dummyToPlayer = curPos - dummyPos;
+
+	player->GetTransform()->SetLocalPosition(_prevPosition);
+
+	if (dummyToPlayer.LengthSquared() > 0.0001f)
 	{
-		if (!dummy) continue;
+		dummyToPlayer.Normalize();
 
-		bool is_collision = GET_SINGLE(SceneManager)->Collition(player, dummy);
-		if (is_collision)
-		{
-			Vec3 curPos = player->GetTransform()->GetLocalPosition();
-			Vec3 dummyPos = dummy->GetTransform()->GetLocalPosition();
-			Vec3 dir = (curPos - dummyPos);
+		Vec3 slideDir = dummyToPlayer;
+		slideDir.y = 0.f;
 
-			if (dir.LengthSquared() > 0.001f)
-			{
-				dir.Normalize();
-				curPos += dir * 10.f;
-			}
-			else
-			{
-				curPos = _prevPosition;
-			}
-
-			player->GetTransform()->SetLocalPosition(curPos);
-			break;
-		}
+		Vec3 slidePos = _prevPosition + slideDir * 2.f;
+		player->GetTransform()->SetLocalPosition(slidePos);
 	}
+}
+
+void PlayerScript::CheckCrabHits()
+{
+	if (!_hpTransform) return;
+	Vec3 scale = _hpTransform->GetLocalScale();
+	Vec3 pos = _hpTransform->GetLocalPosition();
+
+	float delta = 10.f;
+	if (scale.x - delta >= 0.f)
+	{
+		scale.x -= delta;
+		pos.x -= delta * 0.5f;
+		_hpTransform->SetLocalScale(scale);
+		_hpTransform->SetLocalPosition(pos);
+	}
+	cout << "거미 충돌\n";
 }

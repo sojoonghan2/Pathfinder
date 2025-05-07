@@ -31,6 +31,7 @@
 
 #include "SphereCollider.h"
 #include "BoxCollider.h"
+#include "CollisionManager.h"
 
 #include "DustParticleSystem.h"
 #include "GlitterParticleSystem.h"
@@ -120,7 +121,7 @@ void RuinsScene::Init()
 		{
 			gameObject->SetName(L"Player");
 			gameObject->SetCheckFrustum(false);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -300.0f, 0.0f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 			gameObject->AddComponent(playerScript);
@@ -130,6 +131,8 @@ void RuinsScene::Init()
 			gameObject->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(100.f);
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
+
+			GET_SINGLE(CollisionManager)->RegisterCollider(gameObject->GetCollider(), COLLISION_OBJECT_TYPE::PLAYER);
 
 			AddGameObject(gameObject);
 
@@ -222,6 +225,8 @@ void RuinsScene::Init()
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetEnable(false);
 
+			GET_SINGLE(CollisionManager)->RegisterCollider(bullet->GetCollider(), COLLISION_OBJECT_TYPE::BULLET);
+
 			bullet->AddComponent(meshRenderer);
 			bullet->SetRender(false);
 
@@ -290,6 +295,8 @@ void RuinsScene::Init()
 		dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetRadius(500.f);
 		dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 		dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetEnable(false);
+
+		GET_SINGLE(CollisionManager)->RegisterCollider(grenade->GetCollider(), COLLISION_OBJECT_TYPE::GRENADE);
 
 		grenade->SetRender(false);
 		AddGameObject(grenade);
@@ -594,7 +601,7 @@ void RuinsScene::Init()
 		water->AddComponent(make_shared<Transform>());
 		water->AddComponent(make_shared<WaterScript>());
 		water->GetTransform()->SetLocalScale(Vec3(10000.f, 1.f, 10000.f));
-		water->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 50.f));
+		water->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 50.f));
 		water->SetStatic(true);
 
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -608,7 +615,7 @@ void RuinsScene::Init()
 		}
 		meshRenderer->GetMesh()->SetVrs(true);
 		meshRenderer->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
-		//water->AddComponent(meshRenderer);
+		water->AddComponent(meshRenderer);
 		AddGameObject(water);
 	}
 #pragma endregion
@@ -625,6 +632,10 @@ void RuinsScene::Init()
 		dummyInfo.emplace_back(Vec3(-407.447f, 100.f, 2300.f), 100.f);
 		dummyInfo.emplace_back(Vec3(735.708f, 100.f, 2300.f), 100.f);
 		dummyInfo.emplace_back(Vec3(754.53f, 100.f, 3250.f), 100.f);
+		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 100.f);
+
+		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 100.f);
+		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 100.f);
 		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 100.f);
 
 
@@ -654,6 +665,8 @@ void RuinsScene::Init()
 			dummy->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetRadius(info.second);
 			dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+
+			GET_SINGLE(CollisionManager)->RegisterCollider(dummy->GetCollider(), COLLISION_OBJECT_TYPE::DUMMY);
 
 			AddGameObject(dummy);
 		}
@@ -735,6 +748,8 @@ void RuinsScene::Init()
 			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetExtents(info.second / 1.5);
 			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetCenter(info.first);
 
+			GET_SINGLE(CollisionManager)->RegisterCollider(dummy->GetCollider(), COLLISION_OBJECT_TYPE::DUMMY);
+
 			AddGameObject(dummy);
 		}
 	}
@@ -791,6 +806,8 @@ void RuinsScene::Init()
 			gameObjects[0]->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
+
+			GET_SINGLE(CollisionManager)->RegisterCollider(gameObjects[0]->GetCollider(), COLLISION_OBJECT_TYPE::CRAB);
 
 			vector<shared_ptr<GameObject>> crabParticles;
 			for (int j = 0; j < 5; ++j)
@@ -942,7 +959,7 @@ void RuinsScene::Init()
 
 	// 점령 구역
 #pragma region Occupation
-	for (int i{}; i < 3; ++i)
+	for (int i{}; i < 5; ++i)
 	{
 		shared_ptr<GameObject> occupation = make_shared<GameObject>();
 		occupation->SetName(L"Occupation" + std::to_wstring(i));
@@ -1026,7 +1043,7 @@ void RuinsScene::Init()
 		{
 			gameObject->SetName(L"Apollo");
 			gameObject->SetCheckFrustum(true);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(-4000.f, -200.f, 0.f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(-3800.f, -200.f, 0.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 0.f, 0.f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(200.f, 200.f, 200.f));
 			AddGameObject(gameObject);
@@ -1179,8 +1196,7 @@ void RuinsScene::Init()
 	{
 		vector<Vec3> Stone_pillar{ Vec3(-1375.2f, 1500.f, 900.f), Vec3(1542.62f, 1500.f, 900.f), Vec3(-407.447f, 1500.f, 2300.f),
 		   Vec3(735.708f, 1500.f, 2300.f),Vec3(754.53f, 1500.f, 3250.f), Vec3(-372.698f, 1500.f, 3250.f) };
-
-		for (int i = 0; i < 6; ++i) {
+		for (int i = 0; i < Stone_pillar.size(); ++i) {
 			// 1. Light 오브젝트 생성 
 			shared_ptr<GameObject> light = make_shared<GameObject>();
 			light->SetName(L"Ancient_Ruin_Point_Light" + std::to_wstring(i + 1));

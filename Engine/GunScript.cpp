@@ -16,7 +16,6 @@ void GunScript::Start()
 	_gunFlame = GET_SINGLE(SceneManager)->FindObjectByName(L"GunFlameParticle");
 }
 
-
 void GunScript::Update()
 {
 	UpdateGunTransformByInput();

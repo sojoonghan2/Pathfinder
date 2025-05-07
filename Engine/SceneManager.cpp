@@ -9,6 +9,7 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "Light.h"
+#include "CollisionManager.h"
 
 #include "CameraScript.h"
 #include "PlayerScript.h"
@@ -105,9 +106,8 @@ void SceneManager::Render()
 
 void SceneManager::LoadScene(wstring sceneName)
 {
-	shared_ptr<Scene> scene = make_shared<Scene>();
-
 	_activeScene = scenes.at(sceneName);
+	_activeScene->SetName(sceneName);
 
 	_activeScene->Awake();
 	_activeScene->Start();
@@ -119,6 +119,7 @@ void SceneManager::ChangeScene(wstring sceneName) {
 
 void SceneManager::RegisterScene(const wstring& name, shared_ptr<Scene> scene)
 {
+	GET_SINGLE(CollisionManager)->ClearCollider();
 	scenes[name] = scene;
 }
 

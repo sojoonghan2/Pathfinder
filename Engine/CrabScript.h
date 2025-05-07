@@ -1,6 +1,7 @@
 #pragma once
 #include "MonoBehaviour.h"
 #include "ParticlePool.h"
+#include "GameObject.h"
 
 class CrabScript : public MonoBehaviour
 {
@@ -11,7 +12,8 @@ public:
 
 	void MoveRandomly();
 	void CheckBoundary();
-	void CheckBulletHits();
+	void CheckDummyHits(shared_ptr<GameObject> dummy);
+	void CheckBulletHits(shared_ptr<GameObject> bullet);
 	void CheckGrenadeHits();
 	void CheckRazerHits();
 
@@ -36,10 +38,8 @@ private:
 	bool _takeGrenade = false;
 
 private:
-	vector<shared_ptr<GameObject>>	_bullets;
 	shared_ptr<GameObject>			_hp;
 	shared_ptr<GameObject>			_player;
-	shared_ptr<GameObject>			_grenade;
 
 	int32							_index = -1;
 	bool							_isAlive = true;
@@ -54,6 +54,4 @@ private:
 
 	float							_hitTime = 100.f;
 	float							_hitDuration = 0.2f;
-
-
 };
