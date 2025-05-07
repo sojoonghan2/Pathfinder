@@ -5,12 +5,12 @@
 
 bool SweptCollider::CheckCollisionWithAABB(const AABBCollider& other) const
 {
-	return false;
+	return other.CheckCollisionWithSwept(*this);
 }
 
 bool SweptCollider::CheckCollisionWithCircle(const CircleCollider& other) const
 {
-	return other;
+	return other.CheckCollisionWithSwept(*this);
 }
 
 bool SweptCollider::CheckCollisionWithSwept(const SweptCollider& other) const

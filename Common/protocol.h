@@ -19,18 +19,23 @@ constexpr float SKILL_RAZER_COOLDOWN_S{ 10.f };
 constexpr float MONSTER_CRAB_SIZE_M{ 0.5f };
 constexpr float MONSTER_CRAB_SPEED_MPS{ 2.f };
 
+// other object
+constexpr float BULLET_SPEED_MPS{ 10.f };
+
+
 // NETWORK
 constexpr int PORT_NUMBER{ 4000 };
 constexpr int BUFFER_SIZE{ 200 };
 
 constexpr const char* SERVER_IP{ "127.0.0.1" };
 
-constexpr float MOVE_PACKET_TIME_MS{ 75.f }; // 초당 13.3회
-constexpr float MAX_NETWORK_DELAY_MS{ 200.f }; // 최대 네트워크 딜레이
+constexpr float MOVE_PACKET_TIME_MS{ 50.f }; // 초당 20회
+constexpr float MAX_NETWORK_DELAY_MS{ 100.f }; // 최대 네트워크 딜레이
 
 constexpr int MAX_PLAYER{ 100 };
 constexpr int MAX_ROOM{ MAX_PLAYER / 3 + 1 };
 constexpr int MAX_MONSTER{ MAX_ROOM * 10 };
+constexpr int MAX_BULLET{ MAX_ROOM * 30 };
 
 enum class RoomType : unsigned char
 {
@@ -70,6 +75,11 @@ enum class Type : unsigned char
 	// move
 	SC_MOVE_OBJECT,
 	CS_MOVE_PLAYER,
+
+	SC_DELETE_OBJECT,
+
+	// player skills
+	CS_FIRE_BULLET,
 
 	// other
 	SC_CHECK_DELAY,
@@ -194,6 +204,23 @@ struct CSMovePlayer : Header
 		Header{ sizeof(CSMovePlayer), Type::CS_MOVE_PLAYER },
 		x{ x }, y{ y },
 		dirX{ dirX }, dirY{ dirY }
+	{}
+};
+
+struct CSFireBullet : Header
+{
+	CSFireBullet() :
+		Header{ sizeof(CSFireBullet), Type::CS_FIRE_BULLET }
+	{}
+};
+
+struct SCDeleteObject : Header
+{
+	int objectId{ -1 };
+
+	SCDeleteObject(const int object_id) :
+		Header{ sizeof(SCDeleteObject), Type::SC_DELETE_OBJECT },
+		objectId{ object_id }
 	{}
 };
 

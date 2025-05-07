@@ -34,6 +34,11 @@ struct Vec2f
 			y = 0.f;
 		}
 	}
+
+	float Dot(const Vec2f& rhs) const
+	{
+		return x * rhs.x + y * rhs.y;
+	}
 };
 
 struct ClientIdInfo

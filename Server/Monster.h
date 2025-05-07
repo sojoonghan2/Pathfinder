@@ -21,15 +21,9 @@ public:
 	// getter /setter
 	ObjectType GetObjectType() const override { return ObjectType::Monster; }
 
-	void SetMonsterType(const MonsterType type) { _monsterType = type; }
+	void Update(const float delta) override;
 
-	// 자동적으로 Collider 생성.
-	// Todo: 
-	// 일단 이렇게 하는데 나중에 SETMONSTERTYPE에서 바뀌도록 해야한다.
-	Monster()
-	{
-		SetCollider(std::make_shared<AABBCollider>(GetPosRef(), MONSTER_CRAB_SIZE_M, MONSTER_CRAB_SIZE_M));
-	}
+	void InitMonster(const MonsterType monster_type, const Vec2f pos);
 
 private:
 

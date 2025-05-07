@@ -3,6 +3,10 @@
 #include "IOCP.h"
 #include "Timer.h"
 
+#include "Monster.h"
+#include "Bullet.h"
+
+
 std::random_device rd_game;
 std::default_random_engine dre_game{ rd_game() };
 std::uniform_real_distribution<float> posDist{ -24.f, 24.f };
@@ -36,23 +40,18 @@ void Game::InitRoom(int room_id)
 	// 일단 임시로 10마리. 방타입에 따라 몬스터 양이 달라져야 함.
 	std::array<std::shared_ptr<Monster>, 10> monsters{};
 	for (auto& monster : monsters) {
-		std::shared_ptr<Object> obj;
-		if (not _objectPoolHash[ObjectType::Monster].try_pop(obj)) {
-			monster = std::shared_ptr<Monster>();
-			continue;
-		}
+		auto obj{ GetObjectFromPool(ObjectType::Monster) };
 		monster = std::dynamic_pointer_cast<Monster, Object>(obj);
 	}
 	
 	// 몬스터 추가
 	for (auto& monster: monsters) {
-		monster->SetPos(posDist(dre_game), posDist(dre_game));
 
-		// TODO: 
-		// 몬스터 타입을 입력하면 자동으로 내부 설정이 가능하도록.
-		// 나중엔 lua까지.
-		monster->SetMonsterType(MonsterType::Crab);
-		monster->SetSpeed(speedDist(dre_game));
+		// 일단 임시로 게
+		monster->InitMonster(
+			MonsterType::Crab,
+			Vec2f{ posDist(dre_game), posDist(dre_game) }
+		);
 		_roomList[room_id]->AddObject(monster);
 	}
 
@@ -61,6 +60,30 @@ void Game::InitRoom(int room_id)
 std::shared_ptr<Player> Game::GetPlayer(const ClientIdInfo& id_info)
 {
 	return _playerList.at(id_info.roomId * 3 + id_info.playerId);
+}
+
+std::shared_ptr<Object> Game::GetObjectFromPool(const ObjectType type)
+{
+	std::shared_ptr<Object> obj;
+
+	// 실패하면 새 객체를 만들어 주어야 한다.
+	if (not _objectPoolHash[type].try_pop(obj)) {
+		switch (type) {
+		case ObjectType::Monster:
+		{
+			obj = std::make_shared<Monster>();
+		}
+		break;
+		case ObjectType::Bullet:
+		{
+			obj = std::make_shared<Bullet>();
+		}
+		break;
+		default:
+			break;
+		}
+	}
+	return obj;
 }
 
 void Game::Update()
@@ -96,7 +119,7 @@ void Game::Init()
 		room = std::make_shared<Room>();
 	}
 
-	// monster init
+
 	_objectPoolHash[ObjectType::Monster].clear();
 
 	for (int i = 0; i < MAX_MONSTER; ++i) {
@@ -105,6 +128,12 @@ void Game::Init()
 		);
 	}
 
-	// 나중엔 총알도 넣을 예정.
+	_objectPoolHash[ObjectType::Bullet].clear();
+
+	for (int i = 0; i < MAX_BULLET; ++i) {
+		_objectPoolHash[ObjectType::Bullet].push(
+			std::make_shared<Bullet>()
+		);
+	}
 
 }

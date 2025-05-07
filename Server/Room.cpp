@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Room.h"
 #include "IOCP.h"
+#include "Game.h"
+#include "Bullet.h"
 
 void Room::Update(const float delta)
 {
@@ -10,22 +12,15 @@ void Room::Update(const float delta)
 		return;
 	}
 
-	// 순회 중간에 객체가 들어오는 현상 방지
-	SyncObjects();
+	// 성능 향상을 위한 복사 순회
+	// TODO: 성능 비교를 해주어야 할듯.
+	std::unordered_map<int, std::shared_ptr<Object>> objects;
+	for (auto& [id, object] : _objects) {
+		objects[id] = object;
+		
+	}
 
-	// TODO: 충돌 확인
-	// readerObjects 간 충돌 체크
-	for (auto iter{ _readerObjects.begin() }; iter != _readerObjects.end(); ++iter) {
-		auto iter2{ iter };
-		++iter2;
-		for (; iter2 != _readerObjects.end(); ++iter2) {
-			if (iter->second->CheckCollision(iter2->second)) {
-				// 확인 완료
-			}
-		}
-	};
-
-	for (auto& [id, object] : _readerObjects) {
+	for (auto& [_, object] : objects) {
 
 		// 몬스터
 		if (ObjectType::Monster == object->GetObjectType()) {
@@ -53,29 +48,97 @@ void Room::Update(const float delta)
 			auto dir{ player->GetPos() - object->GetPos() };
 			dir.Normalize();
 			object->SetDir(dir);
+		}
+
+		// 객체 업데이트
+		if (ObjectType::Player != object->GetObjectType()) {
+			object->Update(delta);
+		}
+	}
 
 
-			// 일단 몬스터만 움직이게.
-			object->Move(delta);
+
+	// objects 간 충돌 체크
+	std::unordered_set<int> deleted_objects;
+	for (auto iter1{ objects.begin() }; iter1 != objects.end(); ++iter1) {
+		auto iter2{ iter1 };
+		++iter2;
+		for (; iter2 != objects.end(); ++iter2) {
+
+			// 충돌 처리 중 이미 지워진 객체면 지우기
+			if (deleted_objects.contains(iter1->first) || deleted_objects.contains(iter2->first)) {
+				continue;
+			}
+
+			// 충돌 체크 검사 
+			if (iter1->second->CheckCollision(iter2->second)) {
+				auto iter_a{ iter1 };
+				auto iter_b{ iter2 };
+				auto type_a{ iter1->second->GetObjectType() };
+				auto type_b{ iter2->second->GetObjectType() };
+
+				if (type_a > type_b) {
+					std::swap(iter_a, iter_b);
+					std::swap(type_a, type_b);
+				}
+
+				// first는 항상 작은 값이 들어가도록 한다.
+				// 총알과 몬스터의 충돌
+				if (type_a == ObjectType::Monster && type_b == ObjectType::Bullet) {
+					deleted_objects.insert(iter_a->first);
+					deleted_objects.insert(iter_b->first);
+				}
+			}
+		}
+	}
+
+	// 논리적으로 제거된 객체들 지우기
+	// 삭제는 여기서만 이루어지고, 지운 객체는 참조하지 않으므로 thread-safe
+	// 지워진 id를 
+	for (auto& id : deleted_objects) {
+		auto iter{ _objects.find(id) };
+		if (iter != _objects.end()) {
+			_objects.unsafe_erase(iter);
+		}
+	}
+
+	// 지워진 id를 플레이어에게 전송
+	const auto& client_ids{ GET_SINGLE(IOCP)->GetClients(_roomId) };
+	for (auto& object_id : deleted_objects) {
+		packet::SCDeleteObject delete_packet{ object_id };
+		for (auto client_id : client_ids) {
+			GET_SINGLE(IOCP)->DoSend(client_id, &delete_packet);
 		}
 	}
 }
 
 void Room::ClearObjects()
 {
-	_writerObjects.clear();
-	_readerObjects.clear();
+	_objects.clear();
+	_idCount = 0;
 }
 
 void Room::AddObject(std::shared_ptr<Object> object)
 {
-	_writerObjects[_idCount++] = object;
+	_objects[_idCount++] = object;
 }
 
 void Room::InsertPlayers(const int idx, std::shared_ptr<Player>& player)
 {
 	_playerList[idx] = player;
-	_writerObjects[_idCount++] = player;
+	_objects[_idCount++] = player;
+}
+
+void Room::FireBullet(const int player_id)
+{
+	auto player{ _playerList[player_id] };
+
+
+	auto obj{ GET_SINGLE(Game)->GetObjectFromPool(ObjectType::Bullet) };
+	auto bullet{ std::dynamic_pointer_cast<Bullet, Object>(obj) };
+	bullet->InitBullet(player->GetPos());
+
+	AddObject(bullet);
 }
 
 void Room::SendObjectsToClient()
@@ -89,7 +152,7 @@ void Room::SendObjectsToClient()
 	// update와 동시에 이루어지지 않으므로 thread-safe
 	// 업데이트 이후에 이루어진다.
 	const auto& client_ids{ GET_SINGLE(IOCP)->GetClients(_roomId) };
-	for (auto& [id, object] : _readerObjects) {
+	for (auto& [id, object] : _objects) {
 		if (ObjectType::None == object->GetObjectType()) {
 			continue;
 		}
@@ -108,17 +171,6 @@ void Room::SendObjectsToClient()
 	}
 }
 
-
-void Room::SyncObjects()
-{
-
-	_readerObjects.clear();
-	
-	// thread safe
-	for (auto& obj : _writerObjects) {
-		_readerObjects.insert(obj);
-	}
-}
 
 void Room::Clear()
 {

@@ -28,11 +28,11 @@ public:
 	void AddObject(std::shared_ptr<Object> object);
 	void InsertPlayers(const int idx, std::shared_ptr<Player>& players);
 
+	void FireBullet(const int player_id);
+
 
 	// client들에게 object의 위치를 보냄.
 	void SendObjectsToClient();
-
-	void SyncObjects();
 
 	// getter and setter
 
@@ -62,9 +62,7 @@ private:
 
 	// 객체가 id를 가져야 함.
 	std::atomic_int _idCount{ 0 };
-	concurrency::concurrent_unordered_map<int, std::shared_ptr<Object>> _writerObjects;
-	std::unordered_map<int, std::shared_ptr<Object>> _readerObjects;
-
+	concurrency::concurrent_unordered_map<int, std::shared_ptr<Object>> _objects;
 
 	RoomType			_roomType{ RoomType::None };
 	RoomStatus			_roomStatus{ RoomStatus::Waiting };

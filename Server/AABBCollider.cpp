@@ -35,5 +35,62 @@ bool AABBCollider::CheckCollisionWithCircle(const CircleCollider& other) const
 
 bool AABBCollider::CheckCollisionWithSwept(const SweptCollider& other) const
 {
+
+	Vec2f rect_min{ GetMin() };
+	Vec2f rect_max{ GetMax() };
+	Vec2f line_start{ other._prevPos };
+	Vec2f line_end{ other._pos };
+
+	// 선분의 AABB 구하기
+	float line_min_x{ std::min(line_start.x, line_end.x) };
+	float line_max_x{ std::max(line_start.x, line_end.x) };
+	float line_min_y{ std::min(line_start.y, line_end.y) };
+	float line_max_y{ std::max(line_start.y, line_end.y) };
+
+	// 빠른 AABB 체크
+	if (line_max_x < rect_min.x || line_min_x > rect_max.x ||
+		line_max_y < rect_min.y || line_min_y > rect_max.y) {
+		return false;
+	}
+
+	// 선분의 끝점이 사각형 안에 있는지 검사
+	if (line_start.x >= rect_min.x && line_start.x <= rect_max.x &&
+		line_start.y >= rect_min.y && line_start.y <= rect_max.y) {
+		return true;
+	}
+
+	if (line_end.x >= rect_min.x && line_end.x <= rect_max.x &&
+		line_end.y >= rect_min.y && line_end.y <= rect_max.y) {
+		return true;
+	}
+
+	// 사각형의 네 변 정의
+	std::array<Vec2f, 4> corners{
+		Vec2f{ rect_min.x, rect_min.y },
+		Vec2f{ rect_max.x, rect_min.y },
+		Vec2f{ rect_max.x, rect_max.y },
+		Vec2f{ rect_min.x, rect_max.y }
+	};
+
+	auto IsLineIntersect = [](const Vec2f& p1, const Vec2f& p2, const Vec2f& q1, const Vec2f& q2) -> bool
+	{
+		auto CCW = [](const Vec2f& a, const Vec2f& b, const Vec2f& c) -> bool
+		{
+			return (c.y - a.y) * (b.x - a.x) > (b.y - a.y) * (c.x - a.x);
+		};
+
+		return CCW(p1, q1, q2) != CCW(p2, q1, q2) && CCW(p1, p2, q1) != CCW(p1, p2, q2);
+	};
+
+	// 선분과 사각형 변들의 교차 검사
+	for (int i{ 0 }; i < 4; ++i) {
+		Vec2f edge_start{ corners[i] };
+		Vec2f edge_end{ corners[(i + 1) % 4] };
+
+		if (IsLineIntersect(line_start, line_end, edge_start, edge_end)) {
+			return true;
+		}
+	}
+
 	return false;
 }

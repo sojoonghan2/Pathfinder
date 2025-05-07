@@ -7,6 +7,7 @@ public:
 	void Move(const float delta_time);
 
 	bool CheckCollision(const std::shared_ptr<Object>& other);
+	virtual void Update(const float delta) = 0;
 
 	// getter and setter
 	virtual ObjectType GetObjectType() const = 0;

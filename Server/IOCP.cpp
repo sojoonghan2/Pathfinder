@@ -5,6 +5,9 @@
 #include "Game.h"
 #include "Timer.h"
 
+#include "Room.h"
+
+
 bool IOCP::Init()
 {
 	// 윈도우 초기화
@@ -527,6 +530,19 @@ void IOCP::ProcessPacket(int key, char* p)
 			}
 			DoSend(_clientInfoHash[other], &send_packet);
 		}
+	}
+	break;
+
+	case packet::Type::CS_FIRE_BULLET:
+	{
+		auto client_id_info{ _clientInfoHash[key].clientIdInfo};
+		
+		// room에 총알 객체 생성
+		GET_SINGLE(Game)->GetRoom(client_id_info.roomId)->FireBullet(client_id_info.playerId);
+
+		// 생성한 총알은 일단 update할때마다 알려주는 것으로 한다.
+
+
 	}
 	break;
 
