@@ -121,7 +121,7 @@ void RuinsScene::Init()
 		{
 			gameObject->SetName(L"Player");
 			gameObject->SetCheckFrustum(false);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -300.0f, 0.0f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 			gameObject->AddComponent(playerScript);
@@ -634,6 +634,10 @@ void RuinsScene::Init()
 		dummyInfo.emplace_back(Vec3(754.53f, 100.f, 3250.f), 100.f);
 		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 100.f);
 
+		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 100.f);
+		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 100.f);
+		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 100.f);
+
 
 		for (const auto& info : dummyInfo)
 		{
@@ -1039,7 +1043,7 @@ void RuinsScene::Init()
 		{
 			gameObject->SetName(L"Apollo");
 			gameObject->SetCheckFrustum(true);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(-4000.f, -200.f, 0.f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(-3800.f, -200.f, 0.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 0.f, 0.f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(200.f, 200.f, 200.f));
 			AddGameObject(gameObject);

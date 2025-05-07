@@ -111,7 +111,7 @@ void FactoryScene::Init()
 		{
 			gameObject->SetName(L"Player");
 			gameObject->SetCheckFrustum(false);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -300.0f, 0.0f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 			gameObject->AddComponent(playerScript);
