@@ -594,7 +594,7 @@ void RuinsScene::Init()
 		water->AddComponent(make_shared<Transform>());
 		water->AddComponent(make_shared<WaterScript>());
 		water->GetTransform()->SetLocalScale(Vec3(10000.f, 1.f, 10000.f));
-		water->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 50.f));
+		water->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 50.f));
 		water->SetStatic(true);
 
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -942,7 +942,7 @@ void RuinsScene::Init()
 
 	// 점령 구역
 #pragma region Occupation
-	for (int i{}; i < 3; ++i)
+	for (int i{}; i < 5; ++i)
 	{
 		shared_ptr<GameObject> occupation = make_shared<GameObject>();
 		occupation->SetName(L"Occupation" + std::to_wstring(i));
@@ -1164,7 +1164,7 @@ void RuinsScene::Init()
 		// 2-2. 스팟 라이트 방향 설정
 		light->GetLight()->SetLightDirection(Vec3(0.f, -1.f, 0.f));
 
-		float lightpower = 0.5f;
+		float lightpower = 0.7f;
 		// 3. 조명 색상 및 강도 조정 (따뜻한 황금빛)
 		light->GetLight()->SetDiffuse(Vec3(1.0f, 0.85f, 0.6f) * lightpower);
 		light->GetLight()->SetAmbient(Vec3(0.25f, 0.2f, 0.25f) * lightpower);
@@ -1179,7 +1179,7 @@ void RuinsScene::Init()
 	{
 		vector<Vec3> Stone_pillar{ Vec3(-1375.2f, 1500.f, 900.f), Vec3(1542.62f, 1500.f, 900.f), Vec3(-407.447f, 1500.f, 2300.f),
 		   Vec3(735.708f, 1500.f, 2300.f),Vec3(754.53f, 1500.f, 3250.f), Vec3(-372.698f, 1500.f, 3250.f) };
-		for (int i = 0; i < 6; ++i) {
+		for (int i = 0; i < Stone_pillar.size(); ++i) {
 			// 1. Light 오브젝트 생성 
 			shared_ptr<GameObject> light = make_shared<GameObject>();
 			light->SetName(L"Ancient_Ruin_Point_Light" + std::to_wstring(i + 1));

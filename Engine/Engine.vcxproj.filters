@@ -357,7 +357,9 @@
     <ClCompile Include="CrabScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
-    <ClCompile Include="ParticlePool.cpp" />
+    <ClCompile Include="ParticlePool.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -664,7 +666,9 @@
     <ClInclude Include="CrabScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
-    <ClInclude Include="ParticlePool.h" />
+    <ClInclude Include="ParticlePool.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">

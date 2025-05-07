@@ -94,25 +94,20 @@ void RuinsScript::Occupation()
 		playerPos.z >= -2000.0f && playerPos.z <= 2000.0f)
 	{
 		Vec3 pos = _water->GetTransform()->GetLocalPosition();
-		pos.y -= 0.2f;
+		pos.y -= DELTA_TIME * 7.6667;
 		_water->GetTransform()->SetLocalPosition(pos);
+		cout << "Water Pos: " << _water->GetTransform()->GetLocalPosition().y << "\n";
 		BlinkUI();
-	}
-	else
-	{
-		Vec3 pos = _water->GetTransform()->GetLocalPosition();
-		pos.y += 0.1f;
-		_water->GetTransform()->SetLocalPosition(pos);
-		_occupationUI->SetRender(false);
 	}
 
 	// ¾À Á¾·á Á¶°Ç
-	if (_water->GetTransform()->GetLocalPosition().y < -200.f)
+	if (_water->GetTransform()->GetLocalPosition().y < -130.f)
 	{
 		_occupationUI->SetRender(false);
 		auto pos = _water->GetTransform()->GetLocalPosition();
 		pos.y = -10000.f;
 		_water->GetTransform()->SetLocalPosition(pos);
+		_water->SetRender(false);
 		CreatePortal();
 	}
 }
