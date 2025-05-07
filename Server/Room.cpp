@@ -15,12 +15,13 @@ void Room::Update(const float delta)
 	// 성능 향상을 위한 복사 순회
 	// TODO: 성능 비교를 해주어야 할듯.
 	std::unordered_map<int, std::shared_ptr<Object>> objects;
+	std::unordered_set<int> deleted_objects;
 	for (auto& [id, object] : _objects) {
 		objects[id] = object;
 		
 	}
 
-	for (auto& [_, object] : objects) {
+	for (auto& [id, object] : objects) {
 
 		// 몬스터
 		if (ObjectType::Monster == object->GetObjectType()) {
@@ -53,13 +54,27 @@ void Room::Update(const float delta)
 		// 객체 업데이트
 		if (ObjectType::Player != object->GetObjectType()) {
 			object->Update(delta);
+
+			// 임시
+			if (ObjectType::Bullet == object->GetObjectType()) {
+				if (object->GetPos().x < -24.f) {
+					deleted_objects.insert(id);
+				}
+				else if (object->GetPos().x > 24.f) {
+					deleted_objects.insert(id);
+				}
+				else if (object->GetPos().y < -24.f) {
+					deleted_objects.insert(id);
+				}
+				else if (object->GetPos().y > 24.f) {
+					deleted_objects.insert(id);
+				}
+			}
 		}
 	}
 
 
 
-	// objects 간 충돌 체크
-	std::unordered_set<int> deleted_objects;
 	for (auto iter1{ objects.begin() }; iter1 != objects.end(); ++iter1) {
 		auto iter2{ iter1 };
 		++iter2;
@@ -136,7 +151,7 @@ void Room::FireBullet(const int player_id)
 
 	auto obj{ GET_SINGLE(Game)->GetObjectFromPool(ObjectType::Bullet) };
 	auto bullet{ std::dynamic_pointer_cast<Bullet, Object>(obj) };
-	bullet->InitBullet(player->GetPos());
+	bullet->InitBullet(player->GetPos(), player->GetDir());
 
 	AddObject(bullet);
 }
@@ -167,6 +182,7 @@ void Room::SendObjectsToClient()
 				continue;
 			}
 			GET_SINGLE(IOCP)->DoSend(client_ids[i], &move_packet);
+			std::cout << _objects.size() << std::endl;
 		}
 	}
 }

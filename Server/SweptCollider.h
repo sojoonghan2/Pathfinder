@@ -6,6 +6,9 @@
 class SweptCollider : public Collider
 {
 public:
+	ColliderType GetColliderType() const override { return ColliderType::Swept; }
+
+
 	bool CheckCollision(const std::shared_ptr<const Collider>& other) const override {
 		return other->CheckCollisionWithSwept(*this);
 	}

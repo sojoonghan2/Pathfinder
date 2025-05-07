@@ -14,6 +14,8 @@ enum class PlayerType : unsigned char
 class Player : public Object
 {
 public:
+	void Update(const float delta) override {};
+	
 	// getter and setter
 	ObjectType GetObjectType() const override { return ObjectType::Player; }
 

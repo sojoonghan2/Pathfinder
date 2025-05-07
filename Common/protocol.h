@@ -20,7 +20,7 @@ constexpr float MONSTER_CRAB_SIZE_M{ 0.5f };
 constexpr float MONSTER_CRAB_SPEED_MPS{ 2.f };
 
 // other object
-constexpr float BULLET_SPEED_MPS{ 10.f };
+constexpr float BULLET_SPEED_MPS{ 15.f };
 
 
 // NETWORK

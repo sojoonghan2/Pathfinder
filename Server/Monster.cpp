@@ -2,6 +2,8 @@
 #include "Monster.h"
 #include "Room.h"
 
+// ·£´ý ¿£Áø
+
 void Monster::Update(const float delta)
 {
 	Move(delta);

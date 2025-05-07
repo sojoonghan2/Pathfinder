@@ -320,6 +320,84 @@ public:
 };
 
 
+class Bullet
+{
+	// 단위 m
+	Vec2f pos{};
+	Vec2f dir{};
+	float& x{ pos.x };
+	float& y{ pos.y };
+	bool show{ false };
+	sf::RectangleShape Square{ sf::Vector2f(GRID_WIDTH_PIXEL, GRID_HEIGHT_PIXEL) };
+
+
+public:
+
+	Bullet(const float x, const float y, const sf::Color color, const bool show) :
+		pos{ x, y },
+		show{ show }
+	{
+		SetFillColor(color);
+		sf::FloatRect bounds = Square.getLocalBounds();
+		Square.setOrigin(bounds.width / 2, bounds.height / 2);
+	}
+
+	Bullet(const float x, const float y, const sf::Color color) :
+		Bullet{ x, y, color, false }
+	{}
+
+	Bullet() :
+		Bullet{ 0.f, 0.f, sf::Color::Red }
+	{}
+
+	void SetFillColor(const sf::Color color)
+	{
+		Square.setFillColor(color);
+	}
+
+	void Update(const Controller& controller, const float delta)
+	{
+
+	}
+
+	void Draw(sf::RenderWindow& window)
+	{
+		if (not show) return;
+
+		// 윈도우 위치 계산
+		auto window_pos{ GameToWindow(pos) };
+		auto& windowX = window_pos.x;
+		auto& windowY = window_pos.y;
+
+		// 윈도우 위치에 표시
+		Square.setPosition(windowX, windowY);
+		window.draw(Square);
+	}
+
+
+	// getter and setter
+
+
+	void SetPosition(Vec2f _pos) { pos = _pos; }
+
+	void SetPosition(const float _x, const float _y)
+	{
+		SetPosition(Vec2f{ _x, _y });
+	}
+
+	void SetShow(const bool _show) { show = _show; }
+
+	Vec2f GetPosition() const { return pos; }
+
+	void SetDir(const Vec2f& _dir) { dir = _dir; }
+	void SetDir(const float _dirx, const float _diry)
+	{
+		dir.x = _dirx; dir.y = _diry;
+	}
+};
+
+
+
 int main() {
 	// 창 생성 (800x800 픽셀, 제목은 "Grid Map")
 	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Grid Map");
@@ -335,6 +413,7 @@ int main() {
 
 	std::unordered_map<int, Player> players{};
 	std::unordered_map<int, Monster> monsters{};
+	std::unordered_map<int, Monster> bullets{};
 	int my_id = -1;
 
 	Controller controller;
@@ -362,6 +441,20 @@ int main() {
 			break;
 			case packet::Type::SC_GAME_START:
 			{
+
+			}
+			break;
+
+			case packet::Type::SC_DELETE_OBJECT:
+			{
+				packet::SCDeleteObject packet = reinterpret_cast<packet::SCDeleteObject&>(buffer);
+				if (monsters.contains(packet.objectId)) {
+					monsters.erase(packet.objectId);
+				}
+				if (bullets.contains(packet.objectId)) {
+					bullets.erase(packet.objectId);
+				}
+
 
 			}
 			break;
@@ -421,6 +514,16 @@ int main() {
 					}
 					monsters[packet.objectId].SetDir(packet.dirX, packet.dirY);
 					monsters[packet.objectId].SetPosition(packet.x, packet.y);
+				}
+				break;
+
+				case ObjectType::Bullet:
+				{
+					if (not bullets.contains(packet.objectId)) {
+						bullets[packet.objectId].SetFillColor(sf::Color::Cyan);
+						bullets[packet.objectId].SetShow(true);
+					}
+					bullets[packet.objectId].SetPosition(packet.x, packet.y);
 				}
 				break;
 				default:
@@ -519,6 +622,12 @@ int main() {
 				auto pos = players[my_id].GetPosition();
 				auto dir = players[my_id].GetDir();
 				socket_io.DoSend<packet::CSMovePlayer>(pos.x, pos.y, dir.x, dir.y);
+
+				// 마우스가 클릭되어 있으면 총알 발사 패킷을 보냄.
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+					bullets[my_id].SetPosition(pos.x, pos.y);
+					socket_io.DoSend<packet::CSFireBullet>();
+				}
 			}
 		}
 
@@ -548,6 +657,10 @@ int main() {
 
 		for (auto& [_, monster] : monsters) {
 			monster.Draw(window);
+		}
+
+		for (auto& [_, bullet] : bullets) {
+			bullet.Draw(window);
 		}
 
 

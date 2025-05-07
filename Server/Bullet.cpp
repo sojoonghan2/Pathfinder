@@ -9,10 +9,11 @@ void Bullet::Update(const float delta)
 	Move(delta);
 }
 
-void Bullet::InitBullet(const Vec2f& pos)
+void Bullet::InitBullet(const Vec2f& pos, const Vec2f& dir)
 {
 	SetPos(pos);
 	_prevPos = pos;
 	SetCollider(std::make_shared<SweptCollider>(GetPosRef(), _prevPos));
 	SetSpeed(BULLET_SPEED_MPS);
+	SetDir(dir);
 }
