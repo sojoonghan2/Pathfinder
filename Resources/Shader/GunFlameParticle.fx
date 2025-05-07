@@ -137,13 +137,33 @@ float4 PS_Main(GS_OUT input) : SV_Target
     
 	float lifeRatio = input.lifeRatio;
 	float randomSeed = input.randomSeed;
-	
-	float3 coreColor = lerp(float3(1.0f, 0.9f, 0.5f), float3(1.0f, 0.6f, 0.2f), lifeRatio);
+    
+	float dist = distance(input.uv, float2(0.5f, 0.5f)) * 2.0f;
+    
+	float3 coreColor = float3(1.0f, 0.2f, 0.1f);
+	float3 midColor = float3(1.0f, 0.9f, 0.3f);
+	float3 edgeColor = float3(1.0f, 1.0f, 1.0f);
+    
+	float3 baseColor;
+	if (dist < 0.7f)
+	{
+		baseColor = lerp(coreColor, midColor, smoothstep(0.0f, 0.7f, dist));
+	}
+	else if (dist < 0.9f)
+	{
+		baseColor = lerp(midColor, edgeColor, smoothstep(0.7f, 0.9f, dist));
+	}
+	else
+	{
+		baseColor = edgeColor;
+	}
+    
+	baseColor = lerp(baseColor, edgeColor, lifeRatio * 0.4f);
     
 	float brightness = 5.0f + 3.0f * sin(randomSeed * 7.92f);
 	float colorShift = 0.1f * sin(randomSeed * 3.14f);
     
-	color.rgb *= coreColor * brightness;
+	color.rgb *= baseColor * brightness;
 	color.rgb += float3(colorShift, colorShift * 0.5f, 0.0f);
     
 	float flicker1 = sin(lifeRatio * PI * 15.0f + randomSeed * 6.28f);
@@ -157,8 +177,8 @@ float4 PS_Main(GS_OUT input) : SV_Target
 	float alpha = saturate(fadeOut * (0.8f + 0.2f * flickerMix + initialPulse * 0.5f));
     
 	float edgeDist = distance(input.uv, float2(0.5f, 0.5f)) * 2.0f;
-	float edgeGlow = saturate(1.0f - edgeDist * edgeDist);
-	edgeGlow = pow(edgeGlow, 1.0f + lifeRatio * 2.0f); // Edge gets harder as particle ages
+	float edgeGlow = saturate(1.0f - edgeDist * edgeDist * 1.2f);
+	edgeGlow = pow(edgeGlow, 1.5f + lifeRatio * 2.5f);
     
 	color.a *= alpha * edgeGlow;
     
