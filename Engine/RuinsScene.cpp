@@ -1184,6 +1184,7 @@ void RuinsScene::Init()
 			shared_ptr<GameObject> light = make_shared<GameObject>();
 			light->SetName(L"Ancient_Ruin_Point_Light" + std::to_wstring(i + 1));
 			light->AddComponent(make_shared<Transform>());
+			light->SetCheckFrustum(false);
 			light->GetTransform()->SetLocalPosition(Stone_pillar[i]);
 
 			// 2-1. Light 컴포넌트 추가 및 속성 설정
