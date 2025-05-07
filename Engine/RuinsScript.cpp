@@ -96,7 +96,6 @@ void RuinsScript::Occupation()
 		Vec3 pos = _water->GetTransform()->GetLocalPosition();
 		pos.y -= DELTA_TIME * 7.6667;
 		_water->GetTransform()->SetLocalPosition(pos);
-		cout << "Water Pos: " << _water->GetTransform()->GetLocalPosition().y << "\n";
 		BlinkUI();
 	}
 
