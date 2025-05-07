@@ -96,22 +96,12 @@ void CrabScript::LateUpdate()
 		CheckBoundary();
 	}
 
-	CheckBulletHits();
-	CheckGrenadeHits();
 	CheckRazerHits();
 }
 
 void CrabScript::Start()
 {
 	_player = GET_SINGLE(SceneManager)->FindObjectByName(L"Player");
-	_grenade = GET_SINGLE(SceneManager)->FindObjectByName(L"Grenade");
-
-	_bullets.resize(50);
-	for (int i = 0; i < 50; ++i)
-	{
-		wstring name = L"Bullet" + to_wstring(i);
-		_bullets[i] = GET_SINGLE(SceneManager)->FindObjectByName(name);
-	}
 
 	wstring myName = GetGameObject()->GetName();
 	size_t numberPos = myName.find_first_of(L"0123456789");
@@ -181,73 +171,45 @@ void CrabScript::CheckDummyHits(shared_ptr<GameObject> dummy)
 	}
 }
 
-void CrabScript::CheckBulletHits()
+void CrabScript::CheckBulletHits(shared_ptr<GameObject> bullet)
 {
 	if (!_hp)
 		return;
 
-	for (const auto& bullet : _bullets)
+	bullet->GetCollider()->SetEnable(false);
+	auto particle = _particlePool.GetAvailable();
+	if (particle)
 	{
-		if (!bullet)
-			continue;
+		particle->ParticleStart();
+	}
 
-		if (GET_SINGLE(SceneManager)->Collition(GetGameObject(), bullet))
-		{
-			if (!_initialized)
-			{
-				_initialized = true;
-				return;
-			}
+	Vec3 hpScale = _hp->GetTransform()->GetLocalScale();
+	Vec3 hpPos = _hp->GetTransform()->GetLocalPosition();
+	float delta = 10.f;
 
-			bullet->GetCollider()->SetEnable(false);
-			auto particle = _particlePool.GetAvailable();
-			if (particle)
-			{
-				particle->ParticleStart();
-			}
+	if (_takeGrenade)
+		delta *= 2.f;
 
+	if (hpScale.x - delta >= 0.f)
+	{
+		hpScale.x -= delta;
+		hpPos.x -= delta * 0.5f;
 
-			Vec3 hpScale = _hp->GetTransform()->GetLocalScale();
-			Vec3 hpPos = _hp->GetTransform()->GetLocalPosition();
-			float delta = 10.f;
+		_hp->GetTransform()->SetLocalScale(hpScale);
+		_hp->GetTransform()->SetLocalPosition(hpPos);
+	}
 
-			if (_takeGrenade)
-				delta *= 2.f;
-
-			if (hpScale.x - delta >= 0.f)
-			{
-				hpScale.x -= delta;
-				hpPos.x -= delta * 0.5f;
-
-				_hp->GetTransform()->SetLocalScale(hpScale);
-				_hp->GetTransform()->SetLocalPosition(hpPos);
-			}
-
-			if ((hpScale.x - delta) < 0.f)
-			{
-				DeadAnimation();
-				_hp->SetRender(false);
-			}
-			break;
-		}
+	if ((hpScale.x - delta) < 0.f)
+	{
+		DeadAnimation();
+		_hp->SetRender(false);
 	}
 }
 
 void CrabScript::CheckGrenadeHits()
 {
-	if (_grenade)
-	{
-		if (GET_SINGLE(SceneManager)->Collition(GetGameObject(), _grenade))
-		{
-			if (!_initialized)
-			{
-				_initialized = true;
-				return;
-			}
-			_takeGrenade = true;
-			cout << "熱盟驕 Я問\n";
-		}
-	}
+	_takeGrenade = true;
+	cout << "熱盟驕 Я問\n";
 }
 
 void CrabScript::CheckRazerHits()

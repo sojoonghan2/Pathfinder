@@ -296,6 +296,8 @@ void RuinsScene::Init()
 		dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 		dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetEnable(false);
 
+		GET_SINGLE(CollisionManager)->RegisterCollider(grenade->GetCollider(), COLLISION_OBJECT_TYPE::GRENADE);
+
 		grenade->SetRender(false);
 		AddGameObject(grenade);
 

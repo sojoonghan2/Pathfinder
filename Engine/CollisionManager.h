@@ -7,6 +7,7 @@ enum class COLLISION_OBJECT_TYPE
 	CRAB,
 	DUMMY,
 	BULLET,
+	GRENADE,
 	GENERATE,
 };
 
@@ -23,7 +24,9 @@ public:
 	void CheckPlayerToDummy();
 	void CheckCrabToDummy();
 	void CheckPlayerToCrab();
-	void CheckMonsterToBullet();
+	void CheckCrabToBullet();
+	void CheckCrabToGrenade();
+	void CheckCrabToRazer();
 	void CheckGenerateToBullet();
 
 private:

@@ -75,22 +75,6 @@ void PlayerScript::LateUpdate()
 	ShootRazer();
 	Animation();
 	Recoil();
-
-	// 테스트용 HP 코드
-	if (_hpTransform && INPUT->GetButton(KEY_TYPE::K))
-	{
-		Vec3 scale = _hpTransform->GetLocalScale();
-		Vec3 pos = _hpTransform->GetLocalPosition();
-
-		float delta = 10.f;
-		if (scale.x - delta >= 0.f)
-		{
-			scale.x -= delta;
-			pos.x -= delta * 0.5f;
-			_hpTransform->SetLocalScale(scale);
-			_hpTransform->SetLocalPosition(pos);
-		}
-	}
 }
 
 void PlayerScript::KeyboardInput() { Move(); Dash(); }
@@ -422,4 +406,20 @@ void PlayerScript::CheckDummyHits(shared_ptr<GameObject> dummy)
 		Vec3 slidePos = _prevPosition + slideDir * 2.f;
 		player->GetTransform()->SetLocalPosition(slidePos);
 	}
+}
+
+void PlayerScript::CheckCrabHits()
+{
+	Vec3 scale = _hpTransform->GetLocalScale();
+	Vec3 pos = _hpTransform->GetLocalPosition();
+
+	float delta = 10.f;
+	if (scale.x - delta >= 0.f)
+	{
+		scale.x -= delta;
+		pos.x -= delta * 0.5f;
+		_hpTransform->SetLocalScale(scale);
+		_hpTransform->SetLocalPosition(pos);
+	}
+	cout << "거미 충돌\n";
 }

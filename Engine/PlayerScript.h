@@ -38,6 +38,7 @@ public:
 	bool GetIsRazer() { return _isRazer; }
 
 	void CheckDummyHits(shared_ptr<GameObject> dummy);
+	void CheckCrabHits();
 
 private:
 	bool			_isMove = false;

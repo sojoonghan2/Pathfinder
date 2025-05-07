@@ -30,7 +30,9 @@ void CollisionManager::Update()
 	CheckPlayerToDummy();
 	CheckCrabToDummy();
 	CheckPlayerToCrab();
-	CheckMonsterToBullet();
+	CheckCrabToBullet();
+	CheckCrabToGrenade();
+	CheckCrabToRazer();
 	CheckGenerateToBullet();
 }
 
@@ -63,9 +65,9 @@ void CollisionManager::CheckPlayerToDummy()
 
 void CollisionManager::CheckCrabToDummy()
 {
-	for (auto& [monster, typeA] : _colliders)
+	for (auto& [crab, typeA] : _colliders)
 	{
-		if (typeA != COLLISION_OBJECT_TYPE::CRAB || !monster->IsEnabled())
+		if (typeA != COLLISION_OBJECT_TYPE::CRAB || !crab->IsEnabled())
 			continue;
 
 		for (auto& [dummy, typeB] : _colliders)
@@ -73,7 +75,7 @@ void CollisionManager::CheckCrabToDummy()
 			if (typeB != COLLISION_OBJECT_TYPE::DUMMY || !dummy->IsEnabled())
 				continue;
 
-			const auto& objA = monster->GetGameObject();
+			const auto& objA = crab->GetGameObject();
 			const auto& objB = dummy->GetGameObject();
 
 			if (!objA || !objB)
@@ -90,9 +92,86 @@ void CollisionManager::CheckCrabToDummy()
 
 void CollisionManager::CheckPlayerToCrab()
 {
+	for (auto& [player, typeA] : _colliders)
+	{
+		if (typeA != COLLISION_OBJECT_TYPE::PLAYER || !player->IsEnabled())
+			continue;
+
+		for (auto& [dummy, typeB] : _colliders)
+		{
+			if (typeB != COLLISION_OBJECT_TYPE::CRAB || !dummy->IsEnabled())
+				continue;
+
+			const auto& objA = player->GetGameObject();
+			const auto& objB = dummy->GetGameObject();
+
+			if (!objA || !objB)
+				continue;
+
+			if (GET_SINGLE(SceneManager)->Collition(objA, objB))
+			{
+				auto playerScript = objA->GetScript<PlayerScript>();
+				playerScript->CheckCrabHits();
+			}
+		}
+	}
 }
 
-void CollisionManager::CheckMonsterToBullet()
+void CollisionManager::CheckCrabToBullet()
+{
+	for (auto& [crab, typeA] : _colliders)
+	{
+		if (typeA != COLLISION_OBJECT_TYPE::CRAB || !crab->IsEnabled())
+			continue;
+
+		for (auto& [bullet, typeB] : _colliders)
+		{
+			if (typeB != COLLISION_OBJECT_TYPE::BULLET || !bullet->IsEnabled())
+				continue;
+
+			const auto& objA = crab->GetGameObject();
+			const auto& objB = bullet->GetGameObject();
+
+			if (!objA || !objB)
+				continue;
+
+			if (GET_SINGLE(SceneManager)->Collition(objA, objB))
+			{
+				auto crabScript = objA->GetScript<CrabScript>();
+				crabScript->CheckBulletHits(objB);
+			}
+		}
+	}
+}
+
+void CollisionManager::CheckCrabToGrenade()
+{
+	for (auto& [crab, typeA] : _colliders)
+	{
+		if (typeA != COLLISION_OBJECT_TYPE::CRAB || !crab->IsEnabled())
+			continue;
+
+		for (auto& [grenade, typeB] : _colliders)
+		{
+			if (typeB != COLLISION_OBJECT_TYPE::GRENADE || !grenade->IsEnabled())
+				continue;
+
+			const auto& objA = crab->GetGameObject();
+			const auto& objB = grenade->GetGameObject();
+
+			if (!objA || !objB)
+				continue;
+
+			if (GET_SINGLE(SceneManager)->Collition(objA, objB))
+			{
+				auto crabScript = objA->GetScript<CrabScript>();
+				crabScript->CheckGrenadeHits();
+			}
+		}
+	}
+}
+
+void CollisionManager::CheckCrabToRazer()
 {
 }
 
