@@ -1164,7 +1164,7 @@ void RuinsScene::Init()
 		// 2-2. 스팟 라이트 방향 설정
 		light->GetLight()->SetLightDirection(Vec3(0.f, -1.f, 0.f));
 
-		float lightpower = 0.5f;
+		float lightpower = 0.8f;
 		// 3. 조명 색상 및 강도 조정 (따뜻한 황금빛)
 		light->GetLight()->SetDiffuse(Vec3(1.0f, 0.85f, 0.6f) * lightpower);
 		light->GetLight()->SetAmbient(Vec3(0.25f, 0.2f, 0.25f) * lightpower);
@@ -1179,12 +1179,13 @@ void RuinsScene::Init()
 	{
 		vector<Vec3> Stone_pillar{ Vec3(-1375.2f, 1500.f, 900.f), Vec3(1542.62f, 1500.f, 900.f), Vec3(-407.447f, 1500.f, 2300.f),
 		   Vec3(735.708f, 1500.f, 2300.f),Vec3(754.53f, 1500.f, 3250.f), Vec3(-372.698f, 1500.f, 3250.f) };
+
 		for (int i = 0; i < 6; ++i) {
 			// 1. Light 오브젝트 생성 
 			shared_ptr<GameObject> light = make_shared<GameObject>();
 			light->SetName(L"Ancient_Ruin_Point_Light" + std::to_wstring(i + 1));
 			light->AddComponent(make_shared<Transform>());
-			light->SetCheckFrustum(false);
+			light->SetCheckFrustum(true);
 			light->GetTransform()->SetLocalPosition(Stone_pillar[i]);
 
 			// 2-1. Light 컴포넌트 추가 및 속성 설정
@@ -1212,7 +1213,38 @@ void RuinsScene::Init()
 
 	}
 #pragma endregion
+#pragma region Wall Dot Light
+	{
+		float wall_light_spot = 4000.f;
+		float wall_light_height = 1500.f;
+		vector<Vec3> position = {Vec3(wall_light_spot,wall_light_height,wall_light_spot), Vec3(-wall_light_spot,wall_light_height,wall_light_spot) 
+		,Vec3(wall_light_spot,wall_light_height,-wall_light_spot) ,Vec3(-wall_light_spot,wall_light_height,-wall_light_spot) };
+		for ( int i = 0; i < 4; ++i) {
+			// 1. Light 오브젝트 생성
+			shared_ptr<GameObject> light = make_shared<GameObject>();
+			light->SetName(L"Ancient_Wall_Point_Light" + std::to_wstring(i));
+			light->AddComponent(make_shared<Transform>());
+			light->SetCheckFrustum(false);
+			light->GetTransform()->SetLocalPosition(position[i]);
 
+			// 2-1. Light 컴포넌트 추가 및 속성 설정
+			light->AddComponent(make_shared<Light>());
+			light->GetLight()->SetLightType(LIGHT_TYPE::POINT_LIGHT);
+
+			float lightpower = 1.0f;
+
+			light->GetLight()->SetLightRange(2000.0f);
+			lightpower = 0.5f;
+
+			light->GetLight()->SetDiffuse(Vec3(1.0f, 0.4f, 0.3f) * lightpower);
+			light->GetLight()->SetAmbient(Vec3(0.3f, 0.1f, 0.1f) * lightpower);
+			light->GetLight()->SetSpecular(Vec3(1.0f, 0.5f, 0.4f) * lightpower);
+
+			// 4. Scene에 추가
+			AddGameObject(light);
+		}
+	}
+#pragma endregion
 	// 다른 플레이어 대기 UI
 #pragma region WaitUI
 	{
