@@ -29,17 +29,6 @@ void PlayerScript::Start()
 	if (hpObj) _hpTransform = hpObj->GetTransform();
 
 	_cameraObj = GET_SINGLE(SceneManager)->GetActiveScene()->GetMainCamera()->GetGameObject();
-
-	// Dummy Ä³½Ì
-	int index = 0;
-	while (true)
-	{
-		wstring name = L"dummy" + to_wstring(index++);
-		auto dummy = GET_SINGLE(SceneManager)->FindObjectByName(name);
-		if (!dummy) break;
-		_dummyList.push_back(dummy);
-	}
-	_dummiesInitialized = true;
 }
 
 void PlayerScript::LateUpdate()
@@ -193,7 +182,6 @@ void PlayerScript::Move()
 	pos.z = max(mapMinZ, min(pos.z, mapMaxZ));
 
 	GetTransform()->SetLocalPosition(pos);
-	CheckDummyHits();
 }
 
 void PlayerScript::Dash()
@@ -412,44 +400,26 @@ void PlayerScript::RotateToCameraLook()
 	}
 }
 
-void PlayerScript::CheckDummyHits()
+void PlayerScript::CheckDummyHits(shared_ptr<GameObject> dummy)
 {
-	if (!_dummiesInitialized) return;
-
 	auto player = GetGameObject();
-	if (!player) return;
+	if (!player || !dummy)
+		return;
 
 	Vec3 curPos = player->GetTransform()->GetLocalPosition();
-	Vec3 newPos = curPos;
+	Vec3 dummyPos = dummy->GetTransform()->GetLocalPosition();
+	Vec3 dummyToPlayer = curPos - dummyPos;
 
-	for (auto& dummy : _dummyList)
+	player->GetTransform()->SetLocalPosition(_prevPosition);
+
+	if (dummyToPlayer.LengthSquared() > 0.0001f)
 	{
-		if (!dummy) continue;
+		dummyToPlayer.Normalize();
 
-		bool is_collision = GET_SINGLE(SceneManager)->Collition(player, dummy);
-		if (is_collision)
-		{
-			player->GetTransform()->SetLocalPosition(_prevPosition);
+		Vec3 slideDir = dummyToPlayer;
+		slideDir.y = 0.f;
 
-			Vec3 dummyPos = dummy->GetTransform()->GetLocalPosition();
-			Vec3 dummyToPlayer = curPos - dummyPos;
-
-			if (dummyToPlayer.LengthSquared() > 0.0001f)
-			{
-				dummyToPlayer.Normalize();
-
-				Vec3 slideDir = dummyToPlayer;
-				slideDir.y = 0.f;
-
-				Vec3 slidePos = _prevPosition + slideDir * 2.f;
-				player->GetTransform()->SetLocalPosition(slidePos);
-			}
-			else
-			{
-				player->GetTransform()->SetLocalPosition(_prevPosition);
-			}
-
-			break;
-		}
+		Vec3 slidePos = _prevPosition + slideDir * 2.f;
+		player->GetTransform()->SetLocalPosition(slidePos);
 	}
 }

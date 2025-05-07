@@ -31,6 +31,7 @@
 
 #include "SphereCollider.h"
 #include "BoxCollider.h"
+#include "CollisionManager.h"
 
 #include "DustParticleSystem.h"
 #include "GlitterParticleSystem.h"
@@ -130,6 +131,8 @@ void RuinsScene::Init()
 			gameObject->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(100.f);
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
+
+			GET_SINGLE(CollisionManager)->RegisterCollider(gameObject->GetCollider(), COLLISION_OBJECT_TYPE::PLAYER);
 
 			AddGameObject(gameObject);
 
@@ -655,6 +658,8 @@ void RuinsScene::Init()
 			dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetRadius(info.second);
 			dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 
+			GET_SINGLE(CollisionManager)->RegisterCollider(dummy->GetCollider(), COLLISION_OBJECT_TYPE::DUMMY);
+
 			AddGameObject(dummy);
 		}
 	}
@@ -734,6 +739,8 @@ void RuinsScene::Init()
 			dummy->AddComponent(make_shared<BoxCollider>());
 			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetExtents(info.second / 1.5);
 			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetCenter(info.first);
+
+			GET_SINGLE(CollisionManager)->RegisterCollider(dummy->GetCollider(), COLLISION_OBJECT_TYPE::DUMMY);
 
 			AddGameObject(dummy);
 		}
