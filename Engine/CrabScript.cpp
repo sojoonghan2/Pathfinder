@@ -155,6 +155,32 @@ void CrabScript::CheckBoundary()
 	GetTransform()->SetLocalPosition(pos);
 }
 
+void CrabScript::CheckDummyHits(shared_ptr<GameObject> dummy)
+{
+	auto crab = GetGameObject();
+	if (!crab || !dummy) return;
+
+	Vec3 curPos = crab->GetTransform()->GetLocalPosition();
+	Vec3 dummyPos = dummy->GetTransform()->GetLocalPosition();
+
+	Vec3 hitDir = curPos - dummyPos;
+
+	if (hitDir.LengthSquared() > 0.0001f)
+	{
+		hitDir.Normalize();
+
+		// 방향만 반전
+		_direction.x = hitDir.x;
+		_direction.z = hitDir.z;
+	}
+	// 강제 탈출
+	else
+	{
+		_direction.x *= -1.f;
+		_direction.z *= -1.f;
+	}
+}
+
 void CrabScript::CheckBulletHits()
 {
 	if (!_hp)

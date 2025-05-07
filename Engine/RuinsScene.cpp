@@ -225,6 +225,8 @@ void RuinsScene::Init()
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetEnable(false);
 
+			GET_SINGLE(CollisionManager)->RegisterCollider(bullet->GetCollider(), COLLISION_OBJECT_TYPE::BULLET);
+
 			bullet->AddComponent(meshRenderer);
 			bullet->SetRender(false);
 
@@ -798,6 +800,8 @@ void RuinsScene::Init()
 			gameObjects[0]->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
+
+			GET_SINGLE(CollisionManager)->RegisterCollider(gameObjects[0]->GetCollider(), COLLISION_OBJECT_TYPE::CRAB);
 
 			vector<shared_ptr<GameObject>> crabParticles;
 			for (int j = 0; j < 5; ++j)

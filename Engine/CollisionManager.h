@@ -4,8 +4,10 @@
 enum class COLLISION_OBJECT_TYPE
 {
 	PLAYER,
-	MONSTER,
+	CRAB,
 	DUMMY,
+	BULLET,
+	GENERATE,
 };
 
 class CollisionManager
@@ -19,7 +21,10 @@ public:
 	void Update();
 
 	void CheckPlayerToDummy();
-	void CheckMonsterToDummy();
+	void CheckCrabToDummy();
+	void CheckPlayerToCrab();
+	void CheckMonsterToBullet();
+	void CheckGenerateToBullet();
 
 private:
 	vector<pair<shared_ptr<BaseCollider>, COLLISION_OBJECT_TYPE>> _colliders;

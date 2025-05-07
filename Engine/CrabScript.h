@@ -1,6 +1,7 @@
 #pragma once
 #include "MonoBehaviour.h"
 #include "ParticlePool.h"
+#include "GameObject.h"
 
 class CrabScript : public MonoBehaviour
 {
@@ -11,6 +12,7 @@ public:
 
 	void MoveRandomly();
 	void CheckBoundary();
+	void CheckDummyHits(shared_ptr<GameObject> dummy);
 	void CheckBulletHits();
 	void CheckGrenadeHits();
 	void CheckRazerHits();

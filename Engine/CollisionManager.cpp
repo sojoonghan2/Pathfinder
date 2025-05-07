@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "SceneManager.h"
 #include "PlayerScript.h"
+#include "CrabScript.h"
 
 void CollisionManager::RegisterCollider(const shared_ptr<BaseCollider>& collider, COLLISION_OBJECT_TYPE objectType)
 {
@@ -27,7 +28,10 @@ void CollisionManager::UnregisterCollider(const shared_ptr<BaseCollider>& collid
 void CollisionManager::Update()
 {
 	CheckPlayerToDummy();
-	CheckMonsterToDummy();
+	CheckCrabToDummy();
+	CheckPlayerToCrab();
+	CheckMonsterToBullet();
+	CheckGenerateToBullet();
 }
 
 void CollisionManager::CheckPlayerToDummy()
@@ -57,11 +61,11 @@ void CollisionManager::CheckPlayerToDummy()
 	}
 }
 
-void CollisionManager::CheckMonsterToDummy()
+void CollisionManager::CheckCrabToDummy()
 {
 	for (auto& [monster, typeA] : _colliders)
 	{
-		if (typeA != COLLISION_OBJECT_TYPE::MONSTER || !monster->IsEnabled())
+		if (typeA != COLLISION_OBJECT_TYPE::CRAB || !monster->IsEnabled())
 			continue;
 
 		for (auto& [dummy, typeB] : _colliders)
@@ -77,7 +81,21 @@ void CollisionManager::CheckMonsterToDummy()
 
 			if (GET_SINGLE(SceneManager)->Collition(objA, objB))
 			{
+				auto crabScript = objA->GetScript<CrabScript>();
+				crabScript->CheckDummyHits(objB);
 			}
 		}
 	}
+}
+
+void CollisionManager::CheckPlayerToCrab()
+{
+}
+
+void CollisionManager::CheckMonsterToBullet()
+{
+}
+
+void CollisionManager::CheckGenerateToBullet()
+{
 }
