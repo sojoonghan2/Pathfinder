@@ -7,8 +7,8 @@ class CrabScript : public MonoBehaviour
 {
 public:
 	CrabScript();
-	virtual void LateUpdate() override;
 	virtual void Start() override;
+	virtual void LateUpdate() override;
 
 	void MoveRandomly();
 	void CheckBoundary();

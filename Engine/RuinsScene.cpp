@@ -137,8 +137,7 @@ void RuinsScene::Init()
 			AddGameObject(gameObject);
 
 			shared_ptr<GameObject> wire = make_shared<GameObject>();
-			wstring name = L"wire";
-			wire->SetName(name);
+			wire->SetName(L"WirePlayer");
 
 			wire->AddComponent(make_shared<Transform>());
 			wire->GetTransform()->SetParent(gameObject->GetTransform());
@@ -627,12 +626,12 @@ void RuinsScene::Init()
 	{
 		vector<pair<Vec3, float>> dummyInfo;
 		// 돌 기둥
-		dummyInfo.emplace_back(Vec3(-1375.2f, 100.f, 900.f), 100.f);
-		dummyInfo.emplace_back(Vec3(1542.62f, 100.f, 900.f), 100.f);
-		dummyInfo.emplace_back(Vec3(-407.447f, 100.f, 2300.f), 100.f);
-		dummyInfo.emplace_back(Vec3(735.708f, 100.f, 2300.f), 100.f);
-		dummyInfo.emplace_back(Vec3(754.53f, 100.f, 3250.f), 100.f);
-		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 100.f);
+		dummyInfo.emplace_back(Vec3(-1375.2f, 100.f, 900.f), 200.f);
+		dummyInfo.emplace_back(Vec3(1542.62f, 100.f, 900.f), 200.f);
+		dummyInfo.emplace_back(Vec3(-407.447f, 100.f, 2300.f), 200.f);
+		dummyInfo.emplace_back(Vec3(735.708f, 100.f, 2300.f), 200.f);
+		dummyInfo.emplace_back(Vec3(754.53f, 100.f, 3250.f), 200.f);
+		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 200.f);
 
 		for (const auto& info : dummyInfo)
 		{
@@ -670,14 +669,11 @@ void RuinsScene::Init()
 	{
 		vector<pair<Vec3, Vec3>> dummyInfo;
 		// 맨 앞 돌 입구
-		dummyInfo.emplace_back(Vec3(-2080.72f, 0.f, 4800.f), Vec3(3000.f, 300.f, 300.f));
-		dummyInfo.emplace_back(Vec3(2580.72f, 0.f, 4800.f), Vec3(3000.f, 300.f, 300.f));
+		dummyInfo.emplace_back(Vec3(-2100.72f, 0.f, 4750.f), Vec3(3900.f, 300.f, 300.f));
+		dummyInfo.emplace_back(Vec3(2600.72f, 0.f, 4750.f), Vec3(3900.f, 300.f, 300.f));
 
 		// 돌 입구 왼쪽 날개
-		for (int i{}; i < 7; ++i)
-		{
-			dummyInfo.emplace_back(Vec3(-3780.03f, 0.f, 4446.2f - 300.f * i), Vec3(300.f, 300.f, 300.f));
-		}
+		dummyInfo.emplace_back(Vec3(-3780.03f, 0.f, 3800.f), Vec3(300.f, 300.f, 2700.f));
 
 		// 돌 입구 오른쪽 날개
 		for (int i{}; i < 11; ++i)
@@ -791,7 +787,6 @@ void RuinsScene::Init()
 			positions.push_back(randomPos);
 
 			gameObjects[0]->SetName(L"CyberCrabs" + std::to_wstring(i));
-			gameObjects[0]->SetCheckFrustum(true);
 			//gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
 			//gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 			gameObjects[0]->AddComponent(make_shared<CrabScript>());
@@ -803,6 +798,27 @@ void RuinsScene::Init()
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
 			GET_SINGLE(CollisionManager)->RegisterCollider(gameObjects[0]->GetCollider(), COLLISION_OBJECT_TYPE::CRAB);
+
+			shared_ptr<GameObject> wire = make_shared<GameObject>();
+			wire->SetName(L"WireCyberCrabs" + std::to_wstring(i));
+
+			wire->AddComponent(make_shared<Transform>());
+			wire->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+			wire->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+			//wire->GetTransform()->SetLocalScale(Vec3(0.f, 0.f, 0.f));
+
+			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+				meshRenderer->SetMesh(sphereMesh);
+			}
+			{
+				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
+				meshRenderer->SetMaterial(material->Clone());
+			}
+			wire->AddComponent(meshRenderer);
+
+			AddGameObject(wire);
 
 			vector<shared_ptr<GameObject>> crabParticles;
 			for (int j = 0; j < 5; ++j)

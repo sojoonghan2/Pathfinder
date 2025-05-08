@@ -422,5 +422,4 @@ void PlayerScript::CheckCrabHits()
 		_hpTransform->SetLocalScale(scale);
 		_hpTransform->SetLocalPosition(pos);
 	}
-	cout << "거미 충돌\n";
 }

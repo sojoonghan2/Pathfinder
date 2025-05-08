@@ -32,8 +32,28 @@ CrabScript::CrabScript()
 	_hitDuration = 0.2f;
 }
 
+void CrabScript::Start()
+{
+	_player = GET_SINGLE(SceneManager)->FindObjectByName(L"Player");
+
+	wstring myName = GetGameObject()->GetName();
+	size_t numberPos = myName.find_first_of(L"0123456789");
+	if (numberPos != wstring::npos)
+		_index = stoi(myName.substr(numberPos));
+
+	wstring hpName = L"CrabHP" + to_wstring(_index);
+	_hp = GET_SINGLE(SceneManager)->FindObjectByName(hpName);
+
+	_particlePool.Init(_particleObjects);
+}
+
 void CrabScript::LateUpdate()
 {
+	wstring wireName = L"WireCyberCrabs" + to_wstring(_index);
+	auto wire = GET_SINGLE(SceneManager)->FindObjectByName(wireName);
+	cout << "Pos: " << wire->GetTransform()->GetWorldPosition().x << ", " << wire->GetTransform()->GetWorldPosition().y << ", " << wire->GetTransform()->GetWorldPosition().z << "\n";
+	cout << "Scale: " << wire->GetTransform()->GetWorldScale().x << ", " << wire->GetTransform()->GetWorldScale().y << ", " << wire->GetTransform()->GetWorldScale().z << "\n";
+
 	// 사망 애니메이션 처리
 	if (_isDying)
 	{
@@ -97,21 +117,6 @@ void CrabScript::LateUpdate()
 	}
 
 	CheckRazerHits();
-}
-
-void CrabScript::Start()
-{
-	_player = GET_SINGLE(SceneManager)->FindObjectByName(L"Player");
-
-	wstring myName = GetGameObject()->GetName();
-	size_t numberPos = myName.find_first_of(L"0123456789");
-	if (numberPos != wstring::npos)
-		_index = stoi(myName.substr(numberPos));
-
-	wstring hpName = L"CrabHP" + to_wstring(_index);
-	_hp = GET_SINGLE(SceneManager)->FindObjectByName(hpName);
-
-	_particlePool.Init(_particleObjects);
 }
 
 void CrabScript::MoveRandomly()
