@@ -5,6 +5,8 @@ enum class MsgType
 	NONE = 0,
 	MOVE,
 	START_GAME,
+	REGISTER,
+	FIRE_GUN,
 };
 
 struct Msg
@@ -32,9 +34,3 @@ struct MsgMove : Msg
 	{}
 };
 
-struct MsgStartGame : Msg
-{
-	MsgStartGame() :
-		Msg{ MsgType::START_GAME }
-	{}
-};

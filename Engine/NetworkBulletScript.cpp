@@ -12,7 +12,7 @@ NetworkBulletScript::~NetworkBulletScript()
 {
 }
 
-void NetworkBulletScript::Update()
+void NetworkBulletScript::LateUpdate()
 {
 
 	auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(_id);
@@ -25,7 +25,12 @@ void NetworkBulletScript::Update()
 				std::static_pointer_cast<MsgMove>(message) };
 			SetPosition(message_move->x, message_move->y);
 			SetDir(message_move->dirX, message_move->dirY);
-
+		}
+		break;
+		case MsgType::REGISTER:
+		{
+			GET_SINGLE(MessageManager)->RegisterObject(ObjectType::Bullet, _id);
+			SetPosition(100000.f, 0.f);
 		}
 		break;
 		default:
@@ -46,7 +51,7 @@ void NetworkBulletScript::SetPosition(float x, float z)
 {
 	Vec3 pos = GetTransform()->GetLocalPosition();
 	pos.x = x * METER_TO_CLIENT;
-	pos.y = 0.f;
+	pos.y = 400.f;
 	pos.z = z * METER_TO_CLIENT;
 
 	GetTransform()->SetLocalPosition(pos);

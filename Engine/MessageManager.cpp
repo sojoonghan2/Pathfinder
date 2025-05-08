@@ -50,6 +50,21 @@ bool MessageManager::FindNetworkObject(const int network_id) const
 	return _networkToClientHash.contains(network_id);
 }
 
+void MessageManager::DeleteNetworkObject(const int network_id)
+{
+	if (not _networkToClientHash.contains(network_id)) {
+		return;
+	}
+
+	auto object_id{ _networkToClientHash[network_id] };
+
+
+	_networkToClientHash.erase(network_id);
+	PushMessage(object_id, std::make_shared<Msg>(MsgType::REGISTER));
+	
+	
+}
+
 void MessageManager::Clear()
 {
 	_messageQueueHash.clear();

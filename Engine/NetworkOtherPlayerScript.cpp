@@ -68,7 +68,7 @@ void NetworkOtherPlayerScript::SetPosition(float x, float z)
 {
 	Vec3 pos = GetTransform()->GetLocalPosition();
 	pos.x = x * METER_TO_CLIENT;
-	pos.y = 0.f;
+	pos.y = -100.f;
 	pos.z = z * METER_TO_CLIENT;
 
 	GetTransform()->SetLocalPosition(pos);
@@ -93,8 +93,12 @@ void NetworkOtherPlayerScript::Animation()
 
 	if (_isMove)
 		nextAnimIndex = 1;
-	else
+	if (!_isMove)
 		nextAnimIndex = 0;
+	if (_isShoot && _isMove)
+		nextAnimIndex = 5;
+	if (_isShoot && !_isMove)
+		nextAnimIndex = 4;
 
 	if (_currentAnimIndex != nextAnimIndex)
 	{

@@ -9,7 +9,7 @@ public:
 	NetworkBulletScript();
 	virtual ~NetworkBulletScript();
 
-	virtual void Update() override;
+	virtual void LateUpdate() override;
 	virtual void Awake() override;
 
 

@@ -465,7 +465,6 @@ void RuinsScene::Init()
 				shared_ptr<GameObject> bullet = make_shared<GameObject>();
 				bullet->SetName(L"OtherBullet" + std::to_wstring(i) + L"_" + std::to_wstring(ii));
 				bullet->SetCheckFrustum(true);
-				bullet->SetStatic(false);
 
 				bullet->AddComponent(make_shared<Transform>());
 				bullet->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));

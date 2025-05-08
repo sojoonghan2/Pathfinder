@@ -61,7 +61,7 @@ void SocketIO::Continue()
 {
 	if (_stop) {
 		_stop = false;
-		auto msg{ std::make_shared<MsgStartGame>() };
+		auto msg{ std::make_shared<Msg>(MsgType::START_GAME) };
 		GET_SINGLE(MessageManager)->PushMessageByNetworkId(ID_RUINS_SCENE, msg);
 	}
 }
@@ -158,7 +158,7 @@ void SocketIO::ProcessPacket()
 			}
 			else {
 				// 신 전환이 이미 완료되었음.
-				auto msg{ std::make_shared<MsgStartGame>() };
+				auto msg{ std::make_shared<Msg>(MsgType::START_GAME) };
 				GET_SINGLE(MessageManager)->PushMessageByNetworkId(ID_RUINS_SCENE, msg);
 			}
 
@@ -179,6 +179,13 @@ void SocketIO::ProcessPacket()
 			GET_SINGLE(MessageManager)->PushMessageByNetworkId(packet.objectId, msg);
 		}
 		break;
+		case packet::Type::SC_DELETE_OBJECT:
+		{
+			packet::SCDeleteObject& packet{ reinterpret_cast<packet::SCDeleteObject&>(buffer) };
+			GET_SINGLE(MessageManager)->DeleteNetworkObject(packet.objectId);
+		}
+		break;
+
 		default:
 		{
 			std::cout << "Packet Error\n";

@@ -18,7 +18,8 @@ public:
 private:
 	float		_lastX{ -1.f };
 	float		_lastY{ -1.f };
-	bool		_isMove{ true };
+	bool		_isMove{ false };
+	bool		_isShoot{ false };
 	uint32		_currentAnimIndex{ 0 };
 
 };

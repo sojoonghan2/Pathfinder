@@ -45,6 +45,13 @@ void NetworkCrabScript::LateUpdate()
 
 		}
 		break;
+
+		case MsgType::REGISTER:
+		{
+			GET_SINGLE(MessageManager)->RegisterObject(ObjectType::Monster, _id);
+			SetPosition(100000.f, 0.f);
+		}
+		break;
 		default:
 			break;
 		}

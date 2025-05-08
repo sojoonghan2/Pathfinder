@@ -47,6 +47,8 @@ public:
 
 	bool FindNetworkObject(const int network_id) const;
 
+	void DeleteNetworkObject(const int network_id);
+
 	void Clear();
 	
 private:
@@ -54,6 +56,10 @@ private:
 	std::unordered_map<uint32, MsgQueueType> _messageQueueHash;
 
 	// for network
+
+	// 등록된 객체의 큐
 	std::unordered_map<ObjectType, std::queue<uint32>> _objectQueueHash;
+
+	// 네트워크 아이디로 클라이언트 객체 id를 얻는 해시
 	std::unordered_map<int, uint32> _networkToClientHash;
 };
