@@ -179,7 +179,7 @@
     <ClInclude Include="BaseParticleSystem.h" />
     <ClInclude Include="BossScene.h" />
     <ClInclude Include="BossScript.h" />
-    <ClInclude Include="BoxCollider.h" />
+    <ClInclude Include="OrientedBoxCollider.h" />
     <ClInclude Include="BulletScript.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="BINLoader.h" />
@@ -284,7 +284,7 @@
     <ClCompile Include="BaseParticleSystem.cpp" />
     <ClCompile Include="BossScene.cpp" />
     <ClCompile Include="BossScript.cpp" />
-    <ClCompile Include="BoxCollider.cpp" />
+    <ClCompile Include="OrientedBoxCollider.cpp" />
     <ClCompile Include="BulletScript.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="BINLoader.cpp" />

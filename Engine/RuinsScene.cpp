@@ -30,7 +30,7 @@
 #include "ModuleScript.h"
 
 #include "SphereCollider.h"
-#include "BoxCollider.h"
+#include "OrientedBoxCollider.h"
 #include "CollisionManager.h"
 
 #include "DustParticleSystem.h"
@@ -143,7 +143,7 @@ void RuinsScene::Init()
 			wire->AddComponent(make_shared<Transform>());
 			wire->GetTransform()->SetParent(gameObject->GetTransform());
 			wire->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 100.f));
-			wire->GetTransform()->SetLocalScale(Vec3(125.f, 125.f, 125.f));
+			wire->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 
 			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 			{
@@ -156,7 +156,7 @@ void RuinsScene::Init()
 			}
 			wire->AddComponent(meshRenderer);
 
-			//AddGameObject(wire);
+			AddGameObject(wire);
 
 			shared_ptr<GameObject> particleObject = make_shared<GameObject>();
 			particleObject->SetName(L"GunFlameParticle");
@@ -634,11 +634,6 @@ void RuinsScene::Init()
 		dummyInfo.emplace_back(Vec3(754.53f, 100.f, 3250.f), 100.f);
 		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 100.f);
 
-		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 100.f);
-		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 100.f);
-		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 100.f);
-
-
 		for (const auto& info : dummyInfo)
 		{
 			shared_ptr<GameObject> dummy = make_shared<GameObject>();
@@ -660,7 +655,7 @@ void RuinsScene::Init()
 				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
 				meshRenderer->SetMaterial(material->Clone());
 			}
-			//dummy->AddComponent(meshRenderer);
+			dummy->AddComponent(meshRenderer);
 
 			dummy->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(dummy->GetCollider())->SetRadius(info.second);
@@ -675,8 +670,8 @@ void RuinsScene::Init()
 	{
 		vector<pair<Vec3, Vec3>> dummyInfo;
 		// 맨 앞 돌 입구
-		dummyInfo.emplace_back(Vec3(-2080.72f, 0.f, 6604.7f), Vec3(3000.f, 3000.f, 3000.f));
-		dummyInfo.emplace_back(Vec3(2580.72f, 0.f, 6604.7f), Vec3(3000.f, 3000.f, 3000.f));
+		dummyInfo.emplace_back(Vec3(-2080.72f, 0.f, 4800.f), Vec3(3000.f, 300.f, 300.f));
+		dummyInfo.emplace_back(Vec3(2580.72f, 0.f, 4800.f), Vec3(3000.f, 300.f, 300.f));
 
 		// 돌 입구 왼쪽 날개
 		for (int i{}; i < 7; ++i)
@@ -741,12 +736,12 @@ void RuinsScene::Init()
 				meshRenderer->SetMaterial(material->Clone());
 			}
 			// 여기가 문제네
-			//dummy->AddComponent(meshRenderer);
+			dummy->AddComponent(meshRenderer);
 			//dummy->GetMeshRenderer()->GetMesh()->SetVrs(true);
 			//dummy->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
-			dummy->AddComponent(make_shared<BoxCollider>());
-			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetExtents(info.second / 1.5);
-			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetCenter(info.first);
+			dummy->AddComponent(make_shared<OrientedBoxCollider>());
+			dynamic_pointer_cast<OrientedBoxCollider>(dummy->GetCollider())->SetExtents(info.second / 2);
+			dynamic_pointer_cast<OrientedBoxCollider>(dummy->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 
 			GET_SINGLE(CollisionManager)->RegisterCollider(dummy->GetCollider(), COLLISION_OBJECT_TYPE::DUMMY);
 

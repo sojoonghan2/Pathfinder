@@ -345,7 +345,7 @@
     <ClCompile Include="NetworkOtherPlayerScript.cpp">
       <Filter>Script\ObjectScript\NetworkScript</Filter>
     </ClCompile>
-    <ClCompile Include="BoxCollider.cpp">
+    <ClCompile Include="OrientedBoxCollider.cpp">
       <Filter>Object\Component\Collider</Filter>
     </ClCompile>
     <ClCompile Include="GunFlameParticleSystem.cpp">
@@ -656,7 +656,7 @@
     <ClInclude Include="NetworkOtherPlayerScript.h">
       <Filter>Script\ObjectScript\NetworkScript</Filter>
     </ClInclude>
-    <ClInclude Include="BoxCollider.h">
+    <ClInclude Include="OrientedBoxCollider.h">
       <Filter>Object\Component\Collider</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />

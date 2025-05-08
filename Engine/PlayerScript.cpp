@@ -10,7 +10,7 @@
 #include "MessageManager.h"
 #include "SocketIO.h"
 #include "Animator.h"
-#include "BoxCollider.h"
+#include "OrientedBoxCollider.h"
 #include "Material.h"
 #include "MeshRenderer.h"
 #include "SphereCollider.h"

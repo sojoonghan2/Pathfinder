@@ -28,7 +28,7 @@
 #include "TestParticleScript.h"
 
 #include "SphereCollider.h"
-#include "BoxCollider.h"
+#include "OrientedBoxCollider.h"
 #include "GeneratorScript.h"
 
 #include "IceParticleSystem.h"
@@ -494,9 +494,9 @@ void FactoryScene::Init()
 			}
 			//dummy->AddComponent(meshRenderer);
 
-			dummy->AddComponent(make_shared<BoxCollider>());
-			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetExtents(info.second / 1.5);
-			dynamic_pointer_cast<BoxCollider>(dummy->GetCollider())->SetCenter(info.first);
+			dummy->AddComponent(make_shared<OrientedBoxCollider>());
+			dynamic_pointer_cast<OrientedBoxCollider>(dummy->GetCollider())->SetExtents(info.second / 1.5);
+			dynamic_pointer_cast<OrientedBoxCollider>(dummy->GetCollider())->SetCenter(info.first);
 			
 			GET_SINGLE(CollisionManager)->RegisterCollider(dummy->GetCollider(), COLLISION_OBJECT_TYPE::DUMMY);
 
