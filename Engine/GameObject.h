@@ -44,9 +44,20 @@ public:
 	void SetStatic(bool flag) { _static = flag; }
 	bool IsStatic() { return _static; }
 
-	void SetRenderOff() { _isRender = false; }
-	void SetRenderOn() { _isRender = true; }
+	void SetRender(bool render) { _isRender = render; }
 	bool IsRender() { return _isRender; }
+
+	template<typename T>
+	shared_ptr<T> GetScript()
+	{
+		for (const auto& script : _scripts)
+		{
+			shared_ptr<T> casted = dynamic_pointer_cast<T>(script);
+			if (casted)
+				return casted;
+		}
+		return nullptr;
+	}
 
 private:
 	array<shared_ptr<Component>, FIXED_COMPONENT_COUNT> _components;

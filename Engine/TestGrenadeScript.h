@@ -7,9 +7,7 @@ class TestGrenadeScript : public MonoBehaviour
 public:
 	TestGrenadeScript(shared_ptr<PlayerScript> playerScript);
 	virtual ~TestGrenadeScript();
-
 	virtual void LateUpdate() override;
-
 	void KeyboardInput();
 	void MouseInput();
 
@@ -18,6 +16,7 @@ public:
 private:
 	bool _isThrown = false;
 	bool _resetThrow = false;
+	shared_ptr<GameObject> _grenadeUIImage;
 
 	Vec3 _velocity;
 	float _gravity;

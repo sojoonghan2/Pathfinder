@@ -345,7 +345,7 @@
     <ClCompile Include="NetworkOtherPlayerScript.cpp">
       <Filter>Script\ObjectScript\NetworkScript</Filter>
     </ClCompile>
-    <ClCompile Include="BoxCollider.cpp">
+    <ClCompile Include="OrientedBoxCollider.cpp">
       <Filter>Object\Component\Collider</Filter>
     </ClCompile>
     <ClCompile Include="GunFlameParticleSystem.cpp">
@@ -356,6 +356,12 @@
     </ClCompile>
     <ClCompile Include="CrabScript.cpp">
       <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticlePool.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>Manager</Filter>
     </ClCompile>
     <ClCompile Include="NetworkBulletScript.cpp">
       <Filter>Script\ObjectScript\NetworkScript</Filter>
@@ -653,7 +659,7 @@
     <ClInclude Include="NetworkOtherPlayerScript.h">
       <Filter>Script\ObjectScript\NetworkScript</Filter>
     </ClInclude>
-    <ClInclude Include="BoxCollider.h">
+    <ClInclude Include="OrientedBoxCollider.h">
       <Filter>Object\Component\Collider</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
@@ -665,6 +671,12 @@
     </ClInclude>
     <ClInclude Include="CrabScript.h">
       <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticlePool.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>Manager</Filter>
     </ClInclude>
     <ClInclude Include="NetworkBulletScript.h">
       <Filter>Script\ObjectScript\NetworkScript</Filter>
@@ -763,7 +775,7 @@
     <FxCompile Include="..\Resources\Shader\CrabParticle.fx">
       <Filter>Shader\Particle</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\PNG.fx">
+    <FxCompile Include="..\Resources\Shader\SkillIcon.fx">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

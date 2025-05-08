@@ -38,7 +38,8 @@ public:
 	bool GetIsGrenade() { return _isGrenade; }
 	bool GetIsRazer() { return _isRazer; }
 
-	void CheckDummyHits();
+	void CheckDummyHits(shared_ptr<GameObject> dummy);
+	void CheckCrabHits();
 
 private:
 	bool			_isMove = false;
@@ -89,8 +90,4 @@ private:
 
 	// Ä«¸Þ¶ó
 	shared_ptr<GameObject> _cameraObj;
-
-	// Dummy Ä³½Ì
-	vector<shared_ptr<GameObject>> _dummyList;
-	bool _dummiesInitialized = false;
 };

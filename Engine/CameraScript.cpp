@@ -17,7 +17,7 @@ Vec3 Lerp(const Vec3& a, const Vec3& b, float t)
 
 CameraScript::CameraScript() {
 	_defaultOffset = Vec3(0.f, 500.f, -600.f);
-	_zoomOffset = Vec3(0.f, 600.f, -250.f);
+	_zoomOffset = Vec3(0.f, 600.f, -150.f);
 	_currentOffset = _defaultOffset;
 
 	_centerScreenPos.x = GEngine->GetWindow().width / 2;
@@ -40,7 +40,7 @@ void CameraScript::LateUpdate() {
 		Vec3 targetPos = _target->GetTransform()->GetLocalPosition();
 
 		// 오른쪽 마우스 버튼 상태에 따라 오프셋 보간
-		Vec3 targetOffset = INPUT->GetButton(KEY_TYPE::RBUTTON) ? _zoomOffset : _defaultOffset;
+		Vec3 targetOffset = INPUT->GetButton(MOUSE_TYPE::RBUTTON) ? _zoomOffset : _defaultOffset;
 		_currentOffset = Lerp(_currentOffset, targetOffset, 5.f * DELTA_TIME); // 빠르게 따라가도록 보간
 
 		// 공전 위치 계산
@@ -83,7 +83,8 @@ void CameraScript::KeyboardInput() {
 	GetTransform()->SetLocalPosition(pos);
 }
 
-void CameraScript::MouseInput() {
+void CameraScript::MouseInput()
+{
 	if (_playerCamera)
 	{
 		while (ShowCursor(FALSE) >= 0);
@@ -100,29 +101,11 @@ void CameraScript::MouseInput() {
 		const float minAngle = -XM_PI / 18.0f; // -30도
 		const float maxAngle = XM_PI / 18.0f;  // 30도
 		_cameraRotation.x = std::clamp(_cameraRotation.x, minAngle, maxAngle);
-
-		// 커서가 화면 경계를 넘었는지 검사
-		POINT cursorPos;
-		GetCursorPos(&cursorPos);
-
-		int margin = 2;
-		RECT windowRect;
-		GetClientRect(GEngine->GetWindow().hwnd, &windowRect);
-		ClientToScreen(GEngine->GetWindow().hwnd, reinterpret_cast<LPPOINT>(&windowRect.left));
-		ClientToScreen(GEngine->GetWindow().hwnd, reinterpret_cast<LPPOINT>(&windowRect.right));
-
-		if (cursorPos.x <= windowRect.left + margin ||
-			cursorPos.x >= windowRect.right - margin ||
-			cursorPos.y <= windowRect.top + margin ||
-			cursorPos.y >= windowRect.bottom - margin)
-		{
-			SetCursorPos(_centerScreenPos.x, _centerScreenPos.y);
-		}
 	}
 	else
 	{
 		while (ShowCursor(TRUE) < 0);
-		if (INPUT->GetButton(KEY_TYPE::LBUTTON)) {
+		if (INPUT->GetButton(MOUSE_TYPE::LBUTTON)) {
 			POINT mouseDelta = INPUT->GetMouseDelta();
 			Vec3 rotation = GetTransform()->GetLocalRotation();
 			rotation.y += mouseDelta.x * 0.005f;
@@ -135,4 +118,6 @@ void CameraScript::MouseInput() {
 void CameraScript::ToggleCamera()
 {
 	_playerCamera = !_playerCamera;
+
+	INPUT->LockCursor(_playerCamera);
 }

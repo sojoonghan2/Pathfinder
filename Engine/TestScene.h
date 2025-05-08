@@ -1,16 +1,14 @@
 #pragma once
 #include "Scene.h"
-#include "MonoBehaviour.h"
 
-class TestScene : public MonoBehaviour
+class TestScene : public Scene
 {
 public:
 	TestScene();
 	virtual ~TestScene();
 
-	void Init();
+	void Init() override;
 
-	shared_ptr<Scene> GetScene() { return activeScene; }
 private:
-	shared_ptr<Scene> activeScene = make_shared<Scene>();
+	bool stageClear;
 };

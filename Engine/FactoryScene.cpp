@@ -15,6 +15,7 @@
 #include "CameraScript.h"
 #include "Resources.h"
 #include "MeshData.h"
+#include "CollisionManager.h"
 
 #include "TestDragon.h"
 #include "PlayerScript.h"
@@ -27,6 +28,7 @@
 #include "TestParticleScript.h"
 
 #include "SphereCollider.h"
+#include "OrientedBoxCollider.h"
 #include "GeneratorScript.h"
 
 #include "IceParticleSystem.h"
@@ -76,7 +78,7 @@ void FactoryScene::Init()
 		camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, true); // UI는 안 찍음
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -92,7 +94,7 @@ void FactoryScene::Init()
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskAll(); // 다 끄고
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false); // UI만 찍음
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -109,8 +111,8 @@ void FactoryScene::Init()
 		{
 			gameObject->SetName(L"Player");
 			gameObject->SetCheckFrustum(false);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-			gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -300.0f, 0.0f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 			gameObject->AddComponent(playerScript);
 			gameObject->AddComponent(make_shared<TestDragon>());
@@ -119,7 +121,9 @@ void FactoryScene::Init()
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(100.f);
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
-			activeScene->AddGameObject(gameObject);
+			GET_SINGLE(CollisionManager)->RegisterCollider(gameObject->GetCollider(), COLLISION_OBJECT_TYPE::PLAYER);
+
+			AddGameObject(gameObject);
 
 			shared_ptr<GameObject> wire = make_shared<GameObject>();
 			wstring name = L"wire";
@@ -141,7 +145,7 @@ void FactoryScene::Init()
 			}
 			wire->AddComponent(meshRenderer);
 
-			//activeScene->AddGameObject(wire);
+			//AddGameObject(wire);
 
 			shared_ptr<GameObject> particleObject = make_shared<GameObject>();
 			particleObject->SetName(L"GunFlameParticle");
@@ -152,7 +156,7 @@ void FactoryScene::Init()
 			gunFlameParticleSystem->SetParticleScale(50.f, 50.f);
 			particleObject->AddComponent(gunFlameParticleSystem);
 
-			activeScene->AddGameObject(particleObject);
+			AddGameObject(particleObject);
 		}
 
 		// 총
@@ -170,7 +174,7 @@ void FactoryScene::Init()
 			gameObject->GetTransform()->SetLocalPosition(Vec3(42.f, 58.f, -3.f));
 			gameObject->AddComponent(make_shared<GunScript>());
 
-			activeScene->AddGameObject(gameObject);
+			AddGameObject(gameObject);
 		}
 
 		// 총알
@@ -185,7 +189,7 @@ void FactoryScene::Init()
 			bullet->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
 			bullet->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 			bullet->GetTransform()->GetTransform()->RemoveParent();
-			bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
+			bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 			bullet->AddComponent(make_shared<BulletScript>(playerScript));
 
 			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -206,10 +210,14 @@ void FactoryScene::Init()
 			bullet->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetRadius(10.f);
 			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+			dynamic_pointer_cast<SphereCollider>(bullet->GetCollider())->SetEnable(false);
+
+			GET_SINGLE(CollisionManager)->RegisterCollider(bullet->GetCollider(), COLLISION_OBJECT_TYPE::BULLET);
 
 			bullet->AddComponent(meshRenderer);
+			bullet->SetRender(false);
 
-			activeScene->AddGameObject(bullet);
+			AddGameObject(bullet);
 		}
 
 		// 총알
@@ -231,7 +239,7 @@ void FactoryScene::Init()
 				bullet->GetTransform()->GetTransform()->RemoveParent();
 				bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
 				bullet->AddComponent(make_shared<BulletScript>(playerScript));
-				activeScene->AddGameObject(bullet);
+				AddGameObject(bullet);
 			}
 		}
 		*/
@@ -246,7 +254,7 @@ void FactoryScene::Init()
 		grenade->GetTransform()->SetLocalScale(Vec3(30.f, 30.f, 30.f));
 		grenade->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 		grenade->GetTransform()->GetTransform()->RemoveParent();
-		grenade->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
+		grenade->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
 		grenade->AddComponent(make_shared<TestGrenadeScript>(playerScript));
 
 		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
@@ -269,12 +277,17 @@ void FactoryScene::Init()
 		grenadeParticleSystem->SetParticleScale(100.f, 80.f);
 		grenade->AddComponent(grenadeParticleSystem);
 
-		activeScene->AddGameObject(grenade);
+		grenade->AddComponent(make_shared<SphereCollider>());
+		dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetRadius(500.f);
+		dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
+		dynamic_pointer_cast<SphereCollider>(grenade->GetCollider())->SetEnable(false);
+
+		grenade->SetRender(false);
+		AddGameObject(grenade);
 
 		// 레이저 파티클
 		shared_ptr<GameObject> razerParticle = make_shared<GameObject>();
-		wstring razerParticleName = L"RazerParticle";
-		razerParticle->SetName(razerParticleName);
+		razerParticle->SetName(L"Razer");
 		razerParticle->SetCheckFrustum(true);
 		razerParticle->SetStatic(false);
 
@@ -292,7 +305,7 @@ void FactoryScene::Init()
 		razerParticleSystem->SetEmitDirection(dir);
 		razerParticle->AddComponent(razerParticleSystem);
 
-		activeScene->AddGameObject(razerParticle);
+		AddGameObject(razerParticle);
 
 		// 조준점
 		shared_ptr<GameObject> obj = make_shared<GameObject>();
@@ -317,8 +330,8 @@ void FactoryScene::Init()
 			CrosshairmeshRenderer->SetMaterial(material);
 		}
 		obj->AddComponent(CrosshairmeshRenderer);
-		obj->SetRenderOff();
-		activeScene->AddGameObject(obj);
+		obj->SetRender(false);
+		AddGameObject(obj);
 
 		shared_ptr<GameObject> playerFace = make_shared<GameObject>();
 		playerFace->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
@@ -341,7 +354,7 @@ void FactoryScene::Init()
 			playerFacemeshRenderer->SetMaterial(material);
 		}
 		playerFace->AddComponent(playerFacemeshRenderer);
-		activeScene->AddGameObject(playerFace);
+		AddGameObject(playerFace);
 
 		// hp
 		shared_ptr<GameObject> hpBase = make_shared<GameObject>();
@@ -365,7 +378,7 @@ void FactoryScene::Init()
 			hpBasemeshRenderer->SetMaterial(material);
 		}
 		hpBase->AddComponent(hpBasemeshRenderer);
-		activeScene->AddGameObject(hpBase);
+		AddGameObject(hpBase);
 
 		shared_ptr<GameObject> hp = make_shared<GameObject>();
 		hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
@@ -388,7 +401,7 @@ void FactoryScene::Init()
 			hpmeshRenderer->SetMaterial(material);
 		}
 		hp->AddComponent(hpmeshRenderer);
-		activeScene->AddGameObject(hp);
+		AddGameObject(hp);
 	}
 #pragma endregion
 
@@ -410,7 +423,7 @@ void FactoryScene::Init()
 			CrosshairmeshRenderer->SetMesh(mesh);
 		}
 		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"SkillIcon");
 			shared_ptr<Texture> texture{};
 			if (i == 0) texture = GET_SINGLE(Resources)->Load<Texture>(L"DashUI", L"..\\Resources\\Texture\\Skill\\Dash.png");
 			else if (i == 1) texture = GET_SINGLE(Resources)->Load<Texture>(L"GrenadeUI", L"..\\Resources\\Texture\\Skill\\Grenade.png");
@@ -418,126 +431,102 @@ void FactoryScene::Init()
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
 			material->SetTexture(0, texture);
+			material->SetFloat(3, 1.0f);
 			CrosshairmeshRenderer->SetMaterial(material);
 		}
 		obj->AddComponent(CrosshairmeshRenderer);
-		activeScene->AddGameObject(obj);
+		AddGameObject(obj);
 	}
 #pragma endregion
 
-	// 터레인 큐브
-#pragma region TerrainCube
+	// 더미 콜라이더
+#pragma region DummyCollider
+	int dummyCount{};
+	// 큐브
 	{
-		// 1. 기본 오브젝트 생성 및 설정
-		shared_ptr<GameObject> terraincube = make_shared<GameObject>();
-		terraincube->AddComponent(make_shared<Transform>());
-		terraincube->SetCheckFrustum(true);
-
-		// 2. Transform 컴포넌트 추가 및 설정
-		terraincube->AddComponent(make_shared<Transform>());
-		// 씬의 임시 크기
-		terraincube->GetTransform()->SetLocalScale(Vec3(10000.f, 10000.f, 10000.f));
-		// 씬의 임시 좌표
-		terraincube->GetTransform()->SetLocalPosition(Vec3(0, 4900.f, 0.f));
-
-		// 3. MeshRenderer 설정
-		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		vector<pair<Vec3, Vec3>> dummyInfo;
+		
+		for (int i{}; i < 7; ++i)
 		{
-			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadCubeMesh();
-			meshRenderer->SetMesh(sphereMesh);
+			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, -4800.f), Vec3(300.f, 300.f, 300.f));
 		}
+
+		for (int i{}; i < 7; ++i)
 		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"TerrainCube");
-			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Factory", L"..\\Resources\\Texture\\TerrainCube\\Factory.jpg");
-			shared_ptr<Texture> floorTexture = GET_SINGLE(Resources)->Load<Texture>(L"FactoryFloor", L"..\\Resources\\Texture\\TerrainCube\\FactoryFloor.jpg");
-			shared_ptr<Texture> topTexture = GET_SINGLE(Resources)->Load<Texture>(L"FactoryTop", L"..\\Resources\\Texture\\TerrainCube\\FactoryTop.jpg");
-
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, texture);
-			material->SetTexture(1, floorTexture);
-			material->SetTexture(2, topTexture);
-			meshRenderer->SetMaterial(material);
+			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, -2400.f), Vec3(300.f, 300.f, 300.f));
 		}
-		terraincube->AddComponent(meshRenderer);
 
-		// 4. Scene에 추가
-		activeScene->AddGameObject(terraincube);
+		for (int i{}; i < 7; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, 0.f), Vec3(300.f, 300.f, 300.f));
+		}
+
+		for (int i{}; i < 7; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, 2400.f), Vec3(300.f, 300.f, 300.f));
+		}
+
+		for (int i{}; i < 7; ++i)
+		{
+			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, 4800.f), Vec3(300.f, 300.f, 300.f));
+		}
+
+		for (const auto& info : dummyInfo)
+		{
+			shared_ptr<GameObject> dummy = make_shared<GameObject>();
+
+			wstring name = L"dummy" + to_wstring(dummyCount++);
+			dummy->SetName(name);
+
+			dummy->AddComponent(make_shared<Transform>());
+			dummy->GetTransform()->SetLocalPosition(info.first);
+			dummy->GetTransform()->SetLocalScale(info.second);
+			dummy->SetStatic(true);
+
+			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> cubeMesh = GET_SINGLE(Resources)->LoadCubeMesh();
+				meshRenderer->SetMesh(cubeMesh);
+			}
+			{
+				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
+				meshRenderer->SetMaterial(material->Clone());
+			}
+			//dummy->AddComponent(meshRenderer);
+
+			dummy->AddComponent(make_shared<OrientedBoxCollider>());
+			dynamic_pointer_cast<OrientedBoxCollider>(dummy->GetCollider())->SetExtents(info.second / 1.5);
+			dynamic_pointer_cast<OrientedBoxCollider>(dummy->GetCollider())->SetCenter(info.first);
+			
+			GET_SINGLE(CollisionManager)->RegisterCollider(dummy->GetCollider(), COLLISION_OBJECT_TYPE::DUMMY);
+
+			AddGameObject(dummy);
+		}
 	}
 #pragma endregion
 
 	// 로봇
 #pragma region FactoryMonster
 	{
-
-
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Monster\\Monster.fbx");
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
-
 
 		gameObjects[0]->SetName(L"FactoryMonster");
 		gameObjects[0]->SetCheckFrustum(true);
 		gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
 		gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
-		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, 0.0f, 2000.0f));
-		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 0.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(4.f, 4.f, 4.f));
+		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -100.0f, 2000.0f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-PI / 2, 0.0f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 
 		gameObjects[0]->AddComponent(make_shared<SphereCollider>());
 		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
 		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
-		activeScene->AddGameObject(gameObjects[0]);
-
-		// hp
-		shared_ptr<GameObject> hpBase = make_shared<GameObject>();
-		hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI"));
-		hpBase->AddComponent(make_shared<Transform>());
-		hpBase->SetName(L"FactoryMonsterHPBase");
-		hpBase->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
-		hpBase->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
-		shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
-		{
-			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-			hpBasemeshRenderer->SetMesh(mesh);
-		}
-		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
-			shared_ptr<Texture> texture{};
-			texture = GET_SINGLE(Resources)->Load<Texture>(L"FactoryMonsterHPBase", L"..\\Resources\\Texture\\FactoryMonsterHPBase.png");
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, texture);
-			hpBasemeshRenderer->SetMaterial(material);
-		}
-		hpBase->AddComponent(hpBasemeshRenderer);
-		activeScene->AddGameObject(hpBase);
-
-		shared_ptr<GameObject> hp = make_shared<GameObject>();
-		hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
-		hp->AddComponent(make_shared<Transform>());
-		hp->SetName(L"FactoryMonsterHP");
-		hp->GetTransform()->SetLocalScale(Vec3(480.f, 35.f, 100.f));
-		hp->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
-		shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
-		{
-			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
-			hpmeshRenderer->SetMesh(mesh);
-		}
-		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
-			shared_ptr<Texture> texture{};
-			texture = GET_SINGLE(Resources)->Load<Texture>(L"FactoryMonsterHP", L"..\\Resources\\Texture\\FactoryMonsterHP.png");
-			shared_ptr<Material> material = make_shared<Material>();
-			material->SetShader(shader);
-			material->SetTexture(0, texture);
-			hpmeshRenderer->SetMaterial(material);
-		}
-		hp->AddComponent(hpmeshRenderer);
-		activeScene->AddGameObject(hp);
+		AddGameObject(gameObjects[0]);
 	}
 #pragma endregion
-
+	
 	// 전역 조명
 #pragma region Directional Light
 	{
@@ -554,15 +543,34 @@ void FactoryScene::Init()
 		// 2-2. 스팟 라이트 방향 설정
 		light->GetLight()->SetLightDirection(Vec3(0.f, -1.f, 0.f));
 
-		float lightpower = 1.0f;
-		// 3. 조명 색상 및 강도 조정 (따뜻한 황금빛)
-		light->GetLight()->SetDiffuse(Vec3(1.0f, 0.85f, 0.6f) * lightpower);
-		light->GetLight()->SetAmbient(Vec3(0.25f, 0.2f, 0.25f) * lightpower);
-		light->GetLight()->SetSpecular(Vec3(0.9f, 0.8f, 0.6f) * lightpower);
+		light->GetLight()->SetDiffuse(Vec3(1.f, 1.f, 1.f));
+		light->GetLight()->SetAmbient(Vec3(0.4f, 0.4f, 0.4f));
+		light->GetLight()->SetSpecular(Vec3(0.1f, 0.1f, 0.1f));
 
 		// 4. Scene에 추가
-		activeScene->AddGameObject(light);
+		AddGameObject(light);
 
+	}
+#pragma endregion
+
+	// 팩토리 맵
+#pragma region FactoryMap
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\FactoryMap\\FactoryMap.fbx");
+
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		for (auto gameObject : gameObjects)
+		{
+			gameObject->SetName(L"FactoryMap");
+			gameObject->SetCheckFrustum(true);
+			gameObject->SetStatic(true);
+			gameObject->AddComponent(make_shared<Transform>());
+			gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, -100.f, 0.f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
+			//AddGameObject(gameObject);
+		}
 	}
 #pragma endregion
 
@@ -575,20 +583,132 @@ void FactoryScene::Init()
 		gameObjects[0]->SetName(L"Generator");
 		gameObjects[0]->SetCheckFrustum(true);
 		gameObjects[0]->AddComponent(make_shared<GeneratorScript>());
-		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(2000.0f, -200.0f, 2000.0f));
+		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -200.0f, -3000.0f));
 		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-1.6f, 0.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(1.f, 1.f, 1.f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(2.f, 2.f, 2.f));
+
+		gameObjects[0]->AddComponent(make_shared<SphereCollider>());
+		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
+		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 700.f, 0.f));
+
+		GET_SINGLE(CollisionManager)->RegisterCollider(gameObjects[0]->GetCollider(), COLLISION_OBJECT_TYPE::GENERATE);
 
 		shared_ptr<GameObject> particleObj = make_shared<GameObject>();
-		particleObj->SetName(L"IceParticleSystem");
+		particleObj->SetName(L"GeneratorParticle");
 		particleObj->AddComponent(make_shared<Transform>());
 		particleObj->GetTransform()->SetParent(gameObjects[0]->GetTransform());
 		particleObj->GetTransform()->SetLocalPosition(Vec3(0.0f, 0.0f, 500.0f));
 		particleObj->AddComponent(make_shared<IceParticleSystem>());
-		particleObj->AddComponent(make_shared<GeneratorScript>());
-		activeScene->AddGameObject(particleObj);
+		AddGameObject(particleObj);
 
-		activeScene->AddGameObject(gameObjects[0]);
+		AddGameObject(gameObjects[0]);
+
+		// hp
+		shared_ptr<GameObject> hpBase = make_shared<GameObject>();
+		hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI"));
+		hpBase->AddComponent(make_shared<Transform>());
+		hpBase->SetName(L"GeneratorHPBase");
+		hpBase->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
+		hpBase->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
+		shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			hpBasemeshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+			shared_ptr<Texture> texture{};
+			texture = GET_SINGLE(Resources)->Load<Texture>(L"GeneratorHPBase", L"..\\Resources\\Texture\\FactoryMonsterHPBase.png");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			hpBasemeshRenderer->SetMaterial(material);
+		}
+		hpBase->AddComponent(hpBasemeshRenderer);
+		AddGameObject(hpBase);
+
+		shared_ptr<GameObject> hp = make_shared<GameObject>();
+		hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		hp->AddComponent(make_shared<Transform>());
+		hp->SetName(L"GeneratorHP");
+		hp->GetTransform()->SetLocalScale(Vec3(480.f, 35.f, 100.f));
+		hp->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
+		shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			hpmeshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+			shared_ptr<Texture> texture{};
+			texture = GET_SINGLE(Resources)->Load<Texture>(L"GeneratorHP", L"..\\Resources\\Texture\\FactoryMonsterHP.png");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			hpmeshRenderer->SetMaterial(material);
+		}
+		hp->AddComponent(hpmeshRenderer);
+		AddGameObject(hp);
+	}
+#pragma endregion
+
+	// Temp
+#pragma region Temp
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Temp\\Temp.fbx");
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		for (const auto& gameObject : gameObjects)
+		{
+			gameObject->SetName(L"Temp");
+			gameObject->SetCheckFrustum(true);
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -100.0f, 0.0f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, 0.f, 0.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(5.f, 5.f, 5.f));
+			//AddGameObject(gameObject);
+		}
+
+		
+	}
+#pragma endregion
+
+	// FactoryMid
+#pragma region FactoryMid
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\FactoryMid\\FactoryMid.fbx");
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		for (const auto& gameObject : gameObjects)
+		{
+			gameObject->SetName(L"FactoryMid");
+			gameObject->SetCheckFrustum(true);
+			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -200.0f, 1000.0f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, 0.f, 0.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 15.f));
+			//AddGameObject(gameObject);
+		}
+
+
+	}
+#pragma endregion
+
+	// Door
+#pragma region Door
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Door\\Door.fbx");
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		for (const auto& gameObject : gameObjects)
+		{
+			gameObject->SetName(L"Door");
+			gameObject->SetCheckFrustum(true);
+			gameObject->GetTransform()->SetLocalPosition(Vec3(950.f, -100.f, -5200.f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(0.f, 0.f, 0.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(200.f, 100.f, 100.f));
+			AddGameObject(gameObject);
+		}
+
+
 	}
 #pragma endregion
 
@@ -611,7 +731,7 @@ void FactoryScene::Init()
 		testPBRParticle->AddComponent(make_shared<TestParticleScript>());
 		testPBRParticle->AddComponent(testPBRParticleSystem);
 
-		activeScene->AddGameObject(testPBRParticle);
+		AddGameObject(testPBRParticle);
 	}
 #pragma endregion
 
@@ -634,7 +754,7 @@ void FactoryScene::Init()
 		portalFrameParticle->AddComponent(make_shared<TestParticleScript>());
 		portalFrameParticle->AddComponent(portalFrameParticleSystem);
 
-		activeScene->AddGameObject(portalFrameParticle);
+		AddGameObject(portalFrameParticle);
 	}
 #pragma endregion
 }

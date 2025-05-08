@@ -34,7 +34,7 @@ void TitleScene::Init()
 		uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
 		camera->GetCamera()->SetCullingMaskAll();
 		camera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false); // UI
-		activeScene->AddGameObject(camera);
+		AddGameObject(camera);
 	}
 #pragma endregion
 
@@ -61,7 +61,7 @@ void TitleScene::Init()
 		}
 		title->AddComponent(make_shared<TitleScript>());
 		title->AddComponent(meshRenderer);
-		activeScene->AddGameObject(title);
+		AddGameObject(title);
 	}
 #pragma endregion
 
@@ -79,7 +79,7 @@ void TitleScene::Init()
 			meshRenderer->SetMesh(mesh);
 		}
 		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"PNG");
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
 			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"MatchingIcon", L"..\\Resources\\Texture\\MatchingIcon.png");
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
@@ -87,7 +87,7 @@ void TitleScene::Init()
 			meshRenderer->SetMaterial(material);
 		}
 		icon->AddComponent(meshRenderer);
-		activeScene->AddGameObject(icon);
+		AddGameObject(icon);
 	}
 #pragma endregion
 
@@ -105,7 +105,7 @@ void TitleScene::Init()
 			meshRenderer->SetMesh(mesh);
 		}
 		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"PNG");
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
 			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Matchmaking_ing", L"..\\Resources\\Texture\\Matchmaking_ing.png");
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
@@ -113,8 +113,8 @@ void TitleScene::Init()
 			meshRenderer->SetMaterial(material);
 		}
 		icon->AddComponent(meshRenderer);
-		icon->SetRenderOff();
-		activeScene->AddGameObject(icon);
+		icon->SetRender(false);
+		AddGameObject(icon);
 	}
 #pragma endregion
 
@@ -132,7 +132,7 @@ void TitleScene::Init()
 			meshRenderer->SetMesh(mesh);
 		}
 		{
-			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"PNG");
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
 			shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"LoadingIcon", L"..\\Resources\\Texture\\LoadingIcon.png");
 			shared_ptr<Material> material = make_shared<Material>();
 			material->SetShader(shader);
@@ -140,8 +140,8 @@ void TitleScene::Init()
 			meshRenderer->SetMaterial(material);
 		}
 		icon->AddComponent(meshRenderer);
-		icon->SetRenderOff();
-		activeScene->AddGameObject(icon);
+		icon->SetRender(false);
+		AddGameObject(icon);
 	}
 #pragma endregion
 }

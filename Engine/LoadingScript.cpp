@@ -17,13 +17,14 @@
 #include "TestScene.h"
 #include "SocketIO.h"
 
-LoadingScript::LoadingScript() : loadEnd(false), loadThread(nullptr), isInitialized(false)
-{}
+LoadingScript::LoadingScript(RoomType type)
+	: loadEnd(false), loadThread(nullptr), isInitialized(false), pendingThreadJoin(false), _state(LoadingState::Idle), roomType(type)
+{
+}
 
 LoadingScript::~LoadingScript()
 {
-	// 스레드가 아직 실행 중이라면 정리
-	if (loadThread != nullptr && loadThread->joinable())
+	if (loadThread && loadThread->joinable())
 	{
 		loadThread->join();
 		delete loadThread;
@@ -33,7 +34,15 @@ LoadingScript::~LoadingScript()
 	
 }
 
-// 스레드 시작 함수 분리
+void LoadingScript::Awake()
+{
+	auto icon = GET_SINGLE(SceneManager)->FindObjectByName(L"LoadingIcon");
+	if (icon)
+		icon->SetRender(true);
+
+	StartLoadingThread();
+}
+
 void LoadingScript::StartLoadingThread()
 {
 	if (isInitialized)
@@ -41,26 +50,64 @@ void LoadingScript::StartLoadingThread()
 	isInitialized = true;
 	loadEnd = false;
 
-	// 디버그 출력
-	cout << "Starting loading thread..." << endl;
-
-	// 이전 스레드가 있으면 정리
-	if (loadThread != nullptr && loadThread->joinable())
+	if (loadThread && loadThread->joinable())
 	{
 		loadThread->join();
 		delete loadThread;
 	}
 
-	// 새 스레드 생성 및 시작
 #ifdef NETWORK_ENABLE
 	roomType = GET_SINGLE(SocketIO)->GetRoomType();
-#endif // NETWORK_ENABLE
-
-#ifndef NETWORK_ENABLE
-	roomType = RoomType::Ruin;
-#endif // !NETWORK_ENABLE
+#endif
 
 	loadThread = new std::thread(&LoadingScript::SceneLoad, this);
+}
+
+void LoadingScript::SceneLoad()
+{
+	cout << "SceneLoad thread started\n";
+
+	switch (roomType)
+	{
+	case RoomType::Ruin:
+	{
+		auto scene = make_shared<RuinsScene>();
+		GET_SINGLE(SceneManager)->RegisterScene(L"RuinsScene", scene);
+		_sceneToInit = scene;
+		_sceneNameToLoad = L"RuinsScene";
+	}
+	break;
+
+	case RoomType::Factory:
+	{
+		auto scene = make_shared<FactoryScene>();
+		GET_SINGLE(SceneManager)->RegisterScene(L"FactoryScene", scene);
+		_sceneToInit = scene;
+		_sceneNameToLoad = L"FactoryScene";
+	}
+	break;
+
+	case RoomType::Lucky:
+	{
+		auto scene = make_shared<LuckyScene>();
+		GET_SINGLE(SceneManager)->RegisterScene(L"LuckyScene", scene);
+		_sceneToInit = scene;
+		_sceneNameToLoad = L"LuckyScene";
+	}
+	break;
+
+	default:
+		cout << "ERROR: Unhandled RoomType\n";
+		break;
+	}
+
+#ifdef NETWORK_ENABLE
+	GET_SINGLE(SocketIO)->DoSend<packet::CSLoadComplete>();
+#endif
+
+	loadEnd = true;
+
+	_state = LoadingState::ReadyToInit;
 }
 
 void LoadingScript::LateUpdate()
@@ -74,93 +121,44 @@ void LoadingScript::LateUpdate()
 		icon->GetTransform()->SetLocalRotation(rotation);
 	}
 
-	// 아직 초기화되지 않았다면 초기화
 	if (!isInitialized)
-	{
 		StartLoadingThread();
+
+	if (_state == LoadingState::ReadyToInit)
+	{
+		cout << "ReadyToInit\n";
+		_sceneToInit->Init();
+		_state = LoadingState::ReadyToLoad;
+		return;
 	}
 
-	if (loadEnd && loadThread != nullptr)
+	if (_state == LoadingState::ReadyToLoad)
 	{
-		cout << "Loading completed, preparing to switch scenes..." << endl;
+		cout << "ReadyToLoad\n";
+		GET_SINGLE(SceneManager)->LoadScene(_sceneNameToLoad);
+		_sceneToInit = nullptr;
+		_sceneNameToLoad.clear();
+		_state = LoadingState::Switching;
+		pendingThreadJoin = true;
+	}
 
-		if (loadThread->joinable())
+	// 백그라운드 스레드 정리
+	if (pendingThreadJoin)
+	{
+		if (loadThread)
 		{
-			loadThread->join();
+			try
+			{
+				if (loadThread->joinable())
+					loadThread->join();
+			}
+			catch (const std::exception& e)
+			{
+				cout << "Thread join failed: " << e.what() << endl;
+			}
 			delete loadThread;
 			loadThread = nullptr;
 		}
-
-		cout << "Switching to RuinsScene..." << endl;
-		GET_SINGLE(SceneManager)->LoadScene(L"RuinsScene");
+		pendingThreadJoin = false;
 	}
-}
-
-void LoadingScript::Awake()
-{
-	// SERVER TODO:
-	// 메시지로 로딩할 씬 받아와서 로드
-
-	auto icon = GET_SINGLE(SceneManager)->FindObjectByName(L"LoadingIcon");
-	if (icon)
-	{
-		icon->SetRenderOn();
-	}
-
-	StartLoadingThread();
-}
-
-void LoadingScript::SceneLoad()
-{
-	cout << "SceneLoad thread started" << endl;
-
-	// 씬 로딩 작업 수행
-	{
-		cout << "Loading RuinsScene..." << endl;
-		switch (roomType)
-		{
-		case RoomType::None:
-		{
-			cout << "ERROR: Type is not exist" << endl;
-		}
-		break;
-		case RoomType::Ruin:
-		{
-			shared_ptr<RuinsScene> ruinsScene = make_shared<RuinsScene>();
-			GET_SINGLE(SceneManager)->RegisterScene(L"RuinsScene", ruinsScene->GetScene());
-			ruinsScene->Init();
-		}
-		break;
-		case RoomType::Factory:
-		{
-			shared_ptr<FactoryScene> factoryScene = make_shared<FactoryScene>();
-			GET_SINGLE(SceneManager)->RegisterScene(L"FactoryScene", factoryScene->GetScene());
-		}
-		break;
-		case RoomType::Ristrict:
-		{
-		}	
-		break;
-		case RoomType::Falling:
-		{
-		}
-		break;
-		case RoomType::Lucky:
-		{
-		}
-		break;
-		default:
-			break;
-		}
-	}
-
-	// 로딩 완료 플래그 설정
-	cout << "Scene loading completed, setting loadEnd flag" << endl;
-
-#ifdef NETWORK_ENABLE
-	// 예외처리정도 해주면 좋을듯?
-	GET_SINGLE(SocketIO)->DoSend<packet::CSLoadComplete>();
-#endif // NETWORK_ENABLE
-
-	loadEnd = true;
 }

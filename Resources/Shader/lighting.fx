@@ -73,16 +73,31 @@ PS_OUT PS_DirLight(VS_OUT input)
         // UV가 ShadowMap 내부에 있을 때만 그림자 샘플링
         if (uv.x >= 0 && uv.x <= 1 && uv.y >= 0 && uv.y <= 1)
         {
-            float shadowDepth = g_textures2.Sample(g_sam_0, uv).x;
-            float bias = 0.05f;
-
-            if (depth < shadowDepth + bias)
-            {
-                // 그림자 적용
-                color.diffuse *= 0.5f;
-                color.specular = (float4) 0.f;
-            }
             
+            //pcf 처리
+            float bias = max(0.005f * (1.0 - dot(viewNormal, float3(0, 0, -1))), 0.0005f);
+            float shadow = 0.0f;
+
+            float2 texelSize = 1.0f / float2(4096, 4096); // ShadowMap 해상도에 맞게 조절
+
+            [unroll]
+            for (int y = -1; y <= 1; ++y)
+            {
+                [unroll]
+                for (int x = -1; x <= 1; ++x)
+                {
+                    float2 offset = float2(x, y) * texelSize;
+                    float sampleDepth = g_textures2.Sample(g_sam_0, uv + offset).r;
+                    if (depth < sampleDepth + bias)
+                    {
+                        shadow -= 0.2f;
+                    }
+                }
+            }
+
+            shadow /= 9.0f;
+            color.diffuse *= shadow;
+            color.specular *= shadow;
         }
     }
 

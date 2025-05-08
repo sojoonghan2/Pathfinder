@@ -9,6 +9,7 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "Light.h"
+#include "CollisionManager.h"
 
 #include "CameraScript.h"
 #include "PlayerScript.h"
@@ -39,51 +40,51 @@ void SceneManager::Init()
 #pragma endregion
 #pragma region AddScene
 	shared_ptr<TitleScene> titleScene = make_shared<TitleScene>();
-	scenes[L"TitleScene"] = titleScene->GetScene();
+	scenes[L"TitleScene"] = titleScene;
 
 #if defined(ALLLOAD)
 	shared_ptr<LoadingScene> loadingScene = make_shared<LoadingScene>();
-	scenes[L"LoadingScene"] = loadingScene->GetScene();
+	scenes[L"LoadingScene"] = loadingScene;
 #endif
 
 #if defined(RUINSLOAD)
 	shared_ptr<RuinsScene> ruinsScene = make_shared<RuinsScene>();
-	scenes[L"RuinsScene"] = ruinsScene->GetScene();
+	scenes[L"RuinsScene"] = ruinsScene;
 #endif
 
 #if defined(FACTORYLOAD)
 	shared_ptr<FactoryScene> factoryScene = make_shared<FactoryScene>();
-	scenes[L"FactoryScene"] = factoryScene->GetScene();
+	scenes[L"FactoryScene"] = factoryScene;
 #endif
 
 #if defined(EXPLORATIONLOAD)
 	shared_ptr<ExplorationScene> explorationScene = make_shared<ExplorationScene>();
-	scenes[L"ExplorationScene"] = explorationScene->GetScene();
+	scenes[L"ExplorationScene"] = explorationScene;
 #endif
 
 #if defined(CRASHLOAD)
 	shared_ptr<CrashScene> crashScene = make_shared<CrashScene>();
-	scenes[L"CrashScene"] = crashScene->GetScene();
+	scenes[L"CrashScene"] = crashScene;
 #endif
 
 #if defined(LUCKYLOAD)
 	shared_ptr<LuckyScene> luckyScene = make_shared<LuckyScene>();
-	scenes[L"LuckyScene"] = luckyScene->GetScene();
+	scenes[L"LuckyScene"] = luckyScene;
 #endif
 
 #if defined(BOSSLOAD)
 	shared_ptr<BossScene> bossScene = make_shared<BossScene>();
-	scenes[L"BossScene"] = bossScene->GetScene();
+	scenes[L"BossScene"] = bossScene;
 #endif
 
 #if defined(TESTLOAD)
 	shared_ptr<TestScene> testScene = make_shared<TestScene>();
-	scenes[L"TestScene"] = testScene->GetScene();
+	scenes[L"TestScene"] = testScene;
 #endif
 
 #if defined(PARTICLELOAD)
 	shared_ptr<ParticleScene> particleScene = make_shared<ParticleScene>();
-	scenes[L"ParticleScene"] = particleScene->GetScene();
+	scenes[L"ParticleScene"] = particleScene;
 #endif
 
 #pragma endregion
@@ -107,11 +108,8 @@ void SceneManager::Render()
 
 void SceneManager::LoadScene(wstring sceneName)
 {
-	// 메시지 초기화
-
-	shared_ptr<Scene> scene = make_shared<Scene>();
-
 	_activeScene = scenes.at(sceneName);
+	_activeScene->SetName(sceneName);
 
 
 	GET_SINGLE(MessageManager)->Clear();
@@ -126,6 +124,7 @@ void SceneManager::ChangeScene(wstring sceneName) {
 
 void SceneManager::RegisterScene(const wstring& name, shared_ptr<Scene> scene)
 {
+	GET_SINGLE(CollisionManager)->ClearCollider();
 	scenes[name] = scene;
 }
 
@@ -204,8 +203,11 @@ bool SceneManager::Collition(shared_ptr<GameObject> obj1,
 	auto obj1Collider = obj1->GetCollider();
 	auto obj2Collider = obj2->GetCollider();
 
-	if (!obj1Collider) return 0;
-	if (!obj2Collider) return 0;
+	if (!obj1Collider || !obj2Collider)
+		return false;
+
+	if (!obj1Collider->IsEnabled() || !obj2Collider->IsEnabled())
+		return false;
 
 	// 충돌 체크
 	if (obj1Collider->Intersects(obj2Collider))
@@ -231,4 +233,24 @@ shared_ptr<GameObject> SceneManager::FindObjectByName(const wstring& name)
 	}
 
 	return nullptr; // 찾지 못하면 nullptr 반환
+}
+
+vector<shared_ptr<GameObject>> SceneManager::FindObjectsByNameContains(const wstring& keyword)
+{
+	vector<shared_ptr<GameObject>> result;
+
+	if (_activeScene == nullptr)
+		return result;
+
+	const vector<shared_ptr<GameObject>>& objects = _activeScene->GetGameObjects();
+
+	for (const auto& obj : objects)
+	{
+		if (obj->GetName().find(keyword) != wstring::npos)
+		{
+			result.push_back(obj);
+		}
+	}
+
+	return result;
 }

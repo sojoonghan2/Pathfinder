@@ -179,11 +179,12 @@
     <ClInclude Include="BaseParticleSystem.h" />
     <ClInclude Include="BossScene.h" />
     <ClInclude Include="BossScript.h" />
-    <ClInclude Include="BoxCollider.h" />
+    <ClInclude Include="OrientedBoxCollider.h" />
     <ClInclude Include="BulletScript.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="BINLoader.h" />
     <ClInclude Include="CataclysmParticleSystem.h" />
+    <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ConstantBuffer.h" />
@@ -235,6 +236,7 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="OccupationScript.h" />
     <ClInclude Include="OverDriveParticleSystem.h" />
+    <ClInclude Include="ParticlePool.h" />
     <ClInclude Include="ParticleScene.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="pch.h" />
@@ -283,11 +285,12 @@
     <ClCompile Include="BaseParticleSystem.cpp" />
     <ClCompile Include="BossScene.cpp" />
     <ClCompile Include="BossScript.cpp" />
-    <ClCompile Include="BoxCollider.cpp" />
+    <ClCompile Include="OrientedBoxCollider.cpp" />
     <ClCompile Include="BulletScript.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="BINLoader.cpp" />
     <ClCompile Include="CataclysmParticleSystem.cpp" />
+    <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
@@ -338,6 +341,7 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="OccupationScript.cpp" />
     <ClCompile Include="OverDriveParticleSystem.cpp" />
+    <ClCompile Include="ParticlePool.cpp" />
     <ClCompile Include="ParticleScene.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="pch.cpp">
@@ -469,7 +473,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\PNG.fx">
+    <FxCompile Include="..\Resources\Shader\SkillIcon.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>

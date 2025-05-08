@@ -9,8 +9,10 @@
 void OccupationScript::LateUpdate()
 {
 	auto pos = GetTransform()->GetLocalPosition();
-
-	pos.y += 2.f;
-	if (pos.y > 900.f) pos.y = 0.f;
+	pos.y += 1;
+	if (pos.y > 401.f) pos.y = -99.f;
 	GetTransform()->SetLocalPosition(pos);
+
+    m_accumulatedTime += DELTA_TIME * 1.5;
+    GetGameObject()->GetMeshRenderer()->GetMaterial()->SetFloat(0, m_accumulatedTime);
 }

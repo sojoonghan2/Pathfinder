@@ -10,6 +10,7 @@
 #include "InstancingManager.h"
 #include "SocketIO.h"
 #include "DebugRenderer.h"
+#include "CollisionManager.h"
 
 void Engine::Init(const WindowInfo& info)
 {
@@ -58,6 +59,7 @@ void Engine::Update()
 #endif
 
 	GET_SINGLE(SceneManager)->Update();
+	GET_SINGLE(CollisionManager)->Update();
 	GET_SINGLE(InstancingManager)->ClearBuffer();
 
 	Render();

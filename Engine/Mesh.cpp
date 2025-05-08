@@ -69,7 +69,9 @@ void Mesh::CreateVRSUploadBuffer(UINT width, UINT height)
 	}
 
 	// tileWidth, tileHeight 단위로 버퍼 크기 계산
-	UINT bufferSize = width * height * sizeof(UINT8);
+	UINT vrsWidth = width / 16;
+	UINT vrsHeight = height / 16;
+	UINT bufferSize = vrsWidth * vrsHeight * sizeof(UINT8);
 
 	D3D12_HEAP_PROPERTIES uploadHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	D3D12_RESOURCE_DESC uploadBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
@@ -99,15 +101,11 @@ void Mesh::UploadVRSData()
 
 	UINT8* vrsData = new UINT8[width * height];
 
-	// 예제: 화면의 오른쪽 절반은 2x2 블록 사용
 	for (UINT y = 0; y < height; y++)
 	{
 		for (UINT x = 0; x < width; x++)
 		{
-			if (x < width / 2)
-				vrsData[y * width + x] = D3D12_SHADING_RATE_4X4;  // 기본 셰이딩 레이트
-			else
-				vrsData[y * width + x] = D3D12_SHADING_RATE_4X4;  // 2x2 블록
+				vrsData[y * width + x] = shading_rate;  // 기본 셰이딩 레이트
 		}
 	}
 
@@ -132,7 +130,7 @@ void Mesh::UploadVRSData()
 	barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 		_shadingRateImage.Get(),
 		D3D12_RESOURCE_STATE_COPY_DEST,
-		D3D12_RESOURCE_STATE_COMMON
+		D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE
 	);
 	GRAPHICS_CMD_LIST->ResourceBarrier(1, &barrier);
 }
@@ -162,7 +160,7 @@ void Mesh::Create(const vector<Vertex>& vertexBuffer, const vector<uint32>& inde
 		UINT width = static_cast<float>(GEngine->GetWindow().width);
 		UINT height = static_cast<float>(GEngine->GetWindow().height);
 		CreateVRSImage(width, height);
-		CreateVRSUploadBuffer(width / 16, height / 16);
+		CreateVRSUploadBuffer(width, height);
 		UploadVRSData();  // 셰이딩 레이트 맵 초기화
 	}
 }
@@ -179,7 +177,6 @@ void Mesh::Render(uint32 instanceCount, uint32 idx)
 	/////////////////////////////// VRS /////////////////////////////////////
 	if (_supportsVRS && _shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2 && _shadingRateImage)
 	{
-		// RSSetShadingRateImage는 ID3D12GraphicsCommandList5에서만 제공되므로, QueryInterface로 획득
 		ComPtr<ID3D12GraphicsCommandList5> commandList5;
 		GRAPHICS_CMD_LIST->QueryInterface(IID_PPV_ARGS(&commandList5));
 

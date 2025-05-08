@@ -6,6 +6,7 @@
 #include "GameObject.h"
 #include "Timer.h"
 #include "SocketIO.h"
+#include "LoadingScene.h"
 
 TitleScript::TitleScript() {}
 TitleScript::~TitleScript() {}
@@ -29,16 +30,21 @@ void TitleScript::LateUpdate()
 
 	if (GetForegroundWindow() == GEngine->GetWindow().hwnd)
 	{
-		if (INPUT->GetButton(KEY_TYPE::LBUTTON) && isMouseOnButton)
+		if (INPUT->GetButton(MOUSE_TYPE::LBUTTON) && isMouseOnButton)
 		{
 #ifdef NETWORK_ENABLE
 			if (false == _isMatch)
+			{
 				GET_SINGLE(SocketIO)->DoSend<packet::CSMatchmaking>();
+			}
 #endif
 			_isMatch = true;
 		}
 		if (INPUT->GetButton(KEY_TYPE::M))
 		{
+			shared_ptr<LoadingScene> loadingScene = make_shared<LoadingScene>();
+			GET_SINGLE(SceneManager)->RegisterScene(L"LoadingScene", loadingScene);
+			loadingScene->Init(RoomType::Ruin);
 			GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
 		}
 	}
@@ -75,12 +81,12 @@ void TitleScript::MatchMaking()
 {
 	if (_loadingIcon)
 	{
-		_loadingIcon->SetRenderOn();
+		_loadingIcon->SetRender(true);
 	}
 
 	if (_matchmakingIng)
 	{
-		_matchmakingIng->SetRenderOn();
+		_matchmakingIng->SetRender(true);
 	}
 
 	if (_loadingIcon)
