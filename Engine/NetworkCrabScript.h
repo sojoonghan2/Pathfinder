@@ -8,8 +8,6 @@ public:
 	virtual void LateUpdate() override;
 	virtual void Awake() override;
 
-	void CheckBulletHits();
-
 	void SetPosition(float x, float z);
 	void SetDir(float x, float z);
 

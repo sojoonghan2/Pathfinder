@@ -51,8 +51,6 @@ void NetworkCrabScript::LateUpdate()
 		queue.pop();
 	}
 
-
-	CheckBulletHits();
 	Animation();
 }
 
@@ -90,24 +88,5 @@ void NetworkCrabScript::Animation()
 	{
 		GetAnimator()->Play(nextAnimIndex);
 		_currentAnimIndex = nextAnimIndex;
-	}
-}
-void NetworkCrabScript::CheckBulletHits()
-{
-	// 모든 총알에 대해 충돌 검사
-	for (int i = 0; i < 50; ++i)
-	{
-		wstring bulletName = L"Bullet" + to_wstring(i);
-		auto bulletObject = GET_SINGLE(SceneManager)->FindObjectByName(bulletName);
-
-		if (bulletObject)
-		{
-			auto is_collision = GET_SINGLE(SceneManager)->Collition(GetGameObject(), bulletObject);
-			if (is_collision)
-			{
-				std::cout << "오브젝트 충돌 발생\n\n";
-				break;
-			}
-		}
 	}
 }

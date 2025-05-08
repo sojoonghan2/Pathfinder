@@ -229,6 +229,7 @@
     <ClInclude Include="MessageManager.h" />
     <ClInclude Include="ModuleScript.h" />
     <ClInclude Include="MonoBehaviour.h" />
+    <ClInclude Include="NetworkBulletScript.h" />
     <ClInclude Include="NetworkCrabScript.h" />
     <ClInclude Include="NetworkTimer.h" />
     <ClInclude Include="Object.h" />
@@ -331,6 +332,7 @@
     <ClCompile Include="MessageManager.cpp" />
     <ClCompile Include="ModuleScript.cpp" />
     <ClCompile Include="MonoBehaviour.cpp" />
+    <ClCompile Include="NetworkBulletScript.cpp" />
     <ClCompile Include="NetworkCrabScript.cpp" />
     <ClCompile Include="NetworkTimer.cpp" />
     <ClCompile Include="Object.cpp" />

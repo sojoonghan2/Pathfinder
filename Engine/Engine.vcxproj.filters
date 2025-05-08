@@ -357,6 +357,9 @@
     <ClCompile Include="CrabScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
+    <ClCompile Include="NetworkBulletScript.cpp">
+      <Filter>Script\ObjectScript\NetworkScript</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -662,6 +665,9 @@
     </ClInclude>
     <ClInclude Include="CrabScript.h">
       <Filter>Script\ObjectScript</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkBulletScript.h">
+      <Filter>Script\ObjectScript\NetworkScript</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

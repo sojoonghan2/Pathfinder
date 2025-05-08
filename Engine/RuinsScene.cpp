@@ -44,6 +44,7 @@
 #include "NetworkOtherPlayerScript.h"
 #include "NetworkCrabScript.h"
 #include "GunFlameParticleSystem.h"
+#include "NetworkBulletScript.h"
 
 RuinsScene::RuinsScene() {}
 
@@ -220,6 +221,8 @@ void RuinsScene::Init()
 
 			activeScene->AddGameObject(bullet);
 		}
+
+		// here 1
 
 		// 총알
 		/*
@@ -405,45 +408,92 @@ void RuinsScene::Init()
 #ifdef NETWORK_ENABLE
 	{
 		// 다른 플레이어
-		{
+		for (int i{}; i < 2; ++i) {
 			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
 			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
-			auto otherPlayerScript = make_shared<NetworkOtherPlayerScript>();
-
 			for (auto gameObject : gameObjects)
 			{
-				gameObject->SetName(L"OTHER1");
+				gameObject->SetName(L"OTHER" + std::to_wstring(i));
 				gameObject->SetCheckFrustum(false);
-				gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -200.0f, 0.0f));
+				gameObject->GetTransform()->SetLocalPosition(Vec3(10000.0f, 0.0f, 0.0f));
 				gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
 				gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
-				gameObject->AddComponent(otherPlayerScript);
+				gameObject->AddComponent(make_shared<NetworkOtherPlayerScript>());
 				gameObject->AddComponent(make_shared<TestDragon>());
+
+				gameObject->AddComponent(make_shared<SphereCollider>());
+				dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(100.f);
+				dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
+
 				activeScene->AddGameObject(gameObject);
+
+
+				shared_ptr<GameObject> particleObject = make_shared<GameObject>();
+				particleObject->SetName(L"OtherGunFlameParticle" + std::to_wstring(i));
+				particleObject->AddComponent(make_shared<Transform>());
+				particleObject->GetTransform()->SetParent(gameObject->GetTransform());
+				particleObject->GetTransform()->SetLocalPosition(Vec3(0.f, 100.f, 150.f));
+				shared_ptr<GunFlameParticleSystem> gunFlameParticleSystem = make_shared<GunFlameParticleSystem>();
+				gunFlameParticleSystem->SetParticleScale(50.f, 50.f);
+				particleObject->AddComponent(gunFlameParticleSystem);
+
+				activeScene->AddGameObject(particleObject);
 			}
-		}
 
-		{
-			// 다른 플레이어
-			shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Player\\Player.fbx");
-			vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+			// 총
+			shared_ptr<MeshData> gunmeshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Gun\\Gun.fbx");
+			vector<shared_ptr<GameObject>> gungameObjects = gunmeshData->Instantiate();
 
-			auto otherPlayerScript = make_shared<NetworkOtherPlayerScript>();
-
-			for (auto gameObject : gameObjects)
+			for (auto gameObject : gungameObjects)
 			{
-				gameObject->SetName(L"OTHER2");
+				gameObject->SetName(L"OtherGun" + std::to_wstring(i));
 				gameObject->SetCheckFrustum(false);
-				gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 0.0f));
-				gameObject->GetTransform()->SetLocalRotation(Vec3(-1.5708f, 3.1416f, 0.0f));
-				gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
-				gameObject->AddComponent(otherPlayerScript);
-				gameObject->AddComponent(make_shared<TestDragon>());
+				gameObject->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+				gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+				gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+				gameObject->GetTransform()->SetLocalRotation(Vec3(PI / 2, -0.4f, 1.f));
+				gameObject->GetTransform()->SetLocalPosition(Vec3(42.f, 58.f, -3.f));
+				gameObject->AddComponent(make_shared<GunScript>());
+
 				activeScene->AddGameObject(gameObject);
 			}
-		}
 
+			// 총알
+			for (int ii{}; ii < 10; ++ii)
+			{
+				shared_ptr<GameObject> bullet = make_shared<GameObject>();
+				bullet->SetName(L"OtherBullet" + std::to_wstring(i) + L"_" + std::to_wstring(ii));
+				bullet->SetCheckFrustum(true);
+				bullet->SetStatic(false);
+
+				bullet->AddComponent(make_shared<Transform>());
+				bullet->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
+				bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
+				bullet->AddComponent(make_shared<NetworkBulletScript>());
+
+				shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+				{
+					shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+					meshRenderer->SetMesh(sphereMesh);
+				}
+				{
+					shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
+					shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bullet", L"..\\Resources\\Texture\\Skill\\Bullet.png");
+
+					shared_ptr<Material> material = make_shared<Material>();
+					material->SetShader(shader);
+					material->SetTexture(0, texture);
+					meshRenderer->SetMaterial(material);
+				}
+
+				bullet->AddComponent(meshRenderer);
+
+				activeScene->AddGameObject(bullet);
+			}
+			// here 2
+			
+		}
 	}
 
 #endif // NETWORK_ENABLE
