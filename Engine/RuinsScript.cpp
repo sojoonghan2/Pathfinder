@@ -12,6 +12,7 @@
 #include "MessageManager.h"
 #include "LoadingScene.h"
 #include "ModuleScript.h"
+#include "MeshRenderer.h"
 
 RuinsScript::RuinsScript() {}
 
@@ -64,6 +65,26 @@ void RuinsScript::LateUpdate() {
 		GET_SINGLE(SceneManager)->RegisterScene(L"LoadingScene", loadingScene);
 		loadingScene->Init(RoomType::Factory);
 		GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
+	}
+
+	// 디버그 렌더러 On/Off
+	if (INPUT->GetButtonDown(KEY_TYPE::J))
+	{
+		// Wire 오브젝트 비활성화
+		auto wireObjects = GET_SINGLE(SceneManager)->FindObjectsByNameContains(L"Wire");
+		for (auto& obj : wireObjects)
+		{
+			if (obj->IsRender()) obj->SetRender(false);
+			else obj->SetRender(true);
+		}
+
+		// dummy 오브젝트 비활성화
+		auto dummyObjects = GET_SINGLE(SceneManager)->FindObjectsByNameContains(L"dummy");
+		for (auto& obj : dummyObjects)
+		{
+			if (obj->IsRender()) obj->SetRender(false);
+			else obj->SetRender(true);
+		}
 	}
 }
 
