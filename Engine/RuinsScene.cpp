@@ -445,7 +445,7 @@ void RuinsScene::Init()
 				dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(100.f);
 				dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
-				activeScene->AddGameObject(gameObject);
+				AddGameObject(gameObject);
 
 
 				shared_ptr<GameObject> particleObject = make_shared<GameObject>();
@@ -457,7 +457,7 @@ void RuinsScene::Init()
 				gunFlameParticleSystem->SetParticleScale(50.f, 50.f);
 				particleObject->AddComponent(gunFlameParticleSystem);
 
-				activeScene->AddGameObject(particleObject);
+				AddGameObject(particleObject);
 			}
 
 			// ÃÑ
@@ -475,7 +475,7 @@ void RuinsScene::Init()
 				gameObject->GetTransform()->SetLocalPosition(Vec3(42.f, 58.f, -3.f));
 				gameObject->AddComponent(make_shared<GunScript>());
 
-				activeScene->AddGameObject(gameObject);
+				AddGameObject(gameObject);
 			}
 
 			// ÃÑ¾Ë
@@ -507,7 +507,7 @@ void RuinsScene::Init()
 
 				bullet->AddComponent(meshRenderer);
 
-				activeScene->AddGameObject(bullet);
+				AddGameObject(bullet);
 			}
 			// here 2
 			

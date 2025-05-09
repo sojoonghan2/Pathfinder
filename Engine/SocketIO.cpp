@@ -5,6 +5,7 @@
 #include "Timer.h"
 #include "MessageManager.h"
 #include "SceneManager.h"
+#include "LoadingScene.h"
 
 
 void SocketIO::Init()
@@ -143,6 +144,9 @@ void SocketIO::ProcessPacket()
 			_roomType = packet.roomType;
 
 			// todo: 예외처리 필요한가?
+			shared_ptr<LoadingScene> loadingScene = make_shared<LoadingScene>();
+			GET_SINGLE(SceneManager)->RegisterScene(L"LoadingScene", loadingScene);
+			loadingScene->Init(RoomType::Ruin);
 			GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
 		}
 		break;

@@ -101,10 +101,6 @@ void LoadingScript::SceneLoad()
 		break;
 	}
 
-#ifdef NETWORK_ENABLE
-	GET_SINGLE(SocketIO)->DoSend<packet::CSLoadComplete>();
-#endif
-
 	loadEnd = true;
 
 	_state = LoadingState::ReadyToInit;
@@ -149,8 +145,13 @@ void LoadingScript::LateUpdate()
 		{
 			try
 			{
-				if (loadThread->joinable())
+				if (loadThread->joinable()) {
 					loadThread->join();
+#ifdef NETWORK_ENABLE
+					GET_SINGLE(SocketIO)->DoSend<packet::CSLoadComplete>();
+#endif
+
+				}
 			}
 			catch (const std::exception& e)
 			{
