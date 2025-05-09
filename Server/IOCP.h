@@ -27,10 +27,10 @@ private:
 
 	void Worker();
 	void TimerWorker();
-	void DoRecv(ClientInfo& client_info) const;
+	void DoRecv(std::shared_ptr<Session>& session) const;
 	void ProcessPacket(int key, char* p);
 	void Disconnect(int client_id);
-	void DoSend(ClientInfo& client_info, void* packet);
+	// void DoSend(Session& client_info, void* packet);
 
 private:
 	HANDLE		_IOCPHandle{ INVALID_HANDLE_VALUE };
@@ -44,7 +44,8 @@ private:
 	// TODO:
 	// 이렇게 하면 delete가 안됨.
 	// 일단 기본으로 사용 나중에 atomic_shared_ptr로 바꿔야함
-	concurrency::concurrent_unordered_map<int, ClientInfo> _clientInfoHash;
+	concurrency::concurrent_unordered_map<int, 
+		std::atomic<std::shared_ptr<Session>>> _clientInfoHash;
 	
 
 	std::array<RoomInfo, MAX_ROOM>		_roomInfoList{};

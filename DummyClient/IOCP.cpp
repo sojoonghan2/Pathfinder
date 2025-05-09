@@ -137,7 +137,7 @@ int IOCP::GetPlayerCount() const
 	return currentClient.load();
 }
 
-void IOCP::DoRecv(ClientInfo& session) const
+void IOCP::DoRecv(Session& session) const
 {
 
 	DWORD recv_flag = 0;
@@ -161,7 +161,7 @@ void IOCP::DoRecv(ClientInfo& session) const
 }
 
 
-void IOCP::DoSend(ClientInfo& client_info, void* packet)
+void IOCP::DoSend(Session& client_info, void* packet)
 {
 	OverlappedEx* send_over_ex = new OverlappedEx{ reinterpret_cast<unsigned char*>(packet) };
 	WSASend(client_info.clientSocket, &send_over_ex->wsabuf, 1, 0, 0, &send_over_ex->over, 0);
@@ -190,7 +190,7 @@ bool IOCP::ProcessPacket(int key, char* p)
 	break;
 
 
-	case packet::Type::SC_MOVE_PLAYER:
+	case packet::Type::SC_MOVE_OBJECT:
 	{
 
 	}

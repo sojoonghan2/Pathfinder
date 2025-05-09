@@ -43,6 +43,7 @@ struct Vec2f
 
 struct ClientIdInfo
 {
+	int clientId{ -1 };
 	int playerId{ -1 };
 	int roomId{ -1 };
 };
@@ -92,17 +93,36 @@ struct alignas(64) OverlappedEx
 	}
 };
 
-struct ClientInfo
+struct Session
 {
 	OverlappedEx	overEx;								// RECV에 사용할 Overlapped 변수
 	SOCKET			clientSocket{ INVALID_SOCKET };	
 	int				currentDataSize{};					// 패킷 재조립을 위한 남은 데이터 수 
 	ClientIdInfo	clientIdInfo{};
+
+	// atomic하게 해야할듯?
 	IOState			ioState{ IOState::NONE };
 
-	ClientInfo()
+	// unordered_map을 사용하기 위해서 기본 생성자가 있어야 함.
+	// 사실상 미사용.
+	Session()
 	{
-		ZeroMemory(&overEx, sizeof(overEx));
+		exit(-1);
+	}
+
+	Session(SOCKET socket, int client_id) :
+		clientSocket{ socket },
+		currentDataSize{ 0 },
+		ioState{ IOState::CONNECT }
+	{
+		clientIdInfo.clientId = client_id;
+		overEx.clientSocket = socket;
+	}
+
+	~Session()
+	{
+		// 연결 종료 시 게임이랑 다른 플레이어들에게 알려주어야 할듯.
+		closesocket(clientSocket);
 	}
 };
 

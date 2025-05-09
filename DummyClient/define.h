@@ -65,14 +65,14 @@ struct OverlappedEx
 	}
 };
 
-struct ClientInfo
+struct Session
 {
 	OverlappedEx	overEx;							// RECV에 사용할 Overlapped 변수
 	SOCKET			clientSocket{ INVALID_SOCKET };
 	int				currentDataSize{};
 	IOState			ioState{ IOState::DISCONNECT };
 
-	ClientInfo()
+	Session()
 	{
 		ZeroMemory(&overEx, sizeof(overEx));
 	}

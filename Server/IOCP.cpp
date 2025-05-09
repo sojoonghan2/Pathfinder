@@ -113,7 +113,7 @@ void IOCP::Worker()
 	while (true) {
 		DWORD io_size;
 		ULONG_PTR ULkey;
-		WSAOVERLAPPED* over = nullptr;
+		WSAOVERLAPPED* over{ nullptr };
 
 		auto ret = GetQueuedCompletionStatus(
 			_IOCPHandle,
@@ -122,19 +122,24 @@ void IOCP::Worker()
 			&over,
 			INFINITE);
 
-		OverlappedEx* curr_over_ex = reinterpret_cast<OverlappedEx*>(over);
+		OverlappedEx* curr_over_ex{ reinterpret_cast<OverlappedEx*>(over) };
 		
-		// 예상 volatile 필요한 위치
-		int key = static_cast<int>(ULkey);
+		int key{ static_cast<int>(ULkey) };
 
 		if (FALSE == ret) {
 			// TODO: ERROR
-			closesocket(_clientInfoHash[key].clientSocket);
-			_clientInfoHash[key].ioState = IOState::DISCONNECT;
+			// 지우기
+			_clientInfoHash[key] = nullptr;
 			// Send 일경우 보낸 curr_ex는 제거
 			if (curr_over_ex->operation == IOOperation::SEND) {
 				delete curr_over_ex;
 			}
+		}
+
+		if ((now_over->_io_op == IO_RECV or now_over->_io_op == IO_SEND) and 0 == io_size) {
+			if (g_users.count(key) != 0)
+				g_users.at(key) = nullptr;
+			continue;
 		}
 
 
@@ -148,21 +153,19 @@ void IOCP::Worker()
 		case IOOperation::ACCEPT:
 		{
 			int client_id = _sessionCnt++;
-			_clientInfoHash.insert(std::make_pair(client_id, ClientInfo{}));
-			_clientInfoHash[client_id].currentDataSize = 0;
-			_clientInfoHash[client_id].clientSocket = _acceptSocket;
-			_clientInfoHash[client_id].overEx.clientSocket = _acceptSocket;
+			auto session{ std::make_shared<Session>() };
 
+			_clientInfoHash.insert(std::make_pair(client_id, session));
 
 			// IOCP 객체에 받아들인 클라이언트의 소켓을 연결
-			auto ret = CreateIoCompletionPort(
+			auto ret = CreateIoCompletionPort(	
 				reinterpret_cast<HANDLE>(_acceptSocket),
 				_IOCPHandle,
 				client_id,
 				0);
 
 			// WSARecv 호출.
-			DoRecv(_clientInfoHash[client_id]);
+			DoRecv(session);
 
 			// accept를 위한 새로운 소켓 생성
 			_acceptSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
@@ -193,8 +196,13 @@ void IOCP::Worker()
 		*/
 		case IOOperation::RECV:
 		{
-			while (_clientInfoHash.end() == _clientInfoHash.find(key)) { std::this_thread::yield(); }
-			int remain_data = io_size + _clientInfoHash[key].currentDataSize;
+			std::shared_ptr<Session> curr_session{ _clientInfoHash[key].load() };
+			if (nullptr == curr_session) {
+				break;
+			}
+
+
+			int remain_data = io_size + curr_session->currentDataSize;
 			char* p = curr_over_ex->dataBuffer;
 
 			while (remain_data > 0) {
@@ -208,10 +216,10 @@ void IOCP::Worker()
 
 			}
 
-			_clientInfoHash[key].currentDataSize = remain_data;
+			curr_session->currentDataSize = remain_data;
 			if (remain_data > 0)
 				memcpy(curr_over_ex->dataBuffer, p, remain_data);
-			DoRecv(_clientInfoHash[key]);
+			DoRecv(curr_session);
 
 			break;
 		}
@@ -292,16 +300,16 @@ void IOCP::TimerWorker()
 	}
 }
 
-void IOCP::DoRecv(ClientInfo& session) const
+void IOCP::DoRecv(std::shared_ptr<Session>& session) const
 {
 
 	DWORD recv_flag = 0;
-	OverlappedEx& over_ex = session.overEx;
+	OverlappedEx& over_ex = session->overEx;
 	ZeroMemory(&over_ex, sizeof(over_ex));
 
 	// 현재 남은 만큼 recv한다. 
-	over_ex.wsabuf.len = BUFFER_SIZE - session.currentDataSize;
-	over_ex.wsabuf.buf = over_ex.dataBuffer + session.currentDataSize;
+	over_ex.wsabuf.len = BUFFER_SIZE - session->currentDataSize;
+	over_ex.wsabuf.buf = over_ex.dataBuffer + session->currentDataSize;
 	over_ex.operation = IOOperation::RECV;
 
 	// 비동기 Recv
@@ -315,7 +323,7 @@ void IOCP::DoRecv(ClientInfo& session) const
 		0);
 }
 
-void IOCP::DoSend(ClientInfo& client_info, void* packet)
+void IOCP::DoSend(Session& client_info, void* packet)
 {
 	OverlappedEx* send_over_ex = new OverlappedEx{ reinterpret_cast<unsigned char*>(packet) };
 	WSASend(client_info.clientSocket, &send_over_ex->wsabuf, 1, 0, 0, &send_over_ex->over, 0);
@@ -505,7 +513,7 @@ void IOCP::ProcessPacket(int key, char* p)
 		}
 
 		// 방이 실행중이 아니면 나가기
-		auto& id_info{ _clientInfoHash[key].clientIdInfo };
+		auto& id_info{ _clientInfoHash[key].load()->clientIdInfo};
 		if (RoomStatus::Running != GET_SINGLE(Game)->GetRoom(id_info.roomId)->GetRoomStatus()) {
 			break;
 		}
@@ -535,7 +543,7 @@ void IOCP::ProcessPacket(int key, char* p)
 
 	case packet::Type::CS_FIRE_BULLET:
 	{
-		auto client_id_info{ _clientInfoHash[key].clientIdInfo};
+		auto client_id_info{ _clientInfoHash[key].load()->clientIdInfo};
 		
 		// room에 총알 객체 생성
 		GET_SINGLE(Game)->GetRoom(client_id_info.roomId)->FireBullet(client_id_info.playerId);
@@ -550,7 +558,7 @@ void IOCP::ProcessPacket(int key, char* p)
 	{
 
 		packet::SCCheckDelayPacket send_packet{};
-		DoSend(_clientInfoHash[key], &send_packet);
+		DoSend(key, &send_packet);
 
 
 	}
@@ -562,23 +570,13 @@ void IOCP::ProcessPacket(int key, char* p)
 		std::println("packet Error. disconnect Client {}", key);
 
 		// todo: 패킷 에러시 클라이언트 종료
-		_clientInfoHash[key].ioState = IOState::DISCONNECT;
-		closesocket(_clientInfoHash[key].clientSocket);
+		Disconnect(key);
 
 		return;
 	}
 	}
 
 
-}
-
-void IOCP::Disconnect(int client_id)
-{
-	if (INVALID_SOCKET == _clientInfoHash[client_id].clientSocket) {
-		closesocket(_clientInfoHash[client_id].clientSocket);
-	}
-	// Todo:
-	// 나중에 만들 atomic_shared_ptr로 자동으로 지울 예정.
 }
 
 
