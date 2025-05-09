@@ -93,7 +93,7 @@ void Mesh::CreateVRSUploadBuffer(UINT width, UINT height)
 
 void Mesh::UploadVRSData()
 {
-	if (!_supportsVRS)
+	if (!_supportsVRS || _shadingRateTier != D3D12_VARIABLE_SHADING_RATE_TIER_2)
 		return;
 
 	UINT width = _shadingRateImage->GetDesc().Width;
@@ -152,16 +152,22 @@ Mesh::~Mesh()
 
 void Mesh::Create(const vector<Vertex>& vertexBuffer, const vector<uint32>& indexBuffer)
 {
+
 	CreateVertexBuffer(vertexBuffer);
 	CreateIndexBuffer(indexBuffer);
-	if (_supportsVRS && _shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2)
+
+	UINT width = static_cast<float>(GEngine->GetWindow().width);
+	UINT height = static_cast<float>(GEngine->GetWindow().height);
+
+	if (_supportsVRS)
 	{
-		// 보통 여기에 GEngine->GetWindowSize() 같은 걸로 화면 크기 받아올 수 있어야 해
-		UINT width = static_cast<float>(GEngine->GetWindow().width);
-		UINT height = static_cast<float>(GEngine->GetWindow().height);
-		CreateVRSImage(width, height);
-		CreateVRSUploadBuffer(width, height);
-		UploadVRSData();  // 셰이딩 레이트 맵 초기화
+		if (_shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2)
+		{
+			CreateVRSImage(width, height);
+			CreateVRSUploadBuffer(width, height);
+			UploadVRSData();
+		}
+		// Tier 1은 별도 이미지 필요 없음
 	}
 }
 
@@ -175,14 +181,22 @@ void Mesh::Render(uint32 instanceCount, uint32 idx)
 
 	
 	/////////////////////////////// VRS /////////////////////////////////////
-	if (_supportsVRS && _shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2 && _shadingRateImage)
+	if (_supportsVRS)
 	{
 		ComPtr<ID3D12GraphicsCommandList5> commandList5;
 		GRAPHICS_CMD_LIST->QueryInterface(IID_PPV_ARGS(&commandList5));
 
 		if (commandList5)
 		{
-			commandList5->RSSetShadingRateImage(_shadingRateImage.Get());
+			if (_shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2 && _shadingRateImage)
+			{
+				commandList5->RSSetShadingRateImage(_shadingRateImage.Get());
+			}
+			else if (_shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_1)
+			{
+				// 예시: 2x2 셰이딩 레이트 (BLOCK_2X2)
+				commandList5->RSSetShadingRate(D3D12_SHADING_RATE_2X2, nullptr);
+			}
 		}
 	}
 
@@ -190,14 +204,21 @@ void Mesh::Render(uint32 instanceCount, uint32 idx)
 	GRAPHICS_CMD_LIST->DrawIndexedInstanced(_vecIndexInfo[idx].count, instanceCount, 0, 0, 0);
 
 	// VRS 설정 해제 (셰이딩 레이트 이미지 해제)
-	if (_supportsVRS && _shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2 && _shadingRateImage)
+	if (_supportsVRS)
 	{
 		ComPtr<ID3D12GraphicsCommandList5> commandList5;
 		GRAPHICS_CMD_LIST->QueryInterface(IID_PPV_ARGS(&commandList5));
 
 		if (commandList5)
 		{
-			commandList5->RSSetShadingRateImage(nullptr);
+			if (_shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2)
+			{
+				commandList5->RSSetShadingRateImage(nullptr);
+			}
+			else if (_shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_1)
+			{
+				commandList5->RSSetShadingRate(D3D12_SHADING_RATE_1X1, nullptr); // 원래대로 복원
+			}
 		}
 	}
 	/////////////////////////////// VRS /////////////////////////////////////
