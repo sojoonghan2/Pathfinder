@@ -105,6 +105,10 @@ void RuinsScript::Start()
 		_module[i] = dynamic_pointer_cast<GameModule>(go);
 	}
 	INPUT->LockCursor(true);
+
+	auto pos = _player->GetTransform()->GetLocalPosition();
+	pos.y = -100.f;
+	_player->GetTransform()->SetLocalPosition(pos);
 }
 
 void RuinsScript::Occupation()
