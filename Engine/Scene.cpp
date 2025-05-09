@@ -242,3 +242,7 @@ void Scene::RemoveGameObject(shared_ptr<GameObject> gameObject)
 	if (findIt != _gameObjects.end())
 		_gameObjects.erase(findIt);
 }
+
+void Scene::SetRenderingRate(D3D12_VARIABLE_SHADING_RATE_TIER rate_tier) {
+	Scene_RateTier = rate_tier;
+}

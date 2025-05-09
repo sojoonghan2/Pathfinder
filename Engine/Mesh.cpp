@@ -61,12 +61,6 @@ void Mesh::CreateVRSUploadBuffer(UINT width, UINT height)
 		// 쿼리 실패 시 업로드 버퍼 생성하지 않음
 		return;
 	}
-	if (options6.VariableShadingRateTier < D3D12_VARIABLE_SHADING_RATE_TIER_2)
-	{
-		cout << "Not supported" << endl;
-		// Tier 2 미지원 시 업로드 버퍼 생성하지 않음
-		return;
-	}
 
 	// tileWidth, tileHeight 단위로 버퍼 크기 계산
 	UINT vrsWidth = width / 16;
@@ -98,26 +92,37 @@ void Mesh::UploadVRSData()
 
 	UINT width = _shadingRateImage->GetDesc().Width;
 	UINT height = _shadingRateImage->GetDesc().Height;
+	UINT pitch = width; // R8_UINT, 1 byte per texel
 
-	UINT8* vrsData = new UINT8[width * height];
+	// 1. VRS 데이터 준비
+	std::vector<UINT8> vrsData(width * height, shading_rate_size);
 
-	for (UINT y = 0; y < height; y++)
-	{
-		for (UINT x = 0; x < width; x++)
-		{
-				vrsData[y * width + x] = shading_rate;  // 기본 셰이딩 레이트
-		}
-	}
-
-	// 업로드 버퍼에 데이터 복사
-	void* mappedMemory;
+	// 2. 업로드 버퍼에 복사
+	void* mappedMemory = nullptr;
 	_vrsUploadBuffer->Map(0, nullptr, &mappedMemory);
-	memcpy(mappedMemory, vrsData, width * height * sizeof(UINT8));
+	memcpy(mappedMemory, vrsData.data(), width * height * sizeof(UINT8));
 	_vrsUploadBuffer->Unmap(0, nullptr);
 
-	delete[] vrsData;
+	// 3. 서브리소스 footprint 설정
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint = {};
+	footprint.Offset = 0;
+	footprint.Footprint.Format = DXGI_FORMAT_R8_UINT;
+	footprint.Footprint.Width = width;
+	footprint.Footprint.Height = height;
+	footprint.Footprint.Depth = 1;
+	footprint.Footprint.RowPitch = (width + 255) & ~255; // D3D12_TEXTURE_DATA_PITCH_ALIGNMENT = 256
 
-	// VRS 맵을 GPU에 복사
+	D3D12_TEXTURE_COPY_LOCATION dstLocation = {};
+	dstLocation.pResource = _shadingRateImage.Get();
+	dstLocation.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+	dstLocation.SubresourceIndex = 0;
+
+	D3D12_TEXTURE_COPY_LOCATION srcLocation = {};
+	srcLocation.pResource = _vrsUploadBuffer.Get();
+	srcLocation.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+	srcLocation.PlacedFootprint = footprint;
+
+	// 4. 상태 전이: COMMON -> COPY_DEST
 	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 		_shadingRateImage.Get(),
 		D3D12_RESOURCE_STATE_COMMON,
@@ -125,8 +130,10 @@ void Mesh::UploadVRSData()
 	);
 	GRAPHICS_CMD_LIST->ResourceBarrier(1, &barrier);
 
-	GRAPHICS_CMD_LIST->CopyResource(_shadingRateImage.Get(), _vrsUploadBuffer.Get());
+	// 5. 복사
+	GRAPHICS_CMD_LIST->CopyTextureRegion(&dstLocation, 0, 0, 0, &srcLocation, nullptr);
 
+	// 6. 상태 전이: COPY_DEST -> SHADING_RATE_SOURCE
 	barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 		_shadingRateImage.Get(),
 		D3D12_RESOURCE_STATE_COPY_DEST,
@@ -173,32 +180,44 @@ void Mesh::Render(uint32 instanceCount, uint32 idx)
 
 	GEngine->GetGraphicsDescHeap()->CommitTable();
 
+	if (_shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_1) {
+		_useTier2 = false;
+	}
+	else {
+		_useTier2 = true;
+	}
 	
 	/////////////////////////////// VRS /////////////////////////////////////
-	if (_supportsVRS && _shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2 && _shadingRateImage)
-	{
-		ComPtr<ID3D12GraphicsCommandList5> commandList5;
-		GRAPHICS_CMD_LIST->QueryInterface(IID_PPV_ARGS(&commandList5));
+	ComPtr<ID3D12GraphicsCommandList5> commandList5;
+	GRAPHICS_CMD_LIST->QueryInterface(IID_PPV_ARGS(&commandList5));
 
-		if (commandList5)
+	if (commandList5 && _supportsVRS)
+	{
+		if (_useTier2 && _shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2 && _shadingRateImage)
 		{
+			// Tier 2 사용
 			commandList5->RSSetShadingRateImage(_shadingRateImage.Get());
+			commandList5->RSSetShadingRate(D3D12_SHADING_RATE_1X1, nullptr); // 안전 초기화
+		}
+		else if (!_useTier2 && _shadingRateTier >= D3D12_VARIABLE_SHADING_RATE_TIER_1)
+		{
+			// Tier 1 사용
+			commandList5->RSSetShadingRateImage(nullptr);
+			D3D12_SHADING_RATE_COMBINER combiners[] = {
+				D3D12_SHADING_RATE_COMBINER_PASSTHROUGH,
+				D3D12_SHADING_RATE_COMBINER_PASSTHROUGH
+			};
+			commandList5->RSSetShadingRate(shading_rate_size, combiners);
 		}
 	}
 
-	// 첫 번째 드로우 호출 (VRS 적용된 상태)
+	// 드로우 호출
 	GRAPHICS_CMD_LIST->DrawIndexedInstanced(_vecIndexInfo[idx].count, instanceCount, 0, 0, 0);
 
-	// VRS 설정 해제 (셰이딩 레이트 이미지 해제)
-	if (_supportsVRS && _shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2 && _shadingRateImage)
+	// VRS 해제 (Tier 2 전용)
+	if (_useTier2 && _shadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2 && _shadingRateImage && commandList5)
 	{
-		ComPtr<ID3D12GraphicsCommandList5> commandList5;
-		GRAPHICS_CMD_LIST->QueryInterface(IID_PPV_ARGS(&commandList5));
-
-		if (commandList5)
-		{
-			commandList5->RSSetShadingRateImage(nullptr);
-		}
+		commandList5->RSSetShadingRateImage(nullptr);
 	}
 	/////////////////////////////// VRS /////////////////////////////////////
 	
