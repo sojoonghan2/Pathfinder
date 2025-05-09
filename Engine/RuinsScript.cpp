@@ -12,7 +12,6 @@
 #include "MessageManager.h"
 #include "LoadingScene.h"
 #include "ModuleScript.h"
-#include "MeshRenderer.h"
 
 RuinsScript::RuinsScript() {}
 
@@ -66,6 +65,7 @@ void RuinsScript::LateUpdate() {
 		loadingScene->Init(RoomType::Factory);
 		GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
 	}
+<<<<<<< HEAD
 
 	// Vrs Mode Change
 	/*
@@ -95,6 +95,8 @@ void RuinsScript::LateUpdate() {
 			else obj->SetRender(true);
 		}
 	}
+=======
+>>>>>>> parent of e521ebe (J로 와이어 껐다켰다 가능)
 }
 
 void RuinsScript::Start()

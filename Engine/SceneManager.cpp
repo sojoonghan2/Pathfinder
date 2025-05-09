@@ -229,23 +229,3 @@ shared_ptr<GameObject> SceneManager::FindObjectByName(const wstring& name)
 
 	return nullptr; // 찾지 못하면 nullptr 반환
 }
-
-vector<shared_ptr<GameObject>> SceneManager::FindObjectsByNameContains(const wstring& keyword)
-{
-	vector<shared_ptr<GameObject>> result;
-
-	if (_activeScene == nullptr)
-		return result;
-
-	const vector<shared_ptr<GameObject>>& objects = _activeScene->GetGameObjects();
-
-	for (const auto& obj : objects)
-	{
-		if (obj->GetName().find(keyword) != wstring::npos)
-		{
-			result.push_back(obj);
-		}
-	}
-
-	return result;
-}

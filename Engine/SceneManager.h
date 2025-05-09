@@ -28,7 +28,6 @@ public:
 	bool Collition(shared_ptr<GameObject> obj1, shared_ptr<GameObject> obj2);
 
 	shared_ptr<GameObject> FindObjectByName(const wstring& name);
-	vector<shared_ptr<GameObject>> FindObjectsByNameContains(const wstring& keyword);
 
 public:
 	shared_ptr<Scene> GetActiveScene() { return _activeScene; }

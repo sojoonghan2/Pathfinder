@@ -634,14 +634,6 @@ void RuinsScene::Init()
 		dummyInfo.emplace_back(Vec3(754.53f, 100.f, 3250.f), 200.f);
 		dummyInfo.emplace_back(Vec3(-372.698f, 100.f, 3250.f), 200.f);
 
-		dummyInfo.emplace_back(Vec3(-3904.f, 0.f, -2208.63f), 200.f);
-		dummyInfo.emplace_back(Vec3(-2916.68f, 0.f, -2164.75f), 200.f);
-		dummyInfo.emplace_back(Vec3(-4900.f, 0.f, -2157.97f), 200.f);
-		dummyInfo.emplace_back(Vec3(-4900.f, 0.f, -1162.01f), 200.f);
-		dummyInfo.emplace_back(Vec3(-4900.f, 0.f, -173.274f), 200.f);
-		dummyInfo.emplace_back(Vec3(-4900.f, 0.f, 827.566f), 200.f);
-		dummyInfo.emplace_back(Vec3(-4900.f, 0.f, 1837.92f), 200.f);
-
 		for (const auto& info : dummyInfo)
 		{
 			shared_ptr<GameObject> dummy = make_shared<GameObject>();

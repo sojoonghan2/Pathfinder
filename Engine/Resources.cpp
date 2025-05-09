@@ -504,7 +504,7 @@ void Resources::CreateDefaultShader()
 	{
 		ShaderInfo info =
 		{
-			SHADER_TYPE::FORWARD,
+			SHADER_TYPE::DEFERRED,
 			RASTERIZER_TYPE::CULL_NONE,
 			DEPTH_STENCIL_TYPE::LESS,
 			BLEND_TYPE::ALPHA_BLEND
