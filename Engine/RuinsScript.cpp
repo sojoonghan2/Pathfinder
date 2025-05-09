@@ -67,15 +67,6 @@ void RuinsScript::LateUpdate() {
 	}
 <<<<<<< HEAD
 
-	// Vrs Mode Change
-	/*
-	if (INPUT->GetButtonDown(KEY_TYPE::K)) {
-		GET_SINGLE(SceneManager)->GetActiveScene()->SetRenderingRate(D3D12_VARIABLE_SHADING_RATE_TIER_2);
-	}
-	if (INPUT->GetButtonDown(KEY_TYPE::L)) {
-		GET_SINGLE(SceneManager)->GetActiveScene()->SetRenderingRate(D3D12_VARIABLE_SHADING_RATE_TIER_1);
-	}
-	*/
 	// 디버그 렌더러 On/Off
 	if (INPUT->GetButtonDown(KEY_TYPE::J))
 	{

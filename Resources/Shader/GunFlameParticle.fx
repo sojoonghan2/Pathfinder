@@ -1,11 +1,12 @@
-#ifndef _GUNFLAMEPARTICLE_FX_
-#define _GUNFLAMEPARTICLE_FX_
+#ifndef _MUZZLEFLAME_PARTICLE_FX_
+#define _MUZZLEFLAME_PARTICLE_FX_
 
 #include "params.fx"
 #include "utils.fx"
 
 #define PI 3.141592
 
+// 기존 구조체 유지
 struct Particle
 {
 	float3 worldPos;
@@ -13,9 +14,7 @@ struct Particle
 	float3 worldDir;
 	float lifeTime;
 	int alive;
-	float3 velocity;
-	float rotation;
-	float randomSeed;
+	float3 padding; // padding 유지
 };
 
 StructuredBuffer<Particle> g_data : register(t9);
@@ -34,8 +33,6 @@ struct VS_OUT
 	float4 viewPos : POSITION;
 	float2 uv : TEXCOORD;
 	float id : ID;
-	float rotation : ROTATION;
-	float randomSeed : RANDOM_SEED;
 };
 
 VS_OUT VS_Main(VS_IN input)
@@ -48,8 +45,6 @@ VS_OUT VS_Main(VS_IN input)
 	output.viewPos = mul(float4(worldPos, 1.f), g_matView);
 	output.uv = input.uv;
 	output.id = input.id;
-	output.rotation = g_data[input.id].rotation;
-	output.randomSeed = g_data[input.id].randomSeed;
 
 	return output;
 }
@@ -60,7 +55,6 @@ struct GS_OUT
 	float2 uv : TEXCOORD;
 	uint id : SV_InstanceID;
 	float lifeRatio : LIFE_RATIO;
-	float randomSeed : RANDOM_SEED;
 };
 
 float2x2 Create2DRotationMatrix(float angle)
@@ -81,31 +75,33 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 		return;
 
 	float lifeRatio = g_data[id].curTime / g_data[id].lifeTime;
-    
+	
 	float scaleBase = ((g_float_1 - g_float_0) * lifeRatio + g_float_0);
-    
-	float widthScale = scaleBase * (1.0f + 0.3f * sin(vtx.randomSeed * 6.28f));
-	float heightScale = scaleBase * (1.0f + 0.2f * cos(vtx.randomSeed * 4.13f)) * 1.8f;
-    
+	
+	float pseudoRandom = frac(sin(dot(float2(id, g_data[id].curTime), float2(12.9898f, 78.233f))) * 43758.5453f);
+	float pseudoRandom2 = frac(sin(dot(float2(id * 1.234f, g_data[id].curTime * 0.876f), float2(27.1653f, 57.713f))) * 31268.5123f);
+	
+	float widthScale = scaleBase * (1.0f + 0.2f * sin(pseudoRandom * 6.28f));
+	float heightScale = scaleBase * (1.0f + 0.15f * cos(pseudoRandom2 * 4.13f)) * 1.5f;
+	
 	float4 centerPos = vtx.viewPos;
-    
+	
+	float rotationAngle = pseudoRandom * PI * 2.0f + lifeRatio * PI * 0.5f;
+	float2x2 rotMat = Create2DRotationMatrix(rotationAngle);
+	
 	float2 corners[4] =
 	{
 		float2(-widthScale, heightScale),
-        float2(widthScale, heightScale),
-        float2(widthScale, -heightScale),
-        float2(-widthScale, -heightScale)
+		float2(widthScale, heightScale),
+		float2(widthScale, -heightScale),
+		float2(-widthScale, -heightScale)
 	};
-    
-	float rotationAngle = vtx.rotation + lifeRatio * PI * 0.5f;
-	float2x2 rotMat = Create2DRotationMatrix(rotationAngle);
-    
+	
 	for (int i = 0; i < 4; ++i)
 	{
 		corners[i] = mul(rotMat, corners[i]);
-        
+		
 		output[i].position = centerPos + float4(corners[i], 0.f, 0.f);
-        
 		output[i].position = mul(output[i].position, g_matProjection);
 	}
 	
@@ -113,12 +109,11 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 	output[1].uv = float2(1.f, 0.f);
 	output[2].uv = float2(1.f, 1.f);
 	output[3].uv = float2(0.f, 1.f);
-
+	
 	for (int i = 0; i < 4; ++i)
 	{
 		output[i].id = id;
 		output[i].lifeRatio = lifeRatio;
-		output[i].randomSeed = vtx.randomSeed;
 	}
 	
 	outputStream.Append(output[0]);
@@ -134,54 +129,34 @@ void GS_Main(point VS_OUT input[1], inout TriangleStream<GS_OUT> outputStream)
 float4 PS_Main(GS_OUT input) : SV_Target
 {
 	float4 color = g_textures.Sample(g_sam_0, input.uv);
-    
+	
 	float lifeRatio = input.lifeRatio;
-	float randomSeed = input.randomSeed;
-    
-	float dist = distance(input.uv, float2(0.5f, 0.5f)) * 2.0f;
-    
-	float3 coreColor = float3(1.0f, 0.2f, 0.1f);
-	float3 midColor = float3(1.0f, 0.9f, 0.3f);
-	float3 edgeColor = float3(1.0f, 1.0f, 1.0f);
-    
-	float3 baseColor;
-	if (dist < 0.7f)
-	{
-		baseColor = lerp(coreColor, midColor, smoothstep(0.0f, 0.7f, dist));
-	}
-	else if (dist < 0.9f)
-	{
-		baseColor = lerp(midColor, edgeColor, smoothstep(0.7f, 0.9f, dist));
-	}
-	else
-	{
-		baseColor = edgeColor;
-	}
-    
-	baseColor = lerp(baseColor, edgeColor, lifeRatio * 0.4f);
-    
-	float brightness = 5.0f + 3.0f * sin(randomSeed * 7.92f);
-	float colorShift = 0.1f * sin(randomSeed * 3.14f);
-    
-	color.rgb *= baseColor * brightness;
-	color.rgb += float3(colorShift, colorShift * 0.5f, 0.0f);
-    
-	float flicker1 = sin(lifeRatio * PI * 15.0f + randomSeed * 6.28f);
-	float flicker2 = sin(lifeRatio * PI * 8.0f + randomSeed * 3.14f);
+	uint id = input.id;
+	
+	float pseudoRandom = frac(sin(dot(float2(id, lifeRatio * 100.0f), float2(12.9898f, 78.233f))) * 43758.5453f);
+	
+	float3 coreColor = lerp(float3(1.0f, 0.9f, 0.5f), float3(1.0f, 0.6f, 0.2f), lifeRatio);
+	
+	float brightness = 5.0f + 2.0f * sin(pseudoRandom * 7.92f);
+	
+	color.rgb *= coreColor * brightness;
+	
+	float flicker1 = sin(lifeRatio * PI * 15.0f + pseudoRandom * 6.28f);
+	float flicker2 = sin(lifeRatio * PI * 8.0f + pseudoRandom * 3.14f);
 	float flickerMix = saturate(0.7f * flicker1 + 0.3f * flicker2);
-    
+	
 	float initialPulse = saturate(1.2f - lifeRatio * 8.0f);
-    
+	
 	float fadeOut = saturate(1.0f - pow(lifeRatio, 0.5f) * 1.2f);
-    
-	float alpha = saturate(fadeOut * (0.8f + 0.2f * flickerMix + initialPulse * 0.5f));
-    
+	
+	float alpha = fadeOut * (0.8f + 0.2f * flickerMix + initialPulse * 0.5f);
+	
 	float edgeDist = distance(input.uv, float2(0.5f, 0.5f)) * 2.0f;
-	float edgeGlow = saturate(1.0f - edgeDist * edgeDist * 1.2f);
-	edgeGlow = pow(edgeGlow, 1.5f + lifeRatio * 2.5f);
-    
-	color.a *= alpha * edgeGlow;
-    
+	float edgeGlow = saturate(1.0f - edgeDist * edgeDist);
+	edgeGlow = pow(edgeGlow, 1.0f + lifeRatio * 2.0f);
+	
+	color.a *= alpha * edgeGlow * 0.7f;
+	
 	return color;
 }
 
@@ -233,49 +208,48 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 
 		if (g_particle[threadIndex.x].alive == 1)
 		{
+			// 파티클 초기화
 			float x = ((float) threadIndex.x / (float) maxCount) + accTime;
 			float3 noise = float3(
-                Rand(float2(x, accTime)),
-                Rand(float2(x * 0.31f, accTime)),
-                Rand(float2(x * 0.59f, accTime)));
-                
+				Rand(float2(x, accTime)),
+				Rand(float2(x * 0.31f, accTime)),
+				Rand(float2(x * 0.59f, accTime)));
+				
+			// 총구 방향에 약간의 무작위성 추가
 			float3 baseDir = normalize(float3(dirX, dirY, dirZ));
-			float3 randDir = normalize(noise * 2.0f - 1.0f) * 0.2f;
+			float3 randDir = normalize(noise * 2.0f - 1.0f) * 0.15f;
 			g_particle[threadIndex.x].worldDir = normalize(baseDir + randDir);
-            
-			g_particle[threadIndex.x].worldPos = float3(noise.x * 0.5f - 0.25f,
-                                                     noise.y * 0.5f - 0.25f,
-                                                     noise.z * 0.5f - 0.25f);
-            
-			g_particle[threadIndex.x].velocity = g_particle[threadIndex.x].worldDir * (10.0f + noise.x * 5.0f) +
-                                             float3(noise.y * 2.0f - 1.0f,
-                                                   noise.z * 2.0f - 1.0f,
-                                                   noise.x * 2.0f - 1.0f) * 3.0f;
-            
-			g_particle[threadIndex.x].rotation = noise.y * PI * 2.0f;
-            
-			g_particle[threadIndex.x].randomSeed = noise.x;
-            
+			
+			// 총구 주변에 파티클 분산 배치
+			g_particle[threadIndex.x].worldPos = float3(
+				noise.x * 0.2f - 0.1f,
+				noise.y * 0.2f - 0.1f,
+				noise.z * 0.2f - 0.1f
+			);
+			
+			// 수명 설정
 			g_particle[threadIndex.x].lifeTime = (maxLifeTime - minLifeTime) * noise.z + minLifeTime;
 			g_particle[threadIndex.x].curTime = 0.f;
 		}
 	}
 	else if (g_particle[threadIndex.x].alive == 1)
 	{
+		// 파티클 업데이트
 		g_particle[threadIndex.x].curTime += deltaTime;
 		if (g_particle[threadIndex.x].curTime > g_particle[threadIndex.x].lifeTime)
 		{
 			g_particle[threadIndex.x].alive = 0;
 			return;
 		}
-        
+		
 		float lifeRatio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
-        
-		float velocityFactor = 1.0f - lifeRatio * 0.8f;
-        
-		g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].velocity * deltaTime * velocityFactor;
-        
-		g_particle[threadIndex.x].rotation += deltaTime * (1.0f - lifeRatio) * 2.0f;
+		
+		// 시간에 따른 속도 감소
+		float velocityFactor = 1.0f - lifeRatio * 0.7f;
+		
+		// 파티클 움직임
+		g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * deltaTime * velocityFactor * 2.0f;
 	}
 }
+
 #endif

@@ -17,8 +17,6 @@ public:
 	void Render();
 
 	void ClearRTV();
-	D3D12_VARIABLE_SHADING_RATE_TIER Scene_RateTier = D3D12_VARIABLE_SHADING_RATE_TIER_2;
-	void SetRenderingRate(D3D12_VARIABLE_SHADING_RATE_TIER Rate_tier);
 
 	void RenderShadow();
 	void RenderDeferred();
