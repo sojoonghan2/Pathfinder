@@ -126,13 +126,13 @@ void FactoryScene::Init()
 			AddGameObject(gameObject);
 
 			shared_ptr<GameObject> wire = make_shared<GameObject>();
-			wstring name = L"wire";
+			wstring name = L"WirePlayer";
 			wire->SetName(name);
 
 			wire->AddComponent(make_shared<Transform>());
 			wire->GetTransform()->SetParent(gameObject->GetTransform());
 			wire->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 100.f));
-			wire->GetTransform()->SetLocalScale(Vec3(125.f, 125.f, 125.f));
+			wire->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 
 			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 			{
@@ -446,30 +446,13 @@ void FactoryScene::Init()
 	{
 		vector<pair<Vec3, Vec3>> dummyInfo;
 		
-		for (int i{}; i < 7; ++i)
-		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, -4800.f), Vec3(300.f, 300.f, 300.f));
-		}
+		dummyInfo.emplace_back(Vec3(-3900.f, 0.f, -5000.f), Vec3(2100.f, 300.f, 500.f));
+		dummyInfo.emplace_back(Vec3(-3900.f, 0.f, -2500.f), Vec3(2100.f, 300.f, 500.f));
+		dummyInfo.emplace_back(Vec3(-3900.f, 0.f, 0.f), Vec3(2100.f, 300.f, 500.f));
+		dummyInfo.emplace_back(Vec3(-3900.f, 0.f, 2500.f), Vec3(2100.f, 300.f, 500.f));
+		dummyInfo.emplace_back(Vec3(-3900.f, 0.f, 5000.f), Vec3(2100.f, 300.f, 500.f));
 
-		for (int i{}; i < 7; ++i)
-		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, -2400.f), Vec3(300.f, 300.f, 300.f));
-		}
-
-		for (int i{}; i < 7; ++i)
-		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, 0.f), Vec3(300.f, 300.f, 300.f));
-		}
-
-		for (int i{}; i < 7; ++i)
-		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, 2400.f), Vec3(300.f, 300.f, 300.f));
-		}
-
-		for (int i{}; i < 7; ++i)
-		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, 4800.f), Vec3(300.f, 300.f, 300.f));
-		}
+		dummyInfo.emplace_back(Vec3(3900.f, 0.f, 0.f), Vec3(300.f, 300.f, 10000.f));
 
 		for (const auto& info : dummyInfo)
 		{
@@ -513,8 +496,8 @@ void FactoryScene::Init()
 
 		gameObjects[0]->SetName(L"FactoryMonster");
 		gameObjects[0]->SetCheckFrustum(true);
-		gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
-		gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
+		//gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
+		//gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -100.0f, 2000.0f));
 		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-PI, 0.0f, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(0.1f, 0.1f, 0.1f));
@@ -570,7 +553,7 @@ void FactoryScene::Init()
 			gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, -100.f, 0.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
-			//AddGameObject(gameObject);
+			AddGameObject(gameObject);
 		}
 	}
 #pragma endregion
@@ -593,6 +576,28 @@ void FactoryScene::Init()
 		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 700.f, 0.f));
 
 		GET_SINGLE(CollisionManager)->RegisterCollider(gameObjects[0]->GetCollider(), COLLISION_OBJECT_TYPE::GENERATE);
+
+		shared_ptr<GameObject> wire = make_shared<GameObject>();
+		wstring name = L"WireGenerator";
+		wire->SetName(name);
+
+		wire->AddComponent(make_shared<Transform>());
+		wire->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+		wire->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 500.f));
+		wire->GetTransform()->SetLocalScale(Vec3(200.f, 200.f, 200.f));
+
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+			meshRenderer->SetMesh(sphereMesh);
+		}
+		{
+			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
+			meshRenderer->SetMaterial(material->Clone());
+		}
+		wire->AddComponent(meshRenderer);
+
+		AddGameObject(wire);
 
 		shared_ptr<GameObject> particleObj = make_shared<GameObject>();
 		particleObj->SetName(L"GeneratorParticle");

@@ -189,7 +189,7 @@ void RuinsScript::ModuleSelect()
 	/*
 	if (모듈을 선택하라는 메시지)
 	{
-		for (int i = 0; i < 3; ++i) _module[i]들의 모듈 스크립트->Activate();
+		for (int i = 0; i < 3; ++i) _module[i]->GetScript<ModuleScript>()->Activate();
 	}
 
 	if (모듈을 선택했다는 메시지)
@@ -204,9 +204,9 @@ void RuinsScript::ModuleSelect()
 void RuinsScript::WaitOtherModule()
 {
 	/*
-	if (모든 플레이어가 모듈을 골랐으면)
+	if (모든 플레이어가 모듈을 골랐다는 메시지)
 	{
-		for (int i = 0; i < 3; ++i) _module[i]들의 모듈 스크립트->Deactivate();
+		for (int i = 0; i < 3; ++i) _module[i]->GetScript<ModuleScript>()->Deactivate();
 
 		_currentState = StageState::LOAD_NEXT_SCENE;
 	}
