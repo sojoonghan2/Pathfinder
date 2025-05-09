@@ -18,6 +18,11 @@
 PlayerScript::PlayerScript() {}
 PlayerScript::~PlayerScript() {}
 
+void PlayerScript::Awake()
+{
+	GET_SINGLE(MessageManager)->RegisterObject(ObjectType::MainPlayer, _id);
+}
+
 void PlayerScript::Start()
 {
 	_dashUI = GET_SINGLE(SceneManager)->FindObjectByName(L"DashUI");
@@ -34,26 +39,24 @@ void PlayerScript::Start()
 void PlayerScript::LateUpdate()
 {
 #ifdef NETWORK_ENABLE
-	int id{ GET_SINGLE(SocketIO)->_myId};
-	if (-1 != id) {
-		auto& queue{ GET_SINGLE(MessageManager)->GetMessageQueue(id) };
-		while (not queue.empty()) {
-			auto& message{ queue.front() };
-			switch (message->type)
-			{
-			case MsgType::MOVE:
-			{
-				std::shared_ptr<MsgMove> message_move{
-					std::static_pointer_cast<MsgMove>(message) };
-				SetPosition(message_move->x, message_move->y);
-			}
-			break;
-			default:
-				break;
-			}
-			queue.pop();
+	auto& queue{ GET_SINGLE(MessageManager)->GetMessageQueue(_id) };
+	while (not queue.empty()) {
+		auto& message{ queue.front() };
+		switch (message->type)
+		{
+		case MsgType::MOVE:
+		{
+			std::shared_ptr<MsgMove> message_move{
+				std::static_pointer_cast<MsgMove>(message) };
+			SetPosition(message_move->x, message_move->y);
 		}
+		break;
+		default:
+			break;
+		}
+		queue.pop();
 	}
+	
 
 	if (_moveTimer.PeekDeltaTime() > MOVE_PACKET_TIME_MS) {
 		_moveTimer.updateDeltaTime();
@@ -347,9 +350,18 @@ void PlayerScript::Recoil()
 void PlayerScript::SetPosition(float x, float z)
 {
 	Vec3 pos = GetTransform()->GetLocalPosition();
-	pos.x = x * 200.f;
-	pos.z = z * 200.f;
-	GetTransform()->SetLocalPosition(pos);
+	Vec3 changed_pos = pos;
+	changed_pos.x = x * METER_TO_CLIENT;
+	changed_pos.z = z * METER_TO_CLIENT;
+
+
+	float dx{ pos.x - changed_pos.x };
+	float dy{ pos.y - changed_pos.y };
+	float distance{ std::sqrt(dx * dx + dy * dy) };
+
+	if (distance > 0.5f * METER_TO_CLIENT) {
+		GetTransform()->SetLocalPosition(changed_pos);
+	}
 }
 
 

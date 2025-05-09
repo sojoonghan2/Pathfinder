@@ -1,6 +1,5 @@
 #pragma once
 #include "Player.h"
-#include "Monster.h"
 
 enum class RoomStatus : unsigned char
 {
@@ -21,28 +20,51 @@ class Room
 {
 public:
 
-	void Update(const float delta_time);
-	void ClearMonsterPtrList() { _monsterPtrList.clear(); }
-	void AddMonsterPtr(Monster* monster_ptr) { _monsterPtrList.push_back(monster_ptr); }
+	void Update(const float delta);
+	//void ClearMonsterPtrList() { _monsterPtrList.clear(); }
+	//void AddMonsterPtr(std::shared_ptr<Monster>& monster_ptr) { _monsterPtrList.push_back(monster_ptr); }
+
+	void ClearObjects();
+	void AddObject(std::shared_ptr<Object> object);
+	void InsertPlayers(const int idx, std::shared_ptr<Player>& players);
+
+	void FireBullet(const int player_id);
+
+
+	// client들에게 object의 위치를 보냄.
+	void SendObjectsToClient();
 
 	// getter and setter
 
-	void SetPlayerPtrList(const int id, Player* player_ptr);
+	// void SetPlayerPtrList(const int id, std::shared_ptr<Player>& player_ptr);
 	void SetRoomType(const RoomType room_type) { _roomType = room_type; }
-	void SetRoomStatus(const RoomStatus room_status) { _roomStatus = room_status; }
-
-	// 이게 맞음?
-	std::vector<Monster*>& GetMonsterPtrList() { return _monsterPtrList; }
-
-	RoomStatus GetRoomStatus() const { return _roomStatus; }
 	RoomType GetRoomType() const { return _roomType; }
 
+
+	void SetRoomStatus(const RoomStatus room_status) { _roomStatus = room_status; }
+	RoomStatus GetRoomStatus() const { return _roomStatus; }
+
+	void SetRoomId(const int id) { _roomId = id; }
+
+	// 모든 플레이어가 게임 종료했다고 한 순간 호출될 함수.
+	// game에서 가지고 있는 object pool에 반환해 주어야 함.
+	void Clear();
+
 private:
+
+	// TODO:
+	// 일단 임시. 나중에 여기에 client_id를 저장하도록 변경
+	int _roomId{-1};
 	
-	// TODO: 여기를 shared_ptr로
-	std::array<Player*, 3>	_playerPtrList{};
-	std::vector<Monster*>	_monsterPtrList{};
+	// 플레이어는 3명 고정이니까 monster 연산에 편하도록 array에도 저장
+	std::array<std::shared_ptr<Player>, 3>	_playerList{};
+
+
+	// 객체가 id를 가져야 함.
+	std::atomic_int _idCount{ 0 };
+	concurrency::concurrent_unordered_map<int, std::shared_ptr<Object>> _objects;
 
 	RoomType			_roomType{ RoomType::None };
 	RoomStatus			_roomStatus{ RoomStatus::Waiting };
+
 };

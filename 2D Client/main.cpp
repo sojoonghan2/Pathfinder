@@ -312,12 +312,90 @@ public:
 
 	Vec2f GetPosition() const { return pos; }
 
-	void NormalizeAndSetDir(const Vec2f& _dir) { dir = _dir; }
+	void SetDir(const Vec2f& _dir) { dir = _dir; }
 	void SetDir(const float _dirx, const float _diry)
 	{
 		dir.x = _dirx; dir.y = _diry;
 	}
 };
+
+
+class Bullet
+{
+	// 단위 m
+	Vec2f pos{};
+	Vec2f dir{};
+	float& x{ pos.x };
+	float& y{ pos.y };
+	bool show{ false };
+	sf::RectangleShape Square{ sf::Vector2f(GRID_WIDTH_PIXEL, GRID_HEIGHT_PIXEL) };
+
+
+public:
+
+	Bullet(const float x, const float y, const sf::Color color, const bool show) :
+		pos{ x, y },
+		show{ show }
+	{
+		SetFillColor(color);
+		sf::FloatRect bounds = Square.getLocalBounds();
+		Square.setOrigin(bounds.width / 2, bounds.height / 2);
+	}
+
+	Bullet(const float x, const float y, const sf::Color color) :
+		Bullet{ x, y, color, false }
+	{}
+
+	Bullet() :
+		Bullet{ 0.f, 0.f, sf::Color::Red }
+	{}
+
+	void SetFillColor(const sf::Color color)
+	{
+		Square.setFillColor(color);
+	}
+
+	void Update(const Controller& controller, const float delta)
+	{
+
+	}
+
+	void Draw(sf::RenderWindow& window)
+	{
+		if (not show) return;
+
+		// 윈도우 위치 계산
+		auto window_pos{ GameToWindow(pos) };
+		auto& windowX = window_pos.x;
+		auto& windowY = window_pos.y;
+
+		// 윈도우 위치에 표시
+		Square.setPosition(windowX, windowY);
+		window.draw(Square);
+	}
+
+
+	// getter and setter
+
+
+	void SetPosition(Vec2f _pos) { pos = _pos; }
+
+	void SetPosition(const float _x, const float _y)
+	{
+		SetPosition(Vec2f{ _x, _y });
+	}
+
+	void SetShow(const bool _show) { show = _show; }
+
+	Vec2f GetPosition() const { return pos; }
+
+	void SetDir(const Vec2f& _dir) { dir = _dir; }
+	void SetDir(const float _dirx, const float _diry)
+	{
+		dir.x = _dirx; dir.y = _diry;
+	}
+};
+
 
 
 int main() {
@@ -335,6 +413,7 @@ int main() {
 
 	std::unordered_map<int, Player> players{};
 	std::unordered_map<int, Monster> monsters{};
+	std::unordered_map<int, Monster> bullets{};
 	int my_id = -1;
 
 	Controller controller;
@@ -366,14 +445,28 @@ int main() {
 			}
 			break;
 
+			case packet::Type::SC_DELETE_OBJECT:
+			{
+				packet::SCDeleteObject packet = reinterpret_cast<packet::SCDeleteObject&>(buffer);
+				if (monsters.contains(packet.objectId)) {
+					monsters.erase(packet.objectId);
+				}
+				if (bullets.contains(packet.objectId)) {
+					bullets.erase(packet.objectId);
+				}
+
+
+			}
+			break;
+
 
 			case packet::Type::SC_MATCHMAKING:
 			{
 				packet::SCMatchmaking packet = reinterpret_cast<packet::SCMatchmaking&>(buffer);
-				players[packet.clientId].SetFillColor(sf::Color::Red);
-				players[packet.clientId].SetShow(true);
-				players[packet.clientId].SetCtrl(true);
-				my_id = packet.clientId;
+				players[packet.playerId].SetFillColor(sf::Color::Red);
+				players[packet.playerId].SetShow(true);
+				players[packet.playerId].SetCtrl(true);
+				my_id = packet.playerId;
 				// TODO: 방 타입 받아와서 설정하기. 지금은 ruins 고정
 				// packet.roomType;
 
@@ -381,26 +474,61 @@ int main() {
 			}
 
 			break;
-			case packet::Type::SC_MOVE_PLAYER:
+			case packet::Type::SC_MOVE_OBJECT:
 			{
-				packet::SCMovePlayer packet = reinterpret_cast<packet::SCMovePlayer&>(buffer);
-				if (not players.contains(packet.clientId)) {
-					players[packet.clientId].SetFillColor(sf::Color::Black);
-					players[packet.clientId].SetShow(true);
+				packet::SCMoveObject packet = reinterpret_cast<packet::SCMoveObject&>(buffer);
+
+				switch (packet.objectType)
+				{
+				case ObjectType::Player:
+				{
+					if (packet.objectId == my_id) {
+						auto pos1{ players[my_id].GetPosition() };
+						Vec2f pos2{ packet.x, packet.y };
+
+						float dx{ pos1.x - pos2.x };
+						float dy{ pos1.y - pos2.y };
+						float distance{ std::sqrt(dx * dx + dy * dy) };
+
+						if (distance > 0.5f) {
+							players[my_id].SetPosition(pos2);
+						}
+					}
+
+					else {
+						if (not players.contains(packet.objectId)) {
+							players[packet.objectId].SetFillColor(sf::Color::Black);
+							players[packet.objectId].SetShow(true);
+						}
+						players[packet.objectId].SetDir(packet.dirX, packet.dirY);
+						players[packet.objectId].SetPosition(packet.x, packet.y);
+					}
 				}
-				players[packet.clientId].SetDir(packet.dirX, packet.dirY);
-				players[packet.clientId].SetPosition(packet.x, packet.y);
-			}
-			break;
-			case packet::Type::SC_MOVE_MONSTER:
-			{
-				packet::SCMoveMonster packet = reinterpret_cast<packet::SCMoveMonster&>(buffer);
-				if (not monsters.contains(packet.monsterId)) {
-					monsters[packet.monsterId].SetFillColor(sf::Color::Green);
-					monsters[packet.monsterId].SetShow(true);
+				break;
+
+				case ObjectType::Monster:
+				{
+					if (not monsters.contains(packet.objectId)) {
+						monsters[packet.objectId].SetFillColor(sf::Color::Green);
+						monsters[packet.objectId].SetShow(true);
+					}
+					monsters[packet.objectId].SetDir(packet.dirX, packet.dirY);
+					monsters[packet.objectId].SetPosition(packet.x, packet.y);
 				}
-				monsters[packet.monsterId].SetDir(packet.dirX, packet.dirY);
-				monsters[packet.monsterId].SetPosition(packet.x, packet.y);
+				break;
+
+				case ObjectType::Bullet:
+				{
+					if (not bullets.contains(packet.objectId)) {
+						bullets[packet.objectId].SetFillColor(sf::Color::Cyan);
+						bullets[packet.objectId].SetShow(true);
+					}
+					bullets[packet.objectId].SetPosition(packet.x, packet.y);
+				}
+				break;
+				default:
+					break;
+				}
 			}
 			break;
 			default:
@@ -494,6 +622,12 @@ int main() {
 				auto pos = players[my_id].GetPosition();
 				auto dir = players[my_id].GetDir();
 				socket_io.DoSend<packet::CSMovePlayer>(pos.x, pos.y, dir.x, dir.y);
+
+				// 마우스가 클릭되어 있으면 총알 발사 패킷을 보냄.
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+					bullets[my_id].SetPosition(pos.x, pos.y);
+					socket_io.DoSend<packet::CSFireBullet>();
+				}
 			}
 		}
 
@@ -523,6 +657,10 @@ int main() {
 
 		for (auto& [_, monster] : monsters) {
 			monster.Draw(window);
+		}
+
+		for (auto& [_, bullet] : bullets) {
+			bullet.Draw(window);
 		}
 
 

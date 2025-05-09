@@ -29,6 +29,8 @@
 #include "LuckyScene.h"
 #include "BossScene.h"
 #include "TestScene.h"
+#include "MessageManager.h"
+#include "SocketIO.h"
 
 void SceneManager::Init()
 {
@@ -109,8 +111,11 @@ void SceneManager::LoadScene(wstring sceneName)
 	_activeScene = scenes.at(sceneName);
 	_activeScene->SetName(sceneName);
 
+
+	GET_SINGLE(MessageManager)->Clear();
 	_activeScene->Awake();
 	_activeScene->Start();
+	GET_SINGLE(SocketIO)->Continue();
 }
 
 void SceneManager::ChangeScene(wstring sceneName) {

@@ -5,9 +5,8 @@
 #include "Game.h"
 #include "Timer.h"
 
-std::random_device rd;
-std::default_random_engine dre{ rd() };
-std::uniform_real_distribution<float> timeDist{ 2.f, 4.f };
+#include "Room.h"
+
 
 bool IOCP::Init()
 {
@@ -100,7 +99,7 @@ bool IOCP::Start()
 	// worker_thread 따로 멤버변수로 뺴기
 
 	int thread_number = std::thread::hardware_concurrency();
-	for (int i = 0; i < 2; ++i) {
+	for (int i = 0; i < thread_number; ++i) {
 		_workers.emplace_back([this]() { Worker(); });
 	}
 	_workers.emplace_back([this]() { TimerWorker(); });
@@ -143,7 +142,7 @@ void IOCP::Worker()
 		// 어떤 operation으로 완료되었는지 확인. 
 		switch (curr_over_ex->operation) {
 
-			/**
+			/**G
 			* ACCEPT: AcceptEx() 작업 완료
 			*/
 		case IOOperation::ACCEPT:
@@ -234,60 +233,62 @@ void IOCP::Worker()
 void IOCP::TimerWorker()
 {
 	using namespace std::chrono_literals;
-	Timer update_timer;
-	Timer send_timer;
+	//Timer update_timer;
+	//Timer send_timer;
 	while (true) {
 
-		update_timer.updateDeltaTime();
-		auto delta = update_timer.getDeltaTimeSeconds();
-		GET_SINGLE(Game)->Update(delta);
+		//update_timer.updateDeltaTime();
+		//auto delta = update_timer.getDeltaTimeSeconds();
+		GET_SINGLE(Game)->Update();
 
 
 		// 몬스터의 위치를 플레이어한테 전송
-		if (send_timer.PeekDeltaTime() > MOVE_PACKET_TIME_MS) {
-			send_timer.updateDeltaTime();
+		//if (send_timer.PeekDeltaTime() > MOVE_PACKET_TIME_MS) {
+		//	send_timer.updateDeltaTime();
 
 
+			// Todo:
+			// 근데 이거는 Game쪽에서 해결하는게 맞지 않나?
+			//for (int i = 0; i < MAX_MONSTER; ++i) {
+			//	const auto& monster{ GET_SINGLE(Game)->GetMonster(i) };
+			//	auto room_id{ monster->GetRoomId() };
+			//	if (-1 == room_id) {
+			//		continue;
+			//	}
+			//	if (GET_SINGLE(Game)->GetRoom(monster->GetRoomId())->GetRoomStatus()
+			//		!= RoomStatus::Running) {
+			//		continue;
+			//	}
 
-			// 현재 방이 활성화 되어있는지 확인
-			// 일단 킵
-			for (int i = 0; i < MAX_MONSTER; ++i) {
-				const auto& monster{ GET_SINGLE(Game)->GetMonster(i) };
-				auto room_id{ monster.GetRoomId() };
-				if (-1 == room_id) {
-					continue;
-				}
-				if (GET_SINGLE(Game)->GetRoom(monster.GetRoomId()).GetRoomStatus() != RoomStatus::Running) {
-					continue;
-				}
+			//	auto monster_pos = monster->GetPos();
+			//	auto monster_dir = monster->GetDir();
 
-				auto monster_pos = monster.GetPos();
-				auto monster_dir = monster.GetDir();
+			//	// 패킷 생성
+			//	// 일단 임시로 MAX_PLAYER를 더한 아이디를 준다.
+			//	// TODO: 오브젝트를 한 자료구조에(shared_ptr) 저장하게 되면 id만을 보낼 것.
+			//	packet::SCMoveMonster sc_monster_move{
+			//		MAX_PLAYER + i,
+			//		monster_pos.x,
+			//		monster_pos.y,
+			//		monster_dir.x,
+			//		monster_dir.y
+			//	};
 
-				// 패킷 생성
-				// 일단 임시로 MAX_PLAYER를 더한 아이디를 준다.
-				// TODO: 오브젝트를 한 자료구조에(shared_ptr) 저장하게 되면 id만을 보낼 것.
-				packet::SCMoveMonster sc_monster_move{
-					MAX_PLAYER + i,
-					monster_pos.x,
-					monster_pos.y,
-					monster_dir.x,
-					monster_dir.y
-				};
-				// 방에 있는 플레이어에게 전송
-				auto list{ _roomInfoList[monster.GetRoomId()].GetClientIdList() };
-				for (auto id : list) {
-					if (id == -1) {
-						continue;
-					}
-					if (_clientInfoHash[id].ioState != IOState::INGAME) {
-						continue;
-					}
-					DoSend(id, &sc_monster_move);
-				}
+			//	// 방에 있는 플레이어에게 전송
+			//	auto list{ _roomInfoList[monster->GetRoomId()].GetClientIdList() };
+			//	for (auto id : list) {
+			//		if (id == -1) {
+			//			continue;
+			//		}
+			//		if (_clientInfoHash[id].ioState != IOState::INGAME) {
+			//			continue;
+			//		}
+			//		DoSend(id, &sc_monster_move);
+			//	}
 
-			}
-		}
+			//}
+
+		//}
 	}
 }
 
@@ -341,80 +342,31 @@ void IOCP::ProcessPacket(int key, char* p)
 
 	case packet::Type::CS_MATCHMAKING:
 	{
-		// 클라이언트에 매치메이킹 패킷이 도착하였을 경우
-		// 클라이언트 아이디를 큐에 넣고 사이즈 검사
-		// 사이즈가 3이상이면 클라이언트 3개를 뽑아냄.
 
-		// 만약 클라이언트 3개를 뽑는데 실패한다면
-		// 여태 뽑은 클라이언트 id를 우선순위를 높혀서 다시 매치메이킹 큐에 저장
+		// TODO: 나중에는 역할군 선택 기능도 지원해야 함.
 
-		// 번호 3개를 뽑는데 성공한다면 
-		// 플레이어 번호를 3개 플레이어 큐에서 꺼냄.
-		// 꺼낸 번호 3개를 각각 클라이언트에 부여
-		// 방 번호 큐에서 번호를 하나를 꺼내와
-		// 그 번호의 방에 플레이어 아이디를 저장.
 
-		// TODO:
-		// 최적화 할 것: 매치매이킹 패킷이 여러개 들어오면 짤라야 한다.
-		// atomic한 STATE 변수가 필요할 예정
-
-		// 일단 아이디를 넣는다.
 		_matchmakingQueue.push(key);
-
-		// 3 미만이면 그냥 나가기
-		if (_matchmakingQueue.unsafe_size() < 3) {
-			break;
-		}
-
-
-		// 현재 클라이언트가 3 이상이면 다음과 같은 매치메이킹을 실행
-		// 매칭 실패시 대기할 시간
-		float waiting_time = timeDist(dre);
 
 		// 큐에서 뽑아낼 3명의 클라이언트 아이디를 저장할 배열
 		std::array<int, 3> client_ids{};
 		client_ids.fill(-1);
 
-		bool loop{ false };
-		bool match{ false };
-		Timer pop_timer;
-		int count{ 1 };
-
-		// 매치메이킹 알고리즘
-		do {
-			loop = false;
-
-			// 매치메이킹 큐에 세명이 찰 경우 3명을 뽑음
-			if (_matchmakingQueue.unsafe_size() >= 3) {
-				for (auto& id : client_ids) {
-					if (not _matchmakingQueue.try_pop(id)) {
-						loop = true;
-						break;
-					}
-				}
-				match = true;
+		_matchmakingLock.lock();
+		// 매치메이킹 큐에 세명이 찰 경우 3명을 뽑음
+		if (_matchmakingQueue.unsafe_size() >= 3) {
+			for (auto& id : client_ids) {
+				// lock으로 보호하므로 절대 실패하지 않음.
+				_matchmakingQueue.try_pop(id);
 			}
-
-			// 실패하면 다시 넣고 대기시간을 점점 더 늘려가면서 재시도
-			if (loop) {
-
-				// 다시 넣음
-				for (auto& id : client_ids) {
-					if (-1 != id) {
-						_matchmakingQueue.push(id);
-					}
-				}
-
-				// 재시도
-				pop_timer.updateDeltaTime();
-				while (pop_timer.PeekDeltaTime() < waiting_time) {
-					std::this_thread::yield();
-				}
-				waiting_time += timeDist(dre) * count++;
-			}
-		} while (loop);
+		}
+		_matchmakingLock.unlock();
 
 
+		// 3명 이하임.
+		if (-1 == client_ids[0]) {
+			break;
+		}
 
 		// -- 클라이언트 세명 매칭 완료 --
 
@@ -443,13 +395,6 @@ void IOCP::ProcessPacket(int key, char* p)
 			break;
 		}
 
-		// 플레이어 아이디는 방 번호에 따라 고정.
-		std::array<int, 3> player_ids{
-			room_id * 3,
-			room_id * 3 + 1,
-			room_id * 3 + 2
-		};
-
 		// -- 방 번호와 플레이어 번호를 얻어왔음. -- 
 		// 이제 게임을 시작히기 위해
 		// Room, RoomInfo, Player에다가 정보를 저장
@@ -466,16 +411,18 @@ void IOCP::ProcessPacket(int key, char* p)
 
 			// ClientInfoHash에 정보를 넣음
 			_clientInfoHash[client_ids[i]].clientIdInfo.roomId = room_id;
-			_clientInfoHash[client_ids[i]].clientIdInfo.playerId = player_ids[i];
+			_clientInfoHash[client_ids[i]].clientIdInfo.playerId = i;
 			_clientInfoHash[client_ids[i]].ioState = IOState::INGAME;
 		}
 
 		// SC_MATCHMAKING 매칭 완료 알림 및 로드할 방의 타입을 줌.
-		auto room_type{ GET_SINGLE(Game)->GetRoom(room_id).GetRoomType() };
+		auto room_type{ GET_SINGLE(Game)->GetRoom(room_id)->GetRoomType() };
 		
 		// 클라이언트 로딩 시작
 		for (int i = 0; i < 3; ++i) {
-			packet::SCMatchmaking matchmaking_packet{ client_ids[i], room_type };
+
+			// 플레이어 아이디 전송
+			packet::SCMatchmaking matchmaking_packet{ i, room_type };
 			DoSend(client_ids[i], &matchmaking_packet);
 		}
 
@@ -488,6 +435,7 @@ void IOCP::ProcessPacket(int key, char* p)
 	{
 		// TODO:
 		// 예외 처리 고고
+		// 여러 번 들어왔을 떄 처리가 필요함.
 
 		// 대기 완료 플레이어 수를 조정
 		auto room_id{ _clientInfoHash[key].clientIdInfo.roomId };
@@ -524,24 +472,18 @@ void IOCP::ProcessPacket(int key, char* p)
 
 		// 클라이언트 아이디와 플레이어 아이디를 가져온다.
 		auto client_ids{ _roomInfoList[room_id].GetClientIdList() };
-		std::array<int, 3> player_ids{
-			room_id * 3,
-			room_id * 3 + 1,
-			room_id * 3 + 2
-		};
-
 
 		// 방에 있는 플레이어들에게 위치를 보냄
 		for (int i{}; i < 3; ++i) {
 
-			auto& player = GET_SINGLE(Game)->GetPlayer(player_ids[i]);
-			auto pos = player.GetPos();
-			auto dir = player.GetDir();
+			auto player = GET_SINGLE(Game)->GetPlayer(room_id * 3 + i);
+			auto pos = player->GetPos();
+			auto dir = player->GetDir();
 
 			packet::SCGameStart sc_game_start{};
 			DoSend(client_ids[i], &sc_game_start);
 
-			packet::SCMovePlayer sc_move_player{ client_ids[i], pos.x, pos.y, dir.x, dir.y };
+			packet::SCMoveObject sc_move_player{ i, ObjectType::Player, pos.x, pos.y, dir.x, dir.y };
 
 			for (auto other_id : client_ids) {
 				DoSend(other_id, &sc_move_player);
@@ -549,7 +491,7 @@ void IOCP::ProcessPacket(int key, char* p)
 		}
 
 		// 게임 시작. 방 상태를 Running으로.
-		GET_SINGLE(Game)->GetRoom(room_id).SetRoomStatus(RoomStatus::Running);
+		GET_SINGLE(Game)->GetRoom(room_id)->SetRoomStatus(RoomStatus::Running);
 				
 
 	}
@@ -562,18 +504,22 @@ void IOCP::ProcessPacket(int key, char* p)
 			break;
 		}
 
+		// 방이 실행중이 아니면 나가기
 		auto& id_info{ _clientInfoHash[key].clientIdInfo };
+		if (RoomStatus::Running != GET_SINGLE(Game)->GetRoom(id_info.roomId)->GetRoomStatus()) {
+			break;
+		}
 
 		// 받은 위치를 저장
-		auto& player = GET_SINGLE(Game)->GetPlayer(id_info.playerId);
-		player.SetDir(Vec2f{ packet->dirX, packet->dirY });
-		player.Move(packet->x, packet->y);
+		auto player = GET_SINGLE(Game)->GetPlayer(id_info);
+		player->SetDir(Vec2f{ packet->dirX, packet->dirY });
+		player->SetPos(packet->x, packet->y);
 
-		auto pos = player.GetPos();
-		auto dir = player.GetDir();
+		auto pos = player->GetPos();
+		auto dir = player->GetDir();
 
 		// 다른 플레이어에게 전송
-		packet::SCMovePlayer send_packet{ key, pos.x, pos.y, dir.x, dir.y };
+		packet::SCMoveObject send_packet{ id_info.playerId, ObjectType::Player, pos.x, pos.y, dir.x, dir.y };
 		auto other_clients{ _roomInfoList[id_info.roomId].GetClientIdList() };
 
 		for (auto other : other_clients) {
@@ -584,6 +530,19 @@ void IOCP::ProcessPacket(int key, char* p)
 			}
 			DoSend(_clientInfoHash[other], &send_packet);
 		}
+	}
+	break;
+
+	case packet::Type::CS_FIRE_BULLET:
+	{
+		auto client_id_info{ _clientInfoHash[key].clientIdInfo};
+		
+		// room에 총알 객체 생성
+		GET_SINGLE(Game)->GetRoom(client_id_info.roomId)->FireBullet(client_id_info.playerId);
+
+		// 생성한 총알은 일단 update할때마다 알려주는 것으로 한다.
+
+
 	}
 	break;
 
@@ -611,23 +570,6 @@ void IOCP::ProcessPacket(int key, char* p)
 	}
 
 
-}
-
-void IOCP::DoBroadcast(void* packet)
-{
-	// todo: 수정
-	for (int i = 0; i < _sessionCnt; ++i) {
-		DoSend(_clientInfoHash[i], packet);
-	}
-}
-
-void IOCP::DoBroadcast(int key, void* packet)
-{
-	// todo: 수정
-	for (int i = 0; i < _sessionCnt; ++i) {
-		if (key == i) continue;
-		DoSend(_clientInfoHash[i], packet);
-	}
 }
 
 void IOCP::Disconnect(int client_id)

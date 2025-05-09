@@ -19,18 +19,23 @@ constexpr float SKILL_RAZER_COOLDOWN_S{ 10.f };
 constexpr float MONSTER_CRAB_SIZE_M{ 0.5f };
 constexpr float MONSTER_CRAB_SPEED_MPS{ 2.f };
 
+// other object
+constexpr float BULLET_SPEED_MPS{ 15.f };
+
+
 // NETWORK
 constexpr int PORT_NUMBER{ 4000 };
 constexpr int BUFFER_SIZE{ 200 };
 
 constexpr const char* SERVER_IP{ "127.0.0.1" };
 
-constexpr float MOVE_PACKET_TIME_MS{ 75.f }; // 초당 13.3회
-constexpr float MAX_NETWORK_DELAY_MS{ 200.f }; // 최대 네트워크 딜레이
+constexpr float MOVE_PACKET_TIME_MS{ 50.f }; // 초당 20회
+constexpr float MAX_NETWORK_DELAY_MS{ 100.f }; // 최대 네트워크 딜레이
 
-constexpr int MAX_PLAYER{ 10000 };
+constexpr int MAX_PLAYER{ 100 };
 constexpr int MAX_ROOM{ MAX_PLAYER / 3 + 1 };
 constexpr int MAX_MONSTER{ MAX_ROOM * 10 };
+constexpr int MAX_BULLET{ MAX_ROOM * 30 };
 
 enum class RoomType : unsigned char
 {
@@ -42,26 +47,39 @@ enum class RoomType : unsigned char
 	Lucky
 };
 
+enum class ObjectType : unsigned char
+{
+	None = 0,
+	Player,
+	MainPlayer, // for client. not use in server
+	Monster,
+	Bullet,
+};
+
 #define PACKET_START	namespace packet {
 #define PACKET_END		}
 
 PACKET_START
 enum class Type : unsigned char
 {
-	NONE,
+	NONE = 0,
 
 	// prepare
 	SC_LOGIN,
 	CS_LOGIN,
 	SC_MATCHMAKING,
 	CS_MATCHMAKING,
-	CS_LOAD_COMPLETE,	// todo
-	SC_GAME_START,		// todo
+	CS_LOAD_COMPLETE,
+	SC_GAME_START,	
 
 	// move
-	SC_MOVE_PLAYER,
+	SC_MOVE_OBJECT,
 	CS_MOVE_PLAYER,
-	SC_MOVE_MONSTER,
+
+	SC_DELETE_OBJECT,
+
+	// player skills
+	CS_FIRE_BULLET,
 
 	// other
 	SC_CHECK_DELAY,
@@ -98,17 +116,20 @@ struct CSLogin : Header
 	{}
 };
 
+
+// TODO: 여기서 본인의 클라이언트 아이디가 아닌 플레이어 아이디를 줘야 함.
+
 // Param
 //	int playerId: 클라이언트의 플레이어 아이디
 //  roomType
 struct SCMatchmaking : Header
 {
-	int clientId{ -1 };
+	int playerId{ -1 };
 	RoomType roomType{ RoomType::None };
 
-	SCMatchmaking(const int client_id, const RoomType room_type) :
+	SCMatchmaking(const int player_id, const RoomType room_type) :
 		Header{ sizeof(SCMatchmaking), Type::SC_MATCHMAKING },
-		clientId{ client_id },
+		playerId{ player_id },
 		roomType{ room_type }
 	{}
 };
@@ -121,16 +142,6 @@ struct CSMatchmaking : Header
 	{}
 };
 
-// RoomType room_type
-//struct SCLoad : Header
-//{
-//	RoomType room_type{ RoomType::None };
-//
-//	SCLoad(const RoomType room_type) :
-//		Header{ sizeof(SCMatchmaking), Type::SC_MATCHMAKING },
-//		room_type{ room_type }
-//	{}
-//};
 
 // No Param
 struct CSLoadComplete : Header
@@ -148,24 +159,29 @@ struct SCGameStart : Header
 	{}
 };
 
+// TODO: SCMoveObject로 통일.
+// CSMovePlayer는 그대로 두자.
+
 // Param:
-//	int clientId
+//	int monsterId
 //	float x
 //	float y
 //	float dirX
 //	float dirY
-struct SCMovePlayer : Header
+struct SCMoveObject : Header
 {
-	int clientId{ -1 };
+	int objectId{ -1 };
+	ObjectType objectType{ ObjectType::None };
 	float x{ 0.f };
 	float y{ 0.f };
 	float dirX{ 0.f };
 	float dirY{ 0.f };
 
-
-	SCMovePlayer(const int client_id, const float x, const float y, const float dirX, const float dirY) :
-		Header{ sizeof(SCMovePlayer), Type::SC_MOVE_PLAYER },
-		clientId{ client_id },
+	SCMoveObject(const int object_id, const ObjectType object_type,
+		const float x, const float y, const float dirX, const float dirY) :
+		Header{ sizeof(SCMoveObject), Type::SC_MOVE_OBJECT },
+		objectId{ object_id },
+		objectType{ object_type },
 		x{ x }, y{ y },
 		dirX{ dirX }, dirY{ dirY }
 	{}
@@ -191,25 +207,20 @@ struct CSMovePlayer : Header
 	{}
 };
 
-// Param:
-//	int monsterId
-//	float x
-//	float y
-//	float dirX
-//	float dirY
-struct SCMoveMonster : Header
+struct CSFireBullet : Header
 {
-	int monsterId{ -1 };
-	float x{ 0.f };
-	float y{ 0.f };
-	float dirX{ 0.f };
-	float dirY{ 0.f };
+	CSFireBullet() :
+		Header{ sizeof(CSFireBullet), Type::CS_FIRE_BULLET }
+	{}
+};
 
-	SCMoveMonster(const int monster_id, const float x, const float y, const float dirX, const float dirY) :
-		Header{ sizeof(SCMoveMonster), Type::SC_MOVE_MONSTER },
-		monsterId{ monster_id },
-		x{ x }, y{ y },
-		dirX{ dirX }, dirY{ dirY }
+struct SCDeleteObject : Header
+{
+	int objectId{ -1 };
+
+	SCDeleteObject(const int object_id) :
+		Header{ sizeof(SCDeleteObject), Type::SC_DELETE_OBJECT },
+		objectId{ object_id }
 	{}
 };
 

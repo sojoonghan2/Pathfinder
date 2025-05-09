@@ -8,6 +8,7 @@ public:
 	virtual ~NetworkOtherPlayerScript();
 
 	virtual void LateUpdate() override;
+	virtual void Awake() override;
 
 	void SetPosition(float x, float z);
 	void SetDir(float x, float z);
@@ -15,10 +16,10 @@ public:
 	void Animation();
 
 private:
-	int			_id{ -1 };
 	float		_lastX{ -1.f };
 	float		_lastY{ -1.f };
-	bool		_isMove{ true };
+	bool		_isMove{ false };
+	bool		_isShoot{ false };
 	uint32		_currentAnimIndex{ 0 };
 
 };

@@ -8,6 +8,7 @@ public:
 	PlayerScript();
 	virtual ~PlayerScript();
 
+	virtual void Awake() override;
 	virtual void Start() override;
 	virtual void LateUpdate() override;
 

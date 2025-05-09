@@ -13,6 +13,7 @@
 
 NetworkOtherPlayerScript::NetworkOtherPlayerScript()
 {
+	
 }
 
 NetworkOtherPlayerScript::~NetworkOtherPlayerScript()
@@ -22,53 +23,52 @@ NetworkOtherPlayerScript::~NetworkOtherPlayerScript()
 void NetworkOtherPlayerScript::LateUpdate()
 {
 
-	if (-1 == _id) {
-		_id = GET_SINGLE(SocketIO)->GetNextId();
-	}
-
-	if (-1 != _id) {
-		auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(_id);
-		while (not queue.empty()) {
-			auto& message{ queue.front() };
-			switch (message->type) {
-			case MsgType::MOVE:
-			{
-				std::shared_ptr<MsgMove> message_move{
-					std::static_pointer_cast<MsgMove>(message) };
-				SetPosition(message_move->x, message_move->y);
-				SetDir(message_move->dirX, message_move->dirY);
-	//			std::println("ID: {} dir {} {}", _id, message_move->dirX, message_move->dirY);
-
-				// 움직임 감지
-				if (_lastX != message_move->x || _lastY != message_move->y) {
-					_isMove = true;
-				}
-
-				// 움직임 동일
-				if (_lastX == message_move->x && _lastY == message_move->y) {
-					_isMove = false;
-				}
-				_lastX = message_move->x;
-				_lastY = message_move->y;
-
+	auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(_id);
+	while (not queue.empty()) {
+		auto& message{ queue.front() };
+		switch (message->type) {
+		case MsgType::MOVE:
+		{
+			std::shared_ptr<MsgMove> message_move{
+				std::static_pointer_cast<MsgMove>(message) };
+			SetPosition(message_move->x, message_move->y);
+			SetDir(message_move->dirX, message_move->dirY);
+			
+			// 움직임 감지
+			if (_lastX != message_move->x || _lastY != message_move->y) {
+				_isMove = true;
 			}
-			break;
-			default:
-				break;
+
+			// 움직임 동일
+			if (_lastX == message_move->x && _lastY == message_move->y) {
+				_isMove = false;
 			}
-			queue.pop();
+			_lastX = message_move->x;
+			_lastY = message_move->y;
+
 		}
+		break;
+		default:
+			break;
+		}
+		queue.pop();
 	}
+
 
 	Animation();
 
+}
+
+void NetworkOtherPlayerScript::Awake()
+{
+	GET_SINGLE(MessageManager)->RegisterObject(ObjectType::Player, _id);
 }
 
 void NetworkOtherPlayerScript::SetPosition(float x, float z)
 {
 	Vec3 pos = GetTransform()->GetLocalPosition();
 	pos.x = x * METER_TO_CLIENT;
-	pos.y = 0.f;
+	pos.y = -100.f;
 	pos.z = z * METER_TO_CLIENT;
 
 	GetTransform()->SetLocalPosition(pos);
@@ -93,8 +93,12 @@ void NetworkOtherPlayerScript::Animation()
 
 	if (_isMove)
 		nextAnimIndex = 1;
-	else
+	if (!_isMove)
 		nextAnimIndex = 0;
+	if (_isShoot && _isMove)
+		nextAnimIndex = 5;
+	if (_isShoot && !_isMove)
+		nextAnimIndex = 4;
 
 	if (_currentAnimIndex != nextAnimIndex)
 	{

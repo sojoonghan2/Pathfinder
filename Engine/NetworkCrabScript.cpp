@@ -20,45 +20,50 @@ NetworkCrabScript::NetworkCrabScript()
 
 void NetworkCrabScript::LateUpdate()
 {
-	if (-1 == _id) {
-		_id = GET_SINGLE(SocketIO)->GetMonsterId();
-	}
+	auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(_id);
+	while (not queue.empty()) {
+		auto& message{ queue.front() };
+		switch (message->type) {
+		case MsgType::MOVE:
+		{
+			std::shared_ptr<MsgMove> message_move{
+				std::static_pointer_cast<MsgMove>(message) };
+			SetPosition(message_move->x, message_move->y);
+			// SetDir(message_move->dirX, message_move->dirY);
 
-	if (-1 != _id) {
-		auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(_id);
-		while (not queue.empty()) {
-			auto& message{ queue.front() };
-			switch (message->type) {
-			case MsgType::MOVE:
-			{
-				std::shared_ptr<MsgMove> message_move{
-					std::static_pointer_cast<MsgMove>(message) };
-				SetPosition(message_move->x, message_move->y);
-				// SetDir(message_move->dirX, message_move->dirY);
-
-				// 움직임 감지
-				if (_lastX != message_move->x || _lastY != message_move->y) {
-					_isMove = true;
-				}
-
-				// 움직임 동일
-				if (_lastX == message_move->x && _lastY == message_move->y) {
-					_isMove = false;
-				}
-				_lastX = message_move->x;
-				_lastY = message_move->y;
-
+			// 움직임 감지
+			if (_lastX != message_move->x || _lastY != message_move->y) {
+				_isMove = true;
 			}
-			break;
-			default:
-				break;
+
+			// 움직임 동일
+			if (_lastX == message_move->x && _lastY == message_move->y) {
+				_isMove = false;
 			}
-			queue.pop();
+			_lastX = message_move->x;
+			_lastY = message_move->y;
+
 		}
+		break;
+
+		case MsgType::REGISTER:
+		{
+			GET_SINGLE(MessageManager)->RegisterObject(ObjectType::Monster, _id);
+			SetPosition(100000.f, 0.f);
+		}
+		break;
+		default:
+			break;
+		}
+		queue.pop();
 	}
 
-	CheckBulletHits();
 	Animation();
+}
+
+void NetworkCrabScript::Awake()
+{
+	GET_SINGLE(MessageManager)->RegisterObject(ObjectType::Monster, _id);
 }
 
 void NetworkCrabScript::SetPosition(float x, float z)
@@ -90,24 +95,5 @@ void NetworkCrabScript::Animation()
 	{
 		GetAnimator()->Play(nextAnimIndex);
 		_currentAnimIndex = nextAnimIndex;
-	}
-}
-void NetworkCrabScript::CheckBulletHits()
-{
-	// 모든 총알에 대해 충돌 검사
-	for (int i = 0; i < 50; ++i)
-	{
-		wstring bulletName = L"Bullet" + to_wstring(i);
-		auto bulletObject = GET_SINGLE(SceneManager)->FindObjectByName(bulletName);
-
-		if (bulletObject)
-		{
-			auto is_collision = GET_SINGLE(SceneManager)->Collition(GetGameObject(), bulletObject);
-			if (is_collision)
-			{
-				std::cout << "오브젝트 충돌 발생\n\n";
-				break;
-			}
-		}
 	}
 }

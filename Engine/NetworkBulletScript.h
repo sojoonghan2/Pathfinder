@@ -1,24 +1,24 @@
 #pragma once
 #include "MonoBehaviour.h"
 
-class NetworkCrabScript : public MonoBehaviour
+
+class NetworkBulletScript : public MonoBehaviour
 {
 public:
-	NetworkCrabScript();
+
+	NetworkBulletScript();
+	virtual ~NetworkBulletScript();
+
 	virtual void LateUpdate() override;
 	virtual void Awake() override;
+
 
 	void SetPosition(float x, float z);
 	void SetDir(float x, float z);
 
-	void Animation();
-
-
 private:
 
-	float		_lastX{ -1.f };
-	float		_lastY{ -1.f };
-	bool		_isMove{ false };
-	uint32		_currentAnimIndex{ 0 };
+	bool _isFired = false;
 
 };
+

@@ -28,13 +28,13 @@ public:
 	void Init();
 	void Update();
 
-	// Temp ID get. 수정예정
-	int GetNextId();
-	int GetMonsterId();
+
 	RoomType GetRoomType() const { return _roomType; }
 
 	template <class Packet, class ...Args>
 	void DoSend(Args ...args);
+
+	void Continue();
 
 	
 private:
@@ -46,27 +46,15 @@ private:
 	void ProcessPacket();
 
 private:
-	SOCKET _serverSocket{ INVALID_SOCKET };
+
+	SOCKET		_serverSocket{ INVALID_SOCKET };
 	std::thread	_recvThread{};
 	std::queue<BufferType> _bufferQueue;
 	NetworkTimer _sendTimer;
+	RoomType	_roomType{ RoomType::None };
+	int			_myId{-1};
 
-
-	// temp ID List.
-	// TODO: 이거 애초에 할거면 큐로 해야지 왜 벡터임?
-	std::vector<int> _idList;
-	int _idCount{ 0 };
-
-	std::vector<int> _monsterIdList;
-	int _monsterIdCount{ 0 };
-	RoomType _roomType{ RoomType::None };
-
-
-	// temp
-public:
-	// todo:
-	// std::unordered_map<int, Player> players{};
-	int _myId{-1};
+	bool		_stop{ false };
 
 };
 

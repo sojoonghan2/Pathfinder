@@ -2,48 +2,27 @@
 #include "Monster.h"
 #include "Room.h"
 
+// 랜덤 엔진
 
-void Monster::Move(const Vec2f& pos)
+void Monster::Update(const float delta)
 {
-	_pos = pos;
+	Move(delta);
 }
 
-void Monster::Move(const float x, const float y)
+void Monster::InitMonster(const MonsterType monster_type, const Vec2f pos)
 {
-	_x = x;
-	_y = y;
-}
+	_monsterType = monster_type;
+	SetPos(pos);
 
-void Monster::Update(const float delta_time)
-{
-	// 위치 업데이트
-	// milliseconds 단위이므로 바꾼다.
-	_x = _pos.x + _dir.x * _speed * delta_time;
-	_y = _pos.y + _dir.y * _speed * delta_time;
-}
-
-void Monster::NormalizeAndSetDir(const Vec2f& dir)
-{
-	// normalize
-	float length = std::sqrt(dir.x * dir.x + dir.y * dir.y);
-	if (length > 0.f) {
-		_dir.x = dir.x / length;
-		_dir.y = dir.y / length;
+	switch (monster_type)
+	{
+	case MonsterType::Crab:
+	{
+		SetCollider(std::make_shared<AABBCollider>(GetPosRef(), MONSTER_CRAB_SIZE_M, MONSTER_CRAB_SIZE_M));
+		SetSpeed(MONSTER_CRAB_SPEED_MPS);
 	}
-	else {
-		_dir.x = 0.f;
-		_dir.y = 0.f;
+	break;
+	default:
+		break;
 	}
-}
-
-
-bool Monster::TrySetRunning(const bool running)
-{
-	bool expected = not running;
-	return _isRunning.compare_exchange_strong(expected, running);
-}
-
-bool Monster::GetRunning() const
-{
-	return _isRunning.load();
 }

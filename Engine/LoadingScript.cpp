@@ -30,6 +30,8 @@ LoadingScript::~LoadingScript()
 		delete loadThread;
 		loadThread = nullptr;
 	}
+
+	
 }
 
 void LoadingScript::Awake()
@@ -45,7 +47,6 @@ void LoadingScript::StartLoadingThread()
 {
 	if (isInitialized)
 		return;
-
 	isInitialized = true;
 	loadEnd = false;
 
@@ -100,10 +101,6 @@ void LoadingScript::SceneLoad()
 		break;
 	}
 
-#ifdef NETWORK_ENABLE
-	GET_SINGLE(SocketIO)->DoSend<packet::CSLoadComplete>();
-#endif
-
 	loadEnd = true;
 
 	_state = LoadingState::ReadyToInit;
@@ -148,8 +145,13 @@ void LoadingScript::LateUpdate()
 		{
 			try
 			{
-				if (loadThread->joinable())
+				if (loadThread->joinable()) {
 					loadThread->join();
+#ifdef NETWORK_ENABLE
+					GET_SINGLE(SocketIO)->DoSend<packet::CSLoadComplete>();
+#endif
+
+				}
 			}
 			catch (const std::exception& e)
 			{
