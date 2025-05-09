@@ -145,7 +145,7 @@ void FactoryScene::Init()
 			}
 			wire->AddComponent(meshRenderer);
 
-			//AddGameObject(wire);
+			AddGameObject(wire);
 
 			shared_ptr<GameObject> particleObject = make_shared<GameObject>();
 			particleObject->SetName(L"GunFlameParticle");
@@ -492,11 +492,11 @@ void FactoryScene::Init()
 				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
 				meshRenderer->SetMaterial(material->Clone());
 			}
-			//dummy->AddComponent(meshRenderer);
+			dummy->AddComponent(meshRenderer);
 
 			dummy->AddComponent(make_shared<OrientedBoxCollider>());
-			dynamic_pointer_cast<OrientedBoxCollider>(dummy->GetCollider())->SetExtents(info.second / 1.5);
-			dynamic_pointer_cast<OrientedBoxCollider>(dummy->GetCollider())->SetCenter(info.first);
+			dynamic_pointer_cast<OrientedBoxCollider>(dummy->GetCollider())->SetExtents(info.second / 2);
+			dynamic_pointer_cast<OrientedBoxCollider>(dummy->GetCollider())->SetCenter(Vec3(0.f, 0.f, 0.f));
 			
 			GET_SINGLE(CollisionManager)->RegisterCollider(dummy->GetCollider(), COLLISION_OBJECT_TYPE::DUMMY);
 
@@ -516,8 +516,9 @@ void FactoryScene::Init()
 		gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
 		gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -100.0f, 2000.0f));
-		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-PI / 2, 0.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
+		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-PI, 0.0f, 0.0f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(0.1f, 0.1f, 0.1f));
+		gameObjects[0]->AddComponent(make_shared<TestDragon>());
 
 		gameObjects[0]->AddComponent(make_shared<SphereCollider>());
 		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
