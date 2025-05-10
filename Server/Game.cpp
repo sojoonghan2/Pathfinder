@@ -50,8 +50,7 @@ void Game::InitRoom(int room_id)
 		// 일단 임시로 게
 		monster->InitMonster(
 			MonsterType::Crab,
-			Vec2f{ posDist(dre_game), posDist(dre_game) }
-		);
+			Vec2f{ posDist(dre_game), posDist(dre_game) });
 		_roomList[room_id]->AddObject(monster);
 	}
 

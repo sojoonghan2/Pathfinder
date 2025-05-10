@@ -25,9 +25,12 @@ public:
 
 	void InitMonster(const MonsterType monster_type, const Vec2f pos);
 
+	void DecreaseHp(const int hp) { _hp -= hp; }
+	bool IsDead() const { return _hp <= 0; }
+
 private:
 
-	MonsterType			_monsterType{ MonsterType::None };
-	
+	MonsterType		_monsterType{ MonsterType::None };
+	int				_hp{ 0 };
 };
 

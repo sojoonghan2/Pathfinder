@@ -3,6 +3,7 @@
 #include "IOCP.h"
 #include "Game.h"
 #include "Bullet.h"
+#include "Monster.h"
 
 void Room::Update(const float delta)
 {
@@ -80,7 +81,7 @@ void Room::Update(const float delta)
 		++iter2;
 		for (; iter2 != objects.end(); ++iter2) {
 
-			// 충돌 처리 중 이미 지워진 객체면 지우기
+			// 충돌 처리 중 이미 지워진 객체면 스킵
 			if (deleted_objects.contains(iter1->first) || deleted_objects.contains(iter2->first)) {
 				continue;
 			}
@@ -97,10 +98,20 @@ void Room::Update(const float delta)
 					std::swap(type_a, type_b);
 				}
 
-				// first는 항상 작은 값이 들어가도록 한다.
+				// 주의!!!! first는 항상 작은 값이 들어가도록 한다.
 				// 총알과 몬스터의 충돌
 				if (type_a == ObjectType::Monster && type_b == ObjectType::Bullet) {
-					deleted_objects.insert(iter_a->first);
+					auto monster{ std::dynamic_pointer_cast<Monster>(iter_a->second) };
+					monster->DecreaseHp(PLAYER_BULLET_DAMAGE);
+					if (monster->IsDead()) {
+						deleted_objects.insert(iter_a->first);
+					}
+					else {
+						// 모든 플레이어에게 체력 감소 패킷을 전달
+						// const auto& client_ids{ GET_SINGLE(IOCP)->GetClients(_roomId) };
+						// packet::SCMonsterHp monster_hp_packet{ iter_a->first, monster->GetHp() };
+					}
+
 					deleted_objects.insert(iter_b->first);
 				}
 			}

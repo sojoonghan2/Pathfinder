@@ -10,17 +10,18 @@ constexpr float MAP_SIZE_M{ 50.f };
 constexpr float PLAYER_SIZE_M{ 0.5f };
 constexpr float PLAYER_SPEED_MPS{ 5.f };
 
-constexpr float SKILL_DASH_SPEED_MPS{ 50.f };
-constexpr float SKILL_DASH_COOLDOWN_S{ 1.f };
-constexpr float SKILL_GRENADE_COOLDOWN_S{ 10.f };
-constexpr float SKILL_RAZER_COOLDOWN_S{ 10.f };
+
+constexpr float PLAYER_DASH_SPEED_MPS{ 50.f };
+constexpr float PLAYER_DASH_COOLDOWN_S{ 1.f };
+constexpr float PLAYER_GRENADE_COOLDOWN_S{ 10.f };
+constexpr float PLAYER_RAZER_COOLDOWN_S{ 10.f };
+constexpr int PLAYER_BULLET_DAMAGE{ 10 };
+constexpr float PLAYER_BULLET_SPEED_MPS{ 25.f };
 
 // MONSTER
 constexpr float MONSTER_CRAB_SIZE_M{ 0.5f };
 constexpr float MONSTER_CRAB_SPEED_MPS{ 2.f };
-
-// other object
-constexpr float BULLET_SPEED_MPS{ 15.f };
+constexpr int MONSTER_CRAB_HP{ 200 };
 
 
 // NETWORK

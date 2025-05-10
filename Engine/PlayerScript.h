@@ -52,18 +52,18 @@ private:
 	float			_dashDuration = 0.1f;
 	float			_dashTimer = 0.f;
 
-	float			_dashCooldown = SKILL_DASH_COOLDOWN_S;
+	float			_dashCooldown = PLAYER_DASH_COOLDOWN_S;
 	float			_dashCooldownTimer = 0.f;
 
 	Vec3			_dashDirection = Vec3::Zero;
-	float			_dashSpeed = SKILL_DASH_SPEED_MPS * METER_TO_CLIENT;
+	float			_dashSpeed = PLAYER_DASH_SPEED_MPS * METER_TO_CLIENT;
 
 	float			_grenadeAniDurationTimer = 0.f;
-	float			_grenadeCooldown = SKILL_GRENADE_COOLDOWN_S;
+	float			_grenadeCooldown = PLAYER_GRENADE_COOLDOWN_S;
 	float			_grenadeCooldownTimer = 0.0f;
 
 	float			_razerAniDurationTimer = 0.f;
-	float			_razerCooldown = SKILL_RAZER_COOLDOWN_S;
+	float			_razerCooldown = PLAYER_RAZER_COOLDOWN_S;
 	float			_razerCooldownTimer = 0.0f;
 
 	float			_shootAniDurationTimer = 0.f;
