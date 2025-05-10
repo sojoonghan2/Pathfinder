@@ -16,11 +16,7 @@ enum class MonsterType : unsigned char
 class Monster : public Object
 {
 public:
-
-
-	// getter /setter
-	ObjectType GetObjectType() const override { return ObjectType::Monster; }
-
+	
 	void Update(const float delta) override;
 
 	void InitMonster(const MonsterType monster_type, const Vec2f pos);
@@ -28,6 +24,9 @@ public:
 	void DecreaseHp(const int hp) { _hp -= hp; }
 	bool IsDead() const { return _hp <= 0; }
 
+	// getter /setter
+	ObjectType GetObjectType() const override { return ObjectType::Monster; }
+	int GetHp() const { return _hp; }
 private:
 
 	MonsterType		_monsterType{ MonsterType::None };

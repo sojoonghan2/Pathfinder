@@ -228,7 +228,10 @@ class Monster
 	float& x{ pos.x };
 	float& y{ pos.y };
 	bool show{ false };
+	int hp{ MONSTER_CRAB_HP };
 	sf::RectangleShape Square{ sf::Vector2f(GRID_WIDTH_PIXEL, GRID_HEIGHT_PIXEL) };
+	sf::Font font{};
+	sf::Text text{};
 
 
 public:
@@ -237,7 +240,13 @@ public:
 		pos{ x, y },
 		show{ show }
 	{
+		if (!font.loadFromFile("cour.ttf")) {
+			exit(-1); // 폰트 파일을 찾지 못했을 때
+		}
 		SetFillColor(color);
+		text.setFont(font);
+		text.setCharacterSize(20);
+		text.setFillColor(sf::Color::Black);
 		sf::FloatRect bounds = Square.getLocalBounds();
 		Square.setOrigin(bounds.width / 2, bounds.height / 2);
 	}
@@ -272,6 +281,10 @@ public:
 		// 윈도우 위치에 표시
 		Square.setPosition(windowX, windowY);
 		window.draw(Square);
+
+		text.setPosition(windowX, windowY - 30);
+		text.setString(std::to_string(hp));
+		window.draw(text);
 
 		if (dir.x == 0.f && dir.y == 0.f) {
 			return;
@@ -317,6 +330,8 @@ public:
 	{
 		dir.x = _dirx; dir.y = _diry;
 	}
+
+	void SetHp(const int _hp) { hp = _hp; }
 };
 
 
@@ -531,6 +546,16 @@ int main() {
 				}
 			}
 			break;
+
+			case packet::Type::SC_SET_OBJECT_HP:
+			{
+				packet::SCSetObjectHP packet = reinterpret_cast<packet::SCSetObjectHP&>(buffer);
+				if (monsters.contains(packet.objectId)) {
+					monsters[packet.objectId].SetHp(packet.hp);
+				}
+			}
+			break;
+
 			default:
 			{
 				std::println("Packet Error.");

@@ -108,8 +108,11 @@ void Room::Update(const float delta)
 					}
 					else {
 						// 모든 플레이어에게 체력 감소 패킷을 전달
-						// const auto& client_ids{ GET_SINGLE(IOCP)->GetClients(_roomId) };
-						// packet::SCMonsterHp monster_hp_packet{ iter_a->first, monster->GetHp() };
+						const auto& client_ids{ GET_SINGLE(IOCP)->GetClients(_roomId) };
+						packet::SCSetObjectHP monster_hp_packet{ iter_a->first, monster->GetHp() };
+						for (auto client_id : client_ids) {
+							GET_SINGLE(IOCP)->DoSend(client_id, &monster_hp_packet);
+						}
 					}
 
 					deleted_objects.insert(iter_b->first);

@@ -21,7 +21,7 @@ constexpr float PLAYER_BULLET_SPEED_MPS{ 25.f };
 // MONSTER
 constexpr float MONSTER_CRAB_SIZE_M{ 0.5f };
 constexpr float MONSTER_CRAB_SPEED_MPS{ 2.f };
-constexpr int MONSTER_CRAB_HP{ 200 };
+constexpr int MONSTER_CRAB_HP{ 100 };
 
 
 // NETWORK
@@ -78,7 +78,7 @@ enum class Type : unsigned char
 	CS_MOVE_PLAYER,
 
 	SC_DELETE_OBJECT,
-
+	SC_SET_OBJECT_HP,
 	// player skills
 	CS_FIRE_BULLET,
 
@@ -205,6 +205,18 @@ struct CSMovePlayer : Header
 		Header{ sizeof(CSMovePlayer), Type::CS_MOVE_PLAYER },
 		x{ x }, y{ y },
 		dirX{ dirX }, dirY{ dirY }
+	{}
+};
+
+struct SCSetObjectHP : Header
+{
+	int objectId{ -1 };
+	int hp{ -1 };
+
+	SCSetObjectHP(const int object_id, const int hp) :
+		Header{ sizeof(SCSetObjectHP), Type::SC_SET_OBJECT_HP },
+		objectId{ object_id },
+		hp{ hp }
 	{}
 };
 
