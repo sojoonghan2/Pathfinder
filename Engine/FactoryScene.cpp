@@ -26,10 +26,12 @@
 #include "GunScript.h"
 #include "BulletScript.h"
 #include "TestParticleScript.h"
+#include "CrabScript.h"
 
 #include "SphereCollider.h"
 #include "OrientedBoxCollider.h"
 #include "GeneratorScript.h"
+#include "FactoryMidScript.h"
 
 #include "IceParticleSystem.h"
 #include "RazerParticleSystem.h"
@@ -126,13 +128,13 @@ void FactoryScene::Init()
 			AddGameObject(gameObject);
 
 			shared_ptr<GameObject> wire = make_shared<GameObject>();
-			wstring name = L"wire";
+			wstring name = L"WirePlayer";
 			wire->SetName(name);
 
 			wire->AddComponent(make_shared<Transform>());
 			wire->GetTransform()->SetParent(gameObject->GetTransform());
 			wire->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 100.f));
-			wire->GetTransform()->SetLocalScale(Vec3(125.f, 125.f, 125.f));
+			wire->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 
 			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
 			{
@@ -446,30 +448,13 @@ void FactoryScene::Init()
 	{
 		vector<pair<Vec3, Vec3>> dummyInfo;
 		
-		for (int i{}; i < 7; ++i)
-		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, -4800.f), Vec3(300.f, 300.f, 300.f));
-		}
+		dummyInfo.emplace_back(Vec3(-3900.f, 0.f, -5000.f), Vec3(2100.f, 300.f, 500.f));
+		dummyInfo.emplace_back(Vec3(-3900.f, 0.f, -2500.f), Vec3(2100.f, 300.f, 500.f));
+		dummyInfo.emplace_back(Vec3(-3900.f, 0.f, 0.f), Vec3(2100.f, 300.f, 500.f));
+		dummyInfo.emplace_back(Vec3(-3900.f, 0.f, 2500.f), Vec3(2100.f, 300.f, 500.f));
+		dummyInfo.emplace_back(Vec3(-3900.f, 0.f, 5000.f), Vec3(2100.f, 300.f, 500.f));
 
-		for (int i{}; i < 7; ++i)
-		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, -2400.f), Vec3(300.f, 300.f, 300.f));
-		}
-
-		for (int i{}; i < 7; ++i)
-		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, 0.f), Vec3(300.f, 300.f, 300.f));
-		}
-
-		for (int i{}; i < 7; ++i)
-		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, 2400.f), Vec3(300.f, 300.f, 300.f));
-		}
-
-		for (int i{}; i < 7; ++i)
-		{
-			dummyInfo.emplace_back(Vec3(-4800.f + 300.f * i, 0.f, 4800.f), Vec3(300.f, 300.f, 300.f));
-		}
+		dummyInfo.emplace_back(Vec3(3900.f, 0.f, 0.f), Vec3(300.f, 300.f, 10000.f));
 
 		for (const auto& info : dummyInfo)
 		{
@@ -507,18 +492,20 @@ void FactoryScene::Init()
 
 	// 로봇
 #pragma region FactoryMonster
+	for (int i{}; i < 2; ++i)
 	{
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Monster\\Monster.fbx");
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
 		gameObjects[0]->SetName(L"FactoryMonster");
 		gameObjects[0]->SetCheckFrustum(true);
-		gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
-		gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
+		//gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
+		//gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -100.0f, 2000.0f));
 		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-PI, 0.0f, 0.0f));
 		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(0.1f, 0.1f, 0.1f));
 		gameObjects[0]->AddComponent(make_shared<TestDragon>());
+		gameObjects[0]->AddComponent(make_shared<CrabScript>());
 
 		gameObjects[0]->AddComponent(make_shared<SphereCollider>());
 		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(200.f);
@@ -570,11 +557,12 @@ void FactoryScene::Init()
 			gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.f, -100.f, 0.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI, 0.0f));
-			//AddGameObject(gameObject);
+			AddGameObject(gameObject);
 		}
 	}
 #pragma endregion
 
+	/*
 	// 공급기
 #pragma region Generator
 	{
@@ -593,6 +581,28 @@ void FactoryScene::Init()
 		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 700.f, 0.f));
 
 		GET_SINGLE(CollisionManager)->RegisterCollider(gameObjects[0]->GetCollider(), COLLISION_OBJECT_TYPE::GENERATE);
+
+		shared_ptr<GameObject> wire = make_shared<GameObject>();
+		wstring name = L"WireGenerator";
+		wire->SetName(name);
+
+		wire->AddComponent(make_shared<Transform>());
+		wire->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+		wire->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 500.f));
+		wire->GetTransform()->SetLocalScale(Vec3(200.f, 200.f, 200.f));
+
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+			meshRenderer->SetMesh(sphereMesh);
+		}
+		{
+			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
+			meshRenderer->SetMaterial(material->Clone());
+		}
+		wire->AddComponent(meshRenderer);
+
+		AddGameObject(wire);
 
 		shared_ptr<GameObject> particleObj = make_shared<GameObject>();
 		particleObj->SetName(L"GeneratorParticle");
@@ -653,6 +663,8 @@ void FactoryScene::Init()
 	}
 #pragma endregion
 
+*/
+
 	// Temp
 #pragma region Temp
 	{
@@ -663,13 +675,29 @@ void FactoryScene::Init()
 		{
 			gameObject->SetName(L"Temp");
 			gameObject->SetCheckFrustum(true);
-			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -100.0f, 0.0f));
+			gameObject->GetTransform()->SetLocalPosition(Vec3(700.f, 520.f, 4900.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, 0.f, 0.f));
-			gameObject->GetTransform()->SetLocalScale(Vec3(5.f, 5.f, 5.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(11.f, 11.f, 11.f));
 			//AddGameObject(gameObject);
 		}
+	}
+#pragma endregion
 
-		
+	// Telephone
+#pragma region Telephone
+	{
+		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\Telephone\\Telephone.fbx");
+		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
+
+		for (const auto& gameObject : gameObjects)
+		{
+			gameObject->SetName(L"Telephone");
+			gameObject->SetCheckFrustum(true);
+			gameObject->GetTransform()->SetLocalPosition(Vec3(1000.f, 520.f, 4900.f));
+			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, 0.f, 0.f));
+			gameObject->GetTransform()->SetLocalScale(Vec3(11.f, 11.f, 11.f));
+			AddGameObject(gameObject);
+		}
 	}
 #pragma endregion
 
@@ -679,17 +707,66 @@ void FactoryScene::Init()
 		shared_ptr<MeshData> meshData = GET_SINGLE(Resources)->LoadFBX(L"..\\Resources\\FBX\\FactoryMid\\FactoryMid.fbx");
 		vector<shared_ptr<GameObject>> gameObjects = meshData->Instantiate();
 
-		for (const auto& gameObject : gameObjects)
+		for (auto& gameObject : gameObjects)
 		{
 			gameObject->SetName(L"FactoryMid");
 			gameObject->SetCheckFrustum(true);
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -200.0f, 1000.0f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, 0.f, 0.f));
 			gameObject->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 15.f));
-			//AddGameObject(gameObject);
+			gameObject->AddComponent(make_shared<FactoryMidScript>());
+
+			AddGameObject(gameObject);
+		}
+		gameObjects[0]->AddComponent(make_shared<SphereCollider>());
+		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetRadius(500.f);
+		dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 700.f, 0.f));
+
+		GET_SINGLE(CollisionManager)->RegisterCollider(gameObjects[0]->GetCollider(), COLLISION_OBJECT_TYPE::FACTORYMID);
+
+		shared_ptr<GameObject> wire = make_shared<GameObject>();
+		wstring name = L"WireFactoryMid";
+		wire->SetName(name);
+
+		wire->AddComponent(make_shared<Transform>());
+		wire->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+		wire->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 70.f));
+		wire->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
+
+		shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+			meshRenderer->SetMesh(sphereMesh);
+		}
+		{
+			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
+			meshRenderer->SetMaterial(material->Clone());
+		}
+		wire->AddComponent(meshRenderer);
+
+		AddGameObject(wire);
+
+		vector<shared_ptr<GameObject>> factorymidParticle;
+		for (int j = 0; j < 5; ++j)
+		{
+			shared_ptr<GameObject> psObj = make_shared<GameObject>();
+			psObj->SetName(L"factoryParticle_" + to_wstring(j));
+			psObj->AddComponent(make_shared<Transform>());
+			psObj->AddComponent(make_shared<IceParticleSystem>());
+			psObj->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+			psObj->SetLayerIndex(gameObjects[0]->GetLayerIndex());
+
+			// 처음에는 비활성화
+			psObj->GetParticleSystem()->ParticleStop();
+
+			// GameObject 등록
+			AddGameObject(psObj);
+			factorymidParticle.push_back(psObj);
 		}
 
-
+		// Script에 등록
+		auto factorymidScript = gameObjects[0]->GetScript<FactoryMidScript>();
+		factorymidScript->RegisterParticles(factorymidParticle);
 	}
 #pragma endregion
 
