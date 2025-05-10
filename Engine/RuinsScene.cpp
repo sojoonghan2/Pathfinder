@@ -192,6 +192,10 @@ void RuinsScene::Init()
 		}
 
 		// ÃÑ¾Ë
+
+
+#ifndef NETWORK_ENABLE
+
 		for (int i{}; i < 50; ++i)
 		{
 			shared_ptr<GameObject> bullet = make_shared<GameObject>();
@@ -233,6 +237,8 @@ void RuinsScene::Init()
 
 			AddGameObject(bullet);
 		}
+
+#endif // !NETWORK_ENABLE
 
 		// here 1
 
@@ -479,40 +485,39 @@ void RuinsScene::Init()
 
 				AddGameObject(gameObject);
 			}
-
-			// ÃÑ¾Ë
-			for (int ii{}; ii < 10; ++ii)
-			{
-				shared_ptr<GameObject> bullet = make_shared<GameObject>();
-				bullet->SetName(L"OtherBullet" + std::to_wstring(i) + L"_" + std::to_wstring(ii));
-				bullet->SetCheckFrustum(true);
-
-				bullet->AddComponent(make_shared<Transform>());
-				bullet->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
-				bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
-				bullet->AddComponent(make_shared<NetworkBulletScript>());
-
-				shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
-				{
-					shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
-					meshRenderer->SetMesh(sphereMesh);
-				}
-				{
-					shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
-					shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bullet", L"..\\Resources\\Texture\\Skill\\Bullet.png");
-
-					shared_ptr<Material> material = make_shared<Material>();
-					material->SetShader(shader);
-					material->SetTexture(0, texture);
-					meshRenderer->SetMaterial(material);
-				}
-
-				bullet->AddComponent(meshRenderer);
-
-				AddGameObject(bullet);
-			}
-			// here 2
 			
+		}
+
+		// ÃÑ¾Ë
+		for (int ii{}; ii < 30; ++ii)
+		{
+			shared_ptr<GameObject> bullet = make_shared<GameObject>();
+			bullet->SetName(L"OtherBullet" + std::to_wstring(ii));
+			bullet->SetCheckFrustum(true);
+
+			bullet->AddComponent(make_shared<Transform>());
+			bullet->GetTransform()->SetLocalScale(Vec3(20.f, 20.f, 20.f));
+			bullet->GetTransform()->SetLocalPosition(Vec3(0.f, 100000000000.f, 0.f));
+			bullet->AddComponent(make_shared<NetworkBulletScript>());
+
+			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+				meshRenderer->SetMesh(sphereMesh);
+			}
+			{
+				shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Deferred");
+				shared_ptr<Texture> texture = GET_SINGLE(Resources)->Load<Texture>(L"Bullet", L"..\\Resources\\Texture\\Skill\\Bullet.png");
+
+				shared_ptr<Material> material = make_shared<Material>();
+				material->SetShader(shader);
+				material->SetTexture(0, texture);
+				meshRenderer->SetMaterial(material);
+			}
+
+			bullet->AddComponent(meshRenderer);
+
+			AddGameObject(bullet);
 		}
 	}
 

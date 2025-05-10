@@ -68,6 +68,19 @@ void PlayerScript::LateUpdate()
 			pos.x / METER_TO_CLIENT, pos.z / METER_TO_CLIENT,
 			dir.x, dir.z);
 	}
+
+	if (INPUT->GetButton(MOUSE_TYPE::LBUTTON))
+	{
+		_lastFireTime += DELTA_TIME;
+		if (_lastFireTime >= _fireInterval)
+		{
+			GET_SINGLE(SocketIO)->DoSend<packet::CSFireBullet>();
+		}
+	}
+	else
+	{
+		_lastFireTime = _fireInterval;
+	}
 #endif
 
 	_isMove = false;

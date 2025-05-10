@@ -68,6 +68,9 @@ private:
 
 	float			_shootAniDurationTimer = 0.f;
 
+	float			_lastFireTime = 500.f;
+	float			_fireInterval = 500.f;
+
 	NetworkTimer	_moveTimer;
 	Vec3			_prevPosition = Vec3::Zero;
 
