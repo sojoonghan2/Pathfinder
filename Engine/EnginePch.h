@@ -118,6 +118,18 @@ using Vec3 = DirectX::SimpleMath::Vector3;
 using Vec4 = DirectX::SimpleMath::Vector4;
 using Matrix = DirectX::SimpleMath::Matrix;
 
+// Scene ÀüÈ¯
+#define ALLLOAD
+//#define TITLELOAD
+//#define RUINSLOAD
+//#define FACTORYLOAD
+//#define EXPLORATIONLOAD
+//#define CRASHLOAD
+//#define LUCKYLOAD
+//#define BOSSLOAD
+//#define PARTICLELOAD
+//#define TESTLOAD
+
 enum class CBV_REGISTER : uint8
 {
 	b0,
