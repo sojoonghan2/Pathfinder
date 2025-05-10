@@ -6,6 +6,7 @@
 #include "PlayerScript.h"
 #include "CrabScript.h"
 #include "GeneratorScript.h"
+#include "FactoryMidScript.h"
 
 void CollisionManager::RegisterCollider(const shared_ptr<BaseCollider>& collider, COLLISION_OBJECT_TYPE objectType)
 {
@@ -48,6 +49,7 @@ void CollisionManager::Update()
 	else if (sceneName == L"FactoryScene")
 	{
 		CheckGenerateToBullet();
+		CheckFactoryMidToBullet();
 	}
 }
 
@@ -212,6 +214,33 @@ void CollisionManager::CheckGenerateToBullet()
 			{
 				auto generatorScript = objA->GetScript<GeneratorScript>();
 				generatorScript->CheckBulletHits(objB);
+			}
+		}
+	}
+}
+
+void CollisionManager::CheckFactoryMidToBullet()
+{
+	for (auto& [factorymid, typeA] : _colliders)
+	{
+		if (typeA != COLLISION_OBJECT_TYPE::FACTORYMID || !factorymid->IsEnabled())
+			continue;
+
+		for (auto& [bullet, typeB] : _colliders)
+		{
+			if (typeB != COLLISION_OBJECT_TYPE::BULLET || !bullet->IsEnabled())
+				continue;
+
+			const auto& objA = factorymid->GetGameObject();
+			const auto& objB = bullet->GetGameObject();
+
+			if (!objA || !objB)
+				continue;
+
+			if (GET_SINGLE(SceneManager)->Collition(objA, objB))
+			{
+				auto factorymidScript = objA->GetScript<FactoryMidScript>();
+				factorymidScript->CheckBulletHits(objB);
 			}
 		}
 	}

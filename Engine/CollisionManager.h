@@ -9,6 +9,7 @@ enum class COLLISION_OBJECT_TYPE
 	BULLET,
 	GRENADE,
 	GENERATE,
+	FACTORYMID,
 };
 
 class CollisionManager
@@ -29,6 +30,7 @@ public:
 	void CheckCrabToGrenade();
 	void CheckCrabToRazer();
 	void CheckGenerateToBullet();
+	void CheckFactoryMidToBullet();
 
 private:
 	vector<pair<shared_ptr<BaseCollider>, COLLISION_OBJECT_TYPE>> _colliders;

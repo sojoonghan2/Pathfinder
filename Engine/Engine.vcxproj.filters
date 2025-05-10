@@ -366,6 +366,9 @@
     <ClCompile Include="NetworkBulletScript.cpp">
       <Filter>Script\ObjectScript\NetworkScript</Filter>
     </ClCompile>
+    <ClCompile Include="FactoryMidScript.cpp">
+      <Filter>Script\ObjectScript</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -680,6 +683,9 @@
     </ClInclude>
     <ClInclude Include="NetworkBulletScript.h">
       <Filter>Script\ObjectScript\NetworkScript</Filter>
+    </ClInclude>
+    <ClInclude Include="FactoryMidScript.h">
+      <Filter>Script\ObjectScript</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
