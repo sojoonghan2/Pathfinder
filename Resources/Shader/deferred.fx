@@ -80,6 +80,48 @@ struct PS_OUT
 // 픽셀 셰이더
 PS_OUT PS_Main(VS_OUT input)
 {
+    PS_OUT output = (PS_OUT) 0;
+
+    float4 color = float4(1.f, 1.f, 1.f, 1.f);
+    if (g_tex_on_0 == 1)
+        color = g_textures.Sample(g_sam_0, input.uv);
+
+    // ------ Texture Blending Start ------
+    if (g_tex_on_2 == 1)
+    {
+        float4 color2 = g_textures2.Sample(g_sam_0, input.uv);
+
+        // 마스크 값 샘플링 (예: R 채널 기준)
+        float mask = 0.5f;
+        if (g_tex_on_3 == 1) // 마스크 텍스처가 있다면
+            mask = g_textures3.Sample(g_sam_0, input.uv).r;
+
+        // 블렌딩 강도 조절
+        mask = saturate(mask);
+        mask = pow(mask, 2.0); // 경계 강조 (optional)
+
+        color.rgb = lerp(color.rgb, color2.rgb, mask);
+    }
+    // ------ Texture Blending End ------
+
+    float3 viewNormal = input.viewNormal;
+    if (g_tex_on_1 == 1)
+    {
+        float3 tangentSpaceNormal = g_textures1.Sample(g_sam_0, input.uv).xyz;
+        tangentSpaceNormal = (tangentSpaceNormal - 0.5f) * 2.f;
+        float3x3 matTBN = { input.viewTangent, input.viewBinormal, input.viewNormal };
+        viewNormal = normalize(mul(tangentSpaceNormal, matTBN));
+    }
+
+    output.position = float4(input.viewPos.xyz, 0.f);
+    output.normal = float4(viewNormal.xyz, 0.f);
+    output.color = color;
+
+    return output;
+}
+/*
+PS_OUT PS_Main(VS_OUT input)
+{
     PS_OUT output = (PS_OUT)0;
 
     float4 color = float4(1.f, 1.f, 1.f, 1.f);
@@ -105,5 +147,5 @@ PS_OUT PS_Main(VS_OUT input)
 
     return output;
 }
-
+*/
 #endif

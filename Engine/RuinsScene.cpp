@@ -127,8 +127,8 @@ void RuinsScene::Init()
 			gameObject->GetTransform()->SetLocalScale(Vec3(3.f, 3.f, 3.f));
 			gameObject->AddComponent(playerScript);
 			gameObject->AddComponent(make_shared<TestDragon>());
-			//gameObject->GetMeshRenderer()->GetMesh()->SetVrs(true);
-			//gameObject->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_1);
+			gameObject->GetMeshRenderer()->GetMesh()->SetVrs(true);
+			gameObject->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_1);
 			gameObject->AddComponent(make_shared<SphereCollider>());
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetRadius(100.f);
 			dynamic_pointer_cast<SphereCollider>(gameObject->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
@@ -183,8 +183,8 @@ void RuinsScene::Init()
 			gameObject->GetTransform()->SetLocalScale(Vec3(100.f, 100.f, 100.f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(PI / 2, -0.4f, 1.f));
 			gameObject->GetTransform()->SetLocalPosition(Vec3(42.f, 58.f, -3.f));
-			//gameObject->GetMeshRenderer()->GetMesh()->SetVrs(true);
-			//gameObject->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_1);
+			gameObject->GetMeshRenderer()->GetMesh()->SetVrs(true);
+			gameObject->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_1);
 			gameObject->AddComponent(make_shared<GunScript>());
 
 			AddGameObject(gameObject);
@@ -554,8 +554,8 @@ void RuinsScene::Init()
 		}
 
 		terraincube->AddComponent(meshRenderer);
-		//terraincube->GetMeshRenderer()->GetMesh()->SetVrs(true);
-		//terraincube->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_1);
+		terraincube->GetMeshRenderer()->GetMesh()->SetVrs(true);
+		terraincube->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_1);
 		// 4. Scene¿¡ Ãß°¡
 		AddGameObject(terraincube);
 	}
@@ -660,8 +660,8 @@ void RuinsScene::Init()
 			shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Water");
 			meshRenderer->SetMaterial(material);
 		}
-		//meshRenderer->GetMesh()->SetVrs(true);
-		//meshRenderer->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_1);
+		meshRenderer->GetMesh()->SetVrs(true);
+		meshRenderer->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_1);
 		water->AddComponent(meshRenderer);
 		AddGameObject(water);
 	}
@@ -1070,8 +1070,8 @@ void RuinsScene::Init()
 			gameObject->GetTransform()->SetLocalScale(Vec3(50.f, 50.f, 50.f));
 			gameObject->GetTransform()->SetLocalPosition(Vec3(0.0f, -500.0f, 3500.0f));
 			gameObject->GetTransform()->SetLocalRotation(Vec3(-PI / 2, PI / 2, 0.0f));
-			//gameObject->GetMeshRenderer()->GetMesh()->SetVrs(true);
-			//gameObject->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_1);
+			gameObject->GetMeshRenderer()->GetMesh()->SetVrs(true);
+			gameObject->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_1);
 			AddGameObject(gameObject);
 		}
 	}
@@ -1093,8 +1093,8 @@ void RuinsScene::Init()
 			gameObjects[0]->GetTransform()->SetLocalScale(Vec3(10.f, 10.f, 10.f));
 			gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(100.0f + i * 4000, -100.f, -4550));
 			gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(0.f, PI * (i - 1), 0.f));
-			//gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
-			//gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_1);
+			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetVrs(true);
+			gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_1);
 			AddGameObject(gameObjects[0]);
 		}
 	}

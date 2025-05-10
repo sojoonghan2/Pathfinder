@@ -44,6 +44,55 @@ VS_OUT VS_Main(VS_IN input)
     return output;
 }
 
+
+float4 PS_Main(VS_OUT input) : SV_Target
+{
+    // 디폴트 색
+    float4 baseColor = float4(1.f, 1.f, 1.f, 1.f);
+
+    // 첫 번째 텍스처 (g_textures)
+    if (g_tex_on_0)
+        baseColor = g_textures.Sample(g_sam_0, input.uv);
+
+    // 두 번째 텍스처 (g_textures1)
+    float4 blendColor = baseColor;
+    
+    if (g_tex_on_1)
+        blendColor = g_textures1.Sample(g_sam_0, input.uv);
+    
+    float g_blendFactor = 0.5f;
+
+    // 블렌딩
+    float4 color = lerp(baseColor, blendColor, g_blendFactor); // g_blendFactor: 0~1
+
+    // 노말 매핑
+    float3 viewNormal = input.viewNormal;
+    if (g_tex_on_2)
+    {
+        float3 tangentSpaceNormal = g_textures2.Sample(g_sam_0, input.uv).xyz;
+        tangentSpaceNormal = (tangentSpaceNormal - 0.5f) * 2.f;
+        float3x3 matTBN = { input.viewTangent, input.viewBinormal, input.viewNormal };
+        viewNormal = normalize(mul(tangentSpaceNormal, matTBN));
+    }
+
+    // 조명 계산
+    LightColor totalColor = (LightColor) 0.f;
+    for (int i = 0; i < g_lightCount; ++i)
+    {
+        LightColor lightColor = CalculateLightColor(i, viewNormal, input.viewPos);
+        totalColor.diffuse += lightColor.diffuse;
+        totalColor.ambient += lightColor.ambient;
+        totalColor.specular += lightColor.specular;
+    }
+
+    // 조명 반영
+    color.rgb = (totalColor.diffuse * color.rgb)
+              + (totalColor.ambient * color.rgb)
+              + totalColor.specular;
+
+    return color;
+}
+/*
 float4 PS_Main(VS_OUT input) : SV_Target
 {
     // 기본 색상 또는 디퓨즈 텍스쳐 샘플링
@@ -79,7 +128,7 @@ float4 PS_Main(VS_OUT input) : SV_Target
 
      return color;
 }
-
+*/
 // [Texture Shader]
 // g_textures[0] : Output Texture
 // AlphaBlend : true
