@@ -30,13 +30,5 @@ void FactoryMidScript::CheckBulletHits(shared_ptr<GameObject> bullet)
 {
 	bullet->GetCollider()->SetEnable(false);
 	auto particle = _particlePool.GetAvailable();
-	if (particle)
-	{
-		particle->ParticleStart();
-		cout << "FacMid ParticleStart\n";
-	}
-	else
-	{
-		cout << "파티클이 없음\n";
-	}
+	if (particle) particle->ParticleStart();
 }
