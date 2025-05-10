@@ -13,7 +13,7 @@
 #define _HAS_STD_BYTE 0
 
 // 네트워크 기능 사용
-//#define NETWORK_ENABLE
+#define NETWORK_ENABLE
 
 // 각종 include
 #include <windows.h>
@@ -102,6 +102,7 @@ using namespace Microsoft::WRL;
 #define PI 3.14159265358979323846f
 
 constexpr float METER_TO_CLIENT { 200.f };
+constexpr float EPSILON{ 1e-5f };
 
 // 각종 typedef
 using int8 = __int8;
@@ -116,18 +117,6 @@ using Vec2 = DirectX::SimpleMath::Vector2;
 using Vec3 = DirectX::SimpleMath::Vector3;
 using Vec4 = DirectX::SimpleMath::Vector4;
 using Matrix = DirectX::SimpleMath::Matrix;
-
-// Scene 전환
-//#define ALLLOAD
-//#define TITLELOAD
-//#define RUINSLOAD
-#define FACTORYLOAD
-//#define EXPLORATIONLOAD
-//#define CRASHLOAD
-//#define LUCKYLOAD
-//#define BOSSLOAD
-//#define PARTICLELOAD
-//#define TESTLOAD
 
 enum class CBV_REGISTER : uint8
 {

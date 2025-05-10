@@ -8,7 +8,7 @@
 void Room::Update(const float delta)
 {
 	// 활성화 되어 있는 방만 update한다.
-	if (RoomType::None == _roomType ||
+	if (RoomType::NONE == _roomType ||
 		RoomStatus::Running != _roomStatus) {
 		return;
 	}
@@ -25,7 +25,7 @@ void Room::Update(const float delta)
 	for (auto& [id, object] : objects) {
 
 		// 몬스터
-		if (ObjectType::Monster == object->GetObjectType()) {
+		if (ObjectType::MONSTER == object->GetObjectType()) {
 
 			std::shared_ptr<Player> player = nullptr;
 			float min_distance{ std::numeric_limits<float>::max() };
@@ -53,11 +53,11 @@ void Room::Update(const float delta)
 		}
 
 		// 객체 업데이트
-		if (ObjectType::Player != object->GetObjectType()) {
+		if (ObjectType::PLAYER != object->GetObjectType()) {
 			object->Update(delta);
 
 			// 임시
-			if (ObjectType::Bullet == object->GetObjectType()) {
+			if (ObjectType::BULLET == object->GetObjectType()) {
 				if (object->GetPos().x < -24.f) {
 					deleted_objects.insert(id);
 				}
@@ -100,8 +100,10 @@ void Room::Update(const float delta)
 
 				// 주의!!!! first는 항상 작은 값이 들어가도록 한다.
 				// 총알과 몬스터의 충돌
-				if (type_a == ObjectType::Monster && type_b == ObjectType::Bullet) {
-					auto monster{ std::dynamic_pointer_cast<Monster>(iter_a->second) };
+				if (type_a == ObjectType::MONSTER && type_b == ObjectType::BULLET) {
+					auto monster{ std::static_pointer_cast<Monster>(iter_a->second) };
+					auto bullet{ std::static_pointer_cast<Bullet>(iter_b->second) };
+
 					monster->DecreaseHp(PLAYER_BULLET_DAMAGE);
 					if (monster->IsDead()) {
 						deleted_objects.insert(iter_a->first);
@@ -109,7 +111,9 @@ void Room::Update(const float delta)
 					else {
 						// 모든 플레이어에게 체력 감소 패킷을 전달
 						const auto& client_ids{ GET_SINGLE(IOCP)->GetClients(_roomId) };
-						packet::SCSetObjectHP monster_hp_packet{ iter_a->first, monster->GetHp() };
+						packet::SCSetObjectHp monster_hp_packet{
+							iter_a->first, monster->GetHp(), bullet->GetPlayerId()
+						};
 						for (auto client_id : client_ids) {
 							GET_SINGLE(IOCP)->DoSend(client_id, &monster_hp_packet);
 						}
@@ -163,16 +167,15 @@ void Room::FireBullet(const int player_id)
 	auto player{ _playerList[player_id] };
 
 
-	auto obj{ GET_SINGLE(Game)->GetObjectFromPool(ObjectType::Bullet) };
-	auto bullet{ std::dynamic_pointer_cast<Bullet, Object>(obj) };
-	bullet->InitBullet(player->GetPos(), player->GetDir());
-
+	auto obj{ GET_SINGLE(Game)->GetObjectFromPool(ObjectType::BULLET) };
+	auto bullet{ std::static_pointer_cast<Bullet>(obj) };
+	bullet->InitBullet(player->GetPos(), player->GetDir(), player_id);
 	AddObject(bullet);
 }
 
 void Room::SendObjectsToClient()
 {
-	if (RoomType::None == _roomType ||
+	if (RoomType::NONE == _roomType ||
 		RoomStatus::Running != _roomStatus) {
 		return;
 	}
@@ -182,7 +185,7 @@ void Room::SendObjectsToClient()
 	// 업데이트 이후에 이루어진다.
 	const auto& client_ids{ GET_SINGLE(IOCP)->GetClients(_roomId) };
 	for (auto& [id, object] : _objects) {
-		if (ObjectType::None == object->GetObjectType()) {
+		if (ObjectType::NONE == object->GetObjectType()) {
 			continue;
 		}
 		

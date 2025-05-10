@@ -228,7 +228,7 @@ class Monster
 	float& x{ pos.x };
 	float& y{ pos.y };
 	bool show{ false };
-	int hp{ MONSTER_CRAB_HP };
+	float hp{ MONSTER_CRAB_HP };
 	sf::RectangleShape Square{ sf::Vector2f(GRID_WIDTH_PIXEL, GRID_HEIGHT_PIXEL) };
 	sf::Font font{};
 	sf::Text text{};
@@ -331,7 +331,7 @@ public:
 		dir.x = _dirx; dir.y = _diry;
 	}
 
-	void SetHp(const int _hp) { hp = _hp; }
+	void SetHp(const float _hp) { hp = _hp; }
 };
 
 
@@ -495,7 +495,7 @@ int main() {
 
 				switch (packet.objectType)
 				{
-				case ObjectType::Player:
+				case ObjectType::PLAYER:
 				{
 					if (packet.objectId == my_id) {
 						auto pos1{ players[my_id].GetPosition() };
@@ -521,7 +521,7 @@ int main() {
 				}
 				break;
 
-				case ObjectType::Monster:
+				case ObjectType::MONSTER:
 				{
 					if (not monsters.contains(packet.objectId)) {
 						monsters[packet.objectId].SetFillColor(sf::Color::Green);
@@ -532,7 +532,7 @@ int main() {
 				}
 				break;
 
-				case ObjectType::Bullet:
+				case ObjectType::BULLET:
 				{
 					if (not bullets.contains(packet.objectId)) {
 						bullets[packet.objectId].SetFillColor(sf::Color::Cyan);
@@ -549,7 +549,7 @@ int main() {
 
 			case packet::Type::SC_SET_OBJECT_HP:
 			{
-				packet::SCSetObjectHP packet = reinterpret_cast<packet::SCSetObjectHP&>(buffer);
+				packet::SCSetObjectHp packet = reinterpret_cast<packet::SCSetObjectHp&>(buffer);
 				if (monsters.contains(packet.objectId)) {
 					monsters[packet.objectId].SetHp(packet.hp);
 				}

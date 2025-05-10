@@ -483,7 +483,7 @@ void IOCP::ProcessPacket(int key, char* p)
 			packet::SCGameStart sc_game_start{};
 			DoSend(client_ids[i], &sc_game_start);
 
-			packet::SCMoveObject sc_move_player{ i, ObjectType::Player, pos.x, pos.y, dir.x, dir.y };
+			packet::SCMoveObject sc_move_player{ i, ObjectType::PLAYER, pos.x, pos.y, dir.x, dir.y };
 
 			for (auto other_id : client_ids) {
 				DoSend(other_id, &sc_move_player);
@@ -519,7 +519,7 @@ void IOCP::ProcessPacket(int key, char* p)
 		auto dir = player->GetDir();
 
 		// 다른 플레이어에게 전송
-		packet::SCMoveObject send_packet{ id_info.playerId, ObjectType::Player, pos.x, pos.y, dir.x, dir.y };
+		packet::SCMoveObject send_packet{ id_info.playerId, ObjectType::PLAYER, pos.x, pos.y, dir.x, dir.y };
 		auto other_clients{ _roomInfoList[id_info.roomId].GetClientIdList() };
 
 		for (auto other : other_clients) {

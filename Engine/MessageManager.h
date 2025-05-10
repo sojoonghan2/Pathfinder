@@ -3,28 +3,10 @@
 
 enum
 {
-	ID_SCENE_START = 100000,
-	ID_RUINS_SCENE,
+	ID_STATIC_START = 100000,
+	ID_SCENE_RUINS,
+	ID_OBJECT_MONSTER_HP,
 };
-
-/*
-각 “script”에서 awake() 단계에서
-RegisterObject(ObejctType type, int object_id)를 호출해서
-본인 객체를 messageManager에 등록
-
-이때, 자신의 타입을 같이 줘야 네트워크id에 등록을 할 수 있음.
-
-unordered_map<objectType, std::queue<int(object_id)>> 에 빈 객체를 등록
-
-network_id로 새 객체가 생성이 되었을 때
-비어있는 ObjectType 타입의 객체를 부여해준다.
-
-이걸 unordered_map<network_id message_id>에 저장
-
-지우라는 명령이 들어오면 2에서 지우고 다시 1에 추가.
-
-**중요 각 씬이 전환될 때 MessageManager에게 기존 맵을 모두 지워주는 작업이 필요함.
-*/
 
 class MessageManager
 {
@@ -41,7 +23,7 @@ public:
 
 
 	void RegisterObject(const ObjectType object_type, const uint32 object_id);
-	void RegisterScene(const int network_id, const uint32 scene_id);
+	void RegisterStaticObject(const int network_id, const uint32 scene_id);
 	
 	bool AllocNetworkObject(const ObjectType object_type, const int network_id);
 

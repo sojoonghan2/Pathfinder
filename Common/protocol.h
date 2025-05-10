@@ -15,13 +15,13 @@ constexpr float PLAYER_DASH_SPEED_MPS{ 50.f };
 constexpr float PLAYER_DASH_COOLDOWN_S{ 1.f };
 constexpr float PLAYER_GRENADE_COOLDOWN_S{ 10.f };
 constexpr float PLAYER_RAZER_COOLDOWN_S{ 10.f };
-constexpr int PLAYER_BULLET_DAMAGE{ 10 };
+constexpr float PLAYER_BULLET_DAMAGE{ 10.f };
 constexpr float PLAYER_BULLET_SPEED_MPS{ 25.f };
 
 // MONSTER
 constexpr float MONSTER_CRAB_SIZE_M{ 0.5f };
 constexpr float MONSTER_CRAB_SPEED_MPS{ 2.f };
-constexpr int MONSTER_CRAB_HP{ 100 };
+constexpr float MONSTER_CRAB_HP{ 100.f };
 
 
 // NETWORK
@@ -40,22 +40,33 @@ constexpr int MAX_BULLET{ MAX_ROOM * 30 };
 
 enum class RoomType : unsigned char
 {
-	None = 0,
-	Ruin,
-	Factory,
-	Ristrict,
-	Falling,
-	Lucky
+	NONE = 0,
+	RUIN,
+	FACTORY,
+	RISTRICT,
+	FALLING,
+	LUCKY
 };
 
 enum class ObjectType : unsigned char
 {
-	None = 0,
-	Player,
-	MainPlayer, // for client. not use in server
-	Monster,
-	Bullet,
+	NONE = 0,
+	PLAYER,
+	MAIN_PLAYER, // for client. not use in server
+	MONSTER,
+	BULLET,
 };
+
+
+enum class MonsterType : unsigned char
+{
+	NONE = 0,
+	CRAB,
+	TANK,
+	ROBOT,
+	CORE
+};
+
 
 #define PACKET_START	namespace packet {
 #define PACKET_END		}
@@ -126,7 +137,7 @@ struct CSLogin : Header
 struct SCMatchmaking : Header
 {
 	int playerId{ -1 };
-	RoomType roomType{ RoomType::None };
+	RoomType roomType{ RoomType::NONE };
 
 	SCMatchmaking(const int player_id, const RoomType room_type) :
 		Header{ sizeof(SCMatchmaking), Type::SC_MATCHMAKING },
@@ -172,7 +183,7 @@ struct SCGameStart : Header
 struct SCMoveObject : Header
 {
 	int objectId{ -1 };
-	ObjectType objectType{ ObjectType::None };
+	ObjectType objectType{ ObjectType::NONE };
 	float x{ 0.f };
 	float y{ 0.f };
 	float dirX{ 0.f };
@@ -208,15 +219,17 @@ struct CSMovePlayer : Header
 	{}
 };
 
-struct SCSetObjectHP : Header
+struct SCSetObjectHp : Header
 {
 	int objectId{ -1 };
-	int hp{ -1 };
+	float hp{ -1 };
+	int attackerId{ -1 };
 
-	SCSetObjectHP(const int object_id, const int hp) :
-		Header{ sizeof(SCSetObjectHP), Type::SC_SET_OBJECT_HP },
+	SCSetObjectHp(const int object_id, const float hp, const int attacker_id) :
+		Header{ sizeof(SCSetObjectHp), Type::SC_SET_OBJECT_HP },
 		objectId{ object_id },
-		hp{ hp }
+		hp{ hp },
+		attackerId{ attacker_id }
 	{}
 };
 

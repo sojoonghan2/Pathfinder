@@ -48,6 +48,7 @@
 #include "NetworkCrabScript.h"
 #include "GunFlameParticleSystem.h"
 #include "NetworkBulletScript.h"
+#include "NetworkMonsterHpScript.h"
 
 RuinsScene::RuinsScene() {}
 
@@ -418,6 +419,7 @@ void RuinsScene::Init()
 			material->SetTexture(0, texture);
 			hpmeshRenderer->SetMaterial(material);
 		}
+
 		hp->AddComponent(hpmeshRenderer);
 		AddGameObject(hp);
 	}
@@ -669,6 +671,8 @@ void RuinsScene::Init()
 
 	// 더미 콜라이더
 #pragma region DummyCollider
+
+
 	int dummyCount{};
 	// 스피어
 	{
@@ -1020,6 +1024,57 @@ void RuinsScene::Init()
 			hp->AddComponent(hpmeshRenderer);
 			AddGameObject(hp);
 		}
+
+		shared_ptr<GameObject> hpBase = make_shared<GameObject>();
+		hpBase->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		hpBase->AddComponent(make_shared<Transform>());
+		hpBase->SetName(L"MonsterHPBase");
+		hpBase->GetTransform()->SetLocalScale(Vec3(500.f, 50.f, 100.f));
+		hpBase->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
+		shared_ptr<MeshRenderer> hpBasemeshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			hpBasemeshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+			shared_ptr<Texture> texture{};
+			texture = GET_SINGLE(Resources)->Load<Texture>(L"CrabHPBase", L"..\\Resources\\Texture\\CrabHPBase.png");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			hpBasemeshRenderer->SetMaterial(material);
+		}
+		hpBase->AddComponent(hpBasemeshRenderer);
+		AddGameObject(hpBase);
+
+
+
+		shared_ptr<GameObject> hp = make_shared<GameObject>();
+		hp->SetLayerIndex(GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI")); // UI
+		hp->AddComponent(make_shared<Transform>());
+		hp->SetName(L"MonsterHP");
+		hp->GetTransform()->SetLocalScale(Vec3(480.f, 35.f, 100.f));
+		hp->GetTransform()->SetLocalPosition(Vec3(0.f, 300.f, 1.f));
+		shared_ptr<MeshRenderer> hpmeshRenderer = make_shared<MeshRenderer>();
+		{
+			shared_ptr<Mesh> mesh = GET_SINGLE(Resources)->LoadRectangleMesh();
+			hpmeshRenderer->SetMesh(mesh);
+		}
+		{
+			shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"UI");
+			shared_ptr<Texture> texture{};
+			texture = GET_SINGLE(Resources)->Load<Texture>(L"CrabHP", L"..\\Resources\\Texture\\CrabHP.png");
+			shared_ptr<Material> material = make_shared<Material>();
+			material->SetShader(shader);
+			material->SetTexture(0, texture);
+			hpmeshRenderer->SetMaterial(material);
+		}
+		hp->AddComponent(hpmeshRenderer);
+		AddGameObject(hp);
+
+		hp->AddComponent(make_shared<NetworkMonsterHpScript>());
+
 	}
 #endif // NETWORK_ENABLE
 #pragma endregion

@@ -21,4 +21,6 @@ private:
 	bool		_isMove{ false };
 	uint32		_currentAnimIndex{ 0 };
 
+	float		_currentHp{ 0.f };
+
 };

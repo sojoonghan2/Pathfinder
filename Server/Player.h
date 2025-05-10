@@ -17,7 +17,7 @@ public:
 	void Update(const float delta) override {};
 	
 	// getter and setter
-	ObjectType GetObjectType() const override { return ObjectType::Player; }
+	ObjectType GetObjectType() const override { return ObjectType::PLAYER; }
 
 	void SetPlayerType(const PlayerType& type) { _type = type; }
 

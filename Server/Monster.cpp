@@ -19,7 +19,7 @@ void Monster::InitMonster(const MonsterType monster_type, const Vec2f pos)
 
 	switch (monster_type)
 	{
-	case MonsterType::Crab:
+	case MonsterType::CRAB:
 	{
 		SetCollider(std::make_shared<AABBCollider>(GetPosRef(), MONSTER_CRAB_SIZE_M, MONSTER_CRAB_SIZE_M));
 		auto speed{ speed_dist(gen) * MONSTER_CRAB_SPEED_MPS };

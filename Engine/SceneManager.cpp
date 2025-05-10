@@ -32,6 +32,18 @@
 #include "MessageManager.h"
 #include "SocketIO.h"
 
+// Scene ÀüÈ¯
+#define ALLLOAD
+//#define TITLELOAD
+//#define RUINSLOAD
+//#define FACTORYLOAD
+//#define EXPLORATIONLOAD
+//#define CRASHLOAD
+//#define LUCKYLOAD
+//#define BOSSLOAD
+//#define PARTICLELOAD
+//#define TESTLOAD
+
 void SceneManager::Init()
 {
 #pragma region LayerMask

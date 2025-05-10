@@ -63,7 +63,7 @@ void SocketIO::Continue()
 	if (_stop) {
 		_stop = false;
 		auto msg{ std::make_shared<Msg>(MsgType::START_GAME) };
-		GET_SINGLE(MessageManager)->PushMessageByNetworkId(ID_RUINS_SCENE, msg);
+		GET_SINGLE(MessageManager)->PushMessageByNetworkId(ID_SCENE_RUINS, msg);
 	}
 }
 
@@ -146,7 +146,7 @@ void SocketIO::ProcessPacket()
 			// todo: 예외처리 필요한가?
 			shared_ptr<LoadingScene> loadingScene = make_shared<LoadingScene>();
 			GET_SINGLE(SceneManager)->RegisterScene(L"LoadingScene", loadingScene);
-			loadingScene->Init(RoomType::Ruin);
+			loadingScene->Init(RoomType::RUIN);
 			GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
 		}
 		break;
@@ -157,13 +157,13 @@ void SocketIO::ProcessPacket()
 			// 일단 임시로 ruinsScene에 보냄
 
 			// 아직 씬 전환이 완료가 안되었으면.
-			if (not GET_SINGLE(MessageManager)->FindNetworkObject(ID_RUINS_SCENE)) {
+			if (not GET_SINGLE(MessageManager)->FindNetworkObject(ID_SCENE_RUINS)) {
 				_stop = true;
 			}
 			else {
 				// 신 전환이 이미 완료되었음.
 				auto msg{ std::make_shared<Msg>(MsgType::START_GAME) };
-				GET_SINGLE(MessageManager)->PushMessageByNetworkId(ID_RUINS_SCENE, msg);
+				GET_SINGLE(MessageManager)->PushMessageByNetworkId(ID_SCENE_RUINS, msg);
 			}
 
 		}
@@ -173,8 +173,8 @@ void SocketIO::ProcessPacket()
 			packet::SCMoveObject& packet{ reinterpret_cast<packet::SCMoveObject&>(buffer) };
 			
 			if (not GET_SINGLE(MessageManager)->FindNetworkObject(packet.objectId)) {
-				if (ObjectType::Player == packet.objectType && packet.objectId == _myId) {
-					packet.objectType = ObjectType::MainPlayer;
+				if (ObjectType::PLAYER == packet.objectType && packet.objectId == _myId) {
+					packet.objectType = ObjectType::MAIN_PLAYER;
 				}
 				GET_SINGLE(MessageManager)->AllocNetworkObject(packet.objectType, packet.objectId);
 			}
@@ -190,6 +190,16 @@ void SocketIO::ProcessPacket()
 		}
 		break;
 
+		case packet::Type::SC_SET_OBJECT_HP:
+		{
+			packet::SCSetObjectHp& packet{ reinterpret_cast<packet::SCSetObjectHp&>(buffer) };
+
+
+			auto msg{ std::make_shared<MsgSetObjectHp>(packet.hp, -1.f, _myId == packet.attackerId) };
+			GET_SINGLE(MessageManager)->PushMessageByNetworkId(packet.objectId, msg);
+			
+		}
+		break;
 		default:
 		{
 			std::cout << "Packet Error\n";

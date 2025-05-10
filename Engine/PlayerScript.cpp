@@ -20,7 +20,7 @@ PlayerScript::~PlayerScript() {}
 
 void PlayerScript::Awake()
 {
-	GET_SINGLE(MessageManager)->RegisterObject(ObjectType::MainPlayer, _id);
+	GET_SINGLE(MessageManager)->RegisterObject(ObjectType::MAIN_PLAYER, _id);
 }
 
 void PlayerScript::Start()

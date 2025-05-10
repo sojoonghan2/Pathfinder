@@ -63,7 +63,7 @@ void RuinsScript::LateUpdate() {
 		// 모듈을 골랐으면 다음 씬으로
 		shared_ptr<LoadingScene> loadingScene = make_shared<LoadingScene>();
 		GET_SINGLE(SceneManager)->RegisterScene(L"LoadingScene", loadingScene);
-		loadingScene->Init(RoomType::Factory);
+		loadingScene->Init(RoomType::FACTORY);
 		GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
 	}
 
@@ -90,7 +90,7 @@ void RuinsScript::LateUpdate() {
 
 void RuinsScript::Awake()
 {
-	GET_SINGLE(MessageManager)->RegisterScene(ID_RUINS_SCENE, _id);
+	GET_SINGLE(MessageManager)->RegisterStaticObject(ID_SCENE_RUINS, _id);
 }
 
 void RuinsScript::Start()

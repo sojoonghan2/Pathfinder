@@ -27,7 +27,7 @@ void MessageManager::RegisterObject(const ObjectType object_type, const uint32 o
 	_objectQueueHash[object_type].push(object_id);
 }
 
-void MessageManager::RegisterScene(const int network_id, const uint32 scene_id)
+void MessageManager::RegisterStaticObject(const int network_id, const uint32 scene_id)
 {
 	_networkToClientHash[network_id] = scene_id;
 }

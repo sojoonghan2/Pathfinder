@@ -31,7 +31,7 @@ private:
 
 	std::thread* loadThread = nullptr;
 
-	RoomType roomType = RoomType::None;
+	RoomType roomType = RoomType::NONE;
 	LoadingState _state = LoadingState::Idle;
 
 	shared_ptr<Scene> _sceneToInit;
