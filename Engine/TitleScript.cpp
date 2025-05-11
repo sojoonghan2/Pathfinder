@@ -35,6 +35,7 @@ void TitleScript::LateUpdate()
 #ifdef NETWORK_ENABLE
 			if (false == _isMatch)
 			{
+				GET_SINGLE(SocketIO)->Init();
 				GET_SINGLE(SocketIO)->DoSend<packet::CSMatchmaking>();
 			}
 #endif

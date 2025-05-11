@@ -30,7 +30,10 @@ void SocketIO::Init()
 	serveraddr.sin_port = htons(PORT_NUMBER);
 
 	// inet_pton 사용하여 IP 주소 변환
-	ret = inet_pton(AF_INET, SERVER_IP, &serveraddr.sin_addr);
+	std::string server_ip;
+	std::cin >> server_ip;
+
+	ret = inet_pton(AF_INET, server_ip.c_str(), &serveraddr.sin_addr);
 	if (1 != ret) {
 		util::DisplayQuitError();
 	}
@@ -48,6 +51,8 @@ void SocketIO::Init()
 
 	// 로그인 알림
 	DoSend<packet::CSLogin>();
+
+	_stop = false;
 }
 
 void SocketIO::Update()

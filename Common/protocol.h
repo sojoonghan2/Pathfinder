@@ -16,7 +16,7 @@ constexpr float PLAYER_DASH_COOLDOWN_S{ 1.f };
 constexpr float PLAYER_GRENADE_COOLDOWN_S{ 10.f };
 constexpr float PLAYER_RAZER_COOLDOWN_S{ 10.f };
 constexpr float PLAYER_BULLET_DAMAGE{ 10.f };
-constexpr float PLAYER_BULLET_SPEED_MPS{ 25.f };
+constexpr float PLAYER_BULLET_SPEED_MPS{ 40.f };
 
 // MONSTER
 constexpr float MONSTER_CRAB_SIZE_M{ 0.5f };
@@ -28,7 +28,7 @@ constexpr float MONSTER_CRAB_HP{ 100.f };
 constexpr int PORT_NUMBER{ 4000 };
 constexpr int BUFFER_SIZE{ 200 };
 
-constexpr const char* SERVER_IP{ "127.0.0.1" };
+//constexpr const char* SERVER_IP{ "127.0.0.1" };
 
 constexpr float MOVE_PACKET_TIME_MS{ 50.f }; // 초당 20회
 constexpr float MAX_NETWORK_DELAY_MS{ 100.f }; // 최대 네트워크 딜레이

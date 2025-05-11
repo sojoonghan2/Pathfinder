@@ -29,8 +29,11 @@ void SocketIO::Start()
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_port = htons(PORT_NUMBER);
 
+	std::string server_ip{};
+	std::cin >> server_ip;
+
 	// inet_pton 사용하여 IP 주소 변환
-	int ret = inet_pton(AF_INET, SERVER_IP, &serveraddr.sin_addr);
+	int ret = inet_pton(AF_INET, server_ip.c_str(), &serveraddr.sin_addr);
 	if (1 != ret) {
 		util::DisplayQuitError();
 	}

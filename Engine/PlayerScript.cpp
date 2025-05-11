@@ -116,6 +116,7 @@ void PlayerScript::Animation()
 	else
 		nextAnimIndex = 0;
 
+
 	if (currentAnimIndex != nextAnimIndex)
 	{
 		GetAnimator()->Play(nextAnimIndex);
