@@ -57,13 +57,14 @@ void NetworkMonsterHpScript::LateUpdate()
 
 	hpScale.x = fullWidth * hpRatio;
 	hpPos.x = (fullWidth * 0.5f) * hpRatio - 240.f; // 왜인지 모르겠는데 자꾸 체력바가 가운데로 가서 절반값만큼 빼줌
-
+	
 	GetGameObject()->GetTransform()->SetLocalScale(hpScale);
 	GetGameObject()->GetTransform()->SetLocalPosition(hpPos);
 	
 	// 죽으면 scale이 0이여 하는데 피가 1대만큼 남음
-	// 그렇다고 _currentHp == 0일때 GetGameObject()->SetRender(false)나 hpScale = 0.f;
-	// 하면 아예 출력이 안됨 왜지?
+	// 그렇다고 _currentHp == 0일때 GetGameObject()->SetRender(false) 해버리면 아예 체력바 출력이 안됨
+	// 체력 깎는 코드를 두 번 불러도 꼭 피가 1대 남음
+	// 죽으면 Update가 안불려서 그런가
 }
 
 
