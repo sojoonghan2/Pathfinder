@@ -18,6 +18,9 @@ void Room::Update(const float delta)
 	std::unordered_map<int, std::shared_ptr<Object>> objects;
 	std::unordered_set<int> deleted_objects;
 	for (auto& [id, object] : _objects) {
+		if (object == nullptr) {
+			continue;
+		}
 		objects[id] = object;
 		
 	}
@@ -83,6 +86,11 @@ void Room::Update(const float delta)
 
 			// 충돌 처리 중 이미 지워진 객체면 스킵
 			if (deleted_objects.contains(iter1->first) || deleted_objects.contains(iter2->first)) {
+				continue;
+			}
+
+			// 혹기 모를 처리
+			if (iter2->second == nullptr || iter1->second == nullptr) {
 				continue;
 			}
 
