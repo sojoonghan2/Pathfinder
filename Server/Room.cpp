@@ -18,6 +18,9 @@ void Room::Update(const float delta)
 	std::unordered_map<int, std::shared_ptr<Object>> objects;
 	std::unordered_set<int> deleted_objects;
 	for (auto& [id, object] : _objects) {
+		if (object == nullptr) {
+			continue;
+		}
 		objects[id] = object;
 		
 	}
@@ -86,6 +89,11 @@ void Room::Update(const float delta)
 				continue;
 			}
 
+			// 혹기 모를 처리
+			if (iter2->second == nullptr || iter1->second == nullptr) {
+				continue;
+			}
+
 			// 충돌 체크 검사 
 			if (iter1->second->CheckCollision(iter2->second)) {
 				auto iter_a{ iter1 };
@@ -105,18 +113,17 @@ void Room::Update(const float delta)
 					auto bullet{ std::static_pointer_cast<Bullet>(iter_b->second) };
 
 					monster->DecreaseHp(PLAYER_BULLET_DAMAGE);
+				
+					// 모든 플레이어에게 체력 감소 패킷을 전달
+					const auto& client_ids{ GET_SINGLE(IOCP)->GetClients(_roomId) };
+					packet::SCSetObjectHp monster_hp_packet{
+						iter_a->first, monster->GetHp(), bullet->GetPlayerId()
+					};
+					for (auto client_id : client_ids) {
+						GET_SINGLE(IOCP)->DoSend(client_id, &monster_hp_packet);
+					}
 					if (monster->IsDead()) {
 						deleted_objects.insert(iter_a->first);
-					}
-					else {
-						// 모든 플레이어에게 체력 감소 패킷을 전달
-						const auto& client_ids{ GET_SINGLE(IOCP)->GetClients(_roomId) };
-						packet::SCSetObjectHp monster_hp_packet{
-							iter_a->first, monster->GetHp(), bullet->GetPlayerId()
-						};
-						for (auto client_id : client_ids) {
-							GET_SINGLE(IOCP)->DoSend(client_id, &monster_hp_packet);
-						}
 					}
 
 					deleted_objects.insert(iter_b->first);
