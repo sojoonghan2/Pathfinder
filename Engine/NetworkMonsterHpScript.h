@@ -9,6 +9,7 @@ public:
 	NetworkMonsterHpScript();
 	virtual ~NetworkMonsterHpScript();
 
+	virtual void Start() override;
 	virtual void LateUpdate() override;
 	virtual void Awake() override;
 
@@ -17,6 +18,5 @@ private:
 	float _currentHp{ 0.f };
 
 	bool  _showHp{ false };
-
 };
 
