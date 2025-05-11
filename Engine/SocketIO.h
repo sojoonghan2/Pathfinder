@@ -51,11 +51,10 @@ private:
 	std::thread	_recvThread{};
 	std::queue<BufferType> _bufferQueue;
 	NetworkTimer _sendTimer;
-	RoomType	_roomType{ RoomType::None };
+	RoomType	_roomType{ RoomType::NONE };
 	int			_myId{-1};
 
-	bool		_stop{ false };
-
+	bool		_stop{ true };
 };
 
 template <class Packet, class ...Args>

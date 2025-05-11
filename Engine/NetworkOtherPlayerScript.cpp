@@ -61,7 +61,7 @@ void NetworkOtherPlayerScript::LateUpdate()
 
 void NetworkOtherPlayerScript::Awake()
 {
-	GET_SINGLE(MessageManager)->RegisterObject(ObjectType::Player, _id);
+	GET_SINGLE(MessageManager)->RegisterObject(ObjectType::PLAYER, _id);
 }
 
 void NetworkOtherPlayerScript::SetPosition(float x, float z)

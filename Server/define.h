@@ -1,5 +1,6 @@
 #pragma once
 
+const float EPSILON = 1e-5f;
 
 struct Vec2f
 {

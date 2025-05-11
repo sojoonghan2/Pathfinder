@@ -64,7 +64,7 @@ private:
 	std::atomic_int _idCount{ 0 };
 	concurrency::concurrent_unordered_map<int, std::shared_ptr<Object>> _objects;
 
-	RoomType			_roomType{ RoomType::None };
+	RoomType			_roomType{ RoomType::NONE };
 	RoomStatus			_roomStatus{ RoomStatus::Waiting };
 
 };

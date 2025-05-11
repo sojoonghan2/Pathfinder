@@ -24,7 +24,7 @@ void Game::InitRoom(int room_id)
 
 	// TODO:
 	// 여기를 랜덤으로 받게끔 설정.
-	_roomList[room_id]->SetRoomType(RoomType::Ruin);
+	_roomList[room_id]->SetRoomType(RoomType::RUIN);
 
 	// 플레이어 설정
 	for (int i = 0; i < 3; ++i) {
@@ -40,7 +40,7 @@ void Game::InitRoom(int room_id)
 	// 일단 임시로 10마리. 방타입에 따라 몬스터 양이 달라져야 함.
 	std::array<std::shared_ptr<Monster>, 10> monsters{};
 	for (auto& monster : monsters) {
-		auto obj{ GetObjectFromPool(ObjectType::Monster) };
+		auto obj{ GetObjectFromPool(ObjectType::MONSTER) };
 		monster = std::dynamic_pointer_cast<Monster, Object>(obj);
 	}
 	
@@ -49,9 +49,8 @@ void Game::InitRoom(int room_id)
 
 		// 일단 임시로 게
 		monster->InitMonster(
-			MonsterType::Crab,
-			Vec2f{ posDist(dre_game), posDist(dre_game) }
-		);
+			MonsterType::CRAB,
+			Vec2f{ posDist(dre_game), posDist(dre_game) });
 		_roomList[room_id]->AddObject(monster);
 	}
 
@@ -69,12 +68,12 @@ std::shared_ptr<Object> Game::GetObjectFromPool(const ObjectType type)
 	// 실패하면 새 객체를 만들어 주어야 한다.
 	if (not _objectPoolHash[type].try_pop(obj)) {
 		switch (type) {
-		case ObjectType::Monster:
+		case ObjectType::MONSTER:
 		{
 			obj = std::make_shared<Monster>();
 		}
 		break;
-		case ObjectType::Bullet:
+		case ObjectType::BULLET:
 		{
 			obj = std::make_shared<Bullet>();
 		}
@@ -120,18 +119,18 @@ void Game::Init()
 	}
 
 
-	_objectPoolHash[ObjectType::Monster].clear();
+	_objectPoolHash[ObjectType::MONSTER].clear();
 
 	for (int i = 0; i < MAX_MONSTER; ++i) {
-		_objectPoolHash[ObjectType::Monster].push(
+		_objectPoolHash[ObjectType::MONSTER].push(
 			std::make_shared<Monster>()
 		);
 	}
 
-	_objectPoolHash[ObjectType::Bullet].clear();
+	_objectPoolHash[ObjectType::BULLET].clear();
 
 	for (int i = 0; i < MAX_BULLET; ++i) {
-		_objectPoolHash[ObjectType::Bullet].push(
+		_objectPoolHash[ObjectType::BULLET].push(
 			std::make_shared<Bullet>()
 		);
 	}

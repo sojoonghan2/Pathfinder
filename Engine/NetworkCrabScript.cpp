@@ -22,34 +22,47 @@ void NetworkCrabScript::LateUpdate()
 {
 	auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(_id);
 	while (not queue.empty()) {
-		auto& message{ queue.front() };
-		switch (message->type) {
+		auto& msg{ queue.front() };
+		switch (msg->type) {
 		case MsgType::MOVE:
 		{
-			std::shared_ptr<MsgMove> message_move{
-				std::static_pointer_cast<MsgMove>(message) };
-			SetPosition(message_move->x, message_move->y);
+			std::shared_ptr<MsgMove> msg_move{
+				std::static_pointer_cast<MsgMove>(msg) };
+			SetPosition(msg_move->x, msg_move->y);
 			// SetDir(message_move->dirX, message_move->dirY);
 
 			// 움직임 감지
-			if (_lastX != message_move->x || _lastY != message_move->y) {
+			if (_lastX != msg_move->x || _lastY != msg_move->y) {
 				_isMove = true;
 			}
 
 			// 움직임 동일
-			if (_lastX == message_move->x && _lastY == message_move->y) {
+			if (_lastX == msg_move->x && _lastY == msg_move->y) {
 				_isMove = false;
 			}
-			_lastX = message_move->x;
-			_lastY = message_move->y;
+			_lastX = msg_move->x;
+			_lastY = msg_move->y;
 
 		}
 		break;
 
 		case MsgType::REGISTER:
 		{
-			GET_SINGLE(MessageManager)->RegisterObject(ObjectType::Monster, _id);
+			GET_SINGLE(MessageManager)->RegisterObject(ObjectType::MONSTER, _id);
 			SetPosition(100000.f, 0.f);
+		}
+		break;
+
+		case MsgType::SET_OBJECT_HP:
+		{
+			auto msg_set_hp{ std::static_pointer_cast<MsgSetObjectHp>(msg) };
+			_currentHp = msg_set_hp->hp;
+
+			if (msg_set_hp->isAttacker) {
+				msg_set_hp->maxHp = MONSTER_CRAB_HP;
+				GET_SINGLE(MessageManager)->PushMessageByNetworkId(ID_OBJECT_MONSTER_HP, msg_set_hp);
+			}
+			std::cout << "Crab HP : " << _currentHp << std::endl;
 		}
 		break;
 		default:
@@ -63,7 +76,7 @@ void NetworkCrabScript::LateUpdate()
 
 void NetworkCrabScript::Awake()
 {
-	GET_SINGLE(MessageManager)->RegisterObject(ObjectType::Monster, _id);
+	GET_SINGLE(MessageManager)->RegisterObject(ObjectType::MONSTER, _id);
 }
 
 void NetworkCrabScript::SetPosition(float x, float z)

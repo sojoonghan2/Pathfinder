@@ -69,7 +69,7 @@ void LoadingScript::SceneLoad()
 
 	switch (roomType)
 	{
-	case RoomType::Ruin:
+	case RoomType::RUIN:
 	{
 		auto scene = make_shared<RuinsScene>();
 		GET_SINGLE(SceneManager)->RegisterScene(L"RuinsScene", scene);
@@ -78,7 +78,7 @@ void LoadingScript::SceneLoad()
 	}
 	break;
 
-	case RoomType::Factory:
+	case RoomType::FACTORY:
 	{
 		auto scene = make_shared<FactoryScene>();
 		GET_SINGLE(SceneManager)->RegisterScene(L"FactoryScene", scene);
@@ -87,7 +87,7 @@ void LoadingScript::SceneLoad()
 	}
 	break;
 
-	case RoomType::Lucky:
+	case RoomType::LUCKY:
 	{
 		auto scene = make_shared<LuckyScene>();
 		GET_SINGLE(SceneManager)->RegisterScene(L"LuckyScene", scene);

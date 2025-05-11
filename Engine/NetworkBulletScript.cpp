@@ -29,7 +29,7 @@ void NetworkBulletScript::LateUpdate()
 		break;
 		case MsgType::REGISTER:
 		{
-			GET_SINGLE(MessageManager)->RegisterObject(ObjectType::Bullet, _id);
+			GET_SINGLE(MessageManager)->RegisterObject(ObjectType::BULLET, _id);
 			SetPosition(100000.f, 0.f);
 		}
 		break;
@@ -43,7 +43,7 @@ void NetworkBulletScript::LateUpdate()
 
 void NetworkBulletScript::Awake()
 {
-	GET_SINGLE(MessageManager)->RegisterObject(ObjectType::Bullet, _id);
+	GET_SINGLE(MessageManager)->RegisterObject(ObjectType::BULLET, _id);
 }
 
 

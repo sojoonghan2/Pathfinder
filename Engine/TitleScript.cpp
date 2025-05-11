@@ -35,6 +35,7 @@ void TitleScript::LateUpdate()
 #ifdef NETWORK_ENABLE
 			if (false == _isMatch)
 			{
+				GET_SINGLE(SocketIO)->Init();
 				GET_SINGLE(SocketIO)->DoSend<packet::CSMatchmaking>();
 			}
 #endif
@@ -44,7 +45,7 @@ void TitleScript::LateUpdate()
 		{
 			shared_ptr<LoadingScene> loadingScene = make_shared<LoadingScene>();
 			GET_SINGLE(SceneManager)->RegisterScene(L"LoadingScene", loadingScene);
-			loadingScene->Init(RoomType::Ruin);
+			loadingScene->Init(RoomType::RUIN);
 			GET_SINGLE(SceneManager)->LoadScene(L"LoadingScene");
 		}
 	}

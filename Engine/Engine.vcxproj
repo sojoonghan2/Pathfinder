@@ -180,6 +180,7 @@
     <ClInclude Include="BossScene.h" />
     <ClInclude Include="BossScript.h" />
     <ClInclude Include="FactoryMidScript.h" />
+    <ClInclude Include="NetworkMonsterHpScript.h" />
     <ClInclude Include="OrientedBoxCollider.h" />
     <ClInclude Include="BulletScript.h" />
     <ClInclude Include="Camera.h" />
@@ -287,6 +288,7 @@
     <ClCompile Include="BossScene.cpp" />
     <ClCompile Include="BossScript.cpp" />
     <ClCompile Include="FactoryMidScript.cpp" />
+    <ClCompile Include="NetworkMonsterHpScript.cpp" />
     <ClCompile Include="OrientedBoxCollider.cpp" />
     <ClCompile Include="BulletScript.cpp" />
     <ClCompile Include="Camera.cpp" />

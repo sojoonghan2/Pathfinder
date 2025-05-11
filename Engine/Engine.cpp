@@ -20,11 +20,6 @@ void Engine::Init(const WindowInfo& info)
 	_viewport = { 0, 0, static_cast<FLOAT>(info.width), static_cast<FLOAT>(info.height), 0.0f, 1.0f };
 	_scissorRect = CD3DX12_RECT(0, 0, info.width, info.height);
 
-
-#ifdef NETWORK_ENABLE
-	GET_SINGLE(SocketIO)->Init();
-#endif
-
 	// 버퍼 사이즈가 부족한 경우 256, 512, 1024... 단위로 확장
 	_device->Init();
 	_graphicsCmdQueue->Init(_device->GetDevice(), _swapChain);

@@ -10,24 +10,25 @@ constexpr float MAP_SIZE_M{ 50.f };
 constexpr float PLAYER_SIZE_M{ 0.5f };
 constexpr float PLAYER_SPEED_MPS{ 5.f };
 
-constexpr float SKILL_DASH_SPEED_MPS{ 50.f };
-constexpr float SKILL_DASH_COOLDOWN_S{ 1.f };
-constexpr float SKILL_GRENADE_COOLDOWN_S{ 10.f };
-constexpr float SKILL_RAZER_COOLDOWN_S{ 10.f };
+
+constexpr float PLAYER_DASH_SPEED_MPS{ 50.f };
+constexpr float PLAYER_DASH_COOLDOWN_S{ 1.f };
+constexpr float PLAYER_GRENADE_COOLDOWN_S{ 10.f };
+constexpr float PLAYER_RAZER_COOLDOWN_S{ 10.f };
+constexpr float PLAYER_BULLET_DAMAGE{ 10.f };
+constexpr float PLAYER_BULLET_SPEED_MPS{ 40.f };
 
 // MONSTER
 constexpr float MONSTER_CRAB_SIZE_M{ 0.5f };
 constexpr float MONSTER_CRAB_SPEED_MPS{ 2.f };
-
-// other object
-constexpr float BULLET_SPEED_MPS{ 15.f };
+constexpr float MONSTER_CRAB_HP{ 100.f };
 
 
 // NETWORK
 constexpr int PORT_NUMBER{ 4000 };
 constexpr int BUFFER_SIZE{ 200 };
 
-constexpr const char* SERVER_IP{ "127.0.0.1" };
+//constexpr const char* SERVER_IP{ "127.0.0.1" };
 
 constexpr float MOVE_PACKET_TIME_MS{ 50.f }; // 초당 20회
 constexpr float MAX_NETWORK_DELAY_MS{ 100.f }; // 최대 네트워크 딜레이
@@ -39,22 +40,33 @@ constexpr int MAX_BULLET{ MAX_ROOM * 30 };
 
 enum class RoomType : unsigned char
 {
-	None = 0,
-	Ruin,
-	Factory,
-	Ristrict,
-	Falling,
-	Lucky
+	NONE = 0,
+	RUIN,
+	FACTORY,
+	RISTRICT,
+	FALLING,
+	LUCKY
 };
 
 enum class ObjectType : unsigned char
 {
-	None = 0,
-	Player,
-	MainPlayer, // for client. not use in server
-	Monster,
-	Bullet,
+	NONE = 0,
+	PLAYER,
+	MAIN_PLAYER, // for client. not use in server
+	MONSTER,
+	BULLET,
 };
+
+
+enum class MonsterType : unsigned char
+{
+	NONE = 0,
+	CRAB,
+	TANK,
+	ROBOT,
+	CORE
+};
+
 
 #define PACKET_START	namespace packet {
 #define PACKET_END		}
@@ -77,7 +89,7 @@ enum class Type : unsigned char
 	CS_MOVE_PLAYER,
 
 	SC_DELETE_OBJECT,
-
+	SC_SET_OBJECT_HP,
 	// player skills
 	CS_FIRE_BULLET,
 
@@ -125,7 +137,7 @@ struct CSLogin : Header
 struct SCMatchmaking : Header
 {
 	int playerId{ -1 };
-	RoomType roomType{ RoomType::None };
+	RoomType roomType{ RoomType::NONE };
 
 	SCMatchmaking(const int player_id, const RoomType room_type) :
 		Header{ sizeof(SCMatchmaking), Type::SC_MATCHMAKING },
@@ -171,7 +183,7 @@ struct SCGameStart : Header
 struct SCMoveObject : Header
 {
 	int objectId{ -1 };
-	ObjectType objectType{ ObjectType::None };
+	ObjectType objectType{ ObjectType::NONE };
 	float x{ 0.f };
 	float y{ 0.f };
 	float dirX{ 0.f };
@@ -204,6 +216,20 @@ struct CSMovePlayer : Header
 		Header{ sizeof(CSMovePlayer), Type::CS_MOVE_PLAYER },
 		x{ x }, y{ y },
 		dirX{ dirX }, dirY{ dirY }
+	{}
+};
+
+struct SCSetObjectHp : Header
+{
+	int objectId{ -1 };
+	float hp{ -1 };
+	int attackerId{ -1 };
+
+	SCSetObjectHp(const int object_id, const float hp, const int attacker_id) :
+		Header{ sizeof(SCSetObjectHp), Type::SC_SET_OBJECT_HP },
+		objectId{ object_id },
+		hp{ hp },
+		attackerId{ attacker_id }
 	{}
 };
 

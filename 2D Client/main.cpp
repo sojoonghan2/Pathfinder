@@ -228,7 +228,10 @@ class Monster
 	float& x{ pos.x };
 	float& y{ pos.y };
 	bool show{ false };
+	float hp{ MONSTER_CRAB_HP };
 	sf::RectangleShape Square{ sf::Vector2f(GRID_WIDTH_PIXEL, GRID_HEIGHT_PIXEL) };
+	sf::Font font{};
+	sf::Text text{};
 
 
 public:
@@ -237,7 +240,13 @@ public:
 		pos{ x, y },
 		show{ show }
 	{
+		if (!font.loadFromFile("cour.ttf")) {
+			exit(-1); // 폰트 파일을 찾지 못했을 때
+		}
 		SetFillColor(color);
+		text.setFont(font);
+		text.setCharacterSize(20);
+		text.setFillColor(sf::Color::Black);
 		sf::FloatRect bounds = Square.getLocalBounds();
 		Square.setOrigin(bounds.width / 2, bounds.height / 2);
 	}
@@ -272,6 +281,10 @@ public:
 		// 윈도우 위치에 표시
 		Square.setPosition(windowX, windowY);
 		window.draw(Square);
+
+		text.setPosition(windowX, windowY - 30);
+		text.setString(std::to_string(hp));
+		window.draw(text);
 
 		if (dir.x == 0.f && dir.y == 0.f) {
 			return;
@@ -317,6 +330,8 @@ public:
 	{
 		dir.x = _dirx; dir.y = _diry;
 	}
+
+	void SetHp(const float _hp) { hp = _hp; }
 };
 
 
@@ -480,7 +495,7 @@ int main() {
 
 				switch (packet.objectType)
 				{
-				case ObjectType::Player:
+				case ObjectType::PLAYER:
 				{
 					if (packet.objectId == my_id) {
 						auto pos1{ players[my_id].GetPosition() };
@@ -506,7 +521,7 @@ int main() {
 				}
 				break;
 
-				case ObjectType::Monster:
+				case ObjectType::MONSTER:
 				{
 					if (not monsters.contains(packet.objectId)) {
 						monsters[packet.objectId].SetFillColor(sf::Color::Green);
@@ -517,7 +532,7 @@ int main() {
 				}
 				break;
 
-				case ObjectType::Bullet:
+				case ObjectType::BULLET:
 				{
 					if (not bullets.contains(packet.objectId)) {
 						bullets[packet.objectId].SetFillColor(sf::Color::Cyan);
@@ -531,6 +546,16 @@ int main() {
 				}
 			}
 			break;
+
+			case packet::Type::SC_SET_OBJECT_HP:
+			{
+				packet::SCSetObjectHp packet = reinterpret_cast<packet::SCSetObjectHp&>(buffer);
+				if (monsters.contains(packet.objectId)) {
+					monsters[packet.objectId].SetHp(packet.hp);
+				}
+			}
+			break;
+
 			default:
 			{
 				std::println("Packet Error.");
