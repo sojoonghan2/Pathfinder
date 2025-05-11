@@ -979,6 +979,27 @@ void RuinsScene::Init()
 			dynamic_pointer_cast<SphereCollider>(gameObjects[0]->GetCollider())->SetCenter(Vec3(0.f, 100.f, 0.f));
 
 			AddGameObject(gameObjects[0]);
+
+			shared_ptr<GameObject> wire = make_shared<GameObject>();
+			wire->SetName(L"WireCyberCrabs" + std::to_wstring(i));
+
+			wire->AddComponent(make_shared<Transform>());
+			wire->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+			wire->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0.f));
+			//wire->GetTransform()->SetLocalScale(Vec3(0.f, 0.f, 0.f));
+
+			shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+			{
+				shared_ptr<Mesh> sphereMesh = GET_SINGLE(Resources)->LoadSphereMesh();
+				meshRenderer->SetMesh(sphereMesh);
+			}
+			{
+				shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"Debug");
+				meshRenderer->SetMaterial(material->Clone());
+			}
+			wire->AddComponent(meshRenderer);
+
+			AddGameObject(wire);
 		}
 
 		shared_ptr<GameObject> hpBase = make_shared<GameObject>();
