@@ -248,22 +248,19 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 	int maxCount = g_int_0;
 	int addCount = g_int_1;
 	int frameNumber = g_int_2;
-	int explodeStrength = g_int_3; // 폭발 강도
+	int explodeStrength = g_int_3;
 	float deltaTime = g_vec2_1.x;
 	float accTime = g_vec2_1.y;
 	float minLifeTime = g_vec4_0.x;
 	float maxLifeTime = g_vec4_0.y;
 	float minSpeed = g_vec4_0.z;
 	float maxSpeed = g_vec4_0.w;
-    
-    // 활성화 가능한 파티클 수 관리
+
 	g_shared[0].addCount = addCount;
 	GroupMemoryBarrierWithGroupSync();
 
-    // 비활성 파티클 활성화
 	if (g_particle[threadIndex.x].alive == 0 && g_shared[0].addCount > 0)
 	{
-        // 활성화 가능한 파티클 수 감소
 		while (true)
 		{
 			int remaining = g_shared[0].addCount;
@@ -273,10 +270,8 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 			int expected = remaining;
 			int desired = remaining - 1;
 			int originalValue;
-            
-            // 원자적으로 addCount 값 감소
 			InterlockedCompareExchange(g_shared[0].addCount, expected, desired, originalValue);
-            
+
 			if (originalValue == expected)
 			{
 				g_particle[threadIndex.x].alive = 1;
@@ -284,155 +279,105 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 			}
 		}
 
-        // 수류탄 폭발 파티클 연산
 		if (g_particle[threadIndex.x].alive == 1)
 		{
 			float x = ((float) threadIndex.x / (float) maxCount) + accTime;
-
-			// 파티클마다 고유한 난수값 생성
 			float r1 = Rand(float2(x, accTime));
 			float r2 = Rand(float2(x * accTime, accTime));
 			float r3 = Rand(float2(x * accTime * accTime, accTime * accTime));
 			float r4 = Rand(float2(x + accTime, x * accTime));
 			float r5 = Rand(float2(x * x + accTime, accTime * x));
 
-            // 방향 난수
-			float3 noise =
-			{
-				2 * r1 - 1,
-                2 * r2 - 1,
-                2 * r3 - 1
-			};
-			
-			// 파티클 속성 결정
-			// 온도: 0(차가움) ~ 1(뜨거움)
-			// 밀도: 0(가벼움) ~ 1(무거움)
-			
-			float temperature = pow(r4, 0.7f); // 온도 분포 (높은 온도가 많음)
-			float density = pow(r5, 1.5f); // 밀도 분포 (낮은 밀도가 많음)
-			
-			// 파티클 특성 설정
+			float3 noise = float3(2 * r1 - 1, 2 * r2 - 1, 2 * r3 - 1);
+
+			float temperature = pow(r4, 0.7f);
+			float density = pow(r5, 1.5f);
 			g_particle[threadIndex.x].initialTemperature = temperature;
 			g_particle[threadIndex.x].density = density;
 
-            // 파티클 특성에 따른 방향 및 속도 설정
 			float3 dir;
 			float speedMultiplier;
-			
-			if (temperature > 0.8f) // 고온 파티클 (화염)
-			{
-				// 주로 위쪽으로 확산
-				dir.x = noise.x * 0.7f;
-				dir.y = r2 * 0.7f + 0.3f; // 위쪽 방향 편향
-				dir.z = noise.z * 0.7f;
-				
-				speedMultiplier = 0.7f + r1 * 0.3f;
-			}
-			else if (temperature > 0.3f) // 중간 온도 파티클 (열과 연기 혼합)
-			{
-				// 넓게 퍼지고 위로 올라감
-				dir.x = noise.x;
-				dir.y = r2 * 0.6f + 0.4f; // 위쪽 방향 강한 편향
-				dir.z = noise.z;
-				
-				speedMultiplier = 0.4f + r1 * 0.3f; // 상대적으로 느림
-			}
-			else // 저온 파티클 (파편)
-			{
-				// 모든 방향으로 강하게 튀어나감
-				dir = normalize(noise);
-				speedMultiplier = 1.0f + r1; // 가장 빠름
-			}
-			
-			g_particle[threadIndex.x].worldDir = normalize(dir) * speedMultiplier;
-            
-            // 폭발 중심에서 약간 랜덤하게 시작
+
+			// 아래에서 위로 터지는 방향성을 강화
+			float3 upwardBias = float3(0.0f, 1.0f, 0.0f);
+			float3 spreadDir = normalize(noise);
+			float blend = (temperature > 0.8f) ? 0.6f : (temperature > 0.3f ? 0.4f : 0.2f);
+			dir = normalize(lerp(spreadDir, upwardBias, blend));
+
+			if (temperature > 0.8f)
+				speedMultiplier = 0.8f + r1 * 0.3f;
+			else if (temperature > 0.3f)
+				speedMultiplier = 0.5f + r1 * 0.3f;
+			else
+				speedMultiplier = 1.0f + r1;
+
+			g_particle[threadIndex.x].worldDir = dir * speedMultiplier;
+
 			float initialOffset = r1 * 0.5f;
-			g_particle[threadIndex.x].worldPos = normalize(noise) * initialOffset;
-            
-            // 파티클 수명 및 크기 설정
+			g_particle[threadIndex.x].worldPos = dir * initialOffset;
+
 			float lifeVariance;
 			float sizeVariance;
-			
-			if (temperature > 0.8f) // 고온 파티클 (화염)
+
+			if (temperature > 0.8f)
 			{
 				lifeVariance = 0.3f + r2 * 0.2f;
 				sizeVariance = 0.8f + r2 * 0.4f;
 			}
-			else if (temperature > 0.3f) // 중간 온도 파티클 (열과 연기 혼합)
+			else if (temperature > 0.3f)
 			{
 				lifeVariance = 0.8f + r2 * 0.2f;
 				sizeVariance = 0.6f + r2 * 0.8f;
 			}
-			else // 저온 파티클 (파편)
+			else
 			{
 				lifeVariance = 0.5f + r2 * 0.3f;
 				sizeVariance = 0.2f + r2 * 0.3f;
 			}
-            
+
 			g_particle[threadIndex.x].lifeTime = ((maxLifeTime - minLifeTime) * lifeVariance) + minLifeTime;
 			g_particle[threadIndex.x].curTime = 0.f;
 			g_particle[threadIndex.x].size = sizeVariance * (1.0f + explodeStrength * 0.1f);
 		}
 	}
-    // 기존 파티클 업데이트
 	else if (g_particle[threadIndex.x].alive == 1)
 	{
-        // 현재 프레임의 deltaTime을 더해 파티클의 경과 시간 업데이트
 		g_particle[threadIndex.x].curTime += deltaTime;
 		if (g_particle[threadIndex.x].lifeTime < g_particle[threadIndex.x].curTime)
 		{
-            // lifeTime보다 curTime이 커지면 파티클 비활성화
 			g_particle[threadIndex.x].alive = 0;
 			return;
 		}
 
-        // 현재 경과 시간 비율
 		float ratio = g_particle[threadIndex.x].curTime / g_particle[threadIndex.x].lifeTime;
 		float temp = g_particle[threadIndex.x].initialTemperature;
 		float density = g_particle[threadIndex.x].density;
-		
-		// 파티클 특성별 움직임 연산
-		if (temp > 0.8f) // 고온 파티클 (화염)
+
+		if (temp > 0.8f)
 		{
-			// 빠르게 감속, 약간 위로 이동
 			float speedMultiplier = 1.0f - pow(ratio, 2.0f);
 			float speed = (maxSpeed - minSpeed) * speedMultiplier + minSpeed * 0.2f;
-			
-			// 부력 효과 - 위로 올라감
 			float3 buoyancy = float3(0.0f, 5.0f, 0.0f) * ratio;
-			
-			// 파티클 위치 업데이트
 			g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
 			g_particle[threadIndex.x].worldPos += buoyancy * deltaTime;
 		}
-		else if (temp > 0.3f) // 중간 온도 파티클 (열과 연기 혼합)
+		else if (temp > 0.3f)
 		{
-			// 천천히 위로 올라가며 확산
 			float speedMultiplier = 1.0f - ratio * 0.7f;
 			float speed = (maxSpeed * 0.3f - minSpeed) * speedMultiplier + minSpeed;
-			
-			// 부력과 약간의 랜덤 움직임
 			float3 buoyancy = float3(
 				sin(ratio * 6.28f + g_particle[threadIndex.x].worldPos.x) * 0.5f,
 				3.0f + sin(ratio * 3.14f) * 0.5f,
 				cos(ratio * 6.28f + g_particle[threadIndex.x].worldPos.z) * 0.5f
 			) * (1.0f - ratio * 0.5f);
-			
-			// 파티클 위치 업데이트
 			g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
 			g_particle[threadIndex.x].worldPos += buoyancy * deltaTime;
 		}
-		else // 저온 파티클 (파편)
+		else
 		{
-			// 초기 속도가 빠르고 중력 영향을 크게 받음
 			float speedMultiplier = 1.0f - pow(ratio, 0.7f);
 			float speed = (maxSpeed * 2.0f - minSpeed) * speedMultiplier + minSpeed;
-			
-			// 중력 효과 - 시간이 갈수록 강해짐 (밀도에 비례)
 			float3 gravity = float3(0.0f, -20.0f * density, 0.0f) * ratio;
-			
-			// 파티클 위치 업데이트
 			g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
 			g_particle[threadIndex.x].worldPos += gravity * deltaTime;
 		}

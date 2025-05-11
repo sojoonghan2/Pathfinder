@@ -747,7 +747,7 @@ void FactoryScene::Init()
 		AddGameObject(wire);
 
 		vector<shared_ptr<GameObject>> factorymidParticle;
-		for (int j = 0; j < 5; ++j)
+		for (int j = 0; j < 10; ++j)
 		{
 			shared_ptr<GameObject> psObj = make_shared<GameObject>();
 			psObj->SetName(L"factoryParticle_" + to_wstring(j));

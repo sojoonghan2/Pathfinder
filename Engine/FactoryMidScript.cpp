@@ -29,6 +29,9 @@ void FactoryMidScript::LateUpdate()
 void FactoryMidScript::CheckBulletHits(shared_ptr<GameObject> bullet)
 {
 	bullet->GetCollider()->SetEnable(false);
-	auto particle = _particlePool.GetAvailable();
-	if (particle) particle->ParticleStart();
+	auto obj = _particlePool.GetNext();
+	if (obj)
+	{
+		obj->GetParticleSystem()->ParticleStart();
+	}
 }

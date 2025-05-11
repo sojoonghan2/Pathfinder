@@ -177,6 +177,7 @@ void CrabScript::CheckBulletHits(shared_ptr<GameObject> bullet)
 		return;
 
 	bullet->GetCollider()->SetEnable(false);
+	// 풀링이 안되고 있음
 	auto particle = _particlePool.GetAvailable();
 	if (particle)
 	{
