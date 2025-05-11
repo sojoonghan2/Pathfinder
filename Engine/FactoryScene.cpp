@@ -503,7 +503,7 @@ void FactoryScene::Init()
 		//gameObjects[0]->GetMeshRenderer()->GetMesh()->SetRatingTier(D3D12_VARIABLE_SHADING_RATE_TIER_2);
 		gameObjects[0]->GetTransform()->SetLocalPosition(Vec3(0.0f, -100.0f, 2000.0f));
 		gameObjects[0]->GetTransform()->SetLocalRotation(Vec3(-PI, 0.0f, 0.0f));
-		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(0.1f, 0.1f, 0.1f));
+		gameObjects[0]->GetTransform()->SetLocalScale(Vec3(0.2f, 0.2f, 0.2f));
 		gameObjects[0]->AddComponent(make_shared<TestDragon>());
 		gameObjects[0]->AddComponent(make_shared<CrabScript>());
 
