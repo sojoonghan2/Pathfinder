@@ -1,10 +1,12 @@
 #pragma once
 #include "MonoBehaviour.h"
+#include "ParticlePool.h"
 
 class NetworkCrabScript : public MonoBehaviour
 {
 public:
 	NetworkCrabScript();
+	virtual void Start() override;
 	virtual void LateUpdate() override;
 	virtual void Awake() override;
 
@@ -13,6 +15,7 @@ public:
 
 	void Animation();
 
+	void RegisterParticles(const vector<shared_ptr<GameObject>>& particles) { _particleObjects = particles; }
 
 private:
 
@@ -23,4 +26,6 @@ private:
 
 	float		_currentHp{ 0.f };
 
+	vector<shared_ptr<GameObject>> _particleObjects;
+	ParticlePool _particlePool;
 };

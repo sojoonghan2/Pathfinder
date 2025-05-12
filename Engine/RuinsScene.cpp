@@ -1000,6 +1000,28 @@ void RuinsScene::Init()
 			wire->AddComponent(meshRenderer);
 
 			AddGameObject(wire);
+
+			vector<shared_ptr<GameObject>> crabParticles;
+			for (int j = 0; j < 5; ++j)
+			{
+				shared_ptr<GameObject> psObj = make_shared<GameObject>();
+				psObj->SetName(L"CrabParticle_" + to_wstring(i) + L"_" + to_wstring(j));
+				psObj->AddComponent(make_shared<Transform>());
+				psObj->AddComponent(make_shared<CrabParticleSystem>());
+				psObj->GetTransform()->SetParent(gameObjects[0]->GetTransform());
+				psObj->SetLayerIndex(gameObjects[0]->GetLayerIndex());
+
+				// 처음에는 비활성화
+				psObj->GetParticleSystem()->ParticleStop();
+
+				// GameObject 등록
+				AddGameObject(psObj);
+				crabParticles.push_back(psObj);
+			}
+
+			// Script에 등록
+			auto crabScript = gameObjects[0]->GetScript<NetworkCrabScript>();
+			crabScript->RegisterParticles(crabParticles);
 		}
 
 		shared_ptr<GameObject> hpBase = make_shared<GameObject>();

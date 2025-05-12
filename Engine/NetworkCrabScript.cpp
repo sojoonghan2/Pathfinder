@@ -18,6 +18,11 @@
 NetworkCrabScript::NetworkCrabScript()
 {}
 
+void NetworkCrabScript::Start()
+{
+	_particlePool.Init(_particleObjects);
+}
+
 void NetworkCrabScript::LateUpdate()
 {
 	auto& queue = GET_SINGLE(MessageManager)->GetMessageQueue(_id);
@@ -62,7 +67,13 @@ void NetworkCrabScript::LateUpdate()
 				msg_set_hp->maxHp = MONSTER_CRAB_HP;
 				GET_SINGLE(MessageManager)->PushMessageByNetworkId(ID_OBJECT_MONSTER_HP, msg_set_hp);
 			}
-			std::cout << "Crab HP : " << _currentHp << std::endl;
+
+			// 파티클 출력
+			auto particle = _particlePool.GetAvailable();
+			if (particle)
+			{
+				particle->ParticleStart();
+			}
 		}
 		break;
 		default:
