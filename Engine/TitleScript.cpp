@@ -43,6 +43,7 @@ void TitleScript::LateUpdate()
 		}
 		if (INPUT->GetButton(KEY_TYPE::M))
 		{
+			GEngine->SetFullScreen();
 			shared_ptr<LoadingScene> loadingScene = make_shared<LoadingScene>();
 			GET_SINGLE(SceneManager)->RegisterScene(L"LoadingScene", loadingScene);
 			loadingScene->Init(RoomType::RUIN);

@@ -53,6 +53,12 @@ void Engine::Update()
 	GET_SINGLE(SocketIO)->Update();
 #endif
 
+	if (GET_SINGLE(Input)->GetButtonDown(KEY_TYPE::ESC))
+	{
+		::PostQuitMessage(0);
+		return;
+	}
+
 	GET_SINGLE(SceneManager)->Update();
 	GET_SINGLE(CollisionManager)->Update();
 	GET_SINGLE(InstancingManager)->ClearBuffer();
@@ -222,5 +228,26 @@ void Engine::CreateRenderTargetGroups()
 
 		_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::REFLECTION)] = make_shared<RenderTargetGroup>();
 		_rtGroups[static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::REFLECTION)]->Create(RENDER_TARGET_GROUP_TYPE::REFLECTION, rtVec, reflectionDepthTexture);
+	}
+}
+
+void Engine::SetFullScreen()
+{
+	// 현재 윈도우 스타일 가져오기
+	LONG style = ::GetWindowLong(_window.hwnd, GWL_STYLE);
+	style &= ~WS_OVERLAPPEDWINDOW;
+	style |= WS_POPUP;
+	::SetWindowLong(_window.hwnd, GWL_STYLE, style);
+
+	// 전체 화면으로 전환
+	MONITORINFO monitorInfo = { sizeof(MONITORINFO) };
+	if (::GetMonitorInfo(MonitorFromWindow(_window.hwnd, MONITOR_DEFAULTTOPRIMARY), &monitorInfo))
+	{
+		const RECT& rc = monitorInfo.rcMonitor;
+		::SetWindowPos(_window.hwnd, HWND_TOP,
+			rc.left, rc.top,
+			rc.right - rc.left,
+			rc.bottom - rc.top,
+			SWP_NOZORDER | SWP_FRAMECHANGED);
 	}
 }
