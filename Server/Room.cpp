@@ -160,6 +160,9 @@ void Room::ClearObjects()
 
 void Room::AddObject(std::shared_ptr<Object> object)
 {
+	if (nullptr == object) {
+		return;
+	}
 	_objects[_idCount++] = object;
 }
 
