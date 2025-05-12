@@ -13,7 +13,7 @@
 #define _HAS_STD_BYTE 0
 
 // 네트워크 기능 사용
-#define NETWORK_ENABLE
+//#define NETWORK_ENABLE
 
 // 각종 include
 #include <windows.h>
