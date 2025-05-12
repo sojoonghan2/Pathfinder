@@ -26,13 +26,13 @@ public:
 	{
 		_collider = std::move(collider);
 	}
-	std::shared_ptr<const Collider> GetCollider() const
+	std::shared_ptr<Collider> GetCollider()
 	{
 		return _collider;
 	}
 
 	// collider 생성을 위한 레퍼런스 getter
-	const Vec2f& GetPosRef() const { return _pos; }
+	Vec2f& GetPosRef() { return _pos; }
 
 	Object() = default;
 

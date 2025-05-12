@@ -19,7 +19,7 @@ constexpr float PLAYER_BULLET_DAMAGE{ 10.f };
 constexpr float PLAYER_BULLET_SPEED_MPS{ 40.f };
 
 // MONSTER
-constexpr float MONSTER_CRAB_SIZE_M{ 0.5f };
+constexpr float MONSTER_CRAB_SIZE_M{ 1.f };
 constexpr float MONSTER_CRAB_SPEED_MPS{ 2.f };
 constexpr float MONSTER_CRAB_HP{ 100.f };
 
