@@ -52,7 +52,8 @@ private:
 	std::queue<BufferType> _bufferQueue;
 	NetworkTimer _sendTimer;
 	RoomType	_roomType{ RoomType::NONE };
-	int			_myId{-1};
+	int			_myId{ -1 };
+	int			_attackId{ -1 };
 
 	bool		_stop{ true };
 };
