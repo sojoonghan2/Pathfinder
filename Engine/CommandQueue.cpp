@@ -3,10 +3,6 @@
 #include "SwapChain.h"
 #include "Engine.h"
 
-// ************************
-// GraphicsCommandQueue
-// ************************
-
 GraphicsCommandQueue::~GraphicsCommandQueue()
 {
 	::CloseHandle(_fenceEvent);
@@ -29,7 +25,6 @@ void GraphicsCommandQueue::Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChai
 	device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_resCmdAlloc));
 	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _resCmdAlloc.Get(), nullptr, IID_PPV_ARGS(&_resCmdList));
 
-	// CreateFence
 	device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence));
 	_fenceEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
@@ -85,7 +80,6 @@ void GraphicsCommandQueue::RenderEnd()
 	_cmdList->ResourceBarrier(1, &barrier);
 	_cmdList->Close();
 
-	// 커맨드 리스트 수행
 	ID3D12CommandList* cmdListArr[] = { _cmdList.Get() };
 	_cmdQueue->ExecuteCommandLists(_countof(cmdListArr), cmdListArr);
 
@@ -108,10 +102,6 @@ void GraphicsCommandQueue::FlushResourceCommandQueue()
 	_resCmdAlloc->Reset();
 	_resCmdList->Reset(_resCmdAlloc.Get(), nullptr);
 }
-
-// ************************
-// ComputeCommandQueue
-// ************************
 
 ComputeCommandQueue::~ComputeCommandQueue()
 {

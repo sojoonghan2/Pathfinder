@@ -3,10 +3,6 @@
 class SwapChain;
 class DescriptorHeap;
 
-// ************************
-// GraphicsCommandQueue
-// ************************
-
 // 그래픽스 명령 처리를 위한 커멘드 큐
 class GraphicsCommandQueue
 {
@@ -45,10 +41,6 @@ private:
 
 	shared_ptr<SwapChain>				_swapChain;
 };
-
-// ************************
-// ComputeCommandQueue
-// ************************
 
 // 컴퓨트 쉐이더나 GPU 컴퓨트 작업을 처리하는 커멘드 큐
 class ComputeCommandQueue

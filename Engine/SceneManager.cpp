@@ -24,8 +24,6 @@
 #include "ParticleScene.h"
 #include "RuinsScene.h"
 #include "FactoryScene.h"
-#include "ExplorationScene.h"
-#include "CrashScene.h"
 #include "LuckyScene.h"
 #include "BossScene.h"
 #include "TestScene.h"

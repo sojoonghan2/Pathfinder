@@ -90,7 +90,7 @@
     <ClCompile Include="ConstantBuffer.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="TableDescriptorHeap.cpp">
+    <ClCompile Include="DescriptorTable.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
@@ -180,16 +180,10 @@
     <ClCompile Include="TestScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="ExplorationScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="FactoryScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="RuinsScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="CrashScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="ParticleScene.cpp">
@@ -221,12 +215,6 @@
     </ClCompile>
     <ClCompile Include="GameModule.cpp">
       <Filter>Object</Filter>
-    </ClCompile>
-    <ClCompile Include="CrashScript.cpp">
-      <Filter>Script\SceneScript</Filter>
-    </ClCompile>
-    <ClCompile Include="ExplorationScript.cpp">
-      <Filter>Script\SceneScript</Filter>
     </ClCompile>
     <ClCompile Include="FactoryScript.cpp">
       <Filter>Script\SceneScript</Filter>
@@ -407,7 +395,7 @@
     <ClInclude Include="ConstantBuffer.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="TableDescriptorHeap.h">
+    <ClInclude Include="DescriptorTable.h">
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
@@ -500,12 +488,6 @@
     <ClInclude Include="TestScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="CrashScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="ExplorationScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="FactoryScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
@@ -541,12 +523,6 @@
     </ClInclude>
     <ClInclude Include="GameModule.h">
       <Filter>Object</Filter>
-    </ClInclude>
-    <ClInclude Include="CrashScript.h">
-      <Filter>Script\SceneScript</Filter>
-    </ClInclude>
-    <ClInclude Include="ExplorationScript.h">
-      <Filter>Script\SceneScript</Filter>
     </ClInclude>
     <ClInclude Include="FactoryScript.h">
       <Filter>Script\SceneScript</Filter>
