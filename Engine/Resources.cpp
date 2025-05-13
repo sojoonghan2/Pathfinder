@@ -392,7 +392,7 @@ shared_ptr<Texture> Resources::CloneRenderTargetTexture(shared_ptr<Texture> orig
 	D3D12_RESOURCE_BARRIER barrier4 = CD3DX12_RESOURCE_BARRIER::Transition(
 		cloneTexture->GetTex2D().Get(),
 		D3D12_RESOURCE_STATE_COPY_DEST,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+		D3D12_RESOURCE_STATE_COMMON
 	);
 	GRAPHICS_CMD_LIST->ResourceBarrier(1, &barrier4);
 
