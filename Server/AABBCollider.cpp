@@ -94,3 +94,32 @@ bool AABBCollider::CheckCollisionWithSwept(const SweptCollider& other) const
 
 	return false;
 }
+
+void AABBCollider::ResolveCollisionWithAABB(AABBCollider& other)
+{
+	float dx = _center.x - other._center.x;
+	float px = (_width + other._width) / 2.f - std::abs(dx);
+	if (px <= 0) return;
+
+	float dy = _center.y - other._center.y;
+	float py = (_height + other._height) / 2.f - std::abs(dy);
+	if (py <= 0) return;
+
+	// 최소 침투 방향으로 밀어냄
+	if (px < py)
+	{
+		float sx = (dx < 0) ? -1.0f : 1.0f;
+		float move = px / 2.0f;
+		_center.x -= move * sx;
+		other._center.x += move * sx;
+	}
+	else
+	{
+		float sy = (dy < 0) ? -1.0f : 1.0f;
+		float move = py / 2.0f;
+		_center.y -= move * sy;
+		other._center.y += move * sy;
+	}
+}
+
+

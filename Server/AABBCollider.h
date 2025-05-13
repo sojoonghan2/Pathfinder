@@ -10,10 +10,11 @@ public:
 	bool CheckCollisionWithCircle(const CircleCollider& other) const override;
 	bool CheckCollisionWithSwept(const SweptCollider& other) const override;
 
-
+	// 충돌이 발생했을 때, 충돌을 해결하는 함수.
+	void ResolveCollisionWithAABB(AABBCollider& other);
 
 	AABBCollider() = delete;
-	AABBCollider(const Vec2f& center, const float halfWidth, const float halfHeight) :
+	AABBCollider(Vec2f& center, const float halfWidth, const float halfHeight) :
 		_center{ center },
 		_width{ halfWidth },
 		_height{ halfHeight }
@@ -31,7 +32,7 @@ public:
 	// 불필요한 함수 호출 줄이기 위해 public으로 한다.
 public:
 	// 이 collider를 가지고 있는 object의 pos를 reference로 저장.
-	const Vec2f& _center;
+	Vec2f& _center;
 	float _width;
 	float _height;
 };

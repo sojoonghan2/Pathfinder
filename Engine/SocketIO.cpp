@@ -198,11 +198,19 @@ void SocketIO::ProcessPacket()
 		case packet::Type::SC_SET_OBJECT_HP:
 		{
 			packet::SCSetObjectHp& packet{ reinterpret_cast<packet::SCSetObjectHp&>(buffer) };
-
-
 			auto msg{ std::make_shared<MsgSetObjectHp>(packet.hp, -1.f, _myId == packet.attackerId) };
 			GET_SINGLE(MessageManager)->PushMessageByNetworkId(packet.objectId, msg);
 			
+			// 공격자가 같은 경우.
+			if (_myId == packet.attackerId) {
+				_attackId = packet.objectId;
+			}
+			// 공격자가 다른데 맞고 있는 객체는 같은 경우
+			else if (_attackId == packet.objectId) {
+				auto msg_other{ std::make_shared<MsgSetObjectHp>(packet.hp, -1.f, false) };
+				GET_SINGLE(MessageManager)->PushMessageByNetworkId(ID_OBJECT_MONSTER_HP, msg_other);
+			}
+
 		}
 		break;
 		default:

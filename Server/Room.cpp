@@ -128,6 +128,24 @@ void Room::Update(const float delta)
 
 					deleted_objects.insert(iter_b->first);
 				}
+
+				if (type_a == ObjectType::MONSTER && type_b == ObjectType::MONSTER) {
+					auto a_collider{ iter_a->second->GetCollider() };
+					if (nullptr == a_collider) {
+						continue;
+					}
+					auto a_aabb_collider{ std::static_pointer_cast<AABBCollider>(a_collider) };
+
+					auto b_collider{ iter_b->second->GetCollider() };
+					if (nullptr == b_collider) {
+						continue;
+					}
+					auto b_aabb_collider{ std::static_pointer_cast<AABBCollider>(b_collider) };
+
+					a_aabb_collider->ResolveCollisionWithAABB(*b_aabb_collider);
+
+				}
+
 			}
 		}
 	}
@@ -160,6 +178,9 @@ void Room::ClearObjects()
 
 void Room::AddObject(std::shared_ptr<Object> object)
 {
+	if (nullptr == object) {
+		return;
+	}
 	_objects[_idCount++] = object;
 }
 

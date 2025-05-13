@@ -28,9 +28,10 @@ void NetworkMonsterHpScript::LateUpdate()
 		case MsgType::SET_OBJECT_HP:
 		{
 			auto message_set_hp{ std::static_pointer_cast<MsgSetObjectHp>(message) };
-			_maxHp = message_set_hp->maxHp;
+			if (message_set_hp->maxHp >= 0.f) {
+				_maxHp = message_set_hp->maxHp;
+			}
 			_currentHp = message_set_hp->hp;
-			std::cout << "ATTACKER Crab HP : " << _currentHp << std::endl;
 		}
 		break;
 		default:
