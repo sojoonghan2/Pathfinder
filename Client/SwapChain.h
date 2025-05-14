@@ -1,5 +1,6 @@
 #pragma once
 
+// 스왑체인을 생성하고 백버퍼 관리, Present 처리
 class SwapChain
 {
 public:

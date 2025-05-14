@@ -5,7 +5,7 @@
 #include "Transform.h"
 #include "Buffer.h"
 #include "Resources.h"
-#include "Animator.h"
+#include "Amature.h"
 #include "Scenemanager.h"
 
 MeshRenderer::MeshRenderer() : Component(COMPONENT_TYPE::MESH_RENDERER)
@@ -35,9 +35,9 @@ void MeshRenderer::Render()
 
 		GetTransform()->PushData();
 
-		if (GetAnimator())
+		if (GetAmature())
 		{
-			GetAnimator()->PushData();
+			GetAmature()->PushData();
 			material->SetInt(1, 1);
 		}
 
@@ -57,9 +57,9 @@ void MeshRenderer::Render(shared_ptr<InstancingBuffer>& buffer)
 
 		buffer->PushData();
 
-		if (GetAnimator())
+		if (GetAmature())
 		{
-			GetAnimator()->PushData();
+			GetAmature()->PushData();
 			material->SetInt(1, 1);
 		}
 
@@ -77,9 +77,9 @@ void MeshRenderer::RenderShadow()
 
 	shared_ptr<Material> shadowMaterial = GET_SINGLE(Resources)->Get<Material>(L"Shadow");
 
-	if (GetAnimator())
+	if (GetAmature())
 	{
-		GetAnimator()->PushData();
+		GetAmature()->PushData();
 		shadowMaterial->SetInt(1, 1); // g_int_1 = 1
 	}
 	else

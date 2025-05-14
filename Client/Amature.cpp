@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Animator.h"
+#include "Amature.h"
 #include "Timer.h"
 #include "Resources.h"
 #include "Material.h"
@@ -7,17 +7,17 @@
 #include "MeshRenderer.h"
 #include "Buffer.h"
 
-Animator::Animator() : Component(COMPONENT_TYPE::ANIMATOR)
+Amature::Amature() : Component(COMPONENT_TYPE::ANIMATOR)
 {
 	_computeMaterial = GET_SINGLE(Resources)->Get<Material>(L"ComputeAnimation");
 	_boneFinalMatrix = make_shared<Buffer>();
 }
 
-Animator::~Animator()
+Amature::~Amature()
 {
 }
 
-void Animator::FinalUpdate()
+void Amature::FinalUpdate()
 {
 	if (!_isPlaying) return;
 	_updateTime += DELTA_TIME;
@@ -81,7 +81,7 @@ void Animator::FinalUpdate()
 	_boneFinalMatrix->Update(finalTransforms.data(), finalTransforms.size() * sizeof(Matrix));
 }
 
-void Animator::SetAnimClip(const vector<AnimClipInfo>* animClips)
+void Amature::SetAnimClip(const vector<AnimClipInfo>* animClips)
 {
 	if (!animClips || animClips->empty()) {
 		std::cerr << "Error: animClips is nullptr or empty!" << std::endl;
@@ -90,7 +90,7 @@ void Animator::SetAnimClip(const vector<AnimClipInfo>* animClips)
 	_animClips = animClips;
 }
 
-void Animator::PushData()
+void Amature::PushData()
 {
 	uint32 boneCount = static_cast<uint32>(_bones->size());
 	if (_boneFinalMatrix->GetElementCount() < boneCount)
@@ -114,7 +114,7 @@ void Animator::PushData()
 }
 
 // 플레이 수정
-void Animator::Play(uint32 idx)
+void Amature::Play(uint32 idx)
 {
 	if (!_animClips || _animClips->empty()) {
 		std::cerr << "Error: _animClips is nullptr or empty!" << std::endl;
@@ -130,12 +130,12 @@ void Animator::Play(uint32 idx)
 	_isPlaying = true;
 }
 
-void Animator::Stop()
+void Amature::Stop()
 {
 	_isPlaying = false;
 }
 
-bool Animator::IsAnimationFinished()
+bool Amature::IsAnimationFinished()
 {
 	if (!_animClips || _clipIndex >= _animClips->size())
 		return false;

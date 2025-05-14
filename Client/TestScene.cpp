@@ -16,7 +16,7 @@
 #include "TestHuman.h"
 #include "Resources.h"
 #include "MeshData.h"
-#include "Animator.h"
+#include "Amature.h"
 #include "input.h"
 #include "SphereCollider.h"
 

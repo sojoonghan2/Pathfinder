@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "GeneratorScript.h"
 #include "Input.h"
-#include "Animator.h"
+#include "Amature.h"
 #include "GameObject.h"
 #include "IceParticleSystem.h"
 #include "Timer.h"
@@ -23,7 +23,7 @@ void GeneratorScript::LateUpdate()
 {
 	if (!_init)
 	{
-		if (GetAnimator()) GetAnimator()->Stop();
+		if (GetAmature()) GetAmature()->Stop();
 		_init = true;
 	}
 
@@ -70,7 +70,7 @@ void GeneratorScript::CheckBulletHits(shared_ptr<GameObject> bullet)
 	{
 		if (!_isDead)
 		{
-			if (GetAnimator()) GetAnimator()->Play(0);
+			if (GetAmature()) GetAmature()->Play(0);
 			_isDead = true;
 			_deadTime = 0.f;
 			_generatorParticle->GetParticleSystem()->ParticleStart();

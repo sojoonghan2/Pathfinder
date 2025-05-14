@@ -1,6 +1,8 @@
 #pragma once
 #include <chrono>
 
+// 타이머
+// FPS를 60으로 Lock
 class Timer
 {
 	DECLARE_SINGLE(Timer);

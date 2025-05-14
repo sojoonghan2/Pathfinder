@@ -9,7 +9,7 @@
 #include "Scene.h"
 #include "MessageManager.h"
 #include "SocketIO.h"
-#include "Animator.h"
+#include "Amature.h"
 #include "OrientedBoxCollider.h"
 #include "Material.h"
 #include "MeshRenderer.h"
@@ -119,7 +119,7 @@ void PlayerScript::Animation()
 
 	if (currentAnimIndex != nextAnimIndex)
 	{
-		GetAnimator()->Play(nextAnimIndex);
+		GetAmature()->Play(nextAnimIndex);
 		currentAnimIndex = nextAnimIndex;
 	}
 }

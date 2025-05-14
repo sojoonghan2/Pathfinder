@@ -2,7 +2,7 @@
 #include "CrabScript.h"
 #include "Input.h"
 #include "Timer.h"
-#include "Animator.h"
+#include "Amature.h"
 #include "MeshData.h"
 #include "Resources.h"
 #include "SceneManager.h"
@@ -88,10 +88,10 @@ void CrabScript::LateUpdate()
 		std::uniform_real_distribution<float> pauseDis(1.0f, 5.0f);
 		_pauseDuration = pauseDis(gen);
 
-		int32 count = GetAnimator()->GetAnimCount();
-		int32 currentIndex = GetAnimator()->GetCurrentClipIndex();
+		int32 count = GetAmature()->GetAnimCount();
+		int32 currentIndex = GetAmature()->GetCurrentClipIndex();
 		int32 index = (currentIndex + 1) % count;
-		GetAnimator()->Play(index);
+		GetAmature()->Play(index);
 	}
 
 	if (!_isMoving && _elapsedTime >= _pauseDuration)
@@ -99,10 +99,10 @@ void CrabScript::LateUpdate()
 		_isMoving = true;
 		_elapsedTime = 0.0f;
 
-		int32 count = GetAnimator()->GetAnimCount();
-		int32 currentIndex = GetAnimator()->GetCurrentClipIndex();
+		int32 count = GetAmature()->GetAnimCount();
+		int32 currentIndex = GetAmature()->GetCurrentClipIndex();
 		int32 index = (currentIndex + 1) % count;
-		GetAnimator()->Play(index);
+		GetAmature()->Play(index);
 	}
 
 	if (_isMoving && _isAlive)
@@ -225,8 +225,8 @@ void CrabScript::DeadAnimation()
 		_isAlive = false;
 		_deathHandled = true;
 
-		if (GetAnimator())
-			GetAnimator()->Stop();
+		if (GetAmature())
+			GetAmature()->Stop();
 
 		_startPos = GetTransform()->GetLocalPosition();
 		_startRot = GetTransform()->GetLocalRotation();

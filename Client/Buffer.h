@@ -13,6 +13,8 @@ enum
 	CONSTANT_BUFFER_COUNT = static_cast<uint8>(CONSTANT_BUFFER_TYPE::END)
 };
 
+// GPU 리소스로 사용할 수 있는 범용 버퍼 클래스
+// SRV, UAV로의 바인딩 및 데이터 업데이트를 지원함
 class Buffer
 {
 public:
@@ -56,6 +58,9 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE _uavHeapBegin{};
 };
 
+// 상수 버퍼
+// 셰이더 프로그램에 일정한 값을 전달하기 위해 사용되는 GPU용 버퍼
+// CBV로 바인딩되며, 일반적으로 행렬, 라이트, 머티리얼 등의 데이터를 담음
 class ConstantBuffer
 {
 public:
@@ -107,6 +112,9 @@ struct InstancingParams
 	Matrix matWVP;
 };
 
+// 인스턴싱 렌더링을 위한 상수 데이터(행렬 등)를 저장하는 버퍼
+// 각 인스턴스별로 변환 행렬을 보유하고, SRV로 셰이더에 전달됨
+// 렌더링 성능을 개선하기 위해 GPU 단에서 다수의 인스턴스를 효율적으로 처리
 class InstancingBuffer
 {
 public:

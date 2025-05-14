@@ -15,6 +15,9 @@ union InstanceID
 	uint64 id;
 };
 
+// 메시와 머티리얼을 바탕으로 게임 오브젝트를 렌더링하는 컴포넌트
+// 메시-머티리얼 조합을 기반으로 한 인스턴싱 식별자(InstanceID)를 계산함
+// 간단하게 메시+머터리얼을 합한 구조
 class MeshRenderer : public Component
 {
 public:

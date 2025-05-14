@@ -6,11 +6,14 @@ class Material;
 class Buffer;
 class Mesh;
 
-class Animator : public Component
+// 블렌더의 뼈대 이름에서 참조
+// 애니메이션이 있는 메쉬에 붙여서 사용
+// 강의 내용 다수 참조
+class Amature : public Component
 {
 public:
-	Animator();
-	virtual ~Animator();
+	Amature();
+	virtual ~Amature();
 
 public:
 	void SetBones(const vector<BoneInfo>* bones) { _bones = bones; }

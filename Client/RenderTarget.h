@@ -29,6 +29,7 @@ struct RenderTarget
 	float clearColor[4];
 };
 
+// 렌더 타겟과 깊이 스텐실 텍스처를 그룹화하여 바인딩 및 클리어, 상태 전환을 관리하는 클래스
 class RenderTargetGroup
 {
 public:

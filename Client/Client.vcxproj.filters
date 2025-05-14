@@ -225,7 +225,7 @@
     <ClInclude Include="RazerParticleSystem.h">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Animator.h">
+    <ClInclude Include="Amature.h">
       <Filter>Object\Component</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
@@ -529,7 +529,7 @@
     <ClCompile Include="RazerParticleSystem.cpp">
       <Filter>Object\Component\ParticleSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Animator.cpp">
+    <ClCompile Include="Amature.cpp">
       <Filter>Object\Component</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">

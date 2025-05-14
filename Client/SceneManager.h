@@ -8,6 +8,8 @@ enum
 	MAX_LAYER = 32
 };
 
+// 여러 Scene을 관리, Scene의 init, update, render를 담당
+// Scene 안에서의 오브젝트간 상호작용을 관리
 class SceneManager
 {
 	DECLARE_SINGLE(SceneManager);

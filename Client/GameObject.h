@@ -9,8 +9,10 @@ class Light;
 class MonoBehaviour;
 class ParticleSystem;
 class BaseCollider;
-class Animator;
+class Amature;
 
+// 컴포넌트를 부착 가능한 오브젝트 클래스
+// 게임에서 직접적으로 상호작용
 class GameObject : public Object, public enable_shared_from_this<GameObject>
 {
 public:
@@ -31,7 +33,7 @@ public:
 	shared_ptr<Light> GetLight();
 	shared_ptr<ParticleSystem> GetParticleSystem();
 	shared_ptr<BaseCollider> GetCollider();
-	shared_ptr<Animator> GetAnimator();
+	shared_ptr<Amature> GetAmature();
 
 	void AddComponent(shared_ptr<Component> component);
 

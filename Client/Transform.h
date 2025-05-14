@@ -1,6 +1,8 @@
 #pragma once
 #include "Component.h"
 
+// 월드 행렬을 계산하여	GPU로 전달하는 기본 행렬 컴포넌트
+// 부모 자식 계층을 지원
 class Transform : public Component
 {
 public:

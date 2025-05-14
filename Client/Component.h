@@ -23,8 +23,10 @@ enum
 class GameObject;
 class Transform;
 class MeshRenderer;
-class Animator;
+class Amature;
 
+// GameObject에 부착 가능한 유니티의 컴포넌트의 기반 클래스
+// 강의에서 배운 직관적인 구조로, 객체에 기능을 넣듯이 추가
 class Component : public Object
 {
 public:
@@ -45,7 +47,7 @@ public:
 	shared_ptr<GameObject> GetGameObject();
 	shared_ptr<Transform> GetTransform();
 	shared_ptr<MeshRenderer> GetMeshRenderer();
-	shared_ptr<Animator> GetAnimator();
+	shared_ptr<Amature> GetAmature();
 
 private:
 	friend class GameObject;

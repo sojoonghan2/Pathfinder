@@ -2,14 +2,14 @@
 #include "NetworkCrabScript.h"
 #include "Input.h"
 #include "Timer.h"
-#include "Animator.h"
+#include "Amature.h"
 #include "MeshData.h"
 #include "Resources.h"
 #include "SceneManager.h"
 #include "Scene.h"
 #include "GameObject.h"
 #include "Transform.h"
-#include "Animator.h"
+#include "Amature.h"
 
 #include "MessageManager.h"
 #include "SocketIO.h"
@@ -117,7 +117,7 @@ void NetworkCrabScript::Animation()
 
 	if (_currentAnimIndex != nextAnimIndex)
 	{
-		GetAnimator()->Play(nextAnimIndex);
+		GetAmature()->Play(nextAnimIndex);
 		_currentAnimIndex = nextAnimIndex;
 	}
 }

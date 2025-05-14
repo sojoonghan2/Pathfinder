@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "ParticleSystem.h"
 
+// 파티클을 담아두고 효율적으로 풀링
 class ParticlePool
 {
 public:

@@ -3,6 +3,8 @@
 
 class GameObject;
 
+// 강의에서 알게 된 instancing manager class
+// 같은 인스턴스 ID를 가진 객체를 효율적으로 렌더링
 class InstancingManager
 {
 	DECLARE_SINGLE(InstancingManager);

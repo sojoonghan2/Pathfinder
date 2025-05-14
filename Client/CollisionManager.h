@@ -12,6 +12,7 @@ enum class COLLISION_OBJECT_TYPE
 	FACTORYMID,
 };
 
+// 오브젝트의 콜라이더를 이곳에 등록하고 관리 및 상호작용
 class CollisionManager
 {
 	DECLARE_SINGLE(CollisionManager);

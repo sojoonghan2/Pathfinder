@@ -12,6 +12,8 @@ enum PLANE_TYPE : uint8
 	PLANE_END
 };
 
+// 컬링을 위한 프러스텀 클래스
+// 우리 게임은 컬링을 지원하지 않지만 유지보수를 위해 추가
 class Frustum
 {
 public:

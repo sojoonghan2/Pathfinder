@@ -7,6 +7,8 @@
 #pragma once
 #include <dinput.h>
 
+// 지연 입력으로 인해 DirectInput 도입
+// 가끔 창의 키 입력 소유권을 잃는 경우가 있음 -> 수정이 어려움(다른 input 도입 고려)
 enum class MOUSE_TYPE
 {
 	LBUTTON = 0,  // DIMOUSESTATE.rgbButtons[0]

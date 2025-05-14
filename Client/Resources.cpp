@@ -9,6 +9,8 @@ void Resources::Init()
 	CreateDefaultMaterial();
 }
 
+// 메쉬 생성 코드
+// 노가다 작업으로 인해 타 코드 인용
 shared_ptr<Mesh> Resources::LoadPointMesh()
 {
 	shared_ptr<Mesh> findMesh = Get<Mesh>(L"Point");

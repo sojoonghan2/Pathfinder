@@ -9,7 +9,7 @@
 #include "SceneManager.h"
 #include "MessageManager.h"
 #include "SocketIO.h"
-#include "Animator.h"
+#include "Amature.h"
 
 NetworkOtherPlayerScript::NetworkOtherPlayerScript()
 {
@@ -102,7 +102,7 @@ void NetworkOtherPlayerScript::Animation()
 
 	if (_currentAnimIndex != nextAnimIndex)
 	{
-		GetAnimator()->Play(nextAnimIndex);
+		GetAmature()->Play(nextAnimIndex);
 		_currentAnimIndex = nextAnimIndex;
 	}
 }

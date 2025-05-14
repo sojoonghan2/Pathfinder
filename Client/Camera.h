@@ -8,6 +8,8 @@ enum class PROJECTION_TYPE
 	ORTHOGRAPHIC, // 직교 투영
 };
 
+// 씬 내의 시점을 정의하고, 뷰/투영 행렬 계산 및 렌더링 대상 오브젝트를 분류하는 카메라
+// 디퍼드, 포워드, 그림자 렌더링 방식을 지원하며, 레이어 마스크 기반으로 렌더링
 class Camera : public Component
 {
 public:

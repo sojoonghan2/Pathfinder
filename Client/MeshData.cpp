@@ -7,7 +7,7 @@
 #include "Resources.h"
 #include "Transform.h"
 #include "MeshRenderer.h"
-#include "Animator.h"
+#include "Amature.h"
 
 MeshData::MeshData() : Object(OBJECT_TYPE::MESH_DATA)
 {
@@ -267,10 +267,10 @@ vector<shared_ptr<GameObject>> MeshData::Instantiate()
 		//여가 문제는 맞음
 		if (info.mesh->IsAnimMesh())
 		{
-			shared_ptr<Animator> animator = make_shared<Animator>();
-			gameObject->AddComponent(animator);
-			animator->SetBones(info.mesh->GetBones());
-			animator->SetAnimClip(info.mesh->GetAnimClip());
+			shared_ptr<Amature> amature = make_shared<Amature>();
+			gameObject->AddComponent(amature);
+			amature->SetBones(info.mesh->GetBones());
+			amature->SetAnimClip(info.mesh->GetAnimClip());
 		}
 
 		v.push_back(gameObject);

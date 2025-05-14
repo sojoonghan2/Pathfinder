@@ -2,6 +2,8 @@
 
 class GameObject;
 
+// 모든 Scene의 부모 클래스
+// activeScene은 아래의 구조로 돌아감
 class Scene
 {
 public:
@@ -15,9 +17,7 @@ public:
 	shared_ptr<class Camera> GetMainCamera();
 
 	void Render();
-
 	void ClearRTV();
-
 	void RenderShadow();
 	void RenderDeferred();
 	void RenderLights();
@@ -25,7 +25,6 @@ public:
 
 	void RenderForward();
 
-private:
 	void PushLightData();
 
 public:

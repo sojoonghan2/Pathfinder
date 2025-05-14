@@ -2,7 +2,7 @@
 #include "FactoryMidScript.h"
 #include "Input.h"
 #include "Timer.h"
-#include "Animator.h"
+#include "Amature.h"
 #include "MeshData.h"
 #include "Resources.h"
 #include "SceneManager.h"

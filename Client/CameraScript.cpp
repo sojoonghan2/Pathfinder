@@ -15,7 +15,8 @@ Vec3 Lerp(const Vec3& a, const Vec3& b, float t)
 	return a + (b - a) * t;
 }
 
-CameraScript::CameraScript() {
+CameraScript::CameraScript()
+{
 	_defaultOffset = Vec3(0.f, 500.f, -600.f);
 	_zoomOffset = Vec3(0.f, 600.f, -150.f);
 	_currentOffset = _defaultOffset;
@@ -26,14 +27,17 @@ CameraScript::CameraScript() {
 	ClientToScreen(P_Application->GetWindow().hwnd, &_centerScreenPos);
 }
 
-CameraScript::~CameraScript() {
+CameraScript::~CameraScript()
+{
 }
 
-void CameraScript::LateUpdate() {
+void CameraScript::LateUpdate()
+{
 	KeyboardInput();
 	MouseInput();
 
-	if (_playerCamera) {
+	if (_playerCamera)
+	{
 		_target = GET_SINGLE(SceneManager)->FindObjectByName(L"Player");
 		if (_target == nullptr) return;
 
@@ -61,7 +65,8 @@ void CameraScript::LateUpdate() {
 	}
 }
 
-void CameraScript::KeyboardInput() {
+void CameraScript::KeyboardInput()
+{
 	Vec3 pos = GetTransform()->GetLocalPosition();
 
 	if (!_playerCamera) {

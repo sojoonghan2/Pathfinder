@@ -159,7 +159,7 @@
   <ItemGroup>
     <ClInclude Include="..\Common\protocol.h" />
     <ClInclude Include="..\Common\util.h" />
-    <ClInclude Include="Animator.h" />
+    <ClInclude Include="Amature.h" />
     <ClInclude Include="BaseCollider.h" />
     <ClInclude Include="BaseParticleSystem.h" />
     <ClInclude Include="BINLoader.h" />
@@ -262,7 +262,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\util.cpp" />
-    <ClCompile Include="Animator.cpp" />
+    <ClCompile Include="Amature.cpp" />
     <ClCompile Include="BaseCollider.cpp" />
     <ClCompile Include="BaseParticleSystem.cpp" />
     <ClCompile Include="BINLoader.cpp" />

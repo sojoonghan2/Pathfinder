@@ -7,7 +7,7 @@
 #include "MonoBehaviour.h"
 #include "ParticleSystem.h"
 #include "BaseCollider.h"
-#include "Animator.h"
+#include "Amature.h"
 
 GameObject::GameObject() : Object(OBJECT_TYPE::GAMEOBJECT)
 {
@@ -125,10 +125,10 @@ shared_ptr<BaseCollider> GameObject::GetCollider()
 	return static_pointer_cast<BaseCollider>(component);
 }
 
-shared_ptr<Animator> GameObject::GetAnimator()
+shared_ptr<Amature> GameObject::GetAmature()
 {
 	shared_ptr<Component> component = GetFixedComponent(COMPONENT_TYPE::ANIMATOR);
-	return static_pointer_cast<Animator>(component);
+	return static_pointer_cast<Amature>(component);
 }
 
 void GameObject::AddComponent(shared_ptr<Component> component)

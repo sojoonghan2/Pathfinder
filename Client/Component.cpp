@@ -2,7 +2,7 @@
 #include "Component.h"
 #include "GameObject.h"
 #include "MeshRenderer.h"
-#include "Animator.h"
+#include "Amature.h"
 
 Component::Component(COMPONENT_TYPE type) : Object(OBJECT_TYPE::COMPONENT), _type(type)
 {
@@ -27,7 +27,7 @@ shared_ptr<MeshRenderer> Component::GetMeshRenderer()
 	return _gameObject.lock()->GetMeshRenderer();
 }
 
-shared_ptr<Animator> Component::GetAnimator()
+shared_ptr<Amature> Component::GetAmature()
 {
-	return _gameObject.lock()->GetAnimator();
+	return _gameObject.lock()->GetAmature();
 }

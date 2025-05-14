@@ -33,6 +33,10 @@ struct LightParams
 	LightInfo	lights[50];
 };
 
+// 씬 내에서 조명 역할을 수행하는 컴포넌트
+// 광원 유형(Directional, Point, Spot)에 따라 조명 데이터를 구성하며,
+// 렌더링 시 GPU에 LightInfo 구조체로 전달
+// 그림자 생성을 위한 전용 카메라를 보유하고, Light Volume 렌더링도 지원
 class Light : public Component
 {
 public:
