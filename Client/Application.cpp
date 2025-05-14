@@ -30,6 +30,7 @@ void Application::Init(const WindowInfo& info)
 	_graphicsDescHeap->Init(512);
 	_computeDescHeap->Init();
 
+	// 셰이더에 파라미터 형식으로 전달
 	CreateConstantBuffer(CBV_REGISTER::b0, sizeof(LightParams), 1);
 	CreateConstantBuffer(CBV_REGISTER::b1, sizeof(TransformParams), 512);
 	CreateConstantBuffer(CBV_REGISTER::b2, sizeof(MaterialParams), 512);
