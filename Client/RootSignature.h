@@ -1,5 +1,7 @@
 #pragma once
 
+// 그래픽스 및 컴퓨트 파이프라인용 루트 시그니처를 생성 및 관리하는 클래스
+// CBV, SRV, UAV, Sampler 바인딩을 정의하며, 각 파이프라인에 맞는 루트 시그니처를 분리 보관
 class RootSignature
 {
 public:

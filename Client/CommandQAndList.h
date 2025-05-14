@@ -4,7 +4,6 @@ class SwapChain;
 class DescriptorHeap;
 
 // 커맨드 리스트를 GPU에 제출하기 위한 명령 큐 클래스
-
 class GraphicsCommandQueue
 {
 public:
