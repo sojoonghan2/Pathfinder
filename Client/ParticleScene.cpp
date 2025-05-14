@@ -44,7 +44,6 @@
 #include "RectangleCollider.h"
 
 #include "GameModule.h"
-#include "Player.h"
 
 #include "TestScript.h"
 
