@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "SwapChain.h"
 
-void SwapChain::Init(const WindowInfo& info, ComPtr<ID3D12Device> device, ComPtr<IDXGIFactory> dxgi, ComPtr<ID3D12CommandQueue> cmdQueue)
+void SwapChain::Init(const WindowInfo& info, ComPtr<ID3D12Device> device, ComPtr<IDXGIFactory4> dxgi, ComPtr<ID3D12CommandQueue> cmdQueue)
 {
 	CreateSwapChain(info, dxgi, cmdQueue);
 }
@@ -16,7 +16,7 @@ void SwapChain::SwapIndex()
 	_backBufferIndex = (_backBufferIndex + 1) % SWAP_CHAIN_BUFFER_COUNT;
 }
 
-void SwapChain::CreateSwapChain(const WindowInfo& info, ComPtr<IDXGIFactory> dxgi, ComPtr<ID3D12CommandQueue> cmdQueue)
+void SwapChain::CreateSwapChain(const WindowInfo& info, ComPtr<IDXGIFactory4> dxgi, ComPtr<ID3D12CommandQueue> cmdQueue)
 {
 	_swapChain.Reset();
 
@@ -37,5 +37,5 @@ void SwapChain::CreateSwapChain(const WindowInfo& info, ComPtr<IDXGIFactory> dxg
 	desc.SampleDesc.Count = 1;
 	desc.SampleDesc.Quality = 0;
 
-	dxgi->CreateSwapChain(cmdQueue.Get(), &desc, &_swapChain);
+	HRESULT hResult = dxgi->CreateSwapChain(cmdQueue.Get(), &desc, &_swapChain);
 }

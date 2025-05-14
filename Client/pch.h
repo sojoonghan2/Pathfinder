@@ -42,6 +42,7 @@ namespace fs = std::filesystem;
 #include "d3dx12.h"
 #include "SimpleMath.h"
 #include "SimpleMath.inl"
+#include <dxgi1_4.h>
 #include <d3d12.h>
 #include <wrl.h>
 #include <d3dcompiler.h>
