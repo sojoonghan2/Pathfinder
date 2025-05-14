@@ -8,6 +8,7 @@ enum class ColliderType
 	Rectangle,
 };
 
+// 충돌 컴포넌트를 구현하기 위한 추상 베이스 콜라이더 클래스
 class BaseCollider : public Component
 {
 public:

@@ -30,6 +30,9 @@ struct ComputeSharedInfo
 	int32 padding[3];
 };
 
+// GPU 기반 파티클 시스템 컴포넌트
+// 컴퓨트 셰이더를 통해 파티클 데이터를 계산하고, 버퍼에 저장된 정보를 바탕으로 파티클 렌더링 수행
+// 생성 주기, 수명, 속도, 크기 등 파티클 개별 속성 설정 가능
 class ParticleSystem : public Component
 {
 public:
