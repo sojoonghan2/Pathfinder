@@ -5,12 +5,12 @@
 #include "Obstacle.h"
 
 // object handler 역할도 해준다.
-class Game
+class Pathfinder
 {
-	DECLARE_SINGLE(Game)
+	DECLARE_SINGLE(Pathfinder)
 
 private:
-	~Game() {}
+	~Pathfinder() {}
 
 
 public:

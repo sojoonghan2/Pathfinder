@@ -72,23 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)Output</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)Output</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Library/Include/FBX/;$(SolutionDir)Library/Include/;$(SolutionDir)Engine\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Library/include/FBX/;$(SolutionDir)Library/include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Library/Lib/;$(SolutionDir)Output\;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Output\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Library/Include/FBX/;$(SolutionDir)Library/Include/;$(SolutionDir)Engine\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Library/include/FBX/;$(SolutionDir)Library/include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Library/Lib/;$(SolutionDir)Output\;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Output\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -98,7 +94,6 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -115,7 +110,6 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -133,6 +127,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,6 +146,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,24 +157,214 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Engine\Timer.h" />
+    <ClInclude Include="..\Common\protocol.h" />
+    <ClInclude Include="..\Common\util.h" />
+    <ClInclude Include="Animator.h" />
+    <ClInclude Include="BaseCollider.h" />
+    <ClInclude Include="BaseParticleSystem.h" />
+    <ClInclude Include="BINLoader.h" />
+    <ClInclude Include="BossScene.h" />
+    <ClInclude Include="BossScript.h" />
+    <ClInclude Include="BulletScript.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="CameraScript.h" />
+    <ClInclude Include="CataclysmParticleSystem.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="CollisionManager.h" />
+    <ClInclude Include="CommandQAndList.h" />
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="CrabParticleSystem.h" />
+    <ClInclude Include="CrabScript.h" />
+    <ClInclude Include="d3dx12.h" />
+    <ClInclude Include="Descriptor.h" />
+    <ClInclude Include="Device.h" />
+    <ClInclude Include="DustParticleSystem.h" />
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="FactoryMidScript.h" />
+    <ClInclude Include="FactoryScene.h" />
+    <ClInclude Include="FactoryScript.h" />
+    <ClInclude Include="FBXLoader.h" />
+    <ClInclude Include="FireParticleSystem.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Frustum.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameModule.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GeneratorScript.h" />
+    <ClInclude Include="GlitterParticleSystem.h" />
+    <ClInclude Include="GunFlameParticleSystem.h" />
+    <ClInclude Include="GunScript.h" />
+    <ClInclude Include="IceParticleSystem.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="InstancingManager.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="LightPillarParticleSystem.h" />
+    <ClInclude Include="LoadingScene.h" />
+    <ClInclude Include="LoadingScript.h" />
+    <ClInclude Include="LuckyScene.h" />
+    <ClInclude Include="LuckyScript.h" />
+    <ClInclude Include="MasterScript.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshData.h" />
+    <ClInclude Include="MeshRenderer.h" />
+    <ClInclude Include="Message.h" />
+    <ClInclude Include="MessageManager.h" />
+    <ClInclude Include="ModuleScript.h" />
+    <ClInclude Include="MonoBehaviour.h" />
+    <ClInclude Include="NetworkBulletScript.h" />
+    <ClInclude Include="NetworkCrabScript.h" />
+    <ClInclude Include="NetworkMonsterHpScript.h" />
+    <ClInclude Include="NetworkOtherPlayerScript.h" />
+    <ClInclude Include="NetworkTimer.h" />
+    <ClInclude Include="Object.h" />
+    <ClInclude Include="OccupationScript.h" />
+    <ClInclude Include="OrientedBoxCollider.h" />
+    <ClInclude Include="OverDriveParticleSystem.h" />
+    <ClInclude Include="ParticlePool.h" />
+    <ClInclude Include="ParticleScene.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerScript.h" />
+    <ClInclude Include="PortalFrameParticleSystem.h" />
+    <ClInclude Include="RazerParticleScript.h" />
+    <ClInclude Include="RazerParticleSystem.h" />
+    <ClInclude Include="RectangleCollider.h" />
+    <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Resources.h" />
+    <ClInclude Include="RootSignature.h" />
+    <ClInclude Include="RuinsScene.h" />
+    <ClInclude Include="RuinsScript.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="SelfDestructionRobotScript.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="SimpleMath.h" />
+    <ClInclude Include="SocketIO.h" />
+    <ClInclude Include="SphereCollider.h" />
+    <ClInclude Include="Buffer.h" />
+    <ClInclude Include="SwapChain.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TestDragon.h" />
+    <ClInclude Include="TestGrenadeScript.h" />
+    <ClInclude Include="TestHuman.h" />
+    <ClInclude Include="TestParticleScript.h" />
+    <ClInclude Include="TestPBRParticleSystem.h" />
+    <ClInclude Include="TestScene.h" />
+    <ClInclude Include="TestScript.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="Timer.h" />
+    <ClInclude Include="TitleScene.h" />
+    <ClInclude Include="TitleScript.h" />
+    <ClInclude Include="Transform.h" />
+    <ClInclude Include="WaterScript.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Engine\Timer.cpp" />
+    <ClCompile Include="..\Common\util.cpp" />
+    <ClCompile Include="Animator.cpp" />
+    <ClCompile Include="BaseCollider.cpp" />
+    <ClCompile Include="BaseParticleSystem.cpp" />
+    <ClCompile Include="BINLoader.cpp" />
+    <ClCompile Include="BossScene.cpp" />
+    <ClCompile Include="BossScript.cpp" />
+    <ClCompile Include="BulletScript.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraScript.cpp" />
+    <ClCompile Include="CataclysmParticleSystem.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="CollisionManager.cpp" />
+    <ClCompile Include="CommandQAndList.cpp" />
+    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="CrabParticleSystem.cpp" />
+    <ClCompile Include="CrabScript.cpp" />
+    <ClCompile Include="Descriptor.cpp" />
+    <ClCompile Include="Device.cpp" />
+    <ClCompile Include="DustParticleSystem.cpp" />
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="FactoryMidScript.cpp" />
+    <ClCompile Include="FactoryScene.cpp" />
+    <ClCompile Include="FactoryScript.cpp" />
+    <ClCompile Include="FBXLoader.cpp" />
+    <ClCompile Include="FireParticleSystem.cpp" />
+    <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameModule.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GeneratorScript.cpp" />
+    <ClCompile Include="GlitterParticleSystem.cpp" />
+    <ClCompile Include="GunFlameParticleSystem.cpp" />
+    <ClCompile Include="GunScript.cpp" />
+    <ClCompile Include="IceParticleSystem.cpp" />
+    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="InstancingManager.cpp" />
+    <ClCompile Include="Light.cpp" />
+    <ClCompile Include="LightPillarParticleSystem.cpp" />
+    <ClCompile Include="LoadingScene.cpp" />
+    <ClCompile Include="LoadingScript.cpp" />
+    <ClCompile Include="LuckyScene.cpp" />
+    <ClCompile Include="LuckyScript.cpp" />
+    <ClCompile Include="MasterScript.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshData.cpp" />
+    <ClCompile Include="MeshRenderer.cpp" />
+    <ClCompile Include="Message.cpp" />
+    <ClCompile Include="MessageManager.cpp" />
+    <ClCompile Include="ModuleScript.cpp" />
+    <ClCompile Include="MonoBehaviour.cpp" />
+    <ClCompile Include="NetworkBulletScript.cpp" />
+    <ClCompile Include="NetworkCrabScript.cpp" />
+    <ClCompile Include="NetworkMonsterHpScript.cpp" />
+    <ClCompile Include="NetworkOtherPlayerScript.cpp" />
+    <ClCompile Include="NetworkTimer.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="OccupationScript.cpp" />
+    <ClCompile Include="OrientedBoxCollider.cpp" />
+    <ClCompile Include="OverDriveParticleSystem.cpp" />
+    <ClCompile Include="ParticlePool.cpp" />
+    <ClCompile Include="ParticleScene.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerScript.cpp" />
+    <ClCompile Include="PortalFrameParticleSystem.cpp" />
+    <ClCompile Include="RazerParticleScript.cpp" />
+    <ClCompile Include="RazerParticleSystem.cpp" />
+    <ClCompile Include="RectangleCollider.cpp" />
+    <ClCompile Include="RenderTarget.cpp" />
+    <ClCompile Include="Resources.cpp" />
+    <ClCompile Include="RootSignature.cpp" />
+    <ClCompile Include="RuinsScene.cpp" />
+    <ClCompile Include="RuinsScript.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="SelfDestructionRobotScript.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SimpleMath.cpp" />
+    <ClCompile Include="SocketIO.cpp" />
+    <ClCompile Include="SphereCollider.cpp" />
+    <ClCompile Include="Buffer.cpp" />
+    <ClCompile Include="SwapChain.cpp" />
+    <ClCompile Include="TestDragon.cpp" />
+    <ClCompile Include="TestGrenadeScript.cpp" />
+    <ClCompile Include="TestHuman.cpp" />
+    <ClCompile Include="TestParticleScript.cpp" />
+    <ClCompile Include="TestPBRParticleSystem.cpp" />
+    <ClCompile Include="TestScene.cpp" />
+    <ClCompile Include="TestScript.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="TitleScene.cpp" />
+    <ClCompile Include="TitleScript.cpp" />
+    <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="WaterScript.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc" />
@@ -186,6 +372,137 @@
   <ItemGroup>
     <Image Include="Client.ico" />
     <Image Include="small.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SimpleMath.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Resources\Shader\animation.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\Billboard.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\CataclysmParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\compute.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\CrabParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\Debug.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\deferred.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\DustParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\FireParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\forward.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\GlitterParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\GunFlameParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\IceParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\lighting.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\LightPillarParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\math.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\Occupation.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\OverDriveParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\params.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\PortalFrameParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\RazerParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\shadow.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SkillIcon.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\skybox.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\terrain.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\terrainCube.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\tessellation.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\TestPBRParticle.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\UI.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\utils.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\water.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

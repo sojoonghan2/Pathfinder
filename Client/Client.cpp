@@ -50,7 +50,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	GWindowInfo.height = WINDOWWIDTH;
 	GWindowInfo.windowed = true;
 
-	unique_ptr<Game> game = make_unique<Game>();
+	unique_ptr<Pathfinder> game = make_unique<Pathfinder>();
 	game->Init(GWindowInfo);
 
 	// 게임 초기화 후 창에 포커스 설정

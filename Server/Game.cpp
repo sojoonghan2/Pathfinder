@@ -14,7 +14,7 @@ std::uniform_real_distribution<float> posDist{ -24.f, 24.f };
 std::uniform_real_distribution<float> speedDist{ 1.f, 3.f };
 
 
-void Game::InitRoom(int room_id)
+void Pathfinder::InitRoom(int room_id)
 {
 
 	// 방 설정
@@ -56,12 +56,12 @@ void Game::InitRoom(int room_id)
 
 }
 
-std::shared_ptr<Player> Game::GetPlayer(const ClientIdInfo& id_info)
+std::shared_ptr<Player> Pathfinder::GetPlayer(const ClientIdInfo& id_info)
 {
 	return _playerList.at(id_info.roomId * 3 + id_info.playerId);
 }
 
-std::shared_ptr<Object> Game::GetObjectFromPool(const ObjectType type)
+std::shared_ptr<Object> Pathfinder::GetObjectFromPool(const ObjectType type)
 {
 	std::shared_ptr<Object> obj;
 
@@ -85,7 +85,7 @@ std::shared_ptr<Object> Game::GetObjectFromPool(const ObjectType type)
 	return obj;
 }
 
-void Game::Update()
+void Pathfinder::Update()
 {
 	// 방 업데이트
 	_deltaTimer.updateDeltaTime();
@@ -106,7 +106,7 @@ void Game::Update()
 	}
 }
 
-void Game::Init()
+void Pathfinder::Init()
 {
 	// player init
 	for (auto& player : _playerList) {

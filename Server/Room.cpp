@@ -195,7 +195,7 @@ void Room::FireBullet(const int player_id)
 	auto player{ _playerList[player_id] };
 
 
-	auto obj{ GET_SINGLE(Game)->GetObjectFromPool(ObjectType::BULLET) };
+	auto obj{ GET_SINGLE(Pathfinder)->GetObjectFromPool(ObjectType::BULLET) };
 	auto bullet{ std::static_pointer_cast<Bullet>(obj) };
 	bullet->InitBullet(player->GetPos(), player->GetDir(), player_id);
 	AddObject(bullet);

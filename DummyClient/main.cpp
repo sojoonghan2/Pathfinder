@@ -476,7 +476,7 @@ int WINAPI WinMain(HINSTANCE	hInstance,			// Instance
 			}
 			else									// Not Time To Quit, Update Screen
 			{
-				SwapBuffers(hDC);					// Swap Buffers (Double Buffering)
+				SwaBuffers(hDC);					// Swap Buffers (Double Buffering)
 			}
 
 			if (keys[VK_F1])						// Is F1 Being Pressed?

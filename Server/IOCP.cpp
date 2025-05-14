@@ -239,7 +239,7 @@ void IOCP::TimerWorker()
 
 		//update_timer.updateDeltaTime();
 		//auto delta = update_timer.getDeltaTimeSeconds();
-		GET_SINGLE(Game)->Update();
+		GET_SINGLE(Pathfinder)->Update();
 
 
 		// 몬스터의 위치를 플레이어한테 전송
@@ -400,7 +400,7 @@ void IOCP::ProcessPacket(int key, char* p)
 		// Room, RoomInfo, Player에다가 정보를 저장
 
 		// 게임 쪽 초기화. 방, 플레이어, 몬스터의 실제 정보를 초기화해준다.
-		GET_SINGLE(Game)->InitRoom(room_id);
+		GET_SINGLE(Pathfinder)->InitRoom(room_id);
 		
 		// roominfo에 로딩 완료된 플레이어 0명으로 설정
 		_roomInfoList[room_id].SetLoadingCount(0);
@@ -416,7 +416,7 @@ void IOCP::ProcessPacket(int key, char* p)
 		}
 
 		// SC_MATCHMAKING 매칭 완료 알림 및 로드할 방의 타입을 줌.
-		auto room_type{ GET_SINGLE(Game)->GetRoom(room_id)->GetRoomType() };
+		auto room_type{ GET_SINGLE(Pathfinder)->GetRoom(room_id)->GetRoomType() };
 		
 		// 클라이언트 로딩 시작
 		for (int i = 0; i < 3; ++i) {
@@ -476,7 +476,7 @@ void IOCP::ProcessPacket(int key, char* p)
 		// 방에 있는 플레이어들에게 위치를 보냄
 		for (int i{}; i < 3; ++i) {
 
-			auto player = GET_SINGLE(Game)->GetPlayer(room_id * 3 + i);
+			auto player = GET_SINGLE(Pathfinder)->GetPlayer(room_id * 3 + i);
 			auto pos = player->GetPos();
 			auto dir = player->GetDir();
 
@@ -491,7 +491,7 @@ void IOCP::ProcessPacket(int key, char* p)
 		}
 
 		// 게임 시작. 방 상태를 Running으로.
-		GET_SINGLE(Game)->GetRoom(room_id)->SetRoomStatus(RoomStatus::Running);
+		GET_SINGLE(Pathfinder)->GetRoom(room_id)->SetRoomStatus(RoomStatus::Running);
 				
 
 	}
@@ -506,12 +506,12 @@ void IOCP::ProcessPacket(int key, char* p)
 
 		// 방이 실행중이 아니면 나가기
 		auto& id_info{ _clientInfoHash[key].clientIdInfo };
-		if (RoomStatus::Running != GET_SINGLE(Game)->GetRoom(id_info.roomId)->GetRoomStatus()) {
+		if (RoomStatus::Running != GET_SINGLE(Pathfinder)->GetRoom(id_info.roomId)->GetRoomStatus()) {
 			break;
 		}
 
 		// 받은 위치를 저장
-		auto player = GET_SINGLE(Game)->GetPlayer(id_info);
+		auto player = GET_SINGLE(Pathfinder)->GetPlayer(id_info);
 		player->SetDir(Vec2f{ packet->dirX, packet->dirY });
 		player->SetPos(packet->x, packet->y);
 
@@ -538,7 +538,7 @@ void IOCP::ProcessPacket(int key, char* p)
 		auto client_id_info{ _clientInfoHash[key].clientIdInfo};
 		
 		// room에 총알 객체 생성
-		GET_SINGLE(Game)->GetRoom(client_id_info.roomId)->FireBullet(client_id_info.playerId);
+		GET_SINGLE(Pathfinder)->GetRoom(client_id_info.roomId)->FireBullet(client_id_info.playerId);
 
 		// 생성한 총알은 일단 update할때마다 알려주는 것으로 한다.
 

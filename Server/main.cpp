@@ -6,7 +6,7 @@ int main()
 {
 	
 
-	GET_SINGLE(Game)->Init();
+	GET_SINGLE(Pathfinder)->Init();
 	auto ret = GET_SINGLE(IOCP)->Init();
 	if (false == ret) {
 		return -1;
