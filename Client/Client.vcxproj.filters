@@ -123,7 +123,7 @@
     <ClInclude Include="CommandQueueAndList.h">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="ViewDescriptorHeap.h">
+    <ClInclude Include="DescriptorTable.h">
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Device.h">
@@ -430,7 +430,7 @@
     <ClCompile Include="CommandQueueAndList.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="ViewDescriptorHeap.cpp">
+    <ClCompile Include="DescriptorTable.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="Device.cpp">

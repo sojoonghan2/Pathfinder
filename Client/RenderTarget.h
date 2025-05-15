@@ -35,7 +35,7 @@ class RenderTargetGroup
 public:
 	// 렌더 타겟 그룹 생성
 	void Create(RENDER_TARGET_GROUP_TYPE groupType, vector<RenderTarget>& rtVec, shared_ptr<Texture> dsTexture);
-	void SetViewportAndScissor();
+	void SetViewportAndScissorRect();
 
 	// 지정된 인덱스부터 렌더 타겟들을 OM 단계에 설정
 	void OMSetRenderTargets(uint32 count, uint32 offset);

@@ -41,7 +41,7 @@ void RenderTargetGroup::Create(RENDER_TARGET_GROUP_TYPE groupType, vector<Render
 	}
 }
 
-void RenderTargetGroup::SetViewportAndScissor()
+void RenderTargetGroup::SetViewportAndScissorRect()
 {
 	const float w = static_cast<float>(_rtVec[0].target->GetWidth());
 	const float h = static_cast<float>(_rtVec[0].target->GetHeight());
@@ -56,7 +56,7 @@ void RenderTargetGroup::SetViewportAndScissor()
 // ÃÖÁ¾ÀûÀÎ ´ÜÀÏ ·»´õ Å¸°Ù°ú ±íÀÌ/½ºÅÙ½Ç ºä¸¦ Ãâ·Â º´ÇÕ±â(OM)¿¡ ¼³Á¤
 void RenderTargetGroup::OMSetRenderTargets(uint32 count, uint32 offset)
 {
-	SetViewportAndScissor();
+	SetViewportAndScissorRect();
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(_rtvHeapBegin, offset * _rtvHeapSize);
 	GRAPHICS_CMD_LIST->OMSetRenderTargets(count, &rtvHandle, FALSE, &_dsvHeapBegin);
@@ -65,7 +65,7 @@ void RenderTargetGroup::OMSetRenderTargets(uint32 count, uint32 offset)
 // ÃÖÁ¾ÀûÀÎ ´ÙÁß ·»´õ Å¸°Ù°ú ±íÀÌ/½ºÅÙ½Ç ºä¸¦ Ãâ·Â º´ÇÕ±â(OM)¿¡ ¼³Á¤
 void RenderTargetGroup::OMSetRenderTargets()
 {
-	SetViewportAndScissor();
+	SetViewportAndScissorRect();
 
 	GRAPHICS_CMD_LIST->OMSetRenderTargets(_rtCount, &_rtvHeapBegin, TRUE, &_dsvHeapBegin);
 }

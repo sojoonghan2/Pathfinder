@@ -7,7 +7,7 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "Buffer.h"
-#include "ViewDescriptorHeap.h"
+#include "DescriptorTable.h"
 #include "Texture.h"
 #include "RenderTarget.h"
 
@@ -28,8 +28,8 @@ public:
 	shared_ptr<ComputeCommandQueueAndList> GetComputeCmdQueue() { return _computeCmdQueue; }
 	shared_ptr<SwapChain> GetSwapChain() { return _swapChain; }
 	shared_ptr<RootSignature> GetRootSignature() { return _rootSignature; }
-	shared_ptr<GraphicsViewDescriptorHeap> GetGraphicsDescHeap() { return _graphicsDescHeap; }
-	shared_ptr<ComputeViewDescriptorHeap> GetComputeDescHeap() { return _computeDescHeap; }
+	shared_ptr<GraphicsDescriptorTable> GetGraphicsDescHeap() { return _graphicsDescHeap; }
+	shared_ptr<ComputeDescriptorTable> GetComputeDescHeap() { return _computeDescHeap; }
 
 	shared_ptr<ConstantBuffer> GetConstantBuffer(CONSTANT_BUFFER_TYPE type) { return _constantBuffers[static_cast<uint8>(type)]; }
 	shared_ptr<RenderTargetGroup> GetRTGroup(RENDER_TARGET_GROUP_TYPE type) { return _rtGroups[static_cast<uint8>(type)]; }
@@ -58,8 +58,8 @@ private:
 	shared_ptr<ComputeCommandQueueAndList> _computeCmdQueue = make_shared<ComputeCommandQueueAndList>();
 	shared_ptr<SwapChain> _swapChain = make_shared<SwapChain>();
 	shared_ptr<RootSignature> _rootSignature = make_shared<RootSignature>();
-	shared_ptr<GraphicsViewDescriptorHeap> _graphicsDescHeap = make_shared<GraphicsViewDescriptorHeap>();
-	shared_ptr<ComputeViewDescriptorHeap> _computeDescHeap = make_shared<ComputeViewDescriptorHeap>();
+	shared_ptr<GraphicsDescriptorTable> _graphicsDescHeap = make_shared<GraphicsDescriptorTable>();
+	shared_ptr<ComputeDescriptorTable> _computeDescHeap = make_shared<ComputeDescriptorTable>();
 
 	vector<shared_ptr<ConstantBuffer>> _constantBuffers;
 	array<shared_ptr<RenderTargetGroup>, RENDER_TARGET_GROUP_COUNT> _rtGroups;

@@ -6,7 +6,7 @@ using HandleGetter = D3D12_CPU_DESCRIPTOR_HANDLE(*)(T);
 // CBV/SRV/UAV 리소스를 GPU에 바인딩하기 위한 디스크립터 힙 관리 클래스
 // 뷰 정보를 담은 구조체
 // 각 디스크립터 레지스터에 해당하는 핸들을 설정하고, 명령 리스트에 커밋하는 기능을 제공함
-class GraphicsViewDescriptorHeap
+class GraphicsDescriptorTable
 {
 public:
 	void Init(uint32 count);
@@ -38,7 +38,7 @@ private:
 // CBV/SRV/UAV 리소스를 GPU에 바인딩하기 위한 컴퓨트 디스크립터 힙 관리 클래스
 // 뷰 정보를 담은 구조체
 // 각 디스크립터 레지스터에 해당하는 핸들을 설정하고, 명령 리스트에 커밋하는 기능을 제공함
-class ComputeViewDescriptorHeap
+class ComputeDescriptorTable
 {
 public:
 	void Init();

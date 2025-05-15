@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "ViewDescriptorHeap.h"
+#include "DescriptorTable.h"
 #include "GameFramework.h"
 
 namespace
@@ -15,7 +15,7 @@ namespace
 	}
 }
 
-void GraphicsViewDescriptorHeap::Init(uint32 count)
+void GraphicsDescriptorTable::Init(uint32 count)
 {
 	_groupCount = count;
 
@@ -30,22 +30,22 @@ void GraphicsViewDescriptorHeap::Init(uint32 count)
 	_groupSize = _handleSize * (CBV_SRV_REGISTER_COUNT - 1); // b0는 전역
 }
 
-void GraphicsViewDescriptorHeap::Clear()
+void GraphicsDescriptorTable::Clear()
 {
 	_currentGroupIndex = 0;
 }
 
-void GraphicsViewDescriptorHeap::SetCBV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, CBV_REGISTER reg)
+void GraphicsDescriptorTable::SetCBV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, CBV_REGISTER reg)
 {
 	CopyDescriptor(srcHandle, GetCPUHandle(reg));
 }
 
-void GraphicsViewDescriptorHeap::SetSRV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, SRV_REGISTER reg)
+void GraphicsDescriptorTable::SetSRV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, SRV_REGISTER reg)
 {
 	CopyDescriptor(srcHandle, GetCPUHandle(reg));
 }
 
-void GraphicsViewDescriptorHeap::CommitTable()
+void GraphicsDescriptorTable::CommitTable()
 {
 	D3D12_GPU_DESCRIPTOR_HANDLE handle = _descHeap->GetGPUDescriptorHandleForHeapStart();
 	handle.ptr += _currentGroupIndex * _groupSize;
@@ -54,12 +54,12 @@ void GraphicsViewDescriptorHeap::CommitTable()
 }
 
 template<typename T>
-D3D12_CPU_DESCRIPTOR_HANDLE GraphicsViewDescriptorHeap::GetCPUHandle(T reg)
+D3D12_CPU_DESCRIPTOR_HANDLE GraphicsDescriptorTable::GetCPUHandle(T reg)
 {
 	return GetCPUHandle(static_cast<uint8>(reg));
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE GraphicsViewDescriptorHeap::GetCPUHandle(uint8 reg)
+D3D12_CPU_DESCRIPTOR_HANDLE GraphicsDescriptorTable::GetCPUHandle(uint8 reg)
 {
 	assert(reg > 0); // b0는 글로벌, 그룹 내에서는 b1부터 사용
 	D3D12_CPU_DESCRIPTOR_HANDLE handle = _descHeap->GetCPUDescriptorHandleForHeapStart();
@@ -68,7 +68,7 @@ D3D12_CPU_DESCRIPTOR_HANDLE GraphicsViewDescriptorHeap::GetCPUHandle(uint8 reg)
 	return handle;
 }
 
-void ComputeViewDescriptorHeap::Init()
+void ComputeDescriptorTable::Init()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
 	desc.NumDescriptors = TOTAL_REGISTER_COUNT;
@@ -80,22 +80,22 @@ void ComputeViewDescriptorHeap::Init()
 	_handleSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
-void ComputeViewDescriptorHeap::SetCBV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, CBV_REGISTER reg)
+void ComputeDescriptorTable::SetCBV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, CBV_REGISTER reg)
 {
 	CopyDescriptor(srcHandle, GetCPUHandle(reg));
 }
 
-void ComputeViewDescriptorHeap::SetSRV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, SRV_REGISTER reg)
+void ComputeDescriptorTable::SetSRV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, SRV_REGISTER reg)
 {
 	CopyDescriptor(srcHandle, GetCPUHandle(reg));
 }
 
-void ComputeViewDescriptorHeap::SetUAV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, UAV_REGISTER reg)
+void ComputeDescriptorTable::SetUAV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, UAV_REGISTER reg)
 {
 	CopyDescriptor(srcHandle, GetCPUHandle(reg));
 }
 
-void ComputeViewDescriptorHeap::CommitTable()
+void ComputeDescriptorTable::CommitTable()
 {
 	ID3D12DescriptorHeap* descHeap = _descHeap.Get();
 	COMPUTE_CMD_LIST->SetDescriptorHeaps(1, &descHeap);
@@ -105,12 +105,12 @@ void ComputeViewDescriptorHeap::CommitTable()
 }
 
 template<typename T>
-D3D12_CPU_DESCRIPTOR_HANDLE ComputeViewDescriptorHeap::GetCPUHandle(T reg)
+D3D12_CPU_DESCRIPTOR_HANDLE ComputeDescriptorTable::GetCPUHandle(T reg)
 {
 	return GetCPUHandle(static_cast<uint8>(reg));
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE ComputeViewDescriptorHeap::GetCPUHandle(uint8 reg)
+D3D12_CPU_DESCRIPTOR_HANDLE ComputeDescriptorTable::GetCPUHandle(uint8 reg)
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE handle = _descHeap->GetCPUDescriptorHandleForHeapStart();
 	handle.ptr += reg * _handleSize;

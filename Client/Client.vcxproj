@@ -176,7 +176,7 @@
     <ClInclude Include="CrabParticleSystem.h" />
     <ClInclude Include="CrabScript.h" />
     <ClInclude Include="d3dx12.h" />
-    <ClInclude Include="ViewDescriptorHeap.h" />
+    <ClInclude Include="DescriptorTable.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="DustParticleSystem.h" />
     <ClInclude Include="GameFramework.h" />
@@ -278,7 +278,7 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="CrabParticleSystem.cpp" />
     <ClCompile Include="CrabScript.cpp" />
-    <ClCompile Include="ViewDescriptorHeap.cpp" />
+    <ClCompile Include="DescriptorTable.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="DustParticleSystem.cpp" />
     <ClCompile Include="GameFramework.cpp" />
