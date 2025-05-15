@@ -66,14 +66,12 @@ private:
 	Frustum _frustum;
 	uint32 _cullingMask = 0;
 
-private:
 	vector<shared_ptr<GameObject>>	_vecDeferred;
 	vector<shared_ptr<GameObject>>	_vecForward;
 	vector<shared_ptr<GameObject>>	_vecParticle;
 	vector<shared_ptr<GameObject>>	_vecShadow;
 
 public:
-	// TEMP
 	static Matrix S_MatView;
 	static Matrix S_MatProjection;
 };

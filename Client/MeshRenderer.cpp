@@ -80,11 +80,11 @@ void MeshRenderer::RenderShadow()
 	if (GetAmature())
 	{
 		GetAmature()->PushData();
-		shadowMaterial->SetInt(1, 1); // g_int_1 = 1
+		shadowMaterial->SetInt(1, 1);
 	}
 	else
 	{
-		shadowMaterial->SetInt(1, 0); // g_int_1 = 0
+		shadowMaterial->SetInt(1, 0);
 	}
 
 	shadowMaterial->PushGraphicsData();
@@ -96,7 +96,6 @@ uint64 MeshRenderer::GetInstanceID()
 	if (_mesh == nullptr || _materials.empty())
 		return 0;
 
-	//uint64 id = (_mesh->GetID() << 32) | _material->GetID();
 	InstanceID instanceID{ _mesh->GetID(), _materials[0]->GetID() };
 	return instanceID.id;
 }

@@ -10,11 +10,12 @@
 
 Light::Light() : Component(COMPONENT_TYPE::LIGHT)
 {
+	// 섀도우 전용 카메라
 	_shadowCamera = make_shared<GameObject>();
 	_shadowCamera->AddComponent(make_shared<Transform>());
 	_shadowCamera->AddComponent(make_shared<Camera>());
 	uint8 layerIndex = GET_SINGLE(SceneManager)->LayerNameToIndex(L"UI");
-	_shadowCamera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false); // UI는 안 찍음
+	_shadowCamera->GetCamera()->SetCullingMaskLayerOnOff(layerIndex, false);
 }
 
 Light::~Light()
@@ -26,7 +27,7 @@ void Light::FinalUpdate()
 	_lightInfo.position = GetTransform()->GetWorldPosition();
 	
 	Vec3 lightPos = GetTransform()->GetWorldPosition();
-	Vec3 targetPos = lightPos + _lightInfo.direction * 1000.f; // 충분히 멀리
+	Vec3 targetPos = lightPos + _lightInfo.direction * 1000.f;
 	_shadowCamera->GetTransform()->LookAt(targetPos);
 
 	_shadowCamera->GetTransform()->SetLocalPosition(GetTransform()->GetWorldPosition());

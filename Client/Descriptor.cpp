@@ -4,6 +4,7 @@
 
 namespace
 {
+	// 컴파일 타임에 값이 결정
 	constexpr uint32 GRAPHICS_ROOT_DESCRIPTOR_SLOT = 1;
 	constexpr uint32 COMPUTE_ROOT_DESCRIPTOR_SLOT = 0;
 

@@ -47,7 +47,6 @@ public:
 	void Render();
 	void RenderShadow();
 
-public:
 	LIGHT_TYPE GetLightType() { return static_cast<LIGHT_TYPE>(_lightInfo.lightType); }
 
 	const LightInfo& GetLightInfo() { return _lightInfo; }

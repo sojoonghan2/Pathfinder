@@ -4,7 +4,6 @@
 class Mesh;
 class Material;
 
-// [32][32]
 union InstanceID
 {
 	struct

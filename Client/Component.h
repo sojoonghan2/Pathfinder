@@ -10,7 +10,6 @@ enum class COMPONENT_TYPE : uint8
 	PARTICLE_SYSTEM,
 	COLLIDER,
 	ANIMATOR,
-	// ...
 	MONO_BEHAVIOUR,
 	END,
 };
