@@ -404,7 +404,6 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 			for (int32 f = 0; f < size; f++)
 			{
 				FbxKeyFrameInfo& kf = vec[f];
-				// FBX?μ„ ?μ‹±???•λ³΄?¤λ΅ μ±„μ›μ¤€??
 				KeyFrameInfo& kfInfo = info.keyFrames[b][f];
 				kfInfo.time = kf.time;
 				kfInfo.frame = static_cast<int32>(size);
@@ -440,7 +439,6 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 #pragma region SkinData
 	if (IsAnimMesh())
 	{
-		// BoneOffet ?‰λ ¬
 		const int32 boneCount = static_cast<int32>(_bones.size());
 		vector<Matrix> offsetVec(boneCount);
 		for (size_t b = 0; b < boneCount; b++)
@@ -467,13 +465,11 @@ void Mesh::CreateBonesAndAnimations(class FBXLoader& loader)
 					frameParams[idx] = AnimFrameParams
 					{
 						Vec4(animClip.keyFrames[b][f].scale),
-						animClip.keyFrames[b][f].rotation, // Quaternion
+						animClip.keyFrames[b][f].rotation,
 						Vec4(animClip.keyFrames[b][f].translate)
 					};
 				}
 			}
-
-			// StructuredBuffer ?Έν…
 			_frameBuffer.push_back(make_shared<Buffer>());
 			_frameBuffer.back()->Init(sizeof(AnimFrameParams), static_cast<uint32>(frameParams.size()), frameParams.data());
 		}

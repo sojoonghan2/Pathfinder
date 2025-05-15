@@ -3,7 +3,7 @@
 template<typename T>
 using HandleGetter = D3D12_CPU_DESCRIPTOR_HANDLE(*)(T);
 
-// CBV/SRV/UAV 리소스를 GPU에 바인딩하기 위한 디스크립터 힙 관리 클래스
+// CBV/SRV/UAV 리소스를 GPU에 바인딩하기 위한 디스크립터 테이블 관리 클래스
 // 뷰 정보를 담은 구조체
 // 각 디스크립터 레지스터에 해당하는 핸들을 설정하고, 명령 리스트에 커밋하는 기능을 제공함
 class GraphicsDescriptorTable
@@ -35,7 +35,7 @@ private:
 	uint32							_currentGroupIndex{};
 };
 
-// CBV/SRV/UAV 리소스를 GPU에 바인딩하기 위한 컴퓨트 디스크립터 힙 관리 클래스
+// CBV/SRV/UAV 리소스를 GPU에 바인딩하기 위한 컴퓨트 디스크립터 테이블 관리 클래스
 // 뷰 정보를 담은 구조체
 // 각 디스크립터 레지스터에 해당하는 핸들을 설정하고, 명령 리스트에 커밋하는 기능을 제공함
 class ComputeDescriptorTable

@@ -1,28 +1,18 @@
 #pragma once
 #include "Object.h"
 
+// 쉐이더 종류
 enum class SHADER_TYPE : uint8
 {
-	DEFERRED, // 지연 렌더링, 다중 렌더 타겟 사용(셰이더에서 구조체 리턴 가능)
-	FORWARD, // 일반 전방 렌더링, 단일 렌더 타겟 사용(셰이더에서 구조체 리턴 불가능)
+	DEFERRED,
+	FORWARD,
 	LIGHTING,
 	PARTICLE,
 	COMPUTE,
 	SHADOW,
 };
 
-// *****************************************************************************************
-// struct PS_OUT
-// {
-//	 float4 position : SV_Target0;
-//	 float4 normal : SV_Target1;
-//	 float4 color : SV_Target2;
-// };
-// 이런식으로 SV_Targetn을 사용하여 다중 렌더 타겟을 사용 가능함
-// 만약 FORWARD 렌더링의 경우에는 이런식으로 다중 렌더 타겟을 사용이 불가능하기 떄문에
-// return output 처럼 구조체 리턴이 불가능하고 return color 같이 float4 형만 리턴이 가능함
-// *****************************************************************************************
-
+// 래스터라이저 설정
 enum class RASTERIZER_TYPE : uint8
 {
 	CULL_NONE,
@@ -31,17 +21,19 @@ enum class RASTERIZER_TYPE : uint8
 	WIREFRAME,
 };
 
+// 뎁스-스텐실 설정
 enum class DEPTH_STENCIL_TYPE : uint8
 {
 	LESS,
 	LESS_EQUAL,
 	GREATER,
 	GREATER_EQUAL,
-	NO_DEPTH_TEST, // 깊이 테스트(X) + 깊이 기록(O)
-	NO_DEPTH_TEST_NO_WRITE, // 깊이 테스트(X) + 깊이 기록(X)
-	LESS_NO_WRITE, // 깊이 테스트(O) + 깊이 기록(X)
+	NO_DEPTH_TEST,
+	NO_DEPTH_TEST_NO_WRITE,
+	LESS_NO_WRITE,
 };
 
+// 블렌딩 설정
 enum class BLEND_TYPE : uint8
 {
 	DEFAULT,
@@ -50,6 +42,7 @@ enum class BLEND_TYPE : uint8
 	END,
 };
 
+// 셰이더 설정 정보
 struct ShaderInfo
 {
 	SHADER_TYPE shaderType = SHADER_TYPE::FORWARD;
@@ -61,11 +54,11 @@ struct ShaderInfo
 
 struct ShaderArg
 {
-	const string vs = "VS_Main";
-	const string hs;
-	const string ds;
-	const string gs;
-	const string ps = "PS_Main";
+	string vs = "VS_Main";
+	string hs;
+	string ds;
+	string gs;
+	string ps = "PS_Main";
 };
 
 class Shader : public Object
@@ -74,37 +67,36 @@ public:
 	Shader();
 	virtual ~Shader();
 
-	void CreateGraphicsShader(const wstring& path, ShaderInfo info = ShaderInfo(), ShaderArg arg = ShaderArg());
-	void CreateComputeShader(const wstring& path, const string& name, const string& version);
-
+	void CreateGraphicsShader(const std::wstring& path, ShaderInfo info = {}, ShaderArg arg = {});
+	void CreateComputeShader(const std::wstring& path, const std::string& name, const std::string& version);
 	void Update();
 
-	SHADER_TYPE GetShaderType() { return _info.shaderType; }
-
+	SHADER_TYPE GetShaderType() const { return _info.shaderType; }
 	static D3D12_PRIMITIVE_TOPOLOGY_TYPE GetTopologyType(D3D_PRIMITIVE_TOPOLOGY topology);
 
 private:
-	void CreateShader(const wstring& path, const string& name, const string& version, ComPtr<ID3DBlob>& blob, D3D12_SHADER_BYTECODE& shaderByteCode);
-	void CreateVertexShader(const wstring& path, const string& name, const string& version);
-	void CreateHullShader(const wstring& path, const string& name, const string& version);
-	void CreateDomainShader(const wstring& path, const string& name, const string& version);
-	void CreateGeometryShader(const wstring& path, const string& name, const string& version);
-	void CreatePixelShader(const wstring& path, const string& name, const string& version);
+	void CreateShader(const std::wstring& path, const std::string& name, const std::string& version,
+		ComPtr<ID3DBlob>& blob, D3D12_SHADER_BYTECODE& shaderByteCode);
+
+	void CreateVertexShader(const std::wstring& path, const std::string& name, const std::string& version);
+	void CreateHullShader(const std::wstring& path, const std::string& name, const std::string& version);
+	void CreateDomainShader(const std::wstring& path, const std::string& name, const std::string& version);
+	void CreateGeometryShader(const std::wstring& path, const std::string& name, const std::string& version);
+	void CreatePixelShader(const std::wstring& path, const std::string& name, const std::string& version);
 
 private:
 	ShaderInfo _info;
-	ComPtr<ID3D12PipelineState>			_pipelineState;
+	ComPtr<ID3D12PipelineState> _pipelineState;
 
-	// GraphicsShader
-	ComPtr<ID3DBlob>					_vsBlob;
-	ComPtr<ID3DBlob>					_hsBlob;
-	ComPtr<ID3DBlob>					_dsBlob;
-	ComPtr<ID3DBlob>					_gsBlob;
-	ComPtr<ID3DBlob>					_psBlob;
-	ComPtr<ID3DBlob>					_errBlob;
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC  _graphicsPipelineDesc = {};
+	ComPtr<ID3DBlob> _vsBlob;
+	ComPtr<ID3DBlob> _hsBlob;
+	ComPtr<ID3DBlob> _dsBlob;
+	ComPtr<ID3DBlob> _gsBlob;
+	ComPtr<ID3DBlob> _psBlob;
+	ComPtr<ID3DBlob> _errBlob;
 
-	// ComputeShader
-	ComPtr<ID3DBlob>					_csBlob;
-	D3D12_COMPUTE_PIPELINE_STATE_DESC   _computePipelineDesc = {};
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC _graphicsPipelineDesc = {};
+
+	ComPtr<ID3DBlob> _csBlob;
+	D3D12_COMPUTE_PIPELINE_STATE_DESC _computePipelineDesc = {};
 };
