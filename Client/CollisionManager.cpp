@@ -189,7 +189,7 @@ void CollisionManager::CheckCrabToGrenade()
 			if (GET_SINGLE(SceneManager)->Collition(objA, objB))
 			{
 				auto crabScript = objA->GetScript<CrabScript>();
-				crabScript->CheckGrenadeHits();
+				crabScript->CheckGrenadeHits(objB);
 			}
 		}
 	}

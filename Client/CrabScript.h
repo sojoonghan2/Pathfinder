@@ -14,7 +14,7 @@ public:
 	void CheckBoundary();
 	void CheckDummyHits(shared_ptr<GameObject> dummy);
 	void CheckBulletHits();
-	void CheckGrenadeHits();
+	void CheckGrenadeHits(shared_ptr<GameObject> grenade);
 	void CheckRazerHits();
 
 	void DeadAnimation();
@@ -34,8 +34,6 @@ private:
 	float _pauseDuration{};
 
 	bool _initialized = false;
-
-	bool _takeGrenade = false;
 
 private:
 	shared_ptr<GameObject>			_hp;

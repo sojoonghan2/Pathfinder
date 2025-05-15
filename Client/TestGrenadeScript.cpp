@@ -109,16 +109,20 @@ void TestGrenadeScript::ThrowGrenade()
 	if (_isThrown)
 	{
 		GetGameObject()->SetRender(true);
-		GetGameObject()->GetCollider()->SetEnable(true);
 
 		Vec3 pos = GetTransform()->GetLocalPosition();
 		_velocity.y += _gravity * DELTA_TIME;
 		pos += _velocity * DELTA_TIME;
 		GetTransform()->SetLocalPosition(pos);
 
+		// 땅에 닿으면
 		if (pos.y <= -70.0f)
 		{
 			pos.y = -70.0f;
+
+			// 콜라이더 활성화
+			GetGameObject()->GetCollider()->SetEnable(true);
+
 			_isThrown = false;
 
 			// 파티클 재생
@@ -137,7 +141,7 @@ void TestGrenadeScript::ThrowGrenade()
 	{
 		_timeSinceLanded += DELTA_TIME;
 
-		if (_timeSinceLanded >= 5.0f)
+		if (_timeSinceLanded >= 2.0f)
 		{
 			GetGameObject()->SetRender(false);
 			GetGameObject()->GetCollider()->SetEnable(false);

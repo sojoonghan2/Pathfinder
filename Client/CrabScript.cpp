@@ -187,9 +187,6 @@ void CrabScript::CheckBulletHits()
 	Vec3 hpPos = _hp->GetTransform()->GetLocalPosition();
 	float delta = 10.f;
 
-	if (_takeGrenade)
-		delta *= 2.f;
-
 	if (hpScale.x - delta >= 0.f)
 	{
 		hpScale.x -= delta;
@@ -206,10 +203,39 @@ void CrabScript::CheckBulletHits()
 	}
 }
 
-void CrabScript::CheckGrenadeHits()
+void CrabScript::CheckGrenadeHits(shared_ptr<GameObject> grenade)
 {
-	_takeGrenade = true;
-	cout << "수류탄 피격\n";
+	if (!_hp)
+		return;
+
+	// 한 번만 충돌되도록
+	grenade->GetCollider()->SetEnable(false);
+
+	// 풀링이 안되고 있음
+	auto particle = _particlePool.GetAvailable();
+	if (particle)
+	{
+		particle->ParticleStart();
+	}
+
+	Vec3 hpScale = _hp->GetTransform()->GetLocalScale();
+	Vec3 hpPos = _hp->GetTransform()->GetLocalPosition();
+	float delta = 100.f;
+
+	if (hpScale.x - delta >= 0.f)
+	{
+		hpScale.x -= delta;
+		hpPos.x -= delta * 0.5f;
+
+		_hp->GetTransform()->SetLocalScale(hpScale);
+		_hp->GetTransform()->SetLocalPosition(hpPos);
+	}
+
+	if ((hpScale.x - delta) < 0.f)
+	{
+		DeadAnimation();
+		_hp->SetRender(false);
+	}
 }
 
 void CrabScript::CheckRazerHits()
