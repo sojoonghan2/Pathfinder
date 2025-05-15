@@ -171,12 +171,11 @@ void CrabScript::CheckDummyHits(shared_ptr<GameObject> dummy)
 	}
 }
 
-void CrabScript::CheckBulletHits(shared_ptr<GameObject> bullet)
+void CrabScript::CheckBulletHits()
 {
 	if (!_hp)
 		return;
 
-	bullet->GetCollider()->SetEnable(false);
 	// 풀링이 안되고 있음
 	auto particle = _particlePool.GetAvailable();
 	if (particle)

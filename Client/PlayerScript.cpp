@@ -14,6 +14,7 @@
 #include "Material.h"
 #include "MeshRenderer.h"
 #include "SphereCollider.h"
+#include "CollisionManager.h"
 
 PlayerScript::PlayerScript() {}
 PlayerScript::~PlayerScript() {}
@@ -242,12 +243,15 @@ void PlayerScript::Shoot()
 			_shootAniDurationTimer = 1.0f;
 		}
 
+		CreateRay();
 		ShakeCamera();
 	}
 	else
 	{
 		_isShoot = false;
 		_shootAniDurationTimer = 0.f;
+		// 키 뗐을 때 즉시 다음 발사 가능하게 초기화
+		_rayElapsedTime = _rayInterval;
 	}
 }
 
@@ -447,5 +451,62 @@ void PlayerScript::CheckCrabHits()
 		pos.x -= delta * 0.5f;
 		_hpTransform->SetLocalScale(scale);
 		_hpTransform->SetLocalPosition(pos);
+	}
+}
+
+void PlayerScript::CreateRay()
+{
+	_rayElapsedTime += DELTA_TIME;
+
+	// 간격보다 짧으면 생성 안 함
+	if (_rayElapsedTime < _rayInterval)
+		return;
+
+	_rayElapsedTime = 0.0f;
+
+	// 줌 상태일 때
+	if (_crosshairUI->IsRender())
+	{
+		shared_ptr<Camera> camera = GET_SINGLE(SceneManager)->GetActiveScene()->GetMainCamera();
+
+		float width = static_cast<float>(WINDOWWIDTH);
+		float height = static_cast<float>(WINDOWHEIGHT);
+
+		Matrix projectionMatrix = camera->GetProjectionMatrix();
+
+		float viewX = 0.0f / projectionMatrix(0, 0);
+		float viewY = 0.0f / projectionMatrix(1, 1);
+
+		Matrix viewMatrix = camera->GetViewMatrix();
+		Matrix viewMatrixInv = viewMatrix.Invert();
+
+		Vec4 rayOrigin = Vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		Vec4 rayDir = Vec4(viewX, viewY, 1.0f, 0.0f);
+
+		rayOrigin = XMVector3TransformCoord(rayOrigin, viewMatrixInv);
+		rayDir = XMVector3TransformNormal(rayDir, viewMatrixInv);
+		rayDir.Normalize();
+
+		GET_SINGLE(CollisionManager)->RegisterRay(rayOrigin, rayDir);
+	}
+	else
+	{
+		Vec3 rayStart = GetGameObject()->GetTransform()->GetLocalPosition();
+		rayStart.y += 450.f;
+
+		Vec3 up = GetGameObject()->GetTransform()->GetUp();
+		rayStart += up * 100.f;
+
+		Vec4 rayOrigin = Vec4(rayStart.x, rayStart.y, rayStart.z, 1.0f);
+
+		Vec3 dir = GetGameObject()->GetTransform()->GetLook();
+		dir.y = 0.0f;
+		dir += up * 400.f;
+		dir.Normalize();
+
+		Vec4 rayDir = Vec4(dir.x, dir.y, dir.z, 0.0f);
+		rayDir.Normalize();
+
+		GET_SINGLE(CollisionManager)->RegisterRay(rayOrigin, rayDir);
 	}
 }

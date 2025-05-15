@@ -27,6 +27,7 @@ public:
 	uint8 LayerNameToIndex(const wstring& name);
 
 	shared_ptr<class GameObject> Pick(int32 screenX, int32 screenY);
+	bool RayCast(const Vec4& rayOrigin, const Vec4& rayDir, shared_ptr<GameObject> obj);
 	bool Collition(shared_ptr<GameObject> obj1, shared_ptr<GameObject> obj2);
 
 	shared_ptr<GameObject> FindObjectByName(const wstring& name);

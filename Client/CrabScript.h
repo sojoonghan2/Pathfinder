@@ -13,7 +13,7 @@ public:
 	void MoveRandomly();
 	void CheckBoundary();
 	void CheckDummyHits(shared_ptr<GameObject> dummy);
-	void CheckBulletHits(shared_ptr<GameObject> bullet);
+	void CheckBulletHits();
 	void CheckGrenadeHits();
 	void CheckRazerHits();
 

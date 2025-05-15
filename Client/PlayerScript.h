@@ -40,6 +40,7 @@ public:
 
 	void CheckDummyHits(shared_ptr<GameObject> dummy);
 	void CheckCrabHits();
+	void CreateRay();
 
 private:
 	bool			_isMove = false;
@@ -93,4 +94,9 @@ private:
 
 	// 카메라
 	shared_ptr<GameObject> _cameraObj;
+
+	// 레이 생성 간격 (초)
+	float _rayInterval = 0.2f;
+	// 경과 시간
+	float _rayElapsedTime = 0.0f;
 };

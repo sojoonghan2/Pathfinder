@@ -76,6 +76,15 @@
     <Filter Include="Utils\Loader">
       <UniqueIdentifier>{a368cf18-54a7-406b-8998-10debac46459}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Script\PlayerScript">
+      <UniqueIdentifier>{7e51a749-aad0-4413-b247-e9e4234e5fef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Script\MonsterScript">
+      <UniqueIdentifier>{1701ed5d-e597-4bef-a28c-39d14b9dd2ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Script\UtilScript">
+      <UniqueIdentifier>{4fa78ef9-24f6-49a9-b750-4c213bf1bf0d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -324,52 +333,19 @@
     <ClInclude Include="RuinsScript.h">
       <Filter>Script\SceneScript</Filter>
     </ClInclude>
-    <ClInclude Include="TestScript.h">
-      <Filter>Script\ObjectScript</Filter>
-    </ClInclude>
-    <ClInclude Include="WaterScript.h">
-      <Filter>Script\ObjectScript</Filter>
-    </ClInclude>
     <ClInclude Include="BulletScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
     <ClInclude Include="CameraScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
-    <ClInclude Include="CrabScript.h">
-      <Filter>Script\ObjectScript</Filter>
-    </ClInclude>
-    <ClInclude Include="FactoryMidScript.h">
-      <Filter>Script\ObjectScript</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratorScript.h">
-      <Filter>Script\ObjectScript</Filter>
-    </ClInclude>
     <ClInclude Include="GunScript.h">
-      <Filter>Script\ObjectScript</Filter>
-    </ClInclude>
-    <ClInclude Include="ModuleScript.h">
-      <Filter>Script\ObjectScript</Filter>
-    </ClInclude>
-    <ClInclude Include="OccupationScript.h">
-      <Filter>Script\ObjectScript</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
     <ClInclude Include="RazerParticleScript.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
-    <ClInclude Include="SelfDestructionRobotScript.h">
-      <Filter>Script\ObjectScript</Filter>
-    </ClInclude>
-    <ClInclude Include="TestDragon.h">
-      <Filter>Script\ObjectScript</Filter>
-    </ClInclude>
     <ClInclude Include="TestGrenadeScript.h">
-      <Filter>Script\ObjectScript</Filter>
-    </ClInclude>
-    <ClInclude Include="TestHuman.h">
       <Filter>Script\ObjectScript</Filter>
     </ClInclude>
     <ClInclude Include="TestParticleScript.h">
@@ -383,6 +359,39 @@
     </ClInclude>
     <ClInclude Include="BINLoader.h">
       <Filter>Utils\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="CrabScript.h">
+      <Filter>Script\MonsterScript</Filter>
+    </ClInclude>
+    <ClInclude Include="FactoryMidScript.h">
+      <Filter>Script\MonsterScript</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratorScript.h">
+      <Filter>Script\MonsterScript</Filter>
+    </ClInclude>
+    <ClInclude Include="SelfDestructionRobotScript.h">
+      <Filter>Script\MonsterScript</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerScript.h">
+      <Filter>Script\PlayerScript</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleScript.h">
+      <Filter>Script\UtilScript</Filter>
+    </ClInclude>
+    <ClInclude Include="TestDragon.h">
+      <Filter>Script\UtilScript</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterScript.h">
+      <Filter>Script\UtilScript</Filter>
+    </ClInclude>
+    <ClInclude Include="TestScript.h">
+      <Filter>Script\UtilScript</Filter>
+    </ClInclude>
+    <ClInclude Include="TestHuman.h">
+      <Filter>Script\UtilScript</Filter>
+    </ClInclude>
+    <ClInclude Include="OccupationScript.h">
+      <Filter>Script\UtilScript</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -628,52 +637,19 @@
     <ClCompile Include="RuinsScript.cpp">
       <Filter>Script\SceneScript</Filter>
     </ClCompile>
-    <ClCompile Include="TestScript.cpp">
-      <Filter>Script\ObjectScript</Filter>
-    </ClCompile>
-    <ClCompile Include="WaterScript.cpp">
-      <Filter>Script\ObjectScript</Filter>
-    </ClCompile>
     <ClCompile Include="BulletScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
     <ClCompile Include="CameraScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
-    <ClCompile Include="CrabScript.cpp">
-      <Filter>Script\ObjectScript</Filter>
-    </ClCompile>
-    <ClCompile Include="FactoryMidScript.cpp">
-      <Filter>Script\ObjectScript</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratorScript.cpp">
-      <Filter>Script\ObjectScript</Filter>
-    </ClCompile>
     <ClCompile Include="GunScript.cpp">
-      <Filter>Script\ObjectScript</Filter>
-    </ClCompile>
-    <ClCompile Include="ModuleScript.cpp">
-      <Filter>Script\ObjectScript</Filter>
-    </ClCompile>
-    <ClCompile Include="OccupationScript.cpp">
-      <Filter>Script\ObjectScript</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
     <ClCompile Include="RazerParticleScript.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
-    <ClCompile Include="SelfDestructionRobotScript.cpp">
-      <Filter>Script\ObjectScript</Filter>
-    </ClCompile>
-    <ClCompile Include="TestDragon.cpp">
-      <Filter>Script\ObjectScript</Filter>
-    </ClCompile>
     <ClCompile Include="TestGrenadeScript.cpp">
-      <Filter>Script\ObjectScript</Filter>
-    </ClCompile>
-    <ClCompile Include="TestHuman.cpp">
       <Filter>Script\ObjectScript</Filter>
     </ClCompile>
     <ClCompile Include="TestParticleScript.cpp">
@@ -684,6 +660,39 @@
     </ClCompile>
     <ClCompile Include="BINLoader.cpp">
       <Filter>Utils\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="CrabScript.cpp">
+      <Filter>Script\MonsterScript</Filter>
+    </ClCompile>
+    <ClCompile Include="FactoryMidScript.cpp">
+      <Filter>Script\MonsterScript</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratorScript.cpp">
+      <Filter>Script\MonsterScript</Filter>
+    </ClCompile>
+    <ClCompile Include="SelfDestructionRobotScript.cpp">
+      <Filter>Script\MonsterScript</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerScript.cpp">
+      <Filter>Script\PlayerScript</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleScript.cpp">
+      <Filter>Script\UtilScript</Filter>
+    </ClCompile>
+    <ClCompile Include="TestDragon.cpp">
+      <Filter>Script\UtilScript</Filter>
+    </ClCompile>
+    <ClCompile Include="WaterScript.cpp">
+      <Filter>Script\UtilScript</Filter>
+    </ClCompile>
+    <ClCompile Include="TestScript.cpp">
+      <Filter>Script\UtilScript</Filter>
+    </ClCompile>
+    <ClCompile Include="TestHuman.cpp">
+      <Filter>Script\UtilScript</Filter>
+    </ClCompile>
+    <ClCompile Include="OccupationScript.cpp">
+      <Filter>Script\UtilScript</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

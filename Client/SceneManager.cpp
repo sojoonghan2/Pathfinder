@@ -195,6 +195,23 @@ shared_ptr<GameObject> SceneManager::Pick(int32 screenX, int32 screenY)
 	return picked;
 }
 
+bool SceneManager::RayCast(const Vec4& rayOrigin, const Vec4& rayDir, shared_ptr<GameObject> obj)
+{
+	auto collider = obj->GetCollider();
+
+	if (collider == nullptr)
+		return false;
+
+	if (!collider->IsEnabled())
+		return false;
+
+	float distance = 0.f;
+	if (collider->Intersects(rayOrigin, rayDir, OUT distance))
+		return true;
+
+	return false;
+}
+
 bool SceneManager::Collition(shared_ptr<GameObject> obj1,
 	shared_ptr<GameObject> obj2)
 {

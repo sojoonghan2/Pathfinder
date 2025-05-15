@@ -28,6 +28,12 @@ void CollisionManager::UnregisterCollider(const shared_ptr<BaseCollider>& collid
 		}), _colliders.end());
 }
 
+void CollisionManager::RegisterRay(const Vec4& origin, const Vec4& direction)
+{
+	RayInfo ray = { origin, direction };
+	_rays.push_back(ray);
+}
+
 void CollisionManager::ClearCollider()
 {
 	_colliders.clear();
@@ -42,9 +48,10 @@ void CollisionManager::Update()
 	{
 		CheckCrabToDummy();
 		CheckPlayerToCrab();
-		CheckCrabToBullet();
+		//CheckCrabToBullet();
 		CheckCrabToGrenade();
 		CheckCrabToRazer();
+		CheckRayToCrab();
 	}
 	else if (sceneName == L"FactoryScene")
 	{
@@ -155,7 +162,7 @@ void CollisionManager::CheckCrabToBullet()
 			if (GET_SINGLE(SceneManager)->Collition(objA, objB))
 			{
 				auto crabScript = objA->GetScript<CrabScript>();
-				crabScript->CheckBulletHits(objB);
+				crabScript->CheckBulletHits();
 			}
 		}
 	}
@@ -244,4 +251,29 @@ void CollisionManager::CheckFactoryMidToBullet()
 			}
 		}
 	}
+}
+
+void CollisionManager::CheckRayToCrab()
+{
+	for (const RayInfo& ray : _rays)
+	{
+		for (auto& [crab, type] : _colliders)
+		{
+			if (type != COLLISION_OBJECT_TYPE::CRAB || !crab->IsEnabled())
+				continue;
+
+			const auto& obj = crab->GetGameObject();
+			if (!obj)
+				continue;
+
+			if (GET_SINGLE(SceneManager)->RayCast(ray.origin, ray.direction, obj))
+			{
+				auto crabScript = obj->GetScript<CrabScript>();
+				if (crabScript)
+					crabScript->CheckBulletHits();
+			}
+		}
+	}
+
+	_rays.clear();
 }
