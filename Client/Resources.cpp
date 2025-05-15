@@ -1257,7 +1257,7 @@ void Resources::CreateDefaultMaterial()
 		Add<Material>(L"SpotLight", material);
 	}
 
-	// Final
+	// Final(디퍼드 렌더링 최종 출력용 머터리얼)
 	{
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"Final");
 		shared_ptr<Material> material = make_shared<Material>();

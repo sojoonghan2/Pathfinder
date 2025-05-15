@@ -120,13 +120,42 @@ void GameFramework::CreateConstantBuffer(CBV_REGISTER reg, uint32 bufferSize, ui
 
 void GameFramework::CreateRenderTargetGroups()
 {
-	auto CreateRTTexture = [&](const wstring& name, DXGI_FORMAT format, uint32 width, uint32 height, D3D12_RESOURCE_FLAGS flags) -> shared_ptr<Texture>
+	// 1. 렌더 타겟 텍스쳐 생성
+	auto CreateRenderTargetTexture = [&](const wstring& name, DXGI_FORMAT format, uint32 width, uint32 height, D3D12_RESOURCE_FLAGS flags) -> shared_ptr<Texture>
 		{
 			return GET_SINGLE(Resources)->CreateTexture(name, format, width, height,
 				CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, flags);
 		};
 
-	auto CreateRTGroup = [&](RENDER_TARGET_GROUP_TYPE groupType, const vector<shared_ptr<Texture>>& targets, shared_ptr<Texture> depth) -> void
+	vector<shared_ptr<Texture>> shadowTargets =
+	{
+		CreateRenderTargetTexture(L"ShadowTarget", DXGI_FORMAT_R32_FLOAT, 4096, 4096, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
+	};
+	vector<shared_ptr<Texture>> GTargets =
+	{
+		CreateRenderTargetTexture(L"PositionTarget", DXGI_FORMAT_R32G32B32A32_FLOAT, _window.width, _window.height, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET),
+		CreateRenderTargetTexture(L"NormalTarget", DXGI_FORMAT_R32G32B32A32_FLOAT, _window.width, _window.height, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET),
+		CreateRenderTargetTexture(L"DiffuseTarget", DXGI_FORMAT_R8G8B8A8_UNORM, _window.width, _window.height, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
+	};
+	vector<shared_ptr<Texture>> lightTargets =
+	{
+		CreateRenderTargetTexture(L"DiffuseLightTarget", DXGI_FORMAT_R8G8B8A8_UNORM, _window.width, _window.height, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET),
+		CreateRenderTargetTexture(L"SpecularLightTarget", DXGI_FORMAT_R8G8B8A8_UNORM, _window.width, _window.height, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
+	};
+	vector<shared_ptr<Texture>> reflectionTargets =
+	{
+		CreateRenderTargetTexture(L"ReflectionPositionTarget", DXGI_FORMAT_R32G32B32A32_FLOAT, _window.width, _window.height, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET),
+		CreateRenderTargetTexture(L"ReflectionNormalTarget", DXGI_FORMAT_R32G32B32A32_FLOAT, _window.width, _window.height, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET),
+		CreateRenderTargetTexture(L"ReflectionDiffuseTarget", DXGI_FORMAT_R8G8B8A8_UNORM, _window.width, _window.height, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
+	};
+
+	// 2. Depth-Stencil 텍스쳐 생성
+	shared_ptr<Texture> depth = CreateRenderTargetTexture(L"ShadowDepthStencil", DXGI_FORMAT_D32_FLOAT, 4096, 4096, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+	shared_ptr<Texture> reflectionDepth = CreateRenderTargetTexture(L"ReflectionDepthStencil", DXGI_FORMAT_D32_FLOAT, 4096, 4096, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+	shared_ptr<Texture> depthStencilTexture = CreateRenderTargetTexture(L"DepthStencil", DXGI_FORMAT_D32_FLOAT, _window.width, _window.height, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+
+	// 3. 렌더 타겟 그룹을 생성
+	auto CreateRenderTargetGroup = [&](RENDER_TARGET_GROUP_TYPE groupType, const vector<shared_ptr<Texture>>& targets, shared_ptr<Texture> depth) -> void
 		{
 			vector<RenderTarget> rtVec(targets.size());
 			for (size_t i = 0; i < targets.size(); ++i)
@@ -136,54 +165,23 @@ void GameFramework::CreateRenderTargetGroups()
 			_rtGroups[static_cast<uint8>(groupType)]->Create(groupType, rtVec, depth);
 		};
 
-	shared_ptr<Texture> dsTexture = CreateRTTexture(L"DepthStencil", DXGI_FORMAT_D32_FLOAT, _window.width, _window.height, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+	// 4. G_Buffer에 렌더 타겟 텍스쳐에 깊이와 함께 합성
+	CreateRenderTargetGroup(RENDER_TARGET_GROUP_TYPE::SHADOW, shadowTargets, depth);
+	CreateRenderTargetGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER, GTargets, depthStencilTexture);
+	CreateRenderTargetGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING, lightTargets, depthStencilTexture);
+	CreateRenderTargetGroup(RENDER_TARGET_GROUP_TYPE::REFLECTION, reflectionTargets, reflectionDepth);
 
+	// 5. 스왑체인에서 얻은 백버퍼 리소스를 렌더 타겟으로 등록하여
+	//	  화면 출력용 렌더 타겟 그룹(SWAP_CHAIN) 구성
+	vector<shared_ptr<Texture>> renderTargets(SWAP_CHAIN_BUFFER_COUNT);
+	for (uint32 i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
 	{
-		vector<shared_ptr<Texture>> targets(SWAP_CHAIN_BUFFER_COUNT);
-		for (uint32 i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
-		{
-			wstring name = L"SwapChainTarget_" + to_wstring(i);
-			ComPtr<ID3D12Resource> resource;
-			_swapChain->GetSwapChain()->GetBuffer(i, IID_PPV_ARGS(&resource));
-			targets[i] = GET_SINGLE(Resources)->CreateTextureFromResource(name, resource);
-		}
-		CreateRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN, targets, dsTexture);
+		wstring name = L"SwapChainTarget_" + to_wstring(i);
+		ComPtr<ID3D12Resource> resource;
+		_swapChain->GetSwapChain()->GetBuffer(i, IID_PPV_ARGS(&resource));
+		renderTargets[i] = GET_SINGLE(Resources)->CreateTextureFromResource(name, resource);
 	}
-
-	{
-		vector<shared_ptr<Texture>> targets = {
-			CreateRTTexture(L"ShadowTarget", DXGI_FORMAT_R32_FLOAT, 4096, 4096, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
-		};
-		shared_ptr<Texture> depth = CreateRTTexture(L"ShadowDepthStencil", DXGI_FORMAT_D32_FLOAT, 4096, 4096, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
-		CreateRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW, targets, depth);
-	}
-
-	{
-		vector<shared_ptr<Texture>> targets = {
-			CreateRTTexture(L"PositionTarget", DXGI_FORMAT_R32G32B32A32_FLOAT, _window.width, _window.height, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET),
-			CreateRTTexture(L"NormalTarget", DXGI_FORMAT_R32G32B32A32_FLOAT, _window.width, _window.height, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET),
-			CreateRTTexture(L"DiffuseTarget", DXGI_FORMAT_R8G8B8A8_UNORM, _window.width, _window.height, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
-		};
-		CreateRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER, targets, dsTexture);
-	}
-
-	{
-		vector<shared_ptr<Texture>> targets = {
-			CreateRTTexture(L"DiffuseLightTarget", DXGI_FORMAT_R8G8B8A8_UNORM, _window.width, _window.height, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET),
-			CreateRTTexture(L"SpecularLightTarget", DXGI_FORMAT_R8G8B8A8_UNORM, _window.width, _window.height, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
-		};
-		CreateRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING, targets, dsTexture);
-	}
-
-	{
-		vector<shared_ptr<Texture>> targets = {
-			CreateRTTexture(L"ReflectionPositionTarget", DXGI_FORMAT_R32G32B32A32_FLOAT, WINDOWWIDTH, WINDOWHEIGHT, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET),
-			CreateRTTexture(L"ReflectionNormalTarget", DXGI_FORMAT_R32G32B32A32_FLOAT, WINDOWWIDTH, WINDOWHEIGHT, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET),
-			CreateRTTexture(L"ReflectionDiffuseTarget", DXGI_FORMAT_R8G8B8A8_UNORM, WINDOWWIDTH, WINDOWHEIGHT, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
-		};
-		shared_ptr<Texture> reflectionDepth = CreateRTTexture(L"ReflectionDepthStencil", DXGI_FORMAT_D32_FLOAT, 4096, 4096, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
-		CreateRTGroup(RENDER_TARGET_GROUP_TYPE::REFLECTION, targets, reflectionDepth);
-	}
+	CreateRenderTargetGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN, renderTargets, depthStencilTexture);
 }
 
 void GameFramework::SetFullScreen()
