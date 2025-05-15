@@ -1,7 +1,7 @@
 #ifndef _DEFAULT_FX_
 #define _DEFAULT_FX_
 
-#include "params.fx"
+#include "ShaderParams.fx"
 #include "utils.fx"
 
 // ************************

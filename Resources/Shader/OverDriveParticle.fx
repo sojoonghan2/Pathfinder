@@ -1,7 +1,7 @@
 #ifndef _OVERDRIVEPARTICLE_FX_
 #define _OVERDRIVEPARTICLE_FX_
 
-#include "params.fx"
+#include "ShaderParams.fx"
 #include "utils.fx"
 
 #define PI 3.141592

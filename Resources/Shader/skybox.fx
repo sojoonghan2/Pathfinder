@@ -1,7 +1,7 @@
 #ifndef _SKYBOX_FX_
 #define _SKYBOX_FX_
 
-#include "params.fx"
+#include "ShaderParams.fx"
 
 struct VS_IN
 {

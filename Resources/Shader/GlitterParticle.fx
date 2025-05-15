@@ -1,7 +1,7 @@
 #ifndef _GLITTERPARTICLE_FX_
 #define _GLITTERPARTICLE_FX_
 
-#include "params.fx"
+#include "ShaderParams.fx"
 #include "utils.fx"
 
 #define PI 3.141592

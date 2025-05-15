@@ -1,7 +1,7 @@
 #ifndef _MATH_FX_
 #define _MATH_FX_
 
-#include "params.fx"
+#include "ShaderParams.fx"
 
 float4 VectorPermute(uint PermuteX, uint PermuteY, uint PermuteZ, uint PermuteW, in float4 V1, in float4 V2)
 {

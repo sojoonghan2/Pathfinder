@@ -1,7 +1,7 @@
 #ifndef _ANIMATION_FX_
 #define _ANIMATION_FX_
 
-#include "params.fx"
+#include "ShaderParams.fx"
 #include "utils.fx"
 #include "math.fx"
 

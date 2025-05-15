@@ -1,7 +1,7 @@
 #ifndef _TESTPBRPARTICLE_FX_
 #define _TESTPBRPARTICLE_FX_
 
-#include "params.fx"
+#include "ShaderParams.fx"
 #include "utils.fx"
 
 struct Particle

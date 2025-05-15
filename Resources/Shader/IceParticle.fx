@@ -1,7 +1,7 @@
 #ifndef _ICEPARTICLE_FX_
 #define _ICEPARTICLE_FX_
 
-#include "params.fx"
+#include "ShaderParams.fx"
 #include "utils.fx"
 
 struct Particle

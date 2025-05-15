@@ -1,7 +1,7 @@
 #ifndef _WATER_FX_
 #define _WATER_FX_
 
-#include "params.fx"
+#include "ShaderParams.fx"
 #include "utils.fx"
 
 struct VS_IN

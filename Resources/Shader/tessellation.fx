@@ -1,7 +1,7 @@
 #ifndef _TESSELLATION_FX_
 #define _TESSELLATION_FX_
 
-#include "params.fx"
+#include "ShaderParams.fx"
 
 // --------------
 // Vertex Shader

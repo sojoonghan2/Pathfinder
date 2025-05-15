@@ -1,7 +1,7 @@
 #ifndef _BILLBOARD_FX_
 #define _BILLBOARD_FX_
 
-#include "params.fx"
+#include "ShaderParams.fx"
 #include "utils.fx"
 
 // ************************

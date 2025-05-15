@@ -1,7 +1,7 @@
 #ifndef _COMPUTE_FX_
 #define _COMPUTE_FX_
 
-#include "params.fx"
+#include "ShaderParams.fx"
 
 RWTexture2D<float4> g_rwtex_0 : register(u0);
 

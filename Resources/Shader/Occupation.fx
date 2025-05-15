@@ -1,6 +1,6 @@
 #ifndef _OCCUPATION_FORWARD_FX_
 #define _OCCUPATION_FORWARD_FX_
-#include "params.fx"
+#include "ShaderParams.fx"
 #include "utils.fx"
 
 // 포워드 렌더링용 구조

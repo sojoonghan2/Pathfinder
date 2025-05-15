@@ -742,7 +742,7 @@
     <FxCompile Include="..\Resources\Shader\math.fx">
       <Filter>Shader\Util</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\params.fx">
+    <FxCompile Include="..\Resources\Shader\ShaderParams.fx">
       <Filter>Shader\Util</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\GunFlameParticle.fx">

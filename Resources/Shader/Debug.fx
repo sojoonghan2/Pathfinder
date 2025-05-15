@@ -1,7 +1,7 @@
 #ifndef _DEBUG_FX_
 #define _DEBUG_FX_
 
-#include "params.fx"
+#include "ShaderParams.fx"
 #include "utils.fx"
 
 cbuffer Material : register(b2)

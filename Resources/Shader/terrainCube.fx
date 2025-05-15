@@ -1,7 +1,7 @@
 #ifndef TERRAINCUBE_FX_
 #define TERRAINCUBE_FX_
 
-#include "params.fx"
+#include "ShaderParams.fx"
 #include "utils.fx"
 
 struct VS_IN

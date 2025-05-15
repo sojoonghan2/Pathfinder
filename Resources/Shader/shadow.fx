@@ -1,7 +1,7 @@
 #ifndef _SHADOW_FX_
 #define _SHADOW_FX_
 
-#include "params.fx"
+#include "ShaderParams.fx"
 #include "utils.fx"
 
 // ************************

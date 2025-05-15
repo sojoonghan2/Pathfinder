@@ -1,7 +1,7 @@
 #ifndef _UTILS_FX_
 #define _UTILS_FX_
 
-#include "params.fx"
+#include "ShaderParams.fx"
 
 // 타입별 조명 처리
 LightColor CalculateLightColor(int lightIndex, float3 viewNormal, float3 viewPos)
