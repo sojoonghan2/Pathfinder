@@ -42,6 +42,7 @@ public:
 	void CheckFactoryMidToBullet();
 
 	void CheckRayToCrab();
+	void CheckRayToFactoryMid();
 
 private:
 	vector<pair<shared_ptr<BaseCollider>, COLLISION_OBJECT_TYPE>> _colliders;

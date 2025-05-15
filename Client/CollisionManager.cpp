@@ -55,8 +55,9 @@ void CollisionManager::Update()
 	}
 	else if (sceneName == L"FactoryScene")
 	{
-		CheckGenerateToBullet();
-		CheckFactoryMidToBullet();
+		//CheckGenerateToBullet();
+		//CheckFactoryMidToBullet();
+		CheckRayToFactoryMid();
 	}
 }
 
@@ -247,7 +248,7 @@ void CollisionManager::CheckFactoryMidToBullet()
 			if (GET_SINGLE(SceneManager)->Collition(objA, objB))
 			{
 				auto factorymidScript = objA->GetScript<FactoryMidScript>();
-				factorymidScript->CheckBulletHits(objB);
+				factorymidScript->CheckBulletHits();
 			}
 		}
 	}
@@ -271,6 +272,31 @@ void CollisionManager::CheckRayToCrab()
 				auto crabScript = obj->GetScript<CrabScript>();
 				if (crabScript)
 					crabScript->CheckBulletHits();
+			}
+		}
+	}
+
+	_rays.clear();
+}
+
+void CollisionManager::CheckRayToFactoryMid()
+{
+	for (const RayInfo& ray : _rays)
+	{
+		for (auto& [crab, type] : _colliders)
+		{
+			if (type != COLLISION_OBJECT_TYPE::FACTORYMID || !crab->IsEnabled())
+				continue;
+
+			const auto& obj = crab->GetGameObject();
+			if (!obj)
+				continue;
+
+			if (GET_SINGLE(SceneManager)->RayCast(ray.origin, ray.direction, obj))
+			{
+				auto factoryMidScript = obj->GetScript<FactoryMidScript>();
+				if (factoryMidScript)
+					factoryMidScript->CheckBulletHits();
 			}
 		}
 	}

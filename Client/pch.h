@@ -145,9 +145,9 @@ enum class SRV_REGISTER : uint8
 	t4,
 	t5,
 	t6,
-	t7,
-	t8,
-	t9,
+	t7, // Amature
+	t8, // Born Frame
+	t9, // Born Offset, Particle
 	t10,
 
 	END

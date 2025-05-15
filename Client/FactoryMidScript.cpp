@@ -26,9 +26,8 @@ void FactoryMidScript::LateUpdate()
 	GetTransform()->SetLocalRotation(rotation);
 }
 
-void FactoryMidScript::CheckBulletHits(shared_ptr<GameObject> bullet)
+void FactoryMidScript::CheckBulletHits()
 {
-	bullet->GetCollider()->SetEnable(false);
 	auto obj = _particlePool.GetNext();
 	if (obj)
 	{

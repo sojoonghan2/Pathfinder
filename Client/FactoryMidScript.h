@@ -10,7 +10,7 @@ public:
 	virtual void LateUpdate() override;
 
 	void RegisterParticles(const vector<shared_ptr<GameObject>>& particles) { _particleObjects = particles; }
-	void CheckBulletHits(shared_ptr<GameObject> bullet);
+	void CheckBulletHits();
 
 private:
 	vector<shared_ptr<GameObject>>	_particleObjects;
