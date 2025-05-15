@@ -7,7 +7,7 @@
 #include "Timer.h"
 #include "SceneManager.h"
 #include "Scene.h"
-#include "Application.h"
+#include "GameFramework.h"
 
 // 선형 보간 함수
 Vec3 Lerp(const Vec3& a, const Vec3& b, float t)
@@ -21,10 +21,10 @@ CameraScript::CameraScript()
 	_zoomOffset = Vec3(0.f, 600.f, -150.f);
 	_currentOffset = _defaultOffset;
 
-	_centerScreenPos.x = P_Application->GetWindow().width / 2;
-	_centerScreenPos.y = P_Application->GetWindow().height / 2;
+	_centerScreenPos.x = GFramework->GetWindow().width / 2;
+	_centerScreenPos.y = GFramework->GetWindow().height / 2;
 
-	ClientToScreen(P_Application->GetWindow().hwnd, &_centerScreenPos);
+	ClientToScreen(GFramework->GetWindow().hwnd, &_centerScreenPos);
 }
 
 CameraScript::~CameraScript()

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Application.h"
+#include "GameFramework.h"
 #include "Material.h"
 #include "Transform.h"
 #include "Input.h"
@@ -11,7 +11,7 @@
 #include "SocketIO.h"
 #include "CollisionManager.h"
 
-void Application::Init(const WindowInfo& info)
+void GameFramework::Init(const WindowInfo& info)
 {
 	_window = info;
 
@@ -45,7 +45,7 @@ void Application::Init(const WindowInfo& info)
 	GET_SINGLE(SceneManager)->Init();
 }
 
-void Application::Update()
+void GameFramework::Update()
 {
 	GET_SINGLE(Input)->Update();
 	GET_SINGLE(Timer)->Update();
@@ -67,7 +67,7 @@ void Application::Update()
 	Render();
 }
 
-void Application::Render()
+void GameFramework::Render()
 {
 	RenderBegin();
 
@@ -78,17 +78,17 @@ void Application::Render()
 	RenderEnd();
 }
 
-void Application::RenderBegin()
+void GameFramework::RenderBegin()
 {
 	_graphicsCmdQueue->RenderBegin();
 }
 
-void Application::RenderEnd()
+void GameFramework::RenderEnd()
 {
 	_graphicsCmdQueue->RenderEnd();
 }
 
-void Application::ResizeWindow(int32 width, int32 height)
+void GameFramework::ResizeWindow(int32 width, int32 height)
 {
 	_window.width = width;
 	_window.height = height;
@@ -98,7 +98,7 @@ void Application::ResizeWindow(int32 width, int32 height)
 	::SetWindowPos(_window.hwnd, 0, 100, 10, width, height, 0);
 }
 
-void Application::ShowFps()
+void GameFramework::ShowFps()
 {
 	uint32 fps = GET_SINGLE(Timer)->GetFps();
 
@@ -108,7 +108,7 @@ void Application::ShowFps()
 	::SetWindowText(_window.hwnd, text);
 }
 
-void Application::CreateConstantBuffer(CBV_REGISTER reg, uint32 bufferSize, uint32 count)
+void GameFramework::CreateConstantBuffer(CBV_REGISTER reg, uint32 bufferSize, uint32 count)
 {
 	uint8 typeInt = static_cast<uint8>(reg);
 	assert(_constantBuffers.size() == typeInt);
@@ -118,7 +118,7 @@ void Application::CreateConstantBuffer(CBV_REGISTER reg, uint32 bufferSize, uint
 	_constantBuffers.push_back(buffer);
 }
 
-void Application::CreateRenderTargetGroups()
+void GameFramework::CreateRenderTargetGroups()
 {
 	auto CreateRTTexture = [&](const wstring& name, DXGI_FORMAT format, uint32 width, uint32 height, D3D12_RESOURCE_FLAGS flags) -> shared_ptr<Texture>
 		{
@@ -186,7 +186,7 @@ void Application::CreateRenderTargetGroups()
 	}
 }
 
-void Application::SetFullScreen()
+void GameFramework::SetFullScreen()
 {
 	// 현재 윈도우 스타일 가져오기
 	LONG style = ::GetWindowLong(_window.hwnd, GWL_STYLE);

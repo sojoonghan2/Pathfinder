@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Texture.h"
-#include "Application.h"
+#include "GameFramework.h"
 
 Texture::Texture() : Object(OBJECT_TYPE::TEXTURE)
 {
@@ -63,7 +63,7 @@ void Texture::Load(const wstring& path)
 		static_cast<unsigned int>(subResources.size()),
 		subResources.data());
 
-	P_Application->GetGraphicsCmdQueue()->UploadResource();
+	GFramework->GetGraphicsCmdQueue()->UploadResource();
 
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
 	srvHeapDesc.NumDescriptors = 1;

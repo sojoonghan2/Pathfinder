@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Buffer.h"
-#include "Application.h"
+#include "GameFramework.h"
 
 Buffer::Buffer()
 {
@@ -81,17 +81,17 @@ void Buffer::Init(uint32 elementSize, uint32 elementCount, void* initialData)
 
 void Buffer::PushGraphicsData(SRV_REGISTER reg)
 {
-	P_Application->GetGraphicsDescHeap()->SetSRV(_srvHeapBegin, reg);
+	GFramework->GetGraphicsDescHeap()->SetSRV(_srvHeapBegin, reg);
 }
 
 void Buffer::PushComputeSRVData(SRV_REGISTER reg)
 {
-	P_Application->GetComputeDescHeap()->SetSRV(_srvHeapBegin, reg);
+	GFramework->GetComputeDescHeap()->SetSRV(_srvHeapBegin, reg);
 }
 
 void Buffer::PushComputeUAVData(UAV_REGISTER reg)
 {
-	P_Application->GetComputeDescHeap()->SetUAV(_uavHeapBegin, reg);
+	GFramework->GetComputeDescHeap()->SetUAV(_uavHeapBegin, reg);
 }
 
 void Buffer::CopyInitialData(uint64 bufferSize, void* initialData)
@@ -131,7 +131,7 @@ void Buffer::CopyInitialData(uint64 bufferSize, void* initialData)
 		RESOURCE_CMD_LIST->ResourceBarrier(1, &barrier);
 	}
 
-	P_Application->GetGraphicsCmdQueue()->UploadResource();
+	GFramework->GetGraphicsCmdQueue()->UploadResource();
 
 	_resourceState = D3D12_RESOURCE_STATE_COMMON;
 }
@@ -184,7 +184,7 @@ void Buffer::Update(const void* data, size_t dataSize)
 	}
 
 	// 명령 실행 및 동기화
-	P_Application->GetGraphicsCmdQueue()->UploadResource();
+	GFramework->GetGraphicsCmdQueue()->UploadResource();
 }
 
 ConstantBuffer::ConstantBuffer() {}
@@ -266,7 +266,7 @@ void ConstantBuffer::PushGraphicsData(void* buffer, uint32 size)
 	::memcpy(&_mappedBuffer[_currentIndex * _elementSize], buffer, size);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = GetCpuHandle(_currentIndex);
-	P_Application->GetGraphicsDescHeap()->SetCBV(cpuHandle, cbvResiger);
+	GFramework->GetGraphicsDescHeap()->SetCBV(cpuHandle, cbvResiger);
 
 	_currentIndex++;
 }
@@ -286,7 +286,7 @@ void ConstantBuffer::PushComputeData(void* buffer, uint32 size)
 	::memcpy(&_mappedBuffer[_currentIndex * _elementSize], buffer, size);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = GetCpuHandle(_currentIndex);
-	P_Application->GetComputeDescHeap()->SetCBV(cpuHandle, cbvResiger);
+	GFramework->GetComputeDescHeap()->SetCBV(cpuHandle, cbvResiger);
 
 	_currentIndex++;
 }

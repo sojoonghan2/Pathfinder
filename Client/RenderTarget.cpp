@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "RenderTarget.h"
-#include "Application.h"
+#include "GameFramework.h"
 #include "Device.h"
 
 // 렌더 타겟 그룹 생성 및 초기화

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "RootSignature.h"
-#include "Application.h"
+#include "GameFramework.h"
 
 void RootSignature::Init()
 {

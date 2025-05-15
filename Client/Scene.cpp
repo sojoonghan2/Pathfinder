@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include "GameObject.h"
 #include "Camera.h"
-#include "Application.h"
+#include "GameFramework.h"
 #include "Buffer.h"
 #include "Light.h"
 #include "Resources.h"
@@ -72,16 +72,16 @@ void Scene::Render()
 
 void Scene::ClearRTV()
 {
-	int8 backIndex = P_Application->GetSwapChain()->GetBackBufferIndex();
-	P_Application->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->ClearRenderTargetView(backIndex);
-	P_Application->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->ClearRenderTargetView();
-	P_Application->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->ClearRenderTargetView();
-	P_Application->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->ClearRenderTargetView();
+	int8 backIndex = GFramework->GetSwapChain()->GetBackBufferIndex();
+	GFramework->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->ClearRenderTargetView(backIndex);
+	GFramework->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->ClearRenderTargetView();
+	GFramework->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->ClearRenderTargetView();
+	GFramework->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING)->ClearRenderTargetView();
 }
 
 void Scene::RenderShadow()
 {
-	P_Application->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->OMSetRenderTargets();
+	GFramework->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->OMSetRenderTargets();
 
 	for (auto& light : _lights)
 	{
@@ -91,7 +91,7 @@ void Scene::RenderShadow()
 		light->RenderShadow();
 	}
 
-	P_Application->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->WaitTargetToResource();
+	GFramework->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SHADOW)->WaitTargetToResource();
 }
 
 void Scene::RenderDeferred()
@@ -100,12 +100,12 @@ void Scene::RenderDeferred()
 	if (!mainCamera)
 		return;
 
-	P_Application->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->OMSetRenderTargets();
+	GFramework->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->OMSetRenderTargets();
 
 	mainCamera->SortGameObject();
 	mainCamera->Render_Deferred();
 
-	P_Application->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->WaitTargetToResource();
+	GFramework->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->WaitTargetToResource();
 }
 
 void Scene::RenderLights()
@@ -117,7 +117,7 @@ void Scene::RenderLights()
 	Camera::S_MatView = mainCamera->GetViewMatrix();
 	Camera::S_MatProjection = mainCamera->GetProjectionMatrix();
 
-	auto rtGroup = P_Application->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING);
+	auto rtGroup = GFramework->GetRTGroup(RENDER_TARGET_GROUP_TYPE::LIGHTING);
 	rtGroup->OMSetRenderTargets();
 
 	for (auto& light : _lights)
@@ -129,8 +129,8 @@ void Scene::RenderLights()
 void Scene::RenderFinal()
 {
 	// Swapchain OMSet
-	int8 backIndex = P_Application->GetSwapChain()->GetBackBufferIndex();
-	P_Application->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->OMSetRenderTargets(1, backIndex);
+	int8 backIndex = GFramework->GetSwapChain()->GetBackBufferIndex();
+	GFramework->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->OMSetRenderTargets(1, backIndex);
 
 	GET_SINGLE(Resources)->Get<Material>(L"Final")->PushGraphicsData();
 	GET_SINGLE(Resources)->Get<Mesh>(L"Rectangle")->Render();
@@ -138,7 +138,7 @@ void Scene::RenderFinal()
 	// 렌더 타겟 텍스쳐 생성
 	{
 		shared_ptr<Texture> renderTargetTexture =
-			P_Application->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->GetRTTexture(backIndex);
+			GFramework->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->GetRTTexture(backIndex);
 
 		// 복사본 생성
 		shared_ptr<Texture> copiedTexture = GET_SINGLE(Resources)->CloneRenderTargetTexture(renderTargetTexture);
@@ -150,7 +150,7 @@ void Scene::RenderFinal()
 	// 컬러 텍스쳐 생성
 	{
 		shared_ptr<Texture> colorTexture =
-			P_Application->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->GetRTTexture(2);
+			GFramework->GetRTGroup(RENDER_TARGET_GROUP_TYPE::G_BUFFER)->GetRTTexture(2);
 
 		shared_ptr<Texture> copiedTexture2 = GET_SINGLE(Resources)->CloneRenderTargetTexture(colorTexture);
 

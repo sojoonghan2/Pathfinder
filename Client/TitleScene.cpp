@@ -3,7 +3,7 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
-#include "Application.h"
+#include "GameFramework.h"
 #include "Shader.h"
 #include "Material.h"
 #include "GameObject.h"

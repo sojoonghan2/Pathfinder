@@ -1,14 +1,14 @@
 #include "pch.h"
-#include "CommandQAndList.h"
+#include "CommandQueueAndList.h"
 #include "SwapChain.h"
-#include "Application.h"
+#include "GameFramework.h"
 
-GraphicsCommandQueue::~GraphicsCommandQueue()
+GraphicsCommandQueueAndList::~GraphicsCommandQueueAndList()
 {
 	::CloseHandle(_fenceEvent);
 }
 
-void GraphicsCommandQueue::Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChain> swapChain)
+void GraphicsCommandQueueAndList::Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChain> swapChain)
 {
 	HRESULT hResult;
 
@@ -29,7 +29,7 @@ void GraphicsCommandQueue::Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChai
 	_fenceEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
 
-void GraphicsCommandQueue::WaitForGPUComplete()
+void GraphicsCommandQueueAndList::WaitForGPUComplete()
 {
 	_fenceValue++;
 
@@ -42,7 +42,7 @@ void GraphicsCommandQueue::WaitForGPUComplete()
 	}
 }
 
-void GraphicsCommandQueue::RenderBegin()
+void GraphicsCommandQueueAndList::RenderBegin()
 {
 	HRESULT hResult;
 
@@ -52,31 +52,31 @@ void GraphicsCommandQueue::RenderBegin()
 	int8 backIndex = _swapChain->GetBackBufferIndex();
 
 	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		P_Application->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->GetRTTexture(backIndex)->GetTex2D().Get(),
+		GFramework->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->GetRTTexture(backIndex)->GetTex2D().Get(),
 		D3D12_RESOURCE_STATE_PRESENT,
 		D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 	_cmdList->SetGraphicsRootSignature(GRAPHICS_ROOT_SIGNATURE.Get());
 
-	P_Application->GetConstantBuffer(CONSTANT_BUFFER_TYPE::TRANSFORM)->Clear();
-	P_Application->GetConstantBuffer(CONSTANT_BUFFER_TYPE::MATERIAL)->Clear();
+	GFramework->GetConstantBuffer(CONSTANT_BUFFER_TYPE::TRANSFORM)->Clear();
+	GFramework->GetConstantBuffer(CONSTANT_BUFFER_TYPE::MATERIAL)->Clear();
 
-	P_Application->GetGraphicsDescHeap()->Clear();
+	GFramework->GetGraphicsDescHeap()->Clear();
 
-	ID3D12DescriptorHeap* descHeap = P_Application->GetGraphicsDescHeap()->GetDescriptorHeap().Get();
+	ID3D12DescriptorHeap* descHeap = GFramework->GetGraphicsDescHeap()->GetDescriptorHeap().Get();
 	_cmdList->SetDescriptorHeaps(1, &descHeap);
 
 	_cmdList->ResourceBarrier(1, &barrier);
 }
 
-void GraphicsCommandQueue::RenderEnd()
+void GraphicsCommandQueueAndList::RenderEnd()
 {
 	HRESULT hResult;
 
 	int8 backIndex = _swapChain->GetBackBufferIndex();
 
 	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		P_Application->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->GetRTTexture(backIndex)->GetTex2D().Get(),
+		GFramework->GetRTGroup(RENDER_TARGET_GROUP_TYPE::SWAP_CHAIN)->GetRTTexture(backIndex)->GetTex2D().Get(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		D3D12_RESOURCE_STATE_PRESENT);
 
@@ -93,7 +93,7 @@ void GraphicsCommandQueue::RenderEnd()
 	_swapChain->SwapIndex();
 }
 
-void GraphicsCommandQueue::UploadResource()
+void GraphicsCommandQueueAndList::UploadResource()
 {
 	HRESULT hResult;
 
@@ -108,12 +108,12 @@ void GraphicsCommandQueue::UploadResource()
 	hResult = _resCmdList->Reset(_resCmdAllocator.Get(), nullptr);
 }
 
-ComputeCommandQueue::~ComputeCommandQueue()
+ComputeCommandQueueAndList::~ComputeCommandQueueAndList()
 {
 	::CloseHandle(_fenceEvent);
 }
 
-void ComputeCommandQueue::Init(ComPtr<ID3D12Device> device)
+void ComputeCommandQueueAndList::Init(ComPtr<ID3D12Device> device)
 {
 	HRESULT hResult;
 
@@ -129,7 +129,7 @@ void ComputeCommandQueue::Init(ComPtr<ID3D12Device> device)
 	_fenceEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
 
-void ComputeCommandQueue::WaitForGPUComplete()
+void ComputeCommandQueueAndList::WaitForGPUComplete()
 {
 	_fenceValue++;
 
@@ -142,7 +142,7 @@ void ComputeCommandQueue::WaitForGPUComplete()
 	}
 }
 
-void ComputeCommandQueue::UploadComputeResource()
+void ComputeCommandQueueAndList::UploadComputeResource()
 {
 	HRESULT hResult;
 

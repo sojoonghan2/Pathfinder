@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "RuinsScript.h"
 #include "Input.h"
-#include "Application.h"
+#include "GameFramework.h"
 #include "SceneManager.h"
 #include "Scene.h"
 #include "GameObject.h"

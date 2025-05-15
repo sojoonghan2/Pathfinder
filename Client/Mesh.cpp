@@ -2,7 +2,7 @@
 
 #include "pch.h"
 #include "Mesh.h"
-#include "Application.h"
+#include "GameFramework.h"
 #include "Material.h"
 #include "Buffer.h"
 #include "FBXLoader.h"
@@ -156,8 +156,8 @@ void Mesh::Create(const vector<Vertex>& vertexBuffer, const vector<uint32>& inde
 	CreateVertexBuffer(vertexBuffer);
 	CreateIndexBuffer(indexBuffer);
 
-	UINT width = static_cast<float>(P_Application->GetWindow().width);
-	UINT height = static_cast<float>(P_Application->GetWindow().height);
+	UINT width = static_cast<float>(GFramework->GetWindow().width);
+	UINT height = static_cast<float>(GFramework->GetWindow().height);
 
 	if (_supportsVRS)
 	{
@@ -177,7 +177,7 @@ void Mesh::Render(uint32 instanceCount, uint32 idx)
 	GRAPHICS_CMD_LIST->IASetVertexBuffers(0, 1, &_vertexBufferView); // Slot: (0~15)
 	GRAPHICS_CMD_LIST->IASetIndexBuffer(&_vecIndexInfo[idx].bufferView);
 
-	P_Application->GetGraphicsDescHeap()->CommitTable();
+	GFramework->GetGraphicsDescHeap()->CommitTable();
 
 	
 	/////////////////////////////// VRS /////////////////////////////////////
@@ -234,7 +234,7 @@ void Mesh::Render(shared_ptr<InstancingBuffer>& buffer, uint32 idx)
 	GRAPHICS_CMD_LIST->IASetVertexBuffers(0, 2, bufferViews);
 	GRAPHICS_CMD_LIST->IASetIndexBuffer(&_vecIndexInfo[idx].bufferView);
 
-	P_Application->GetGraphicsDescHeap()->CommitTable();
+	GFramework->GetGraphicsDescHeap()->CommitTable();
 
 	GRAPHICS_CMD_LIST->DrawIndexedInstanced(_vecIndexInfo[idx].count, buffer->GetCount(), 0, 0, 0);
 }

@@ -2,7 +2,7 @@
 #include "LoadingScript.h"
 #include "Input.h"
 #include "Timer.h"
-#include "Application.h"
+#include "GameFramework.h"
 #include "SceneManager.h"
 #include "GameObject.h"
 #include "LoadingScene.h"

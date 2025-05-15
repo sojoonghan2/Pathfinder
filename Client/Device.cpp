@@ -3,6 +3,8 @@
 
 void Device::Init()
 {
-	::CreateDXGIFactory(IID_PPV_ARGS(&_dxgi));
-	::D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&_device));
+	CreateDXGIFactory2(0, IID_PPV_ARGS(&_dxgi));
+
+	IDXGIAdapter1* pd3dAdapter = NULL;
+	if(SUCCEEDED(D3D12CreateDevice(pd3dAdapter, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&_device))));
 }

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Light.h"
 #include "Transform.h"
-#include "Application.h"
+#include "GameFramework.h"
 #include "Resources.h"
 #include "Camera.h"
 #include "Transform.h"

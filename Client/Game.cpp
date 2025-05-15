@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Game.h"
-#include "Application.h"
+#include "GameFramework.h"
 #include "SceneManager.h"
 
 #include "LoadingScene.h"
@@ -14,7 +14,7 @@
 
 void Pathfinder::Init(const WindowInfo& info)
 {
-	P_Application->Init(info);
+	GFramework->Init(info);
 
 #ifdef ALLLOAD
 	shared_ptr<TitleScene> titleScene = make_shared<TitleScene>();
@@ -89,5 +89,5 @@ void Pathfinder::Init(const WindowInfo& info)
 
 void Pathfinder::Update()
 {
-	P_Application->Update();
+	GFramework->Update();
 }

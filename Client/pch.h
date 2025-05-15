@@ -224,18 +224,18 @@ public:								\
 
 #define GET_SINGLE(type)	type::GetInstance()
 
-#define DEVICE				P_Application->GetDevice()->GetDevice()
-#define GRAPHICS_CMD_LIST	P_Application->GetGraphicsCmdQueue()->GetGraphicsCmdList()
-#define RESOURCE_CMD_LIST	P_Application->GetGraphicsCmdQueue()->GetResourceCmdList()
-#define COMPUTE_CMD_LIST	P_Application->GetComputeCmdQueue()->GetComputeCmdList()
+#define DEVICE				GFramework->GetDevice()->GetDevice()
+#define GRAPHICS_CMD_LIST	GFramework->GetGraphicsCmdQueue()->GetGraphicsCmdList()
+#define RESOURCE_CMD_LIST	GFramework->GetGraphicsCmdQueue()->GetResourceCmdList()
+#define COMPUTE_CMD_LIST	GFramework->GetComputeCmdQueue()->GetComputeCmdList()
 
-#define GRAPHICS_ROOT_SIGNATURE		P_Application->GetRootSignature()->GetGraphicsRootSignature()
-#define COMPUTE_ROOT_SIGNATURE		P_Application->GetRootSignature()->GetComputeRootSignature()
+#define GRAPHICS_ROOT_SIGNATURE		GFramework->GetRootSignature()->GetGraphicsRootSignature()
+#define COMPUTE_ROOT_SIGNATURE		GFramework->GetRootSignature()->GetComputeRootSignature()
 
 #define INPUT				GET_SINGLE(Input)
 #define DELTA_TIME			GET_SINGLE(Timer)->GetDeltaTime()
 
-#define CONST_BUFFER(type)	P_Application->GetConstantBuffer(type)
+#define CONST_BUFFER(type)	GFramework->GetConstantBuffer(type)
 
 #define PRINTPOSITION \
     std::cout << std::string(GetGameObject()->GetName().begin(), GetGameObject()->GetName().end()) << ": " << "(" << GetTransform()->GetLocalPosition().x << ", " \
@@ -275,7 +275,7 @@ enum ModuleType
 	EnhancedSiege // 화력 강화
 };
 
-extern unique_ptr<class Application> P_Application;
+extern unique_ptr<class GameFramework> GFramework;
 
 wstring s2ws(const string& s);
 string ws2s(const wstring& s);

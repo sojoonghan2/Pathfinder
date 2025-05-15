@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Shader.h"
-#include "Application.h"
+#include "GameFramework.h"
 
 Shader::Shader() : Object(OBJECT_TYPE::SHADER)
 {

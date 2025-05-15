@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Transform.h"
-#include "Application.h"
+#include "GameFramework.h"
 #include "Camera.h"
 
 Transform::Transform() : Component(COMPONENT_TYPE::TRANSFORM)

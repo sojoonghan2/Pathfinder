@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Input.h"
-#include "Application.h"
+#include "GameFramework.h"
 #include <WindowsX.h>
 
 void Input::Init(HWND hwnd)
@@ -173,8 +173,8 @@ void Input::Update()
 	{
 		if (!_initializedCenter)
 		{
-			_centerScreenPos.x = P_Application->GetWindow().width / 2;
-			_centerScreenPos.y = P_Application->GetWindow().height / 2;
+			_centerScreenPos.x = GFramework->GetWindow().width / 2;
+			_centerScreenPos.y = GFramework->GetWindow().height / 2;
 			ClientToScreen(_hwnd, &_centerScreenPos);
 			_initializedCenter = true;
 		}

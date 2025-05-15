@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "TitleScript.h"
 #include "Input.h"
-#include "Application.h"
+#include "GameFramework.h"
 #include "SceneManager.h"
 #include "GameObject.h"
 #include "Timer.h"
@@ -28,7 +28,7 @@ void TitleScript::LateUpdate()
 	bool isMouseOnButton = (pos.x >= 850 && pos.x <= 1200 &&
 		pos.y >= 530 && pos.y <= 700);
 
-	if (GetForegroundWindow() == P_Application->GetWindow().hwnd)
+	if (GetForegroundWindow() == GFramework->GetWindow().hwnd)
 	{
 		if (INPUT->GetButton(MOUSE_TYPE::LBUTTON) && isMouseOnButton)
 		{
@@ -43,7 +43,7 @@ void TitleScript::LateUpdate()
 		}
 		if (INPUT->GetButton(KEY_TYPE::M))
 		{
-			P_Application->SetFullScreen();
+			GFramework->SetFullScreen();
 			shared_ptr<LoadingScene> loadingScene = make_shared<LoadingScene>();
 			GET_SINGLE(SceneManager)->RegisterScene(L"LoadingScene", loadingScene);
 			loadingScene->Init(RoomType::RUIN);

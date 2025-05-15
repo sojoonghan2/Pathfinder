@@ -10,9 +10,6 @@
     <Filter Include="Game">
       <UniqueIdentifier>{c6b1ff15-4953-4a37-867b-e4f6e7b4f5dc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Device">
-      <UniqueIdentifier>{71fc682e-e861-4fe9-b6b8-e73d9096e27b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Manager">
       <UniqueIdentifier>{fc808d84-f186-4a68-8a9a-a9922fbcad77}</UniqueIdentifier>
     </Filter>
@@ -85,6 +82,9 @@
     <Filter Include="Script\UtilScript">
       <UniqueIdentifier>{4fa78ef9-24f6-49a9-b750-4c213bf1bf0d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{71fc682e-e861-4fe9-b6b8-e73d9096e27b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -112,22 +112,22 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="RootSignature.h">
-      <Filter>Device</Filter>
+      <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="Application.h">
-      <Filter>Device</Filter>
+    <ClInclude Include="GameFramework.h">
+      <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Object\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="CommandQAndList.h">
-      <Filter>Device</Filter>
+    <ClInclude Include="CommandQueueAndList.h">
+      <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="Descriptor.h">
-      <Filter>Device</Filter>
+    <ClInclude Include="ViewDescriptorHeap.h">
+      <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Device.h">
-      <Filter>Device</Filter>
+      <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Input.h">
       <Filter>Manager</Filter>
@@ -136,13 +136,13 @@
       <Filter>Manager</Filter>
     </ClInclude>
     <ClInclude Include="SwapChain.h">
-      <Filter>Device</Filter>
+      <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="RenderTarget.h">
-      <Filter>Device</Filter>
+      <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Buffer.h">
-      <Filter>Device</Filter>
+      <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="ParticlePool.h">
       <Filter>Manager</Filter>
@@ -419,22 +419,22 @@
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="RootSignature.cpp">
-      <Filter>Device</Filter>
+      <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="Application.cpp">
-      <Filter>Device</Filter>
+    <ClCompile Include="GameFramework.cpp">
+      <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>Object\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="CommandQAndList.cpp">
-      <Filter>Device</Filter>
+    <ClCompile Include="CommandQueueAndList.cpp">
+      <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="Descriptor.cpp">
-      <Filter>Device</Filter>
+    <ClCompile Include="ViewDescriptorHeap.cpp">
+      <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="Device.cpp">
-      <Filter>Device</Filter>
+      <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
       <Filter>Manager</Filter>
@@ -443,13 +443,13 @@
       <Filter>Manager</Filter>
     </ClCompile>
     <ClCompile Include="SwapChain.cpp">
-      <Filter>Device</Filter>
+      <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="RenderTarget.cpp">
-      <Filter>Device</Filter>
+      <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="Buffer.cpp">
-      <Filter>Device</Filter>
+      <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="ParticlePool.cpp">
       <Filter>Manager</Filter>

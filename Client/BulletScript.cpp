@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "BulletScript.h"
 #include "Input.h"
-#include "Application.h"
+#include "GameFramework.h"
 #include "Timer.h"
 #include "SceneManager.h"
 #include "Scene.h"

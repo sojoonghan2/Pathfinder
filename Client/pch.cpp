@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "Application.h"
+#include "GameFramework.h"
 
-unique_ptr<Application> P_Application = make_unique<Application>();
+unique_ptr<GameFramework> GFramework = make_unique<GameFramework>();
 
 wstring s2ws(const string& s)
 {

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Material.h"
-#include "Application.h"
+#include "GameFramework.h"
 
 Material::Material() : Object(OBJECT_TYPE::MATERIAL)
 {
@@ -22,7 +22,7 @@ void Material::PushGraphicsData()
 			continue;
 
 		SRV_REGISTER reg = SRV_REGISTER(static_cast<int8>(SRV_REGISTER::t0) + i);
-		P_Application->GetGraphicsDescHeap()->SetSRV(_textures[i]->GetSRVHandle(), reg);
+		GFramework->GetGraphicsDescHeap()->SetSRV(_textures[i]->GetSRVHandle(), reg);
 	}
 
 	// 파이프라인 세팅
@@ -41,7 +41,7 @@ void Material::PushComputeData()
 			continue;
 
 		SRV_REGISTER reg = SRV_REGISTER(static_cast<int8>(SRV_REGISTER::t0) + i);
-		P_Application->GetComputeDescHeap()->SetSRV(_textures[i]->GetSRVHandle(), reg);
+		GFramework->GetComputeDescHeap()->SetSRV(_textures[i]->GetSRVHandle(), reg);
 	}
 
 	// 파이프라인 세팅
@@ -54,11 +54,11 @@ void Material::Dispatch(uint32 x, uint32 y, uint32 z)
 	PushComputeData();
 
 	// SetDescriptorHeaps + SetComputeRootDescriptorTable
-	P_Application->GetComputeDescHeap()->CommitTable();
+	GFramework->GetComputeDescHeap()->CommitTable();
 
 	COMPUTE_CMD_LIST->Dispatch(x, y, z);
 
-	P_Application->GetComputeCmdQueue()->UploadComputeResource();
+	GFramework->GetComputeCmdQueue()->UploadComputeResource();
 }
 
 shared_ptr<Material> Material::Clone()

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Resources.h"
-#include "Application.h"
+#include "GameFramework.h"
 #include "MeshData.h"
 
 void Resources::Init()
@@ -1231,7 +1231,7 @@ void Resources::CreateDefaultMaterial()
 
 	// PointLight
 	{
-		const WindowInfo& window = P_Application->GetWindow();
+		const WindowInfo& window = GFramework->GetWindow();
 		Vec2 resolution = { static_cast<float>(window.width), static_cast<float>(window.height) };
 
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"PointLight");
@@ -1245,7 +1245,7 @@ void Resources::CreateDefaultMaterial()
 
 	// SpotLight
 	{
-		const WindowInfo& window = P_Application->GetWindow();
+		const WindowInfo& window = GFramework->GetWindow();
 		Vec2 resolution = { static_cast<float>(window.width), static_cast<float>(window.height) };
 
 		shared_ptr<Shader> shader = GET_SINGLE(Resources)->Get<Shader>(L"SpotLight");

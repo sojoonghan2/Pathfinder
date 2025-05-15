@@ -2,7 +2,7 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
-#include "Application.h"
+#include "GameFramework.h"
 #include "Material.h"
 #include "GameObject.h"
 #include "MeshRenderer.h"
@@ -149,8 +149,8 @@ shared_ptr<GameObject> SceneManager::Pick(int32 screenX, int32 screenY)
 {
 	shared_ptr<Camera> camera = GetActiveScene()->GetMainCamera();
 
-	float width = static_cast<float>(P_Application->GetWindow().width);
-	float height = static_cast<float>(P_Application->GetWindow().height);
+	float width = static_cast<float>(GFramework->GetWindow().width);
+	float height = static_cast<float>(GFramework->GetWindow().height);
 
 	Matrix projectionMatrix = camera->GetProjectionMatrix();
 

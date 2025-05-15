@@ -3,7 +3,7 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
-#include "Application.h"
+#include "GameFramework.h"
 #include "Shader.h"
 #include "Material.h"
 #include "GameObject.h"
@@ -70,7 +70,7 @@ void RuinsScene::Init()
 		shared_ptr<Material> material = GET_SINGLE(Resources)->Get<Material>(L"ComputeShader");
 		material->SetShader(shader);
 		material->SetInt(0, 1);
-		P_Application->GetComputeDescHeap()->SetUAV(texture->GetUAVHandle(), UAV_REGISTER::u0);
+		GFramework->GetComputeDescHeap()->SetUAV(texture->GetUAVHandle(), UAV_REGISTER::u0);
 
 		// 쓰레드 그룹 (1 * 1024 * 1)
 		material->Dispatch(1, 1024, 1);

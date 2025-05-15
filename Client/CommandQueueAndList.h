@@ -4,10 +4,10 @@ class SwapChain;
 class DescriptorHeap;
 
 // 커맨드 리스트를 GPU에 제출하기 위한 명령 큐 클래스
-class GraphicsCommandQueue
+class GraphicsCommandQueueAndList
 {
 public:
-	~GraphicsCommandQueue();
+	~GraphicsCommandQueueAndList();
 
 	// 디바이스와 스왑체인을 공유 포인터를 통해 커멘드 큐 초기화
 	void Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChain> swapChain);
@@ -43,10 +43,10 @@ private:
 };
 
 // 컴퓨트 커맨드 리스트를 GPU에 제출하기 위한 명령 큐 클래스
-class ComputeCommandQueue
+class ComputeCommandQueueAndList
 {
 public:
-	~ComputeCommandQueue();
+	~ComputeCommandQueueAndList();
 
 	// 초기화
 	void Init(ComPtr<ID3D12Device> device);
