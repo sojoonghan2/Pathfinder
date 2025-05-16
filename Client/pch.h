@@ -44,6 +44,7 @@ namespace fs = std::filesystem;
 #include "SimpleMath.inl"
 #include <dxgi1_4.h>
 #include <d3d12.h>
+#include <dxgi1_4.h>
 #include <wrl.h>
 #include <d3dcompiler.h>
 #include <dxgi.h>

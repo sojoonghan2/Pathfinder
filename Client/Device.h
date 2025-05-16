@@ -6,6 +6,8 @@ class Device
 {
 public:
 	void Init();
+	void CreateFactory();
+	void CreateHardwareDevice();
 
 	ComPtr<IDXGIFactory> GetDXGI() { return _dxgi; }
 	ComPtr<ID3D12Device> GetDevice() { return _device; }
