@@ -90,7 +90,7 @@ void GraphicsCommandQueueAndList::RenderEnd()
 
 	WaitForGPUComplete();
 
-	_swapChain->SwapIndex();
+	_swapChain->AdvanceBufferIndex();
 }
 
 void GraphicsCommandQueueAndList::UploadResource()
