@@ -4,9 +4,10 @@
 #include "Transform.h"
 #include "Input.h"
 #include "Timer.h"
+#include "Resources.h"
 #include "SceneManager.h"
 #include "Light.h"
-#include "Resources.h"
+#include "ShaderResources.h"
 #include "InstancingManager.h"
 #include "SocketIO.h"
 #include "CollisionManager.h"
@@ -41,7 +42,7 @@ void GameFramework::Init(const WindowInfo& info)
 
 	GET_SINGLE(Input)->Init(info.hwnd);
 	GET_SINGLE(Timer)->Init();
-	GET_SINGLE(Resources)->Init();
+	GET_SINGLE(ShaderResources)->Init();
 	GET_SINGLE(SceneManager)->Init();
 }
 

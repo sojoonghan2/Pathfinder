@@ -240,6 +240,7 @@
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SelfDestructionRobotScript.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShaderResources.h" />
     <ClInclude Include="SimpleMath.h" />
     <ClInclude Include="SocketIO.h" />
     <ClInclude Include="SphereCollider.h" />
@@ -345,6 +346,7 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SelfDestructionRobotScript.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderResources.cpp" />
     <ClCompile Include="SimpleMath.cpp" />
     <ClCompile Include="SocketIO.cpp" />
     <ClCompile Include="SphereCollider.cpp" />

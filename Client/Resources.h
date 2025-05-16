@@ -1,5 +1,4 @@
 #pragma once
-
 #include "GameObject.h"
 #include "Material.h"
 #include "Mesh.h"
@@ -49,10 +48,6 @@ public:
 	shared_ptr<Texture> GetColorTexture() { return _colorTexture; }
 
 	shared_ptr<Texture> CloneRenderTargetTexture(shared_ptr<Texture> originalTexture);
-
-private:
-	void CreateDefaultShader();
-	void CreateDefaultMaterial();
 
 private:
 	using KeyObjMap = std::map<wstring/*key*/, shared_ptr<Object>>;

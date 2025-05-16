@@ -393,6 +393,7 @@
     <ClInclude Include="OccupationScript.h">
       <Filter>Script\UtilScript</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderResources.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -694,6 +695,7 @@
     <ClCompile Include="OccupationScript.cpp">
       <Filter>Script\UtilScript</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderResources.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc">
