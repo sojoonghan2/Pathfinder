@@ -1,7 +1,7 @@
 #pragma once
 #include "Object.h"
 
-// ½¦ÀÌ´õ Á¾·ù
+// ¼ÎÀÌ´õ Á¾·ù
 enum class SHADER_TYPE : uint8
 {
 	DEFERRED,
@@ -54,11 +54,11 @@ struct ShaderInfo
 
 struct ShaderArg
 {
-	string vs = "VS_Main";
-	string hs;
-	string ds;
-	string gs;
-	string ps = "PS_Main";
+	std::string vs = "VS_Main";
+	std::string hs;
+	std::string ds;
+	std::string gs;
+	std::string ps = "PS_Main";
 };
 
 class Shader : public Object
@@ -84,19 +84,26 @@ private:
 	void CreateGeometryShader(const std::wstring& path, const std::string& name, const std::string& version);
 	void CreatePixelShader(const std::wstring& path, const std::string& name, const std::string& version);
 
+	void InitInputLayout();
+	void SetPipelineStateDesc(const ShaderInfo& info);
+	void CreatePipelineState();
+
 private:
 	ShaderInfo _info;
+
+	// Graphics
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC _graphicsPipelineDesc = {};
 	ComPtr<ID3D12PipelineState> _pipelineState;
 
+	// Compute
+	D3D12_COMPUTE_PIPELINE_STATE_DESC _computePipelineDesc = {};
+
+	// Shader Blob
 	ComPtr<ID3DBlob> _vsBlob;
 	ComPtr<ID3DBlob> _hsBlob;
 	ComPtr<ID3DBlob> _dsBlob;
 	ComPtr<ID3DBlob> _gsBlob;
 	ComPtr<ID3DBlob> _psBlob;
-	ComPtr<ID3DBlob> _errBlob;
-
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC _graphicsPipelineDesc = {};
-
 	ComPtr<ID3DBlob> _csBlob;
-	D3D12_COMPUTE_PIPELINE_STATE_DESC _computePipelineDesc = {};
+	ComPtr<ID3DBlob> _errBlob;
 };

@@ -2,13 +2,8 @@
 #include "Shader.h"
 #include "GameFramework.h"
 
-Shader::Shader() : Object(OBJECT_TYPE::SHADER)
-{
-}
-
-Shader::~Shader()
-{
-}
+Shader::Shader() : Object(OBJECT_TYPE::SHADER) {}
+Shader::~Shader() {}
 
 void Shader::CreateGraphicsShader(const wstring& path, ShaderInfo info, ShaderArg arg)
 {
@@ -16,14 +11,70 @@ void Shader::CreateGraphicsShader(const wstring& path, ShaderInfo info, ShaderAr
 
 	CreateVertexShader(path, arg.vs, "vs_5_0");
 	CreatePixelShader(path, arg.ps, "ps_5_0");
+	if (!arg.hs.empty()) CreateHullShader(path, arg.hs, "hs_5_0");
+	if (!arg.ds.empty()) CreateDomainShader(path, arg.ds, "ds_5_0");
+	if (!arg.gs.empty()) CreateGeometryShader(path, arg.gs, "gs_5_0");
 
-	if (!arg.hs.empty())
-		CreateHullShader(path, arg.hs, "hs_5_0");
-	if (!arg.ds.empty())
-		CreateDomainShader(path, arg.ds, "ds_5_0");
-	if (!arg.gs.empty())
-		CreateGeometryShader(path, arg.gs, "gs_5_0");
+	InitInputLayout();
+	SetPipelineStateDesc(_info);
+	CreatePipelineState();
+}
 
+void Shader::CreateComputeShader(const wstring& path, const string& name, const string& version)
+{
+	_info.shaderType = SHADER_TYPE::COMPUTE;
+	CreateShader(path, name, version, _csBlob, _computePipelineDesc.CS);
+	_computePipelineDesc.pRootSignature = COMPUTE_ROOT_SIGNATURE.Get();
+	DEVICE->CreateComputePipelineState(&_computePipelineDesc, IID_PPV_ARGS(&_pipelineState));
+}
+
+void Shader::Update()
+{
+	if (_info.shaderType == SHADER_TYPE::COMPUTE)
+		COMPUTE_CMD_LIST->SetPipelineState(_pipelineState.Get());
+	else {
+		GRAPHICS_CMD_LIST->IASetPrimitiveTopology(_info.topology);
+		GRAPHICS_CMD_LIST->SetPipelineState(_pipelineState.Get());
+	}
+}
+
+void Shader::CreateShader(const wstring& path, const string& name, const string& version, ComPtr<ID3DBlob>& blob, D3D12_SHADER_BYTECODE& shaderByteCode)
+{
+	uint32 compileFlag = 0;
+#ifdef _DEBUG
+	compileFlag = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
+	if (FAILED(::D3DCompileFromFile(path.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, name.c_str(), version.c_str(), compileFlag, 0, &blob, &_errBlob))) {
+		if (_errBlob) OutputDebugStringA((char*)_errBlob->GetBufferPointer());
+		::MessageBoxA(nullptr, "Shader Create Failed!", nullptr, MB_OK);
+	}
+
+	shaderByteCode = { blob->GetBufferPointer(), blob->GetBufferSize() };
+}
+
+void Shader::CreateVertexShader(const wstring& path, const string& name, const string& version) {
+	CreateShader(path, name, version, _vsBlob, _graphicsPipelineDesc.VS);
+}
+
+void Shader::CreateHullShader(const wstring& path, const string& name, const string& version) {
+	CreateShader(path, name, version, _hsBlob, _graphicsPipelineDesc.HS);
+}
+
+void Shader::CreateDomainShader(const wstring& path, const string& name, const string& version) {
+	CreateShader(path, name, version, _dsBlob, _graphicsPipelineDesc.DS);
+}
+
+void Shader::CreateGeometryShader(const wstring& path, const string& name, const string& version) {
+	CreateShader(path, name, version, _gsBlob, _graphicsPipelineDesc.GS);
+}
+
+void Shader::CreatePixelShader(const wstring& path, const string& name, const string& version) {
+	CreateShader(path, name, version, _psBlob, _graphicsPipelineDesc.PS);
+}
+
+void Shader::InitInputLayout()
+{
 	static D3D12_INPUT_ELEMENT_DESC desc[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -31,7 +82,6 @@ void Shader::CreateGraphicsShader(const wstring& path, ShaderInfo info, ShaderAr
 		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "WEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "INDICES", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 60, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-
 		{ "W", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 },
 		{ "W", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 },
 		{ "W", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 },
@@ -45,8 +95,11 @@ void Shader::CreateGraphicsShader(const wstring& path, ShaderInfo info, ShaderAr
 		{ "WVP", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 160, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 },
 		{ "WVP", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 176, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 },
 	};
-
 	_graphicsPipelineDesc.InputLayout = { desc, _countof(desc) };
+}
+
+void Shader::SetPipelineStateDesc(const ShaderInfo& info)
+{
 	_graphicsPipelineDesc.pRootSignature = GRAPHICS_ROOT_SIGNATURE.Get();
 	_graphicsPipelineDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	_graphicsPipelineDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
@@ -56,7 +109,6 @@ void Shader::CreateGraphicsShader(const wstring& path, ShaderInfo info, ShaderAr
 	_graphicsPipelineDesc.SampleDesc.Count = 1;
 	_graphicsPipelineDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
-	// Render Target 설정
 	switch (info.shaderType)
 	{
 	case SHADER_TYPE::DEFERRED:
@@ -84,7 +136,6 @@ void Shader::CreateGraphicsShader(const wstring& path, ShaderInfo info, ShaderAr
 		break;
 	}
 
-	// Rasterizer, DepthStencil, Blend 설정은 enum에 따라 커스터마이징 가능
 	D3D12_RASTERIZER_DESC& rs = _graphicsPipelineDesc.RasterizerState;
 	switch (info.rasterizerType)
 	{
@@ -135,70 +186,11 @@ void Shader::CreateGraphicsShader(const wstring& path, ShaderInfo info, ShaderAr
 		rt.DestBlend = D3D12_BLEND_ONE;
 		break;
 	}
+}
 
+void Shader::CreatePipelineState()
+{
 	DEVICE->CreateGraphicsPipelineState(&_graphicsPipelineDesc, IID_PPV_ARGS(&_pipelineState));
-}
-
-void Shader::CreateComputeShader(const wstring& path, const string& name, const string& version)
-{
-	_info.shaderType = SHADER_TYPE::COMPUTE;
-
-	CreateShader(path, name, version, _csBlob, _computePipelineDesc.CS);
-	_computePipelineDesc.pRootSignature = COMPUTE_ROOT_SIGNATURE.Get();
-
-	HRESULT hr = DEVICE->CreateComputePipelineState(&_computePipelineDesc, IID_PPV_ARGS(&_pipelineState));
-	assert(SUCCEEDED(hr));
-}
-
-void Shader::Update()
-{
-	if (_info.shaderType == SHADER_TYPE::COMPUTE)
-		COMPUTE_CMD_LIST->SetPipelineState(_pipelineState.Get());
-	else
-	{
-		GRAPHICS_CMD_LIST->IASetPrimitiveTopology(_info.topology);
-		GRAPHICS_CMD_LIST->SetPipelineState(_pipelineState.Get());
-	}
-}
-
-void Shader::CreateShader(const wstring& path, const string& name, const string& version, ComPtr<ID3DBlob>& blob, D3D12_SHADER_BYTECODE& shaderByteCode)
-{
-	uint32 compileFlag = 0;
-#ifdef _DEBUG
-	compileFlag = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#endif
-
-	if (FAILED(::D3DCompileFromFile(path.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, name.c_str(), version.c_str(), compileFlag, 0, &blob, &_errBlob)))
-	{
-		::MessageBoxA(nullptr, "Shader Create Failed!", nullptr, MB_OK);
-	}
-
-	shaderByteCode = { blob->GetBufferPointer(), blob->GetBufferSize() };
-}
-
-void Shader::CreateVertexShader(const wstring& path, const string& name, const string& version)
-{
-	CreateShader(path, name, version, _vsBlob, _graphicsPipelineDesc.VS);
-}
-
-void Shader::CreateHullShader(const wstring& path, const string& name, const string& version)
-{
-	CreateShader(path, name, version, _hsBlob, _graphicsPipelineDesc.HS);
-}
-
-void Shader::CreateDomainShader(const wstring& path, const string& name, const string& version)
-{
-	CreateShader(path, name, version, _dsBlob, _graphicsPipelineDesc.DS);
-}
-
-void Shader::CreateGeometryShader(const wstring& path, const string& name, const string& version)
-{
-	CreateShader(path, name, version, _gsBlob, _graphicsPipelineDesc.GS);
-}
-
-void Shader::CreatePixelShader(const wstring& path, const string& name, const string& version)
-{
-	CreateShader(path, name, version, _psBlob, _graphicsPipelineDesc.PS);
 }
 
 D3D12_PRIMITIVE_TOPOLOGY_TYPE Shader::GetTopologyType(D3D_PRIMITIVE_TOPOLOGY topology)
