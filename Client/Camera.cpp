@@ -144,7 +144,6 @@ void Camera::Render_Forward()
 
 void Camera::Render_Shadow()
 {
-	// 이거 왜 받는거임? 진짜 모름
 	S_MatView = _matView;
 	S_MatProjection = _matProjection;
 

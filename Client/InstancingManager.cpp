@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "InstancingManager.h"
-#include "Buffer.h"
 #include "GameObject.h"
 #include "MeshRenderer.h"
 #include "Transform.h"
@@ -8,27 +7,30 @@
 
 void InstancingManager::Render(vector<shared_ptr<GameObject>>& gameObjects)
 {
-	map<uint64, vector<shared_ptr<GameObject>>> cache;
+	unordered_map<uint64, vector<shared_ptr<GameObject>>> instanceGroups;
 
-	for (shared_ptr<GameObject>& gameObject : gameObjects)
+	// 인스턴스 ID 기준으로 그룹화
+	for (const auto& gameObject : gameObjects)
 	{
-		const uint64 instanceId = gameObject->GetMeshRenderer()->GetInstanceID();
-		cache[instanceId].push_back(gameObject);
+		if (gameObject->GetMeshRenderer() == nullptr)
+			continue;
+
+		uint64 instanceId = gameObject->GetMeshRenderer()->GetInstanceID();
+		instanceGroups[instanceId].push_back(gameObject);
 	}
 
-	for (auto& pair : cache)
+	// 각 그룹별로 렌더링
+	for (auto& [instanceId, group] : instanceGroups)
 	{
-		const vector<shared_ptr<GameObject>>& vec = pair.second;
-
-		if (vec.size() == 1)
+		if (group.size() == 1)
 		{
-			vec[0]->GetMeshRenderer()->Render();
+			// 단일 렌더링
+			group[0]->GetMeshRenderer()->Render();
 		}
 		else
 		{
-			const uint64 instanceId = pair.first;
-
-			for (const shared_ptr<GameObject>& gameObject : vec)
+			// 인스턴싱 렌더링 준비
+			for (const auto& gameObject : group)
 			{
 				InstancingParams params;
 				params.matWorld = gameObject->GetTransform()->GetLocalToWorldMatrix();
@@ -39,21 +41,21 @@ void InstancingManager::Render(vector<shared_ptr<GameObject>>& gameObjects)
 			}
 
 			shared_ptr<InstancingBuffer>& buffer = _buffers[instanceId];
-			vec[0]->GetMeshRenderer()->Render(buffer);
+			group[0]->GetMeshRenderer()->Render(buffer);
 		}
 	}
 }
 
 void InstancingManager::ClearBuffer()
 {
-	for (auto& pair : _buffers)
+	for (auto& [instanceId, buffer] : _buffers)
 	{
-		shared_ptr<InstancingBuffer>& buffer = pair.second;
-		buffer->Clear();
+		if (buffer)
+			buffer->Clear();
 	}
 }
 
-void InstancingManager::AddParam(uint64 instanceId, InstancingParams& data)
+void InstancingManager::AddParam(uint64 instanceId, const InstancingParams& data)
 {
 	if (_buffers.find(instanceId) == _buffers.end())
 		_buffers[instanceId] = make_shared<InstancingBuffer>();

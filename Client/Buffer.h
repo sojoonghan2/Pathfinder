@@ -132,7 +132,7 @@ public:
 	// 저장된 인스턴싱 데이터 초기화, 이전 프레임 데이터 제거
 	void Clear();
 	// 인스턴싱 데이터 추가, 인스턴싱에 필요한 행렬을 포함하는 구조체를 받아 벡터에 추가
-	void AddData(InstancingParams& params);
+	void AddData(const InstancingParams& params);
 	// 벡터에 저장된 인스터싱 데이터 GPU 버퍼로 전송
 	void PushData();
 

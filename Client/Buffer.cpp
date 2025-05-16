@@ -317,7 +317,7 @@ void InstancingBuffer::Clear()
 	_data.clear();
 }
 
-void InstancingBuffer::AddData(InstancingParams& params)
+void InstancingBuffer::AddData(const InstancingParams& params)
 {
 	_data.push_back(params);
 }

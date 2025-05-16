@@ -1,9 +1,10 @@
 #pragma once
 
 class GameObject;
+class Camera;
+class Light;
 
 // 모든 Scene의 부모 클래스
-// activeScene은 아래의 구조로 돌아감
 class Scene
 {
 public:
@@ -14,35 +15,35 @@ public:
 	void FinalUpdate();
 	virtual void Init();
 
-	shared_ptr<class Camera> GetMainCamera();
-
 	void Render();
+
+	// 렌더링 파이프라인 단계별 분리
 	void ClearRTV();
 	void RenderShadow();
 	void RenderDeferred();
 	void RenderLights();
 	void RenderFinal();
-
 	void RenderForward();
-
 	void PushLightData();
 
-public:
-	void AddGameObject(shared_ptr<GameObject> gameObject);
-	void RemoveGameObject(shared_ptr<GameObject> gameObject);
+	// 게임 오브젝트 관리
+	void AddGameObject(std::shared_ptr<GameObject> gameObject);
+	void RemoveGameObject(std::shared_ptr<GameObject> gameObject);
 
-	const vector<shared_ptr<GameObject>>& GetGameObjects() { return _gameObjects; }
-	const int GetSelectedModuleType() { return _selectedModuleType; }
+	// 접근자
+	std::shared_ptr<Camera> GetMainCamera();
+	const std::vector<std::shared_ptr<GameObject>>& GetGameObjects() { return _gameObjects; }
 
 	void SetSelectedModuleType(int type) { _selectedModuleType = type; }
+	int GetSelectedModuleType() const { return _selectedModuleType; }
 
-	void SetName(const wstring& name) { _sceneName = name; }
-	const wstring& GetName() const { return _sceneName; }
+	void SetName(const std::wstring& name) { _sceneName = name; }
+	const std::wstring& GetName() const { return _sceneName; }
 
 private:
-	wstring								_sceneName;
-	vector<shared_ptr<GameObject>>		_gameObjects;
-	vector<shared_ptr<class Camera>>	_cameras;
-	vector<shared_ptr<class Light>>		_lights;
-	int									_selectedModuleType;
+	std::wstring _sceneName;
+	std::vector<std::shared_ptr<GameObject>> _gameObjects;
+	std::vector<std::shared_ptr<Camera>> _cameras;
+	std::vector<std::shared_ptr<Light>> _lights;
+	int _selectedModuleType = 0;
 };
