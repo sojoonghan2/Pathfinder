@@ -451,7 +451,7 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\skybox.fx", info);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\skybox.hlsl", info);
 		Add<Shader>(L"Skybox", shader);
 	}
 
@@ -463,7 +463,7 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\deferred.fx", info);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\deferred.hlsl", info);
 		Add<Shader>(L"Deferred", shader);
 	}
 
@@ -475,7 +475,7 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\forward.fx", info);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\forward.hlsl", info);
 		Add<Shader>(L"Forward", shader);
 	}
 
@@ -498,7 +498,7 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\forward.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\forward.hlsl", info, arg);
 		Add<Shader>(L"Texture", shader);
 	}
 
@@ -513,7 +513,7 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\Occupation.fx", info);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\Occupation.hlsl", info);
 		Add<Shader>(L"Occupation", shader);
 	}
 
@@ -537,7 +537,7 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\SkillIcon.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\SkillIcon.hlsl", info, arg);
 		Add<Shader>(L"SkillIcon", shader);
 	}
 
@@ -561,7 +561,7 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\Billboard.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\Billboard.hlsl", info, arg);
 		Add<Shader>(L"Billboard", shader);
 	}
 
@@ -585,7 +585,7 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\UI.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\UI.hlsl", info, arg);
 		Add<Shader>(L"UI", shader);
 	}
 
@@ -609,7 +609,7 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\lighting.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\lighting.hlsl", info, arg);
 		Add<Shader>(L"DirLight", shader);
 	}
 
@@ -633,7 +633,7 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\lighting.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\lighting.hlsl", info, arg);
 		Add<Shader>(L"PointLight", shader);
 	}
 
@@ -657,7 +657,7 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\lighting.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\lighting.hlsl", info, arg);
 		Add<Shader>(L"SpotLight", shader);
 	}
 
@@ -680,14 +680,14 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\lighting.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\lighting.hlsl", info, arg);
 		Add<Shader>(L"Final", shader);
 	}
 
 	// Compute Shader
 	{
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateComputeShader(L"..\\Resources\\Shader\\compute.fx", "CS_Main", "cs_5_0");
+		shader->CreateComputeShader(L"..\\Resources\\Shader\\compute.hlsl", "CS_Main", "cs_5_0");
 		Add<Shader>(L"ComputeShader", shader);
 	}
 
@@ -717,11 +717,11 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\IceParticle.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\IceParticle.hlsl", info, arg);
 		Add<Shader>(L"IceParticle", shader);
 
 		shared_ptr<Shader> computeShader = make_shared<Shader>();
-		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\IceParticle.fx", "CS_Main", "cs_5_0");
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\IceParticle.hlsl", "CS_Main", "cs_5_0");
 		Add<Shader>(L"IceComputeParticle", computeShader);
 	}
 
@@ -751,11 +751,11 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\CrabParticle.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\CrabParticle.hlsl", info, arg);
 		Add<Shader>(L"CrabParticle", shader);
 
 		shared_ptr<Shader> computeShader = make_shared<Shader>();
-		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\CrabParticle.fx", "CS_Main", "cs_5_0");
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\CrabParticle.hlsl", "CS_Main", "cs_5_0");
 		Add<Shader>(L"CrabComputeParticle", computeShader);
 	}
 
@@ -785,11 +785,11 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\GunFlameParticle.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\GunFlameParticle.hlsl", info, arg);
 		Add<Shader>(L"GunFlameParticle", shader);
 
 		shared_ptr<Shader> computeShader = make_shared<Shader>();
-		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\GunFlameParticle.fx", "CS_Main", "cs_5_0");
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\GunFlameParticle.hlsl", "CS_Main", "cs_5_0");
 		Add<Shader>(L"GunFlameComputeParticle", computeShader);
 	}
 
@@ -819,11 +819,11 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\FireParticle.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\FireParticle.hlsl", info, arg);
 		Add<Shader>(L"FireParticle", shader);
 
 		shared_ptr<Shader> computeShader = make_shared<Shader>();
-		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\FireParticle.fx", "CS_Main", "cs_5_0");
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\FireParticle.hlsl", "CS_Main", "cs_5_0");
 		Add<Shader>(L"FireComputeParticle", computeShader);
 	}
 
@@ -853,11 +853,11 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\CataclysmParticle.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\CataclysmParticle.hlsl", info, arg);
 		Add<Shader>(L"CataclysmParticle", shader);
 
 		shared_ptr<Shader> computeShader = make_shared<Shader>();
-		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\CataclysmParticle.fx", "CS_Main", "cs_5_0");
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\CataclysmParticle.hlsl", "CS_Main", "cs_5_0");
 		Add<Shader>(L"CataclysmComputeParticle", computeShader);
 	}
 
@@ -887,11 +887,11 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\RazerParticle.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\RazerParticle.hlsl", info, arg);
 		Add<Shader>(L"RazerParticle", shader);
 
 		shared_ptr<Shader> computeShader = make_shared<Shader>();
-		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\RazerParticle.fx", "CS_Main", "cs_5_0");
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\RazerParticle.hlsl", "CS_Main", "cs_5_0");
 		Add<Shader>(L"RazerComputeParticle", computeShader);
 	}
 
@@ -921,11 +921,11 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\OverDriveParticle.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\OverDriveParticle.hlsl", info, arg);
 		Add<Shader>(L"OverDriveParticle", shader);
 
 		shared_ptr<Shader> computeShader = make_shared<Shader>();
-		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\OverDriveParticle.fx", "CS_Main", "cs_5_0");
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\OverDriveParticle.hlsl", "CS_Main", "cs_5_0");
 		Add<Shader>(L"OverDriveComputeParticle", computeShader);
 	}
 
@@ -955,11 +955,11 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\GlitterParticle.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\GlitterParticle.hlsl", info, arg);
 		Add<Shader>(L"GlitterParticle", shader);
 
 		shared_ptr<Shader> computeShader = make_shared<Shader>();
-		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\GlitterParticle.fx", "CS_Main", "cs_5_0");
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\GlitterParticle.hlsl", "CS_Main", "cs_5_0");
 		Add<Shader>(L"GlitterComputeParticle", computeShader);
 	}
 
@@ -989,11 +989,11 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\LightPillarParticle.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\LightPillarParticle.hlsl", info, arg);
 		Add<Shader>(L"LightPillarParticle", shader);
 
 		shared_ptr<Shader> computeShader = make_shared<Shader>();
-		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\LightPillarParticle.fx", "CS_Main", "cs_5_0");
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\LightPillarParticle.hlsl", "CS_Main", "cs_5_0");
 		Add<Shader>(L"LightPillarComputeParticle", computeShader);
 	}
 
@@ -1023,11 +1023,11 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\DustParticle.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\DustParticle.hlsl", info, arg);
 		Add<Shader>(L"DustParticle", shader);
 
 		shared_ptr<Shader> computeShader = make_shared<Shader>();
-		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\DustParticle.fx", "CS_Main", "cs_5_0");
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\DustParticle.hlsl", "CS_Main", "cs_5_0");
 		Add<Shader>(L"DustComputeParticle", computeShader);
 	}
 
@@ -1057,11 +1057,11 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\PortalFrameParticle.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\PortalFrameParticle.hlsl", info, arg);
 		Add<Shader>(L"PortalFrameParticle", shader);
 
 		shared_ptr<Shader> computeShader = make_shared<Shader>();
-		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\PortalFrameParticle.fx", "CS_Main", "cs_5_0");
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\PortalFrameParticle.hlsl", "CS_Main", "cs_5_0");
 		Add<Shader>(L"PortalFrameComputeParticle", computeShader);
 	}
 
@@ -1091,11 +1091,11 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\TestPBRParticle.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\TestPBRParticle.hlsl", info, arg);
 		Add<Shader>(L"TestPBRParticle", shader);
 
 		shared_ptr<Shader> computeShader = make_shared<Shader>();
-		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\TestPBRParticle.fx", "CS_Main", "cs_5_0");
+		computeShader->CreateComputeShader(L"..\\Resources\\Shader\\TestPBRParticle.hlsl", "CS_Main", "cs_5_0");
 		Add<Shader>(L"TestPBRComputeParticle", computeShader);
 	}
 
@@ -1109,7 +1109,7 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\shadow.fx", info);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\shadow.hlsl", info);
 		Add<Shader>(L"Shadow", shader);
 	}
 
@@ -1134,14 +1134,14 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\tessellation.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\tessellation.hlsl", info, arg);
 		Add<Shader>(L"Tessellation", shader);
 	}
 
 	// ComputeAnimation
 	{
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateComputeShader(L"..\\Resources\\Shader\\animation.fx", "CS_Main", "cs_5_0");
+		shader->CreateComputeShader(L"..\\Resources\\Shader\\animation.hlsl", "CS_Main", "cs_5_0");
 		Add<Shader>(L"ComputeAnimation", shader);
 	}
 
@@ -1155,7 +1155,7 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\terrainCube.fx", info);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\terrainCube.hlsl", info);
 		Add<Shader>(L"TerrainCube", shader);
 	}
 
@@ -1179,7 +1179,7 @@ void Resources::CreateDefaultShader()
 		};
 
 		shared_ptr<Shader> shader = make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\water.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\water.hlsl", info, arg);
 		Add<Shader>(L"Water", shader);
 	}
 
@@ -1203,7 +1203,7 @@ void Resources::CreateDefaultShader()
 		};
 
 		std::shared_ptr<Shader> shader = std::make_shared<Shader>();
-		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\Debug.fx", info, arg);
+		shader->CreateGraphicsShader(L"..\\Resources\\Shader\\Debug.hlsl", info, arg);
 		Add<Shader>(L"Debug", shader);
 	}
 }
