@@ -22,6 +22,11 @@ public:
 	~Buffer();
 
 	void Init(uint32 elementSize, uint32 elementCount, void* initialData = nullptr);
+	void CreateBufferResource();
+	void CreateSRV();
+	void CreateUAV();
+
+	void Transition(D3D12_RESOURCE_STATES newState);
 
 	// 그래픽스 파이프라인에서 해당 버퍼를 SRV로 바인딩
 	void PushGraphicsData(SRV_REGISTER reg);
@@ -43,7 +48,7 @@ public:
 	UINT	GetBufferSize() { return _elementSize * _elementCount; }
 
 	void Update(const void* data, size_t dataSize);
-	void CopyInitialData(uint64 bufferSize, void* initialData);
+	void CopyInitialData(void* data);
 
 private:
 	ComPtr<ID3D12Resource>			_buffer;

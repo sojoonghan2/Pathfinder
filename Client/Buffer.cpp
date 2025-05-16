@@ -16,67 +16,57 @@ void Buffer::Init(uint32 elementSize, uint32 elementCount, void* initialData)
 	_elementCount = elementCount;
 	_resourceState = D3D12_RESOURCE_STATE_COMMON;
 
-	// Buffer
-	{
-		uint64 bufferSize = static_cast<uint64>(_elementSize) * _elementCount;
-		D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
-		D3D12_HEAP_PROPERTIES heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	CreateBufferResource();
+	CreateSRV();
+	CreateUAV();
 
-		DEVICE->CreateCommittedResource(
-			&heapProperties,
-			D3D12_HEAP_FLAG_NONE,
-			&desc,
-			_resourceState,
-			nullptr,
-			IID_PPV_ARGS(&_buffer));
+	if(initialData) CopyInitialData(initialData);
+}
 
-		if (initialData)
-			CopyInitialData(bufferSize, initialData);
-	}
+void Buffer::CreateBufferResource()
+{
+	const uint64 totalSize = static_cast<uint64>(_elementSize) * _elementCount;
+	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(totalSize, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+	D3D12_HEAP_PROPERTIES heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
-	// SRV
-	{
-		D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-		srvHeapDesc.NumDescriptors = 1;
-		srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-		DEVICE->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&_srvHeap));
+	DEVICE->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &desc, _resourceState, nullptr, IID_PPV_ARGS(&_buffer));
+}
 
-		_srvHeapBegin = _srvHeap->GetCPUDescriptorHandleForHeapStart();
+void Buffer::CreateSRV()
+{
+	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+	heapDesc.NumDescriptors = 1;
+	heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
-		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-		srvDesc.Buffer.FirstElement = 0;
-		srvDesc.Buffer.NumElements = _elementCount;
-		srvDesc.Buffer.StructureByteStride = _elementSize;
-		srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+	DEVICE->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&_srvHeap));
+	_srvHeapBegin = _srvHeap->GetCPUDescriptorHandleForHeapStart();
 
-		DEVICE->CreateShaderResourceView(_buffer.Get(), &srvDesc, _srvHeapBegin);
-	}
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvDesc.Buffer.NumElements = _elementCount;
+	srvDesc.Buffer.StructureByteStride = _elementSize;
 
-	// UAV
-	{
-		D3D12_DESCRIPTOR_HEAP_DESC uavheapDesc = {};
-		uavheapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		uavheapDesc.NumDescriptors = 1;
-		uavheapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-		DEVICE->CreateDescriptorHeap(&uavheapDesc, IID_PPV_ARGS(&_uavHeap));
+	DEVICE->CreateShaderResourceView(_buffer.Get(), &srvDesc, _srvHeapBegin);
+}
 
-		_uavHeapBegin = _uavHeap->GetCPUDescriptorHandleForHeapStart();
+void Buffer::CreateUAV()
+{
+	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+	heapDesc.NumDescriptors = 1;
+	heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 
-		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-		uavDesc.Format = DXGI_FORMAT_UNKNOWN;
-		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
-		uavDesc.Buffer.FirstElement = 0;
-		uavDesc.Buffer.NumElements = _elementCount;
-		uavDesc.Buffer.StructureByteStride = _elementSize;
-		uavDesc.Buffer.CounterOffsetInBytes = 0;
-		uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
+	DEVICE->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&_uavHeap));
+	_uavHeapBegin = _uavHeap->GetCPUDescriptorHandleForHeapStart();
 
-		DEVICE->CreateUnorderedAccessView(_buffer.Get(), nullptr, &uavDesc, _uavHeapBegin);
-	}
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+	uavDesc.Buffer.NumElements = _elementCount;
+	uavDesc.Buffer.StructureByteStride = _elementSize;
+
+	DEVICE->CreateUnorderedAccessView(_buffer.Get(), nullptr, &uavDesc, _uavHeapBegin);
 }
 
 void Buffer::PushGraphicsData(SRV_REGISTER reg)
@@ -94,46 +84,40 @@ void Buffer::PushComputeUAVData(UAV_REGISTER reg)
 	GFramework->GetComputeDescHeap()->SetUAV(_uavHeapBegin, reg);
 }
 
-void Buffer::CopyInitialData(uint64 bufferSize, void* initialData)
+void Buffer::CopyInitialData(void* data)
 {
-	ComPtr<ID3D12Resource> readBuffer = nullptr;
-	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize, D3D12_RESOURCE_FLAG_NONE);
-	D3D12_HEAP_PROPERTIES heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	const uint64 totalSize = static_cast<uint64>(_elementSize) * _elementCount;
 
-	DEVICE->CreateCommittedResource(
-		&heapProperties,
-		D3D12_HEAP_FLAG_NONE,
-		&desc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&readBuffer));
+	// 업로드용 버퍼 생성
+	ComPtr<ID3D12Resource> uploadBuffer;
+	auto uploadDesc = CD3DX12_RESOURCE_DESC::Buffer(totalSize);
+	auto uploadProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 
-	uint8* dataBegin = nullptr;
-	D3D12_RANGE readRange{ 0, 0 };
-	readBuffer->Map(0, &readRange, reinterpret_cast<void**>(&dataBegin));
-	memcpy(dataBegin, initialData, bufferSize);
-	readBuffer->Unmap(0, nullptr);
+	DEVICE->CreateCommittedResource(&uploadProps, D3D12_HEAP_FLAG_NONE, &uploadDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&uploadBuffer));
 
-	// Common -> Copy
-	{
-		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(_buffer.Get(),
-			D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST);
+	uint8* mapped = nullptr;
+	D3D12_RANGE range{ 0, 0 };
+	uploadBuffer->Map(0, &range, reinterpret_cast<void**>(&mapped));
+	memcpy(mapped, data, totalSize);
+	uploadBuffer->Unmap(0, nullptr);
 
-		RESOURCE_CMD_LIST->ResourceBarrier(1, &barrier);
-	}
-
-	RESOURCE_CMD_LIST->CopyBufferRegion(_buffer.Get(), 0, readBuffer.Get(), 0, bufferSize);
-
-	// Copy -> Common
-	{
-		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(_buffer.Get(),
-			D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_COMMON);
-		RESOURCE_CMD_LIST->ResourceBarrier(1, &barrier);
-	}
+	Transition(D3D12_RESOURCE_STATE_COPY_DEST);
+	RESOURCE_CMD_LIST->CopyBufferRegion(_buffer.Get(), 0, uploadBuffer.Get(), 0, totalSize);
+	Transition(D3D12_RESOURCE_STATE_COMMON);
 
 	GFramework->GetGraphicsCmdQueue()->UploadResource();
+}
 
-	_resourceState = D3D12_RESOURCE_STATE_COMMON;
+void Buffer::Transition(D3D12_RESOURCE_STATES newState)
+{
+	if (_resourceState == newState)
+		return;
+
+	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		_buffer.Get(), _resourceState, newState);
+	RESOURCE_CMD_LIST->ResourceBarrier(1, &barrier);
+	_resourceState = newState;
 }
 
 void Buffer::Update(const void* data, size_t dataSize)
