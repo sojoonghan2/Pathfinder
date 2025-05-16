@@ -1,7 +1,8 @@
 #pragma once
+
 #include "Texture.h"
 
-// 렌더 타겟 그룹
+// 렌더 타겟 그룹 타입 구분
 enum class RENDER_TARGET_GROUP_TYPE : uint8
 {
 	SWAP_CHAIN,
@@ -9,11 +10,11 @@ enum class RENDER_TARGET_GROUP_TYPE : uint8
 	G_BUFFER,
 	LIGHTING,
 	REFLECTION,
-	END,
+	END
 };
 
-// 전체 렌더 타겟 개수
-enum
+// 렌더 타겟 구성 개수 정의
+enum : uint8
 {
 	RENDER_TARGET_SHADOW_GROUP_MEMBER_COUNT = 1,
 	RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT = 3,
@@ -22,47 +23,54 @@ enum
 	RENDER_TARGET_GROUP_COUNT = static_cast<uint8>(RENDER_TARGET_GROUP_TYPE::END)
 };
 
-// 각 렌더 타겟에 대한 정보와 클리어 색상
+// 렌더 타겟 하나의 구성 정보 (텍스처와 클리어 색상)
 struct RenderTarget
 {
 	shared_ptr<Texture> target;
-	float clearColor[4];
+	float clearColor[4] = { 0.f, 0.f, 0.f, 1.f };
 };
 
-// 렌더 타겟과 깊이 스텐실 텍스처를 그룹화하여 바인딩 및 클리어, 상태 전환을 관리하는 클래스
+// 렌더 타겟 그룹: 여러 렌더 타겟과 DSV를 묶어 관리
 class RenderTargetGroup
 {
 public:
-	// 렌더 타겟 그룹 생성
-	void Create(RENDER_TARGET_GROUP_TYPE groupType, vector<RenderTarget>& rtVec, shared_ptr<Texture> dsTexture);
+	// 그룹 초기화
+	void Create(RENDER_TARGET_GROUP_TYPE type, vector<RenderTarget>& rtList, shared_ptr<Texture> depthStencil);
+
+	void CopyRTVs();
+	void PrepareResourceTransitions();
+
+	// 뷰포트 및 시저 설정
 	void SetViewportAndScissorRect();
 
-	// 지정된 인덱스부터 렌더 타겟들을 OM 단계에 설정
-	void OMSetRenderTargets(uint32 count, uint32 offset);
+	// OM 단계 렌더 타겟 바인딩
 	void OMSetRenderTargets();
+	void OMSetRenderTargets(uint32 count, uint32 offset);
 
-	// 특정 인덱스에 해당하는 렌더 타겟을 클리어하거나 전체 렌더 타겟 클리어
-	void ClearRenderTargetView(uint32 index);
+	// 렌더 타겟 클리어
 	void ClearRenderTargetView();
+	void ClearRenderTargetView(uint32 index);
 
-	shared_ptr<Texture> GetRTTexture(uint32 index) { return _rtVec[index].target; }
-	shared_ptr<Texture> GetDSTexture() { return _dsTexture; }
+	// Getter
+	shared_ptr<Texture> GetRTTexture(uint32 index) const { return _rtVec[index].target; }
+	shared_ptr<Texture> GetDSTexture() const { return _dsTexture; }
 
-	// 리소스와 렌더 타겟 간 상태 변환을 위해 GPU에 동기화 요청
+	// 리소스 상태 전이 제어
 	void WaitTargetToResource();
 	void WaitResourceToTarget();
 
 private:
-	RENDER_TARGET_GROUP_TYPE		_groupType;
+	RENDER_TARGET_GROUP_TYPE		_groupType = RENDER_TARGET_GROUP_TYPE::END;
+
 	vector<RenderTarget>			_rtVec;
-	uint32							_rtCount;
+	uint32							_rtCount{};
 	shared_ptr<Texture>				_dsTexture;
+
 	ComPtr<ID3D12DescriptorHeap>	_rtvHeap;
+	uint32							_rtvHeapSize{};
+	D3D12_CPU_DESCRIPTOR_HANDLE		_rtvHeapBegin{};
+	D3D12_CPU_DESCRIPTOR_HANDLE		_dsvHeapBegin{};
 
-	uint32							_rtvHeapSize;
-	D3D12_CPU_DESCRIPTOR_HANDLE		_rtvHeapBegin;
-	D3D12_CPU_DESCRIPTOR_HANDLE		_dsvHeapBegin;
-
-	D3D12_RESOURCE_BARRIER			_targetToResource[8];
-	D3D12_RESOURCE_BARRIER			_resourceToTarget[8];
+	D3D12_RESOURCE_BARRIER			_targetToResource[8]{};
+	D3D12_RESOURCE_BARRIER			_resourceToTarget[8]{};
 };
