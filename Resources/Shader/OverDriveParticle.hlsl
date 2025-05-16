@@ -1,8 +1,5 @@
-#ifndef _OVERDRIVEPARTICLE_FX_
-#define _OVERDRIVEPARTICLE_FX_
-
-#include "ShaderParams.fx"
-#include "utils.fx"
+#include "ShaderParams.hlsl"
+#include "utils.hlsl"
 
 #define PI 3.141592
 
@@ -257,5 +254,3 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
         g_particle[threadIndex.x].worldPos.y += sin(PI * ratio) * amplitude * deltaTime;
     }
 }
-
-#endif

@@ -1,15 +1,5 @@
-#ifndef _BILLBOARD_FX_
-#define _BILLBOARD_FX_
-
-#include "ShaderParams.fx"
-#include "utils.fx"
-
-// ************************
-// Forward Rendering
-// 각 픽셀에 대해 한 번의 패스로 모든 처리 수행
-// 텍스쳐 샘플링, 노말 매핑, 조명 계산을 순차적으로 진행
-// 최종 색상이 바로 화면에 출력
-// ************************
+#include "ShaderParams.hlsl"
+#include "utils.hlsl"
 
 struct VS_IN
 {
@@ -120,5 +110,3 @@ float4 PS_Tex(VS_TEX_OUT input) : SV_Target
 
     return color;
 }
-
-#endif

@@ -1,8 +1,5 @@
-#ifndef _RAZERPARTICLE_FX_
-#define _RAZERPARTICLE_FX_
-
-#include "ShaderParams.fx"
-#include "utils.fx"
+#include "ShaderParams.hlsl"
+#include "utils.hlsl"
 
 struct Particle
 {
@@ -229,5 +226,3 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 		g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * speed * deltaTime;
 	}
 }
-
-#endif

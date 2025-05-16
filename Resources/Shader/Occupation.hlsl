@@ -1,7 +1,5 @@
-#ifndef _OCCUPATION_FORWARD_FX_
-#define _OCCUPATION_FORWARD_FX_
-#include "ShaderParams.fx"
-#include "utils.fx"
+#include "ShaderParams.hlsl"
+#include "utils.hlsl"
 
 // 포워드 렌더링용 구조
 struct VS_IN
@@ -79,4 +77,3 @@ float4 PS_Main(VS_OUT input) : SV_Target
 	
 	return color;
 }
-#endif

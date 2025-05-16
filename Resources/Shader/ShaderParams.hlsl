@@ -1,5 +1,5 @@
-#ifndef _PARAMS_FX_
-#define _PARAMS_FX_
+#ifndef _SHADER_PARAMS_HLSL_
+#define _SHADER_PARAMS_HLSL_
 
 struct LightColor
 {

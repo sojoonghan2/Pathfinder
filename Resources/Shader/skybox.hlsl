@@ -1,7 +1,4 @@
-#ifndef _SKYBOX_FX_
-#define _SKYBOX_FX_
-
-#include "ShaderParams.fx"
+#include "ShaderParams.hlsl"
 
 struct VS_IN
 {
@@ -35,5 +32,3 @@ float4 PS_Main(VS_OUT input) : SV_Target
      float4 color = g_textures.Sample(g_sam_0, input.uv);
      return color;
 }
-
-#endif

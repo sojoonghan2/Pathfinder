@@ -1,7 +1,4 @@
-#ifndef _UTILS_FX_
-#define _UTILS_FX_
-
-#include "ShaderParams.fx"
+#include "ShaderParams.hlsl"
 
 // 타입별 조명 처리
 LightColor CalculateLightColor(int lightIndex, float3 viewNormal, float3 viewPos)
@@ -143,6 +140,3 @@ float4 QuaternionNormalize(float4 q)
         return float4(0.f, 0.f, 0.f, 1.f);
     }
 }
-
-
-#endif

@@ -736,13 +736,13 @@
     <FxCompile Include="..\Resources\Shader\TestPBRParticle.hlsl">
       <Filter>Shader\Particle</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\utils.fx">
+    <FxCompile Include="..\Resources\Shader\utils.hlsl">
       <Filter>Shader\Util</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\math.fx">
+    <FxCompile Include="..\Resources\Shader\math.hlsl">
       <Filter>Shader\Util</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\ShaderParams.fx">
+    <FxCompile Include="..\Resources\Shader\ShaderParams.hlsl">
       <Filter>Shader\Util</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\GunFlameParticle.hlsl">
@@ -779,9 +779,6 @@
       <Filter>Shader\Object</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\skybox.hlsl">
-      <Filter>Shader\Object</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\terrain.fx">
       <Filter>Shader\Object</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\terrainCube.hlsl">

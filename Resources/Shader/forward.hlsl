@@ -1,8 +1,5 @@
-#ifndef _DEFAULT_FX_
-#define _DEFAULT_FX_
-
-#include "ShaderParams.fx"
-#include "utils.fx"
+#include "ShaderParams.hlsl"
+#include "utils.hlsl"
 
 // ************************
 // Forward Rendering
@@ -113,5 +110,3 @@ float4 PS_Tex(VS_TEX_OUT input) : SV_Target
 
     return color;
 }
-
-#endif

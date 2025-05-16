@@ -1,8 +1,5 @@
-#ifndef _SHADOW_FX_
-#define _SHADOW_FX_
-
-#include "ShaderParams.fx"
-#include "utils.fx"
+#include "ShaderParams.hlsl"
+#include "utils.hlsl"
 
 // ************************
 // 그림자 셰이더
@@ -48,5 +45,3 @@ float4 PS_Main(VS_OUT input) : SV_Target
     // depth만 저장 (0~1 range)
     return float4(input.clipPos.z / input.clipPos.w, 0.f, 0.f, 0.f);
 }
-
-#endif

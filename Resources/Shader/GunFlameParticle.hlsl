@@ -1,8 +1,5 @@
-#ifndef _MUZZLEFLAME_PARTICLE_FX_
-#define _MUZZLEFLAME_PARTICLE_FX_
-
-#include "ShaderParams.fx"
-#include "utils.fx"
+#include "ShaderParams.hlsl"
+#include "utils.hlsl"
 
 #define PI 3.141592
 
@@ -251,5 +248,3 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 		g_particle[threadIndex.x].worldPos += g_particle[threadIndex.x].worldDir * deltaTime * velocityFactor * 2.0f;
 	}
 }
-
-#endif

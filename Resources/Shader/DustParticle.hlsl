@@ -1,8 +1,5 @@
-#ifndef _DUSTPARTICLE_FX_
-#define _DUSTPARTICLE_FX_
-
-#include "ShaderParams.fx"
-#include "utils.fx"
+#include "ShaderParams.hlsl"
+#include "utils.hlsl"
 
 #define PI 3.141592
 
@@ -247,5 +244,3 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
         }
     }
 }
-
-#endif

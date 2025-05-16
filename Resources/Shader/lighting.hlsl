@@ -1,8 +1,5 @@
-#ifndef _LIGHTING_FX_
-#define _LIGHTING_FX_
-
-#include "ShaderParams.fx"
-#include "utils.fx"
+#include "ShaderParams.hlsl"
+#include "utils.hlsl"
 
 struct VS_IN
 {
@@ -21,14 +18,6 @@ struct PS_OUT
     float4 diffuse : SV_Target0;
     float4 specular : SV_Target1;
 };
-
-// [Directional Light]
-// g_int_0 : Light index
-// g_textures[0] : Position RT
-// g_textures[1] : Normal RT
-// g_textures[2] : Shadow RT
-// g_mat_0 : ShadowCamera VP
-// Mesh : Rectangle
 
 VS_OUT VS_DirLight(VS_IN input)
 {
@@ -107,14 +96,6 @@ PS_OUT PS_DirLight(VS_OUT input)
 
     return output;
 }
-
-
-// [Point Light]
-// g_int_0 : Light index
-// g_textures[0] : Position RT
-// g_textures[1] : Normal RT
-// g_vec2_0 : RenderTarget Resolution
-// Mesh : Sphere
 
 VS_OUT VS_PointLight(VS_IN input)
 {
@@ -223,12 +204,6 @@ PS_OUT PS_SpotLight(VS_OUT input)
     return output;
 }
 
-// [Final]
-// g_textures[0] : Diffuse Color Target
-// g_textures[1] : Diffuse Light Target
-// g_textures[2] : Specular Light Target
-// Mesh : Rectangle
-
 VS_OUT VS_Final(VS_IN input)
 {
     VS_OUT output = (VS_OUT)0;
@@ -254,5 +229,3 @@ float4 PS_Final(VS_OUT input) : SV_Target
     output = (color * lightPower) + specular;
     return output;
 }
-
-#endif

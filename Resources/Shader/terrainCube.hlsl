@@ -1,8 +1,5 @@
-#ifndef TERRAINCUBE_FX_
-#define TERRAINCUBE_FX_
-
-#include "ShaderParams.fx"
-#include "utils.fx"
+#include "ShaderParams.hlsl"
+#include "utils.hlsl"
 
 struct VS_IN
 {
@@ -115,5 +112,3 @@ PS_OUT PS_Main(VS_OUT input)
     
     return output;
 }
-
-#endif

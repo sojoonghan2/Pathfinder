@@ -1,7 +1,4 @@
-#ifndef _MATH_FX_
-#define _MATH_FX_
-
-#include "ShaderParams.fx"
+#include "ShaderParams.hlsl"
 
 float4 VectorPermute(uint PermuteX, uint PermuteY, uint PermuteZ, uint PermuteW, in float4 V1, in float4 V2)
 {
@@ -176,5 +173,3 @@ float4 QuaternionSlerp(in float4 Q1, in float4 Q2, float Ratio)
 
     return Result;
 }
-
-#endif

@@ -1,11 +1,4 @@
-#ifndef _TESSELLATION_FX_
-#define _TESSELLATION_FX_
-
-#include "ShaderParams.fx"
-
-// --------------
-// Vertex Shader
-// --------------
+#include "ShaderParams.hlsl"
 
 struct VS_IN
 {
@@ -26,10 +19,6 @@ VS_OUT VS_Main(VS_IN input)
     return output;
 }
 
-// --------------
-// Hull Shader
-// --------------
-
 struct PatchTess
 {
     float edgeTess[3] : SV_TessFactor;
@@ -42,7 +31,6 @@ struct HS_OUT
     float2 uv : TEXCOORD;
 };
 
-// Constant HS
 PatchTess ConstantHS(InputPatch<VS_OUT, 3> input, int patchID : SV_PrimitiveID)
 {
     PatchTess output = (PatchTess)0.f;
@@ -77,10 +65,6 @@ HS_OUT HS_Main(InputPatch<VS_OUT, 3> input, int vertexIdx : SV_OutputControlPoin
     return output;
 }
 
-// --------------
-// Domain Shader
-// --------------
-
 struct DS_OUT
 {
     float4 pos : SV_Position;
@@ -101,13 +85,7 @@ DS_OUT DS_Main(const OutputPatch<HS_OUT, 3> input, float3 location : SV_DomainLo
     return output;
 }
 
-// --------------
-// Pixel Shader
-// --------------
-
 float4 PS_Main(DS_OUT input) : SV_Target
 {
     return float4(1.f, 0.f, 0.f, 1.f);
 }
-
-#endif

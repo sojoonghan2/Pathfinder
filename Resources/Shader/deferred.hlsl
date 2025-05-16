@@ -1,8 +1,5 @@
-#ifndef _DEFAULT_FX_
-#define _DEFAULT_FX_
-
-#include "ShaderParams.fx"
-#include "utils.fx"
+#include "ShaderParams.hlsl"
+#include "utils.hlsl"
 
 // 버텍스 셰이더 입력
 struct VS_IN
@@ -105,5 +102,3 @@ PS_OUT PS_Main(VS_OUT input)
 
     return output;
 }
-
-#endif

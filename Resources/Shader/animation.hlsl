@@ -1,9 +1,6 @@
-#ifndef _ANIMATION_FX_
-#define _ANIMATION_FX_
-
-#include "ShaderParams.fx"
-#include "utils.fx"
-#include "math.fx"
+#include "ShaderParams.hlsl"
+#include "utils.hlsl"
+#include "math.hlsl"
 
 struct AnimFrameParams
 {
@@ -48,5 +45,3 @@ void CS_Main(int3 threadIdx : SV_DispatchThreadID)
     
     g_final[threadIdx.x] = mul(g_offset[threadIdx.x], matBone);
 }
-
-#endif

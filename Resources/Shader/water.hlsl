@@ -1,8 +1,5 @@
-#ifndef _WATER_FX_
-#define _WATER_FX_
-
-#include "ShaderParams.fx"
-#include "utils.fx"
+#include "ShaderParams.hlsl"
+#include "utils.hlsl"
 
 struct VS_IN
 {
@@ -81,5 +78,3 @@ float4 PS_Main(VS_OUT input) : SV_TARGET
 
 	return float4(combinedColor, 0.75);
 }
-
-#endif

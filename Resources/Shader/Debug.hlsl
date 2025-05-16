@@ -1,8 +1,5 @@
-#ifndef _DEBUG_FX_
-#define _DEBUG_FX_
-
-#include "ShaderParams.fx"
-#include "utils.fx"
+#include "ShaderParams.hlsl"
+#include "utils.hlsl"
 
 cbuffer Material : register(b2)
 {
@@ -46,5 +43,3 @@ float4 PS_Debug(VS_OUT input) : SV_Target
 {
 	return float4(1.0f, 0.0f, 0.0f, 1.0f);
 }
-
-#endif

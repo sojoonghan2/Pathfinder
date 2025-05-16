@@ -1,8 +1,5 @@
-#ifndef _GRENADEPARTICLE_FX_
-#define _GRENADEPARTICLE_FX_
-
-#include "ShaderParams.fx"
-#include "utils.fx"
+#include "ShaderParams.hlsl"
+#include "utils.hlsl"
 
 struct Particle
 {
@@ -383,5 +380,3 @@ void CS_Main(int3 threadIndex : SV_DispatchThreadID)
 		}
 	}
 }
-
-#endif
